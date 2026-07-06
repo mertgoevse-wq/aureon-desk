@@ -63,8 +63,8 @@ Output files in `dist/`:
 - ✅ **Logs & Debug Panel** (unified redaction, audit trail, debug bundle export, 142 tests total)
 - ✅ **Windows Packaging**: NSIS installer + portable, asar, app icon, GitHub Actions CI (142 tests)
 - ✅ **Stabilization Pass**: Bug fixes, route aliases, dead code removal, docs (MVP_TEST_PLAN, SECURITY_NOTES, ROADMAP)
-- 🔜 MCP server import & real tool integration
-- 🔜 Keyboard shortcuts & resize
+- ✅ **Real Chat Completion Engine**: Send messages to configured providers (OpenAI, Anthropic, Gemini, Ollama, LM Studio, OpenRouter, Groq, Mistral, DeepSeek, custom) with loading states, error handling, and retry
+- 🔜 Streaming responses & cancel mid-request
 
 ## Commands
 

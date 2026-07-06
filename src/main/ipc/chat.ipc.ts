@@ -2,7 +2,9 @@ import { ipcMain } from 'electron'
 import { chatService } from '../services/chat.service'
 import { providerService } from '../services/provider.service'
 import { promptService } from '../services/prompt.service'
+import { chatCompletionService } from '../services/chat-completion.service'
 import { logger } from '../utils/logger'
+import type { ChatSendResult } from '../services/chat-completion.service'
 
 export function registerChatIPC(): void {
   ipcMain.handle('chat:list', (_event, includeArchived?: boolean) => {
@@ -27,6 +29,10 @@ export function registerChatIPC(): void {
 
   ipcMain.handle('chat:archive', (_event, id: string) => {
     return chatService.archiveChat(id)
+  })
+
+  ipcMain.handle('chat:send', async (_event, input: { chatId: string }): Promise<ChatSendResult> => {
+    return chatCompletionService.send(input)
   })
 
   ipcMain.handle('message:list', (_event, chatId: string) => {

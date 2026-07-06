@@ -45,6 +45,16 @@ export interface ChatWithMessages extends ChatRow {
   messages: MessageRow[]
 }
 
+export interface ChatSendResult {
+  success: boolean
+  message?: MessageRow
+  error?: string
+  errorCode?: 'no_provider' | 'no_model' | 'no_api_key' | 'provider_error' | 'timeout' | 'unknown'
+  warnings?: string[]
+  providerName?: string
+  modelName?: string
+}
+
 export interface ChatListItem {
   id: string
   title: string

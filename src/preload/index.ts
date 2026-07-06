@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { ChatRow, ChatWithMessages, ChatListItem, NewChat, NewMessage, MessageRow } from '../shared/types/chat'
+import type { ChatRow, ChatWithMessages, ChatListItem, NewChat, NewMessage, MessageRow, ChatSendResult } from '../shared/types/chat'
 import type { SystemPromptRow, NewSystemPrompt, PromptRow, NewPrompt, HierarchyInput, ResolvedPrompt, PromptExport } from '../shared/types/prompt'
 import type { ProviderAdapterInfo } from '../shared/types/provider'
 import type { AppSettings } from '../shared/types/settings'
@@ -24,6 +24,8 @@ const api = {
     ipcRenderer.invoke('chat:delete', id),
   chatArchive: (id: string): Promise<ChatRow | undefined> =>
     ipcRenderer.invoke('chat:archive', id),
+  chatSend: (chatId: string): Promise<ChatSendResult> =>
+    ipcRenderer.invoke('chat:send', { chatId }),
 
   // Messages
   messageList: (chatId: string): Promise<MessageRow[]> =>

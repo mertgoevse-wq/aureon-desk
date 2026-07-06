@@ -5,6 +5,7 @@ export interface IpcApi {
   chatUpdate: (id: string, updates: Partial<import('../shared/types/chat').ChatRow>) => Promise<import('../shared/types/chat').ChatRow | undefined>
   chatDelete: (id: string) => Promise<boolean>
   chatArchive: (id: string) => Promise<import('../shared/types/chat').ChatRow | undefined>
+  chatSend: (chatId: string) => Promise<import('../shared/types/chat').ChatSendResult>
   messageList: (chatId: string) => Promise<import('../shared/types/chat').MessageRow[]>
   messageAdd: (input: import('../shared/types/chat').NewMessage) => Promise<import('../shared/types/chat').MessageRow>
   messageUpdate: (id: string, content: string) => Promise<import('../shared/types/chat').MessageRow | undefined>

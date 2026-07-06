@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.9.2] - 2026-07-06
+
+### Added — Real Chat Completion Engine
+- **Chat completion service** (`src/main/services/chat-completion.service.ts`): Sends messages to configured providers via native `fetch()`, stores assistant responses in SQLite
+- **Provider adapters**: OpenAI-compatible (OpenAI, OpenRouter, Groq, Mistral, DeepSeek, Custom, Ollama, LM Studio), Anthropic (`/v1/messages`), Google Gemini (`generateContent`)
+- **IPC handler**: New `chat:send` IPC method with comprehensive error classification (`no_provider`, `no_model`, `no_api_key`, `provider_error`, `timeout`)
+- **Renderer UX**: Thinking/typing loading bubble during AI response, error bubble with retry button and "Open Provider Settings" navigation, input disabled while request is running
+- **Preload API**: `chatSend(chatId)` method with `ChatSendResult` type (success, message, error, warnings, providerName, modelName)
+- **14 new unit tests**: Missing API key, no model, disabled provider, successful OpenAI completion, Anthropic payload shape, provider errors (401/403/500), timeout handling, findProviderByModel, chat not found
+
+### Fixed — Critical Bugs from Code Review
+- **Anthropic adapter**: Preserve original user/assistant roles from request builder (was stripping all roles to 'user')
+- **Ollama/LM Studio**: Use provider's configured `base_url` from settings (was hardcoding localhost URLs)
+- **Error logging**: Preserve error value when error is not an `Error` instance (was discarding via `undefined`)
+- **Navigation**: Replace broken `CustomEvent('navigate')` with `useNavigate()` from react-router-dom
+- **Google Gemini**: Map assistant role to 'model' for correct multi-turn conversations
+- **Dead imports**: Remove unused `removeChatFromList` import from ChatPanel
+
 ## [0.9.1] - 2026-07-06
 
 ### Fixed — Stabilization Pass
