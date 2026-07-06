@@ -125,24 +125,28 @@ export const toolService = {
 
   /** Seed the 3 built-in mock tools if they don't exist */
   seedMockTools(): void {
-    const db = getDb()
-    const existing = db.select().from(tools).all() as ToolRow[]
-    const existingNames = new Set(existing.map(t => t.name))
-    const now = new Date().toISOString()
+    try {
+      const db = getDb()
+      const existing = db.select().from(tools).all() as ToolRow[]
+      const existingNames = new Set(existing.map(t => t.name))
+      const now = new Date().toISOString()
 
-    for (const mock of BUILTIN_MOCK_TOOLS) {
-      if (existingNames.has(mock.name)) continue
-      const id = uuid()
-      db.insert(tools).values({
-        id, name: mock.name, description: mock.description,
-        version: mock.version || '1.0.0', source: mock.source || 'builtin',
-        source_path: null, transport: mock.transport || 'local',
-        command: mock.command || null, config: JSON.stringify(mock.config || {}),
-        permissions: mock.permissions ? JSON.stringify(mock.permissions) : null,
-        is_enabled: 1, is_trusted: 0,
-        created_at: now, updated_at: now
-      } as never).run()
-      logger.info(`Seeded mock tool: ${mock.name}`)
+      for (const mock of BUILTIN_MOCK_TOOLS) {
+        if (existingNames.has(mock.name)) continue
+        const id = uuid()
+        db.insert(tools).values({
+          id, name: mock.name, description: mock.description,
+          version: mock.version || '1.0.0', source: mock.source || 'builtin',
+          source_path: null, transport: mock.transport || 'local',
+          command: mock.command || null, config: JSON.stringify(mock.config || {}),
+          permissions: mock.permissions ? JSON.stringify(mock.permissions) : null,
+          is_enabled: 1, is_trusted: 0,
+          created_at: now, updated_at: now
+        } as never).run()
+        logger.info(`Seeded mock tool: ${mock.name}`)
+      }
+    } catch (err) {
+      logger.error('Failed to seed mock tools', err)
     }
   },
 

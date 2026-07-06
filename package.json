@@ -6,6 +6,7 @@
   "author": "Aureon Desk",
   "license": "MIT",
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
@@ -26,7 +27,7 @@
     "package": "npm run build && electron-builder --win"
   },
   "dependencies": {
-    "better-sqlite3": "^12.11.0",
+    "better-sqlite3": "^12.11.1",
     "drizzle-orm": "^0.45.0",
     "uuid": "^11.1.0"
   },
