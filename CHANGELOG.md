@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.3.0] - 2026-07-06
+
+### Added — Prompt Library & Slash Command System
+- **10 built-in slash commands**: /fix, /explain, /refactor, /commit, /test, /plan, /review, /summarize, /skill, /system — all with `{{variable}}` template support
+- **Variable filler modal**: Captures template variables before inserting prompt into composer, with live preview
+- **Favorites system**: Star prompts to filter by favorites, persist favorite state across sessions
+- **Usage tracking**: Increment counter on each slash-command insert, visible on prompt cards
+- **Automatic variable detection**: `{{var}}` placeholders extracted from content on create/edit, displayed below textarea
+- **Import/export**: Export all prompts as JSON, import from JSON / Markdown / YAML with format auto-detection
+- **Import safety**: Secret stripping (API keys, tokens) on import, ID sanitization, no code execution
+- **Combined command palette**: Built-in commands + prompt library entries unified in a single `/` dropdown with category-colored icons
+- **Schema migration**: Additive ALTER TABLE for `variables`, `favorite`, `usage_count` columns
+- **Prompt I/O service**: Standalone import/export engine with JSON validation, Markdown frontmatter parsing, YAML parsing
+
+### Changed
+- `PromptRow` + `NewPrompt` types extended with `variables`, `favorite`, `usage_count`
+- `PromptCard` now shows favorite star button and usage counter
+- `PromptEditor` now detects and displays `{{variables}}` from content
+- `PromptLibrary` page now has Import/Export toolbar buttons, favorites toggle, file upload handler
+- `MessageInput` slash system rewritten with full 10-command palette and keyboard navigation
+
+### Fixed
+- `stripSecrets` regex now properly replaces secrets with `[REDACTED]` instead of leaking the original value
+- Removed dead imports and unused state across UI components
+
 ## [0.2.0] - 2026-07-06
 
 ### Added — System Prompt Profile Engine

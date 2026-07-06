@@ -101,8 +101,11 @@ export function runMigrations(): void {
       title TEXT NOT NULL,
       content TEXT NOT NULL,
       description TEXT,
+      variables TEXT,
       tags TEXT,
       category TEXT,
+      favorite INTEGER NOT NULL DEFAULT 0,
+      usage_count INTEGER NOT NULL DEFAULT 0,
       source TEXT,
       source_path TEXT,
       is_template INTEGER NOT NULL DEFAULT 0,
@@ -154,6 +157,21 @@ export function runMigrations(): void {
   addCol('category', 'TEXT')
   addCol('is_archived', "INTEGER NOT NULL DEFAULT 0")
   addCol('priority', 'INTEGER NOT NULL DEFAULT 0')
+
+  // Prompt Library additive columns
+  const promptCols = sqlite.pragma('table_info(prompts)') as { name: string }[]
+  const promptColNames = promptCols.map(c => c.name)
+
+  const addPromptCol = (name: string, ddl: string) => {
+    if (!promptColNames.includes(name)) {
+      logger.info(`Adding column: prompts.${name}`)
+      sqlite.exec(`ALTER TABLE prompts ADD COLUMN ${name} ${ddl}`)
+    }
+  }
+
+  addPromptCol('variables', 'TEXT')
+  addPromptCol('favorite', 'INTEGER NOT NULL DEFAULT 0')
+  addPromptCol('usage_count', 'INTEGER NOT NULL DEFAULT 0')
 
   sqlite.close()
   logger.info('Migrations complete')

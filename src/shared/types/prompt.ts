@@ -19,8 +19,11 @@ export interface PromptRow {
   title: string
   content: string
   description: string | null
-  tags: string | null // JSON array
+  variables: string | null   // JSON array of variable names from {{var}} placeholders
+  tags: string | null        // JSON array
   category: string | null
+  favorite: number           // 0 or 1
+  usage_count: number        // times inserted via slash or copy
   source: string | null
   source_path: string | null
   is_template: number
@@ -42,9 +45,37 @@ export interface NewPrompt {
   title: string
   content: string
   description?: string
+  variables?: string[]
   tags?: string[]
   category?: string
   is_template?: boolean
+}
+
+/** Built-in slash command definitions */
+export interface SlashCommand {
+  id: string
+  label: string
+  description: string
+  content: string            // Template content with optional {{variable}} placeholders
+  variables?: string[]       // Variable names found in content
+  icon: string               // Lucide icon name
+  category: 'coding' | 'writing' | 'analysis' | 'system' | 'prompts'
+}
+
+/** Prompt import/export format */
+export interface PromptExport {
+  version: number
+  exportedAt: string
+  prompts: PromptRow[]
+}
+
+/** Markdown/YAML import parsed result */
+export interface ParsedPromptImport {
+  title: string
+  content: string
+  description?: string
+  tags?: string[]
+  category?: string
 }
 
 /** Result of resolving the system prompt hierarchy */

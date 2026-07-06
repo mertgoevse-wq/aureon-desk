@@ -1,5 +1,5 @@
 import React from 'react'
-import { Edit2, Trash2, Copy, FileText } from 'lucide-react'
+import { Edit2, Trash2, Copy, Star, BarChart3 } from 'lucide-react'
 import { Badge } from '../shared/Badge'
 import type { PromptRow } from '@shared/types/prompt'
 
@@ -8,21 +8,31 @@ interface PromptCardProps {
   onEdit: (prompt: PromptRow) => void
   onDelete: (id: string) => void
   onCopy: (content: string) => void
+  onToggleFavorite: (id: string) => void
 }
 
 export function PromptCard({
   prompt,
   onEdit,
   onDelete,
-  onCopy
+  onCopy,
+  onToggleFavorite
 }: PromptCardProps): React.ReactElement {
   const tags: string[] = safeParseTags(prompt.tags)
+  const isFavorite = prompt.favorite === 1
+  const usageCount = prompt.usage_count || 0
 
   return (
     <div className="group p-4 rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-bg)] hover:border-[var(--ivory-border-2)] transition-colors">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2 min-w-0">
-          <FileText size={14} className="text-[var(--ivory-text-3)] shrink-0" />
+          <button
+            onClick={() => onToggleFavorite(prompt.id)}
+            className={`shrink-0 transition-colors ${isFavorite ? 'text-amber-500' : 'text-[var(--ivory-text-3)] hover:text-amber-400'}`}
+            title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Star size={14} fill={isFavorite ? 'currentColor' : 'none'} />
+          </button>
           <h3 className="text-sm font-semibold display-text text-[var(--ivory-text)] truncate">
             {prompt.title}
           </h3>
@@ -31,7 +41,7 @@ export function PromptCard({
           )}
           {prompt.source && (
             <Badge variant="default" size="sm">
-              {prompt.source.replace('github:', '')}
+              {prompt.source.replace('import:', '')}
             </Badge>
           )}
         </div>
@@ -71,12 +81,18 @@ export function PromptCard({
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 items-center">
           {tags.map(tag => (
             <Badge key={tag} variant="default" size="sm">{tag}</Badge>
           ))}
           {prompt.category && (
             <Badge variant="success" size="sm">{prompt.category}</Badge>
+          )}
+          {usageCount > 0 && (
+            <span className="text-[10px] text-[var(--ivory-text-3)] flex items-center gap-0.5 ml-1">
+              <BarChart3 size={10} />
+              {usageCount}
+            </span>
           )}
         </div>
         <span className="text-[10px] text-[var(--ivory-text-3)]">

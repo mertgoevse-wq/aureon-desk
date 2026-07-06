@@ -1,7 +1,27 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
-import { Send, Paperclip, Sparkles } from 'lucide-react'
+import { Send, Paperclip, Wrench, FileCode, GitBranch, ClipboardCheck, Map, Eye, FileText, Zap, Settings, BookOpen } from 'lucide-react'
 import { usePromptLibraryStore } from '../../stores/promptLibraryStore'
 import { useIpc } from '../../hooks/useIpc'
+import { VariableFiller } from '../prompts/VariableFiller'
+
+// Local helpers (avoids importing node module in renderer)
+function safeParseTags(tags: string | null): string[] {
+  if (!tags) return []
+  try { return JSON.parse(tags) }
+  catch { return [] }
+}
+
+function safeParseVars(vars: string | null): string[] {
+  if (!vars) return []
+  try { return JSON.parse(vars) }
+  catch { return [] }
+}
+
+function extractTemplateVars(content: string): string[] {
+  const matches = content.match(/\{\{(\w+)\}\}/g)
+  if (!matches) return []
+  return [...new Set(matches.map(m => m.slice(2, -2)))]
+}
 
 interface MessageInputProps {
   onSend: (content: string) => void
@@ -9,22 +29,46 @@ interface MessageInputProps {
   placeholder?: string
 }
 
+interface SlashItem {
+  id: string
+  label: string
+  description: string
+  content: string
+  variables: string[]
+  icon: React.ReactElement
+  category: 'coding' | 'writing' | 'analysis' | 'system' | 'prompts'
+  isPrompt?: boolean
+}
+
+const BUILTIN_COMMANDS: Omit<SlashItem, 'isPrompt'>[] = [
+  { id: 'fix', label: 'Fix Code', description: 'Identify bugs, edge cases, and improvements', content: 'Please fix the following code. Identify bugs, edge cases, and improvements:\n\n```\n{{code}}\n```\n\nExplain each fix you make.', variables: ['code'], icon: <Wrench size={14} />, category: 'coding' },
+  { id: 'explain', label: 'Explain Code', description: 'Walk through what the code does and how it works', content: 'Please explain the following code in detail. Walk through what it does, how it works, and any notable patterns or techniques used:\n\n```\n{{code}}\n```', variables: ['code'], icon: <FileText size={14} />, category: 'analysis' },
+  { id: 'refactor', label: 'Refactor Code', description: 'Cleaner, more efficient, more maintainable', content: 'Please refactor the following code to be cleaner, more efficient, and more maintainable. Preserve all existing behavior:\n\n```\n{{code}}\n```\n\nDescribe each refactoring you apply and why.', variables: ['code'], icon: <FileCode size={14} />, category: 'coding' },
+  { id: 'commit', label: 'Generate Commit', description: 'Conventional commit message from diff', content: 'Based on the following git diff, generate a concise, well-formatted commit message following conventional commits:\n\n```diff\n{{diff}}\n```', variables: ['diff'], icon: <GitBranch size={14} />, category: 'coding' },
+  { id: 'test', label: 'Write Tests', description: 'Comprehensive unit tests with edge cases', content: 'Please write comprehensive unit tests for the following code. Cover happy paths, edge cases, and error handling:\n\n```\n{{code}}\n```\n\nUse the testing framework already in use in this project.', variables: ['code'], icon: <ClipboardCheck size={14} />, category: 'coding' },
+  { id: 'plan', label: 'Create Plan', description: 'Detailed implementation plan with steps', content: 'I need a detailed implementation plan for the following task:\n\n{{task}}\n\nPlease break it down into clear, ordered steps with technical details.', variables: ['task'], icon: <Map size={14} />, category: 'writing' },
+  { id: 'review', label: 'Code Review', description: 'Correctness, security, performance, best practices', content: 'Please review the following code. Evaluate it for:\n- Correctness and edge cases\n- Performance and efficiency\n- Security concerns\n- Readability and maintainability\n- Adherence to best practices\n\n```\n{{code}}\n```', variables: ['code'], icon: <Eye size={14} />, category: 'analysis' },
+  { id: 'summarize', label: 'Summarize', description: 'Concise summary with key takeaways', content: 'Please provide a concise summary of the following:\n\n{{text}}\n\nFocus on the key points and takeaways.', variables: ['text'], icon: <FileText size={14} />, category: 'writing' },
+  { id: 'skill', label: 'Apply Skill', description: 'Act as a specialist with a specific skill', content: 'Act as a specialist with the following skill:\n\n{{skill}}\n\nNow, help me with:\n\n{{task}}', variables: ['skill', 'task'], icon: <Zap size={14} />, category: 'system' },
+  { id: 'system', label: 'System / Meta', description: 'Set rules then proceed with a task', content: 'Rules:\n- {{rules}}\n\nNow proceed with the following task:\n\n{{task}}', variables: ['rules', 'task'], icon: <Settings size={14} />, category: 'system' },
+]
+
 export function MessageInput({
   onSend,
   disabled = false,
-  placeholder = 'Type a message... (Shift+Enter for new line, / for prompts)'
+  placeholder = 'Type a message... (Shift+Enter for new line, / for commands & prompts)'
 }: MessageInputProps): React.ReactElement {
   const [value, setValue] = useState('')
   const [showSlashMenu, setShowSlashMenu] = useState(false)
   const [slashQuery, setSlashQuery] = useState('')
   const [slashIndex, setSlashIndex] = useState(0)
-  const [filteredPrompts, setFilteredPrompts] = useState<{id: string; title: string; content: string}[]>([])
+  const [slashItems, setSlashItems] = useState<SlashItem[]>([])
+  const [variableFiller, setVariableFiller] = useState<{ title: string; content: string; variables: string[] } | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const prompts = usePromptLibraryStore(s => s.prompts)
   const loadPrompts = usePromptLibraryStore(s => s.setPrompts)
   const api = useIpc()
 
-  // Lazy-load prompts from DB on first slash trigger if store is empty
   const ensurePromptsLoaded = useCallback(async () => {
     if (prompts.length === 0) {
       try {
@@ -48,21 +92,37 @@ export function MessageInput({
     }
   }, [value, disabled, onSend])
 
-  const insertPromptContent = useCallback((prompt: {id: string; title: string; content: string}) => {
+  const replaceSlash = useCallback((content: string) => {
     const slashPos = value.lastIndexOf('/')
     const before = value.slice(0, slashPos)
     const after = value.slice(slashPos + slashQuery.length + 1)
-    setValue(before + prompt.content + '\n' + after)
+    setValue(before + content + '\n' + after)
     setShowSlashMenu(false)
     setSlashQuery('')
     requestAnimationFrame(() => textareaRef.current?.focus())
   }, [value, slashQuery])
 
+  const insertCommand = useCallback((item: SlashItem) => {
+    if (item.variables.length > 0) {
+      setVariableFiller({ title: item.label, content: item.content, variables: item.variables })
+      setShowSlashMenu(false)
+    } else {
+      replaceSlash(item.content)
+    }
+    if (item.isPrompt) {
+      api.promptLibraryIncrementUsage(item.id).catch(() => {})
+    }
+  }, [replaceSlash, api])
+
+  const handleVariableInsert = useCallback((text: string) => {
+    replaceSlash(text)
+  }, [replaceSlash])
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (showSlashMenu && filteredPrompts.length > 0) {
+    if (showSlashMenu && slashItems.length > 0) {
       if (e.key === 'ArrowDown') {
         e.preventDefault()
-        setSlashIndex(i => Math.min(i + 1, filteredPrompts.length - 1))
+        setSlashIndex(i => Math.min(i + 1, slashItems.length - 1))
         return
       }
       if (e.key === 'ArrowUp') {
@@ -72,7 +132,7 @@ export function MessageInput({
       }
       if (e.key === 'Enter' || e.key === 'Tab') {
         e.preventDefault()
-        insertPromptContent(filteredPrompts[slashIndex])
+        insertCommand(slashItems[slashIndex])
         return
       }
       if (e.key === 'Escape') {
@@ -87,7 +147,7 @@ export function MessageInput({
         handleSend()
       }
     }
-  }, [handleSend, showSlashMenu, slashIndex, filteredPrompts, insertPromptContent])
+  }, [handleSend, showSlashMenu, slashIndex, slashItems, insertCommand])
 
   const handleInput = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value
@@ -104,14 +164,30 @@ export function MessageInput({
     if (slashMatch && textBefore.lastIndexOf('/') === cursorPos - slashMatch[0].length) {
       const query = slashMatch[1].toLowerCase()
       setSlashQuery(query)
+
+      const filteredBuiltins: SlashItem[] = BUILTIN_COMMANDS
+        .filter(c => c.id.startsWith(query) || c.label.toLowerCase().includes(query) || c.description.toLowerCase().includes(query))
+
       ensurePromptsLoaded().then(() => {
         const currentPrompts = usePromptLibraryStore.getState().prompts
-        const filtered = currentPrompts
+        const filteredPrompts: SlashItem[] = currentPrompts
           .filter(p => p.title.toLowerCase().includes(query) || (p.tags && safeParseTags(p.tags).some(t => t.toLowerCase().includes(query))))
-          .slice(0, 6)
-          .map(p => ({ id: p.id, title: p.title, content: p.content }))
-        setFilteredPrompts(filtered)
-        setShowSlashMenu(filtered.length > 0)
+          .slice(0, 10)
+          .map(p => ({
+            id: p.id,
+            label: p.title,
+            description: p.description || p.content.slice(0, 80),
+            content: p.content,
+            variables: p.variables ? safeParseVars(p.variables) : extractTemplateVars(p.content),
+            icon: <BookOpen size={14} className="text-[var(--ivory-accent)]" />,
+            category: 'prompts' as const,
+            isPrompt: true
+          }))
+
+        const combined = [...filteredBuiltins, ...filteredPrompts].slice(0, 12)
+        setSlashItems(combined)
+        setSlashIndex(0)
+        setShowSlashMenu(combined.length > 0)
       })
     } else {
       setShowSlashMenu(false)
@@ -121,26 +197,61 @@ export function MessageInput({
   return (
     <div className="border-t border-[var(--ivory-border)] bg-[var(--ivory-bg)]">
       <div className="mx-auto max-w-3xl px-4 py-3 relative">
-        {showSlashMenu && filteredPrompts.length > 0 && (
-          <div className="absolute bottom-full left-8 right-8 mb-2 bg-[var(--ivory-bg)] border border-[var(--ivory-border)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] z-20 max-h-48 overflow-y-auto">
-            <div className="px-3 py-1.5 text-[10px] text-[var(--ivory-text-3)] border-b border-[var(--ivory-border)] font-medium">
-              Prompt Templates
+        {/* Slash command palette */}
+        {showSlashMenu && slashItems.length > 0 && (
+          <div className="absolute bottom-full left-8 right-8 mb-2 bg-[var(--ivory-bg)] border border-[var(--ivory-border)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] z-20 max-h-80 overflow-y-auto">
+            <div className="px-3 py-1.5 text-[10px] text-[var(--ivory-text-3)] border-b border-[var(--ivory-border)] font-medium flex items-center justify-between">
+              <span>Commands & Prompts</span>
+              <span className="text-[var(--ivory-text-3)]/60">↑↓ navigate · ↵ insert · esc close</span>
             </div>
-            {filteredPrompts.map((prompt, i) => (
-              <button
-                key={prompt.id}
-                onClick={() => insertPromptContent(prompt)}
-                className={`w-full text-left px-3 py-2 text-xs flex items-start gap-2 transition-colors
-                  ${i === slashIndex ? 'bg-[var(--ivory-surface)]' : 'hover:bg-[var(--ivory-surface)]'}`}
-              >
-                <Sparkles size={12} className="mt-0.5 text-[var(--ivory-accent)] shrink-0" />
-                <div className="min-w-0">
-                  <span className="text-[var(--ivory-text)] font-medium">{prompt.title}</span>
-                  <p className="text-[10px] text-[var(--ivory-text-3)] truncate mt-0.5">{prompt.content.slice(0, 80)}</p>
-                </div>
-              </button>
-            ))}
+            {slashItems.map((item, i) => {
+              const categoryColor: Record<string, string> = {
+                coding: 'text-blue-600',
+                writing: 'text-green-600',
+                analysis: 'text-purple-600',
+                system: 'text-amber-600',
+                prompts: 'text-[var(--ivory-accent)]'
+              }
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => insertCommand(item)}
+                  className={`w-full text-left px-3 py-2.5 flex items-start gap-3 transition-colors border-b border-[var(--ivory-border)]/50 last:border-0
+                    ${i === slashIndex ? 'bg-[var(--ivory-surface)]' : 'hover:bg-[var(--ivory-surface)]'}`}
+                >
+                  <span className={`mt-0.5 shrink-0 ${categoryColor[item.category] || ''}`}>
+                    {item.icon}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-[var(--ivory-text)] font-medium">{item.label}</span>
+                      {item.variables.length > 0 && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-[var(--radius-sm)] bg-[var(--ivory-surface-2)] text-[var(--ivory-text-3)] font-mono">
+                          {item.variables.map(v => `{{${v}}}`).join(', ')}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-[var(--ivory-text-3)] mt-0.5 truncate">{item.description}</p>
+                  </div>
+                  <span className="text-[10px] text-[var(--ivory-text-3)]/60 font-mono mt-0.5 shrink-0">
+                    /{item.id}
+                  </span>
+                </button>
+              )
+            })}
           </div>
+        )}
+
+        {/* Variable filler modal */}
+        {variableFiller && (
+          <VariableFiller
+            isOpen={!!variableFiller}
+            onClose={() => setVariableFiller(null)}
+            onInsert={handleVariableInsert}
+            title={variableFiller.title}
+            content={variableFiller.content}
+            variables={variableFiller.variables}
+          />
         )}
 
         <div className="flex items-end gap-2 bg-[var(--ivory-surface)] border border-[var(--ivory-border)] rounded-[var(--radius-lg)] p-2 focus-within:border-[var(--ivory-accent)] focus-within:ring-1 focus-within:ring-[var(--ivory-accent)] transition-colors">
@@ -175,15 +286,9 @@ export function MessageInput({
         </div>
 
         <p className="text-[10px] text-[var(--ivory-text-3)] mt-1.5 px-1 text-center">
-          Type / to search prompts. Ivory does not send messages until API keys are configured.
+          Type / for commands & prompts. Aureon Desk does not send messages until API keys are configured.
         </p>
       </div>
     </div>
   )
-}
-
-function safeParseTags(tags: string | null): string[] {
-  if (!tags) return []
-  try { return JSON.parse(tags) }
-  catch { return [] }
 }

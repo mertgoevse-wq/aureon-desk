@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { ChatRow, ChatWithMessages, ChatListItem, NewChat, NewMessage, MessageRow } from '../shared/types/chat'
-import type { SystemPromptRow, NewSystemPrompt, PromptRow, NewPrompt, HierarchyInput, ResolvedPrompt } from '../shared/types/prompt'
+import type { SystemPromptRow, NewSystemPrompt, PromptRow, NewPrompt, HierarchyInput, ResolvedPrompt, PromptExport } from '../shared/types/prompt'
 import type { ProviderAdapterInfo } from '../shared/types/provider'
 import type { AppSettings } from '../shared/types/settings'
 
@@ -93,7 +93,7 @@ const api = {
     ipcRenderer.invoke('settings:getDefaults'),
 
   // Prompt Library
-  promptLibraryList: (filters?: { search?: string; tags?: string[]; category?: string }): Promise<PromptRow[]> =>
+  promptLibraryList: (filters?: { search?: string; tags?: string[]; category?: string; favoritesOnly?: boolean }): Promise<PromptRow[]> =>
     ipcRenderer.invoke('promptLibrary:list', filters),
   promptLibraryGet: (id: string): Promise<PromptRow | undefined> =>
     ipcRenderer.invoke('promptLibrary:get', id),
@@ -103,10 +103,23 @@ const api = {
     ipcRenderer.invoke('promptLibrary:update', id, input),
   promptLibraryDelete: (id: string): Promise<boolean> =>
     ipcRenderer.invoke('promptLibrary:delete', id),
+  promptLibraryToggleFavorite: (id: string): Promise<PromptRow | undefined> =>
+    ipcRenderer.invoke('promptLibrary:toggleFavorite', id),
+  promptLibraryIncrementUsage: (id: string): Promise<void> =>
+    ipcRenderer.invoke('promptLibrary:incrementUsage', id),
   promptLibraryGetTags: (): Promise<string[]> =>
     ipcRenderer.invoke('promptLibrary:getTags'),
   promptLibraryGetCategories: (): Promise<string[]> =>
     ipcRenderer.invoke('promptLibrary:getCategories'),
+  promptLibraryExportAll: (): Promise<PromptExport> =>
+    ipcRenderer.invoke('promptLibrary:exportAll'),
+  promptLibraryImportJson: (jsonString: string): Promise<{ imported: number; errors: string[] }> =>
+    ipcRenderer.invoke('promptLibrary:importJson', jsonString),
+  promptLibraryImportText: (text: string, format?: string, extension?: string): Promise<{ imported: number; errors: string[] }> =>
+    ipcRenderer.invoke('promptLibrary:importText', text, format, extension),
+  promptLibraryResolveSlashCommand: (command: string): Promise<{ content: string; label: string; isPrompt: boolean } | null> =>
+    ipcRenderer.invoke('promptLibrary:resolveSlashCommand', command),
+
   credentialsIsAvailable: (): Promise<boolean> =>
     ipcRenderer.invoke('credentials:isAvailable'),
   credentialsMaskKey: (key: string): Promise<string> =>

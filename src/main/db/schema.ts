@@ -83,8 +83,11 @@ export const prompts = sqliteTable('prompts', {
   title: text('title').notNull(),
   content: text('content').notNull(),
   description: text('description'),
-  tags: text('tags'),
+  variables: text('variables'),     // JSON array of {{var}} names
+  tags: text('tags'),               // JSON array
   category: text('category'),
+  favorite: integer('favorite').notNull().default(0),
+  usage_count: integer('usage_count').notNull().default(0),
   source: text('source'),
   source_path: text('source_path'),
   is_template: integer('is_template').notNull().default(0),

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Modal } from '../shared/Modal'
 import { Input, Textarea } from '../shared/Input'
 import { Select } from '../shared/Select'
@@ -35,6 +35,13 @@ export function PromptEditor({
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Extract {{variable}} names from content
+  const detectedVars = useMemo(() => {
+    const matches = content.match(/\{\{(\w+)\}\}/g)
+    if (!matches) return []
+    return [...new Set(matches.map(m => m.slice(2, -2)))]
+  }, [content])
+
   useEffect(() => {
     if (isOpen) {
       if (existingPrompt) {
@@ -67,6 +74,7 @@ export function PromptEditor({
         title: title.trim(),
         description: description.trim() || undefined,
         content: content.trim(),
+        variables: detectedVars.length > 0 ? detectedVars : undefined,
         tags: tags.length > 0 ? tags : undefined,
         category: category || undefined,
         is_template: isTemplate
@@ -102,13 +110,25 @@ export function PromptEditor({
           placeholder="What this prompt does"
         />
 
-        <Textarea
-          label="Prompt Content"
-          value={content}
-          onChange={e => setContent(e.target.value)}
-          placeholder="Write your prompt template here...&#10;&#10;Use {{variable}} syntax for template variables."
-          rows={10}
-        />
+        <div>
+          <Textarea
+            label="Prompt Content"
+            value={content}
+            onChange={e => setContent(e.target.value)}
+            placeholder={`Write your prompt template here...\n\nUse {{variable}} syntax for template variables.\nExample: "Help me build {{feature}} for {{projectName}}"\n`}
+            rows={10}
+          />
+          {detectedVars.length > 0 && (
+            <div className="flex items-center gap-2 mt-1.5">
+              <span className="text-[10px] text-[var(--ivory-text-3)]">Detected variables:</span>
+              {detectedVars.map(v => (
+                <code key={v} className="text-[11px] px-1.5 py-0.5 rounded-[var(--radius-sm)] bg-[var(--ivory-surface-2)] text-[var(--ivory-accent)] font-mono">
+                  {`{{${v}}}`}
+                </code>
+              ))}
+            </div>
+          )}
+        </div>
 
         <TagInput
           tags={tags}

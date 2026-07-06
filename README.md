@@ -35,8 +35,9 @@ npm start
 - ✅ Chat with message persistence (SQLite)
 - ✅ Provider & API key management (8 providers)
 - ✅ **System Prompt Profile Engine** (CRUD, archive, duplicate, hierarchy resolver, safety checks)
-- ✅ Prompt library with tags, categories, search
-- ✅ Slash command integration in chat input
+- ✅ **Prompt Library & Slash Commands** (10 commands, variables, favorites, import/export JSON/MD/YAML)
+- ✅ Prompt library with tags, categories, search, favorites, usage tracking
+- ✅ Slash command integration with combined built-in + library palette
 - ✅ Secure credential vault (safeStorage)
 - ✅ Unit tests (15 passing for hierarchy resolver)
 - 🔜 Projects & local file access

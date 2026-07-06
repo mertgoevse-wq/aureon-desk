@@ -8,6 +8,7 @@ interface PromptLibraryState {
   searchQuery: string
   selectedTags: string[]
   selectedCategory: string | null
+  favoritesOnly: boolean
   isLoading: boolean
 
   setPrompts: (prompts: PromptRow[]) => void
@@ -16,6 +17,7 @@ interface PromptLibraryState {
   setSearchQuery: (query: string) => void
   toggleTag: (tag: string) => void
   setSelectedCategory: (category: string | null) => void
+  toggleFavoritesOnly: () => void
   addPrompt: (prompt: PromptRow) => void
   updatePrompt: (id: string, updates: Partial<PromptRow>) => void
   removePrompt: (id: string) => void
@@ -30,6 +32,7 @@ export const usePromptLibraryStore = create<PromptLibraryState>((set) => ({
   searchQuery: '',
   selectedTags: [],
   selectedCategory: null,
+  favoritesOnly: false,
   isLoading: false,
 
   setPrompts: (prompts) => set({ prompts }),
@@ -42,6 +45,7 @@ export const usePromptLibraryStore = create<PromptLibraryState>((set) => ({
       : [...state.selectedTags, tag]
   })),
   setSelectedCategory: (category) => set({ selectedCategory: category }),
+  toggleFavoritesOnly: () => set((state) => ({ favoritesOnly: !state.favoritesOnly })),
   addPrompt: (prompt) => set((state) => ({ prompts: [...state.prompts, prompt] })),
   updatePrompt: (id, updates) => set((state) => ({
     prompts: state.prompts.map(p => p.id === id ? { ...p, ...updates } : p)
@@ -50,5 +54,5 @@ export const usePromptLibraryStore = create<PromptLibraryState>((set) => ({
     prompts: state.prompts.filter(p => p.id !== id)
   })),
   setLoading: (loading) => set({ isLoading: loading }),
-  clearFilters: () => set({ searchQuery: '', selectedTags: [], selectedCategory: null })
+  clearFilters: () => set({ searchQuery: '', selectedTags: [], selectedCategory: null, favoritesOnly: false })
 }))
