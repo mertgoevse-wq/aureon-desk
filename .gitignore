@@ -10,3 +10,20 @@ dist/
 .DS_Store
 Thumbs.db
 *.log
+
+# Installer/package outputs (dist/ already ignored)
+dist/*.exe
+dist/*.msi
+
+# IDE
+.vscode/
+.idea/
+
+# Test artifacts
+coverage/
+.nyc_output/
+
+# Secrets & credentials
+*.pem
+*.key
+credentials.json

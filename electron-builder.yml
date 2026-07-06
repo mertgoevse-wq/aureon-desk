@@ -1,26 +1,53 @@
 appId: com.aureon.desk
 productName: Aureon Desk
+copyright: "Copyright © 2026 Aureon Desk"
+asar: true
+asarUnpack:
+  - "**/*.node"
+  - "node_modules/better-sqlite3/build/**"
 directories:
   buildResources: build
+  output: dist
 files:
-  - '!**/.vscode/*'
-  - '!src/*'
-  - '!electron.vite.config.*'
-  - '!{.eslintrc,.prettierrc,tsconfig.*,drizzle.config.*}'
-  - '!{dev-app-update.yml,CHANGELOG.md,README.md}'
-  - '!{ARCHITECTURE.md}'
-  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
-  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - out/**/*
+  - "!**/.vscode/*"
+  - "!src/*"
+  - "!electron.vite.config.*"
+  - "!{.eslintrc,.prettierrc,tsconfig.*,drizzle.config.*}"
+  - "!{dev-app-update.yml,CHANGELOG.md,README.md,ARCHITECTURE.md}"
+  - "!{.env,.env.*,.npmrc,pnpm-lock.yaml,package-lock.json}"
+  - "!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}"
+  - "!{.gitignore,.gitattributes}"
+  - "!{tests,__tests__,specs,__specs__}"
+  - "!{coverage,.nyc_output}"
+  - "!{*.md,LICENSE}"
+  - "!{dist,installer}"
+  - "!**/*.map"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
 win:
   target:
     - target: nsis
       arch: [x64]
+    - target: portable
+      arch: [x64]
   icon: build/icon.ico
+  artifactName: "AureonDesk-${version}-${arch}.${ext}"
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Aureon Desk
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  installerHeaderIcon: build/icon.ico
+  deleteAppDataOnUninstall: false
+  artifactName: "AureonDesk-Setup-${version}-${arch}.${ext}"
+portable:
+  artifactName: "AureonDesk-Portable-${version}-${arch}.${ext}"
 extraResources:
   - from: node_modules/better-sqlite3/build
     to: better-sqlite3/build
     filter:
-      - '**/*'
+      - "**/*"

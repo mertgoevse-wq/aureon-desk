@@ -23,9 +23,25 @@ npm run dev
 # Build for production
 npm run build
 
+# Package for Windows (NSIS installer + portable)
+npm run dist:win
+
+# Build + package in one step
+npm run package
+
 # Start production build
 npm start
 ```
+
+### Packaging Requirements
+
+- **Local:** Visual Studio Build Tools (for native module rebuilds)
+- **Without VS:** `npm run dist:win -- --config.npmRebuild=false`
+- **CI:** GitHub Actions builds automatically on push to main/master and tags (`v*`)
+
+Output files in `dist/`:
+- `AureonDesk-Setup-0.9.0-x64.exe` (NSIS installer)
+- `AureonDesk-Portable-0.9.0-x64.exe` (standalone portable)
 
 ## Current Status (Phase 2)
 
@@ -45,7 +61,7 @@ npm start
 - ✅ Unit tests (15 passing for hierarchy resolver)
 - ✅ **Projects & Local Folder Access** (file tree, context builder, instructions, defaults, 117 tests total)
 - ✅ **Logs & Debug Panel** (unified redaction, audit trail, debug bundle export, 142 tests total)
-- ✅ **Component Integration**: CommandPalette (Ctrl+K), Toast notifications, Card/Tabs wiring (142 tests)
+- ✅ **Windows Packaging**: NSIS installer + portable, asar, app icon, GitHub Actions CI (142 tests)
 - 🔜 MCP server import & real tool integration
 - 🔜 Keyboard shortcuts & resize
 
@@ -59,5 +75,6 @@ npm start
 | `npm run typecheck` | TypeScript check |
 | `npm run test` | Run Vitest unit tests |
 | `npm run lint` | Lint check (typecheck) |
-| `npm run pack` | Package for distribution |
-| `npm run dist` | Build installer |
+| `npm run dist:win` | Build Windows NSIS installer + portable |
+| `npm run package` | Build + package for Windows |
+| `npm run pack` | Directory-only build (for testing) |

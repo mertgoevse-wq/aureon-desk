@@ -1,0 +1,66 @@
+name: Build Windows Installer
+
+on:
+  push:
+    branches: [main, master]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build app
+        run: npm run build
+
+      - name: Package for Windows (NSIS installer + portable)
+        run: npm run dist:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: aureon-desk-windows-installer
+          path: dist/AureonDesk-Setup-*.exe
+          if-no-files-found: warn
+
+      - name: Upload portable
+        uses: actions/upload-artifact@v4
+        with:
+          name: aureon-desk-windows-portable
+          path: dist/AureonDesk-Portable-*.exe
+          if-no-files-found: warn
+
+      - name: Create GitHub Release (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/AureonDesk-Setup-*.exe
+            dist/AureonDesk-Portable-*.exe
+          draft: true
+          generate_release_notes: true

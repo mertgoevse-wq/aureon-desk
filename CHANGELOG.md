@@ -2,6 +2,21 @@
 
 ## [0.9.0] - 2026-07-06
 
+### Added — Windows Packaging & Installer
+- **electron-builder.yml**: NSIS installer + portable targets, asar with native module unpacking, comprehensive file exclusions, artifact naming (`AureonDesk-Setup-*.exe`, `AureonDesk-Portable-*.exe`)
+- **App icon**: Programmatically generated 4-size .ico (16, 32, 48, 256px) with warm ivory/terracotta design matching app theme
+- **GitHub Actions CI**: Windows build workflow (`build.yml`) — typecheck → test → build → package with artifact upload and draft release on tags
+- **Build scripts**: `npm run dist:win` (electron-builder --win), `npm run package` (build + dist:win)
+- **Release safety**: Enhanced .gitignore (installer outputs, IDE, secrets), .npmrc for native module builds
+- **App metadata**: Version bumped to 0.9.0, author set, description updated
+
+### Verification
+- Runtime paths confirmed: DB in `userData`, imports in `userData/imports`, logs in `userData/logs`, secrets via DPAPI safeStorage
+- Packaging requires Visual Studio Build Tools locally (GitHub Actions windows-latest has them pre-installed)
+- `npm run build` → `npm run dist:win` produces installer + portable in `dist/`
+
+## [0.9.0] - 2026-07-06
+
 ### Added — Component Integration & Polish
 - **CommandPalette**: Ctrl+K / Cmd+K global shortcut to open a searchable command palette with 10 navigation items (Chats, Prompts, Projects, Tools, Profiles, Providers, Imports, Logs, Appearance, Settings) with icons and keyboard navigation (ArrowUp/Down/Enter/Escape)
 - **Tabs component** integrated into PromptsPage: Active/Archived tabswitcher with live count badges replacing inline tab buttons

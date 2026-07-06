@@ -1,9 +1,9 @@
 {
   "name": "aureon-desk",
-  "version": "0.1.0",
-  "description": "Aureon Desk — a Windows-first desktop AI workspace with multi-provider chat, projects, and tool integrations",
+  "version": "0.9.0",
+  "description": "Aureon Desk — Windows-first desktop AI workspace with multi-provider chat, prompt intelligence, project workspaces, MCP tools, and secure credential management",
   "main": "./out/main/index.js",
-  "author": "",
+  "author": "Aureon Desk",
   "license": "MIT",
   "scripts": {
     "dev": "electron-vite dev",
@@ -21,7 +21,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "package": "npm run build && electron-builder --win"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.0",
