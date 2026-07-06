@@ -3,6 +3,7 @@ import type { ChatRow, ChatWithMessages, ChatListItem, NewChat, NewMessage, Mess
 import type { SystemPromptRow, NewSystemPrompt, PromptRow, NewPrompt, HierarchyInput, ResolvedPrompt, PromptExport } from '../shared/types/prompt'
 import type { ProviderAdapterInfo } from '../shared/types/provider'
 import type { AppSettings } from '../shared/types/settings'
+import type { AnalyzePromptInput, AnalyzePromptOutput } from '../shared/types/routing'
 
 // Define the IPC API exposed to the renderer
 const api = {
@@ -123,7 +124,11 @@ const api = {
   credentialsIsAvailable: (): Promise<boolean> =>
     ipcRenderer.invoke('credentials:isAvailable'),
   credentialsMaskKey: (key: string): Promise<string> =>
-    ipcRenderer.invoke('credentials:maskKey', key)
+    ipcRenderer.invoke('credentials:maskKey', key),
+
+  // Routing
+  routingAnalyze: (input: AnalyzePromptInput): Promise<AnalyzePromptOutput> =>
+    ipcRenderer.invoke('routing:analyze', input)
 }
 
 // Expose the API in the main world

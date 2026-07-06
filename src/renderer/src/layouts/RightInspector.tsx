@@ -1,9 +1,15 @@
 import React from 'react'
-import { PanelRightClose, PanelRightOpen, Wrench } from 'lucide-react'
+import {
+  PanelRightClose, PanelRightOpen, Brain, Target, Shield,
+  Users, Wrench, AlertTriangle, Info, Zap, ChevronRight
+} from 'lucide-react'
 import { useUIStore } from '../stores/uiStore'
+import { useRoutingStore } from '../stores/routingStore'
+import { Badge } from '../components/shared/Badge'
 
 export function RightInspector(): React.ReactElement {
   const { inspectorOpen, toggleInspector, inspectorWidth } = useUIStore()
+  const { currentAnalysis, isLoading, error } = useRoutingStore()
 
   if (!inspectorOpen) {
     return (
@@ -26,9 +32,12 @@ export function RightInspector(): React.ReactElement {
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--ivory-border)]">
-        <h2 className="text-sm font-semibold display-text text-[var(--ivory-text)]">
-          Inspector
-        </h2>
+        <div className="flex items-center gap-1.5">
+          <Brain size={14} className="text-[var(--ivory-accent)]" />
+          <h2 className="text-sm font-semibold display-text text-[var(--ivory-text)]">
+            Router
+          </h2>
+        </div>
         <button
           onClick={toggleInspector}
           className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
@@ -38,17 +47,229 @@ export function RightInspector(): React.ReactElement {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-3">
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <Wrench size={32} className="text-[var(--ivory-text-3)] mb-3" strokeWidth={1.5} />
-          <p className="text-sm text-[var(--ivory-text-2)] font-medium mb-1">
-            Tool Transcript
+      <div className="flex-1 overflow-y-auto">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <p className="text-xs text-[var(--ivory-text-3)] animate-pulse">Analyzing prompt...</p>
+          </div>
+        ) : error ? (
+          <div className="p-3">
+            <div className="p-3 rounded-[var(--radius-md)] bg-[var(--ivory-error-bg)] border border-[var(--ivory-error-bg)]">
+              <p className="text-xs text-[var(--ivory-error)]">{error}</p>
+            </div>
+          </div>
+        ) : !currentAnalysis ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center px-4">
+            <Brain size={28} className="text-[var(--ivory-text-3)] mb-3" strokeWidth={1.5} />
+            <p className="text-sm text-[var(--ivory-text-2)] font-medium mb-1">
+              Prompt Intelligence
+            </p>
+            <p className="text-xs text-[var(--ivory-text-3)] max-w-[200px]">
+              Send a message to see intent classification, agent routing, skill matching, and risk analysis.
+            </p>
+          </div>
+        ) : (
+          <AnalysisView analysis={currentAnalysis} />
+        )}
+      </div>
+    </div>
+  )
+}
+
+function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof useRoutingStore.getState>['currentAnalysis']> }): React.ReactElement {
+  const { analysis: pa, routing } = analysis
+
+  const riskColors: Record<string, string> = {
+    low: 'bg-green-100 text-green-700',
+    medium: 'bg-amber-100 text-amber-700',
+    high: 'bg-orange-100 text-orange-700',
+    destructive: 'bg-red-100 text-red-700',
+  }
+
+  const intentColors: Record<string, string> = {
+    coding: 'text-blue-600',
+    debugging: 'text-red-600',
+    writing: 'text-green-600',
+    planning: 'text-purple-600',
+    research: 'text-indigo-600',
+    data_analysis: 'text-cyan-600',
+    file_operation: 'text-teal-600',
+    github_operation: 'text-orange-600',
+    terminal_operation: 'text-amber-600',
+    design_request: 'text-pink-600',
+    general_chat: 'text-gray-600',
+    security_review: 'text-rose-600',
+  }
+
+  const intentLabel: Record<string, string> = {
+    coding: 'Coding', debugging: 'Debugging', writing: 'Writing',
+    planning: 'Planning', research: 'Research', data_analysis: 'Data Analysis',
+    file_operation: 'File Operation', github_operation: 'GitHub',
+    terminal_operation: 'Terminal', design_request: 'Design',
+    general_chat: 'General', security_review: 'Security',
+  }
+
+  return (
+    <div className="p-3 space-y-4 text-xs">
+      {/* Intent */}
+      <Section icon={<Target size={12} />} title="Intent" collapsible>
+        <div className="flex items-center gap-2">
+          <span className={`font-semibold text-sm ${intentColors[pa.intent] || ''}`}>
+            {intentLabel[pa.intent] || pa.intent}
+          </span>
+          <span className="text-[10px] text-[var(--ivory-text-3)]">
+            {Math.round(pa.confidence * 100)}% confidence
+          </span>
+        </div>
+        {pa.alternativeIntents.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1">
+            {pa.alternativeIntents.map(ai => (
+              <Badge key={ai} variant="default" size="sm">{intentLabel[ai] || ai}</Badge>
+            ))}
+          </div>
+        )}
+      </Section>
+
+      {/* Primary Agent */}
+      <Section icon={<Users size={12} />} title="Primary Agent">
+        <div className="flex items-center gap-1.5">
+          <span className="font-medium text-[var(--ivory-text)]">{routing.primaryAgent.name}</span>
+          {routing.primaryAgent.isDestructive && (
+            <AlertTriangle size={10} className="text-red-500" />
+          )}
+        </div>
+        <p className="text-[10px] text-[var(--ivory-text-3)] mt-0.5">
+          {routing.primaryAgent.description}
+        </p>
+      </Section>
+
+      {/* Supporting Agents */}
+      {routing.supportingAgents.length > 0 && (
+        <Section icon={<Users size={12} />} title="Supporting Agents">
+          {routing.supportingAgents.map(agent => (
+            <div key={agent.id} className="flex items-center gap-1.5 py-0.5">
+              <ChevronRight size={10} className="text-[var(--ivory-text-3)]" />
+              <span className="text-[var(--ivory-text-2)]">{agent.name}</span>
+            </div>
+          ))}
+        </Section>
+      )}
+
+      {/* Risk Level */}
+      <Section icon={<Shield size={12} />} title="Risk Assessment">
+        <span className={`px-2 py-0.5 rounded-[var(--radius-sm)] text-[10px] font-medium ${riskColors[pa.riskLevel] || ''}`}>
+          {pa.riskLevel.toUpperCase()}
+        </span>
+        {routing.riskWarnings.length > 0 && (
+          <div className="mt-1.5 space-y-1">
+            {routing.riskWarnings.map((w, i) => (
+              <div key={i} className="flex items-start gap-1 text-[10px] text-[var(--ivory-text-2)]">
+                <Info size={10} className="mt-0.5 shrink-0 text-amber-500" />
+                <span>{w}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </Section>
+
+      {/* Skills */}
+      {routing.selectedSkills.length > 0 && (
+        <Section icon={<Zap size={12} />} title="Selected Skills">
+          <div className="flex flex-wrap gap-1">
+            {routing.selectedSkills.map(skill => (
+              <Badge key={skill.id} variant="default" size="sm">{skill.name}</Badge>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Permissions */}
+      {pa.requiredPermissions.length > 0 && (
+        <Section icon={<Shield size={12} />} title="Required Permissions">
+          <div className="flex flex-wrap gap-1">
+            {pa.requiredPermissions.map(perm => (
+              <Badge
+                key={perm}
+                variant={perm.includes('delete') || perm.includes('push') ? 'error' : 'default'}
+                size="sm"
+              >
+                {perm.replace(/_/g, ' ')}
+              </Badge>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Subagent Plan */}
+      {routing.subagentPlan && (
+        <Section icon={<Wrench size={12} />} title="Execution Plan">
+          <p className="text-[10px] text-[var(--ivory-text-3)] mb-2">
+            {routing.subagentPlan.summary}
           </p>
-          <p className="text-xs text-[var(--ivory-text-3)] max-w-[200px]">
-            Tool calls and responses will appear here during conversations.
+          <div className="space-y-2">
+            {routing.subagentPlan.steps.map((step, i) => (
+              <div key={i} className="flex items-start gap-2 p-2 rounded-[var(--radius-sm)] bg-[var(--ivory-bg)] border border-[var(--ivory-border)]">
+                <span className="text-[10px] font-mono font-bold text-[var(--ivory-accent)] shrink-0 mt-0.5">
+                  {step.order}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-medium text-[var(--ivory-text)]">{step.agentName}</p>
+                  <p className="text-[10px] text-[var(--ivory-text-3)]">{step.description}</p>
+                  {step.requiresConfirmation && (
+                    <span className="inline-block mt-1 text-[9px] text-red-600">⚠️ Requires confirmation</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* Confirmation needed */}
+      {routing.requiresConfirmation && (
+        <div className="p-2 rounded-[var(--radius-sm)] bg-red-50 border border-red-200">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-red-700">
+            <AlertTriangle size={12} />
+            Confirmation Required
+          </div>
+          <p className="text-[10px] text-red-600 mt-0.5">
+            This operation requires your confirmation before execution.
           </p>
         </div>
-      </div>
+      )}
+
+      {/* Keywords */}
+      {pa.detectedKeywords.length > 0 && (
+        <Section icon={<Target size={12} />} title="Detected Keywords">
+          <div className="flex flex-wrap gap-1">
+            {pa.detectedKeywords.slice(0, 15).map(kw => (
+              <span key={kw} className="text-[10px] px-1.5 py-0.5 rounded-[var(--radius-sm)] bg-[var(--ivory-bg)] text-[var(--ivory-text-3)]">
+                {kw}
+              </span>
+            ))}
+          </div>
+        </Section>
+      )}
+    </div>
+  )
+}
+
+function Section({
+  icon, title, children, collapsible = false
+}: {
+  icon: React.ReactElement; title: string; children: React.ReactNode; collapsible?: boolean
+}): React.ReactElement {
+  const [open, setOpen] = React.useState(true)
+  return (
+    <div className="border-b border-[var(--ivory-border)] pb-3 last:border-0 last:pb-0">
+      <button
+        onClick={() => collapsible && setOpen(!open)}
+        className="flex items-center gap-1.5 mb-1.5 text-[10px] font-medium text-[var(--ivory-text-3)] uppercase tracking-wide w-full text-left"
+      >
+        {icon}
+        {title}
+      </button>
+      {open && children}
     </div>
   )
 }

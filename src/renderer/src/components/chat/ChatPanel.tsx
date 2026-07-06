@@ -3,11 +3,13 @@ import { MessageBubble } from './MessageBubble'
 import { MessageInput } from './MessageInput'
 import { EmptyState } from '../shared/EmptyState'
 import { useChatStore } from '../../stores/chatStore'
+import { useRoutingStore } from '../../stores/routingStore'
 import { useIpc } from '../../hooks/useIpc'
 import type { MessageRow } from '@shared/types/chat'
 
 export function ChatPanel(): React.ReactElement {
   const { activeChat, activeChatId, addMessage, updateChatInList } = useChatStore()
+  const { setCurrentAnalysis, addToHistory, setLoading, setError } = useRoutingStore()
   const api = useIpc()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -56,7 +58,21 @@ export function ChatPanel(): React.ReactElement {
     } catch (err) {
       console.error('Failed to save message:', err)
     }
-  }, [activeChatId, activeChat, addMessage, api, updateChatInList])
+
+    // Trigger prompt analysis for the inspector
+    setLoading(true)
+    setError(null)
+    try {
+      const result = await api.routingAnalyze({ content, chatId: activeChatId })
+      setCurrentAnalysis(result)
+      addToHistory(result)
+    } catch (err) {
+      console.error('Prompt analysis failed:', err)
+      setError(String(err))
+    } finally {
+      setLoading(false)
+    }
+  }, [activeChatId, activeChat, addMessage, api, updateChatInList, setCurrentAnalysis, addToHistory, setLoading, setError])
 
   if (!activeChat || activeChat.messages.length === 0) {
     return (

@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.4.0] - 2026-07-06
+
+### Added — Prompt Intelligence Engine (Agent Skill Router)
+- **PromptAnalyzer**: Rule-based intent classifier supporting 12 intents (coding, debugging, writing, planning, research, data_analysis, file_operation, github_operation, terminal_operation, design_request, security_review, general_chat)
+- **Context detection**: Automatically detects required context (files, repo, project instructions, web access, skills)
+- **Risk assessment**: Four-level risk classification (low, medium, high, destructive) with permission detection
+- **AgentRegistry**: 12 built-in agent definitions (General Assistant, Code Architect, Debugger, Refactor Engineer, Test Engineer, Documentation Writer, Git Assistant, Prompt Engineer, Research Synthesizer, Data Analyst, Security Reviewer, UX/Product Designer)
+- **SkillRegistry**: 28 built-in skill definitions with tags, required permissions, allowed file patterns, and versioning
+- **RoutingPolicy**: Deterministic rule-based routing engine matches prompts → agents → skills → tools
+- **SubagentPlanner**: Generates multi-step execution plans for complex tasks with primary + supporting agents
+- **Risk warnings**: Automatic confirmation required for destructive/high-risk operations (git push, file delete, production changes)
+- **RightInspector rebuilt**: Now shows intent classification, primary agent, supporting agents, risk level, selected skills, required permissions, execution plan
+- **36 unit tests**: Intent classification, risk assessment, agent matching, skill matching, routing integration
+- **routingStore**: Zustand store with analysis history, override support, and error handling
+
+### Changed
+- `ChatPanel` now triggers `routingAnalyze` on every send, populating the inspector in real-time
+- `RightInspector` renamed from "Inspector" to "Router" with Brain icon
+- `AgentRegistry` includes `file_operation` category on General Assistant for fallback coverage
+
 ## [0.3.0] - 2026-07-06
 
 ### Added — Prompt Library & Slash Command System

@@ -52,6 +52,7 @@ export interface IpcApi {
   settingsGetDefaults: () => Promise<import('../shared/types/settings').AppSettings>
   credentialsIsAvailable: () => Promise<boolean>
   credentialsMaskKey: (key: string) => Promise<string>
+  routingAnalyze: (input: import('../shared/types/routing').AnalyzePromptInput) => Promise<import('../shared/types/routing').AnalyzePromptOutput>
 }
 
 declare global {
