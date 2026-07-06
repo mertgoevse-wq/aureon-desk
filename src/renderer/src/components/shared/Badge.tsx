@@ -1,8 +1,10 @@
 import React from 'react'
 
+export type BadgeVariant = 'default' | 'success' | 'warning' | 'error'
+
 interface BadgeProps {
   children: React.ReactNode
-  variant?: 'default' | 'success' | 'warning' | 'error'
+  variant?: BadgeVariant
   size?: 'sm' | 'md'
 }
 

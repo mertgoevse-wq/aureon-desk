@@ -266,11 +266,11 @@ export function ProvidersPage(): React.ReactElement {
               </div>
 
               {/* Models */}
-              {provider && (provider as any).models && (provider as any).models.length > 0 && (
+              {provider && provider.models && provider.models.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-[var(--ivory-border)]">
                   <p className="text-xs font-medium text-[var(--ivory-text-2)] mb-2">Models</p>
                   <div className="space-y-1">
-                    {(provider as any).models.map((model: any) => (
+                    {provider.models.map((model) => (
                       <div key={model.id} className="flex items-center justify-between py-1.5 px-2 rounded-[var(--radius-sm)] hover:bg-[var(--ivory-surface)] text-xs">
                         <div className="flex items-center gap-2">
                           <span className="text-[var(--ivory-text)]">{model.display_name}</span>

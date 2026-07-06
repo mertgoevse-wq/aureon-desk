@@ -6,7 +6,7 @@ import {
   Play, Ban, Clock, History
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'
-import { Badge } from '../../components/shared/Badge'
+import { Badge, type BadgeVariant } from '../../components/shared/Badge'
 import { EmptyState } from '../../components/shared/EmptyState'
 import { useIpc } from '../../hooks/useIpc'
 import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolPermission } from '@shared/types/tool'
@@ -249,7 +249,7 @@ export function ToolsPage(): React.ReactElement {
                       {permissions(tool).map(perm => (
                         <Badge
                           key={perm}
-                          variant={(PERMISSION_COLORS[perm] || 'default') as any}
+                          variant={(PERMISSION_COLORS[perm] || 'default') as BadgeVariant}
                           size="sm"
                         >
                           <span className="flex items-center gap-0.5">

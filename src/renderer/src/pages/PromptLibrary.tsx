@@ -37,12 +37,12 @@ export function PromptLibrary(): React.ReactElement {
   const loadPrompts = useCallback(async () => {
     setLoading(true)
     try {
-      const filters: Record<string, unknown> = {}
+      const filters: { search?: string; tags?: string[]; category?: string; favoritesOnly?: boolean } = {}
       if (searchQuery) filters.search = searchQuery
       if (selectedTags.length > 0) filters.tags = selectedTags
       if (selectedCategory) filters.category = selectedCategory
       if (favoritesOnly) filters.favoritesOnly = true
-      const results = await api.promptLibraryList(filters as any)
+      const results = await api.promptLibraryList(filters)
       setPrompts(results)
     } catch (err) {
       console.error('Failed to load prompts:', err)

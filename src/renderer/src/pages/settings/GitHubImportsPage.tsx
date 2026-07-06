@@ -5,7 +5,7 @@ import {
   ChevronDown, ChevronRight, FileText, Filter, Download
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'
-import { Badge } from '../../components/shared/Badge'
+import { Badge, type BadgeVariant } from '../../components/shared/Badge'
 import { EmptyState } from '../../components/shared/EmptyState'
 import { useIpc } from '../../hooks/useIpc'
 import { MERTS_STAR_LIST, STAR_LIST_NAME, STAR_LIST_DESCRIPTION } from '@shared/star-list'
@@ -119,7 +119,7 @@ export function GitHubImportsPage(): React.ReactElement {
       skill: 'success',
       unknown: 'default'
     }
-    return <Badge variant={(colors[t] || 'default') as any} size="sm">{t.replace('_', ' ')}</Badge>
+    return <Badge variant={(colors[t] || 'default') as BadgeVariant} size="sm">{t.replace('_', ' ')}</Badge>
   }
 
   return (
