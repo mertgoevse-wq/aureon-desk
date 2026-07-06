@@ -43,7 +43,7 @@ npm start
 - ✅ Right inspector panel now shows routing analysis on every message
 - ✅ Secure credential vault (safeStorage)
 - ✅ Unit tests (15 passing for hierarchy resolver)
-- 🔜 Projects & local file access
+- ✅ **Projects & Local Folder Access** (file tree, context builder, instructions, defaults, 117 tests total)
 - 🔜 MCP server import & real tool integration
 - 🔜 Keyboard shortcuts & resize
 

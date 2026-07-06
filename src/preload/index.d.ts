@@ -79,6 +79,17 @@ export interface IpcApi {
   toolCheckSafety: (toolId: string, input: Record<string, unknown>) => Promise<import('../shared/types/tool').SafetyCheckResult>
   toolExecute: (toolId: string, input: Record<string, unknown>) => Promise<import('../shared/types/tool').ToolExecuteResult>
   toolGetCallLogs: (toolId?: string) => Promise<import('../shared/types/tool').ToolCallLog[]>
+  projectList: (includeArchived?: boolean, search?: string) => Promise<import('../shared/types/project').ProjectRow[]>
+  projectGet: (id: string) => Promise<import('../shared/types/project').ProjectRow | undefined>
+  projectCreate: (input: import('../shared/types/project').NewProject) => Promise<import('../shared/types/project').ProjectRow>
+  projectUpdate: (id: string, input: import('../shared/types/project').ProjectUpdate) => Promise<import('../shared/types/project').ProjectRow | undefined>
+  projectDelete: (id: string) => Promise<boolean>
+  projectArchive: (id: string) => Promise<import('../shared/types/project').ProjectRow | undefined>
+  projectRestore: (id: string) => Promise<import('../shared/types/project').ProjectRow | undefined>
+  projectSelectFolder: () => Promise<string | null>
+  projectGetFileTree: (rootPath: string, options?: import('../shared/types/project').FileTreeOptions) => Promise<import('../shared/types/project').FileTreeNode[]>
+  projectGetContext: (projectId: string, selectedFilePaths: string[]) => Promise<import('../shared/types/project').ProjectContext | null>
+  projectIsPathIgnored: (filePath: string) => Promise<boolean>
 }
 
 declare global {

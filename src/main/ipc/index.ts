@@ -7,6 +7,7 @@ import { registerCredentialsIPC } from './credentials.ipc'
 import { registerRoutingIPC } from './routing.ipc'
 import { registerGitHubIPC } from './github.ipc'
 import { registerToolIPC } from './tool.ipc'
+import { registerProjectIPC } from './project.ipc'
 import { logger } from '../utils/logger'
 
 export function registerAllIPC(): void {
@@ -21,6 +22,7 @@ export function registerAllIPC(): void {
   registerRoutingIPC()
   registerGitHubIPC()
   registerToolIPC()
+  registerProjectIPC()
 
   logger.info('All IPC handlers registered')
 }

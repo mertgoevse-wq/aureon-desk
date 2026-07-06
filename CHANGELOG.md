@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.7.0] - 2026-07-06
+
+### Added — Projects & Local Folder Access
+- **ProjectsPage**: Full-page UI with project list (search/filter), create/edit/archive/delete, file tree explorer, project instructions, default settings (provider, model, system prompt), and context preview
+- **Project model**: 13-column schema (id, name, description, instructions, root_path, archived, default_provider_id, default_model, default_system_prompt_id, enabled_skill_ids, created_at, updated_at)
+- **Local folder access**: Electron folder dialog, recursive file tree builder with skip patterns (.git, node_modules, dist, build, .env*, secrets, credentials), binary file detection, 5MB size guard
+- **Project context builder**: Select files from tree, read with safety checks (binary skip, size guard, secret detection), assemble context with remote-upload warnings
+- **RightInspector integration**: `ProjectContextSection` shows active project name, instructions, and root path in the Router panel
+- **File tree component**: Collapsible directory tree with checkboxes for file selection, size display, ignore pattern compliance
+- **Project defaults**: Dropdowns to set default provider, model, and system prompt profile per project
+- **Project store**: Zustand store (`projectStore.ts`) for managing project selection across the app
+- **24 unit tests**: File tree ignore patterns (.git, node_modules, .env, dist, binary, secrets), path ignore checks, context builder, instruction resolution
+- **Additive migration**: 5 new columns on `projects` table (archived, default_provider_id, default_model, default_system_prompt_id, enabled_skill_ids)
+
+### Changed
+- `App.tsx` routes `/projects` and `/settings/projects` now render full `ProjectsPage` instead of placeholder
+- `RightInspector` now imports `useProjectStore` and renders active project context
+- `ProjectRow` type extended from 6 to 11 fields
+
+### Security
+- Files are read-only by default — no write functionality without explicit confirmation
+- Secret patterns detected in project files (API keys, tokens, private keys)
+- Binary files skipped entirely (no content sent)
+- Remote provider upload warning displayed when building context
+- Ignored paths enforced: .git, node_modules, dist, build, .env, .env.*, secrets, credentials, __pycache__, .venv, venv
+
 ## [0.6.0] - 2026-07-06
 
 ### Added — MCP-Style Tool Manager & Safety Gate

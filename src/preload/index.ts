@@ -6,6 +6,7 @@ import type { AppSettings } from '../shared/types/settings'
 import type { AnalyzePromptInput, AnalyzePromptOutput } from '../shared/types/routing'
 import type { ImportedRepo, ImportedItem, ImportWarning, ImportResult, ImportRepoInput, ImportItemFilter } from '../shared/types/github'
 import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolExecuteInput, ToolExecuteResult } from '../shared/types/tool'
+import type { ProjectRow, NewProject, ProjectUpdate, FileTreeNode, ProjectContext, FileTreeOptions } from '../shared/types/project'
 
 // Define the IPC API exposed to the renderer
 const api = {
@@ -186,7 +187,31 @@ const api = {
   toolExecute: (toolId: string, input: Record<string, unknown>): Promise<ToolExecuteResult> =>
     ipcRenderer.invoke('tool:execute', toolId, input),
   toolGetCallLogs: (toolId?: string): Promise<ToolCallLog[]> =>
-    ipcRenderer.invoke('tool:getCallLogs', toolId)
+    ipcRenderer.invoke('tool:getCallLogs', toolId),
+
+  // Projects
+  projectList: (includeArchived?: boolean, search?: string): Promise<ProjectRow[]> =>
+    ipcRenderer.invoke('project:list', includeArchived, search),
+  projectGet: (id: string): Promise<ProjectRow | undefined> =>
+    ipcRenderer.invoke('project:get', id),
+  projectCreate: (input: NewProject): Promise<ProjectRow> =>
+    ipcRenderer.invoke('project:create', input),
+  projectUpdate: (id: string, input: ProjectUpdate): Promise<ProjectRow | undefined> =>
+    ipcRenderer.invoke('project:update', id, input),
+  projectDelete: (id: string): Promise<boolean> =>
+    ipcRenderer.invoke('project:delete', id),
+  projectArchive: (id: string): Promise<ProjectRow | undefined> =>
+    ipcRenderer.invoke('project:archive', id),
+  projectRestore: (id: string): Promise<ProjectRow | undefined> =>
+    ipcRenderer.invoke('project:restore', id),
+  projectSelectFolder: (): Promise<string | null> =>
+    ipcRenderer.invoke('project:selectFolder'),
+  projectGetFileTree: (rootPath: string, options?: FileTreeOptions): Promise<FileTreeNode[]> =>
+    ipcRenderer.invoke('project:getFileTree', rootPath, options),
+  projectGetContext: (projectId: string, selectedFilePaths: string[]): Promise<ProjectContext | null> =>
+    ipcRenderer.invoke('project:getContext', projectId, selectedFilePaths),
+  projectIsPathIgnored: (filePath: string): Promise<boolean> =>
+    ipcRenderer.invoke('project:isPathIgnored', filePath)
 }
 
 // Expose the API in the main world

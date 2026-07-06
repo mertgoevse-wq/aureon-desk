@@ -102,6 +102,11 @@ export const projects = sqliteTable('projects', {
   description: text('description'),
   instructions: text('instructions'),
   root_path: text('root_path'),
+  archived: integer('archived').notNull().default(0),
+  default_provider_id: text('default_provider_id'),
+  default_model: text('default_model'),
+  default_system_prompt_id: text('default_system_prompt_id'),
+  enabled_skill_ids: text('enabled_skill_ids'),
   created_at: text('created_at').notNull(),
   updated_at: text('updated_at').notNull()
 })

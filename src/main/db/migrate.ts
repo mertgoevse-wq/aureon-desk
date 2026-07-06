@@ -269,6 +269,21 @@ export function runMigrations(): void {
   addToolCol('permissions', 'TEXT')
   addToolCol('is_trusted', 'INTEGER NOT NULL DEFAULT 0')
 
+  // Project columns additive migration
+  const projectCols = sqlite.pragma('table_info(projects)') as { name: string }[]
+  const projectColNames = projectCols.map(c => c.name)
+  const addProjectCol = (name: string, ddl: string) => {
+    if (!projectColNames.includes(name)) {
+      logger.info(`Adding column: projects.${name}`)
+      sqlite.exec(`ALTER TABLE projects ADD COLUMN ${name} ${ddl}`)
+    }
+  }
+  addProjectCol('archived', 'INTEGER NOT NULL DEFAULT 0')
+  addProjectCol('default_provider_id', 'TEXT')
+  addProjectCol('default_model', 'TEXT')
+  addProjectCol('default_system_prompt_id', 'TEXT')
+  addProjectCol('enabled_skill_ids', 'TEXT')
+
   sqlite.close()
   logger.info('Migrations complete')
 }

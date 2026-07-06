@@ -1,15 +1,18 @@
 import React from 'react'
 import {
   PanelRightClose, PanelRightOpen, Brain, Target, Shield,
-  Users, Wrench, AlertTriangle, Info, Zap, ChevronRight
+  Users, Wrench, AlertTriangle, Info, Zap, ChevronRight, FolderOpen, BookOpen
 } from 'lucide-react'
 import { useUIStore } from '../stores/uiStore'
 import { useRoutingStore } from '../stores/routingStore'
+import { useProjectStore } from '../stores/projectStore'
 import { Badge } from '../components/shared/Badge'
+import type { ProjectRow } from '@shared/types/project'
 
 export function RightInspector(): React.ReactElement {
   const { inspectorOpen, toggleInspector, inspectorWidth } = useUIStore()
   const { currentAnalysis, isLoading, error } = useRoutingStore()
+  const { activeProject } = useProjectStore()
 
   if (!inspectorOpen) {
     return (
@@ -67,9 +70,57 @@ export function RightInspector(): React.ReactElement {
             <p className="text-xs text-[var(--ivory-text-3)] max-w-[200px]">
               Send a message to see intent classification, agent routing, skill matching, and risk analysis.
             </p>
+            <ProjectContextSection project={activeProject} />
           </div>
         ) : (
-          <AnalysisView analysis={currentAnalysis} />
+          <div>
+            <AnalysisView analysis={currentAnalysis} />
+            <ProjectContextSection project={activeProject} />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ProjectContextSection({ project }: { project: ProjectRow | null }): React.ReactElement | null {
+  if (!project) return null
+
+  return (
+    <div className="border-t border-[var(--ivory-border)] mt-3 mx-3 pt-3 pb-3">
+      <div className="flex items-center gap-1.5 mb-2">
+        <FolderOpen size={11} className="text-[var(--ivory-accent)]" />
+        <span className="text-[10px] font-semibold text-[var(--ivory-text-2)] uppercase tracking-wide">
+          Project Context
+        </span>
+      </div>
+      <div className="space-y-2 text-xs">
+        <div className="flex items-center gap-1.5">
+          <FolderOpen size={12} className="text-[var(--ivory-text-3)]" />
+          <span className="font-medium text-[var(--ivory-text)]">{project.name}</span>
+        </div>
+        {project.description && (
+          <p className="text-[11px] text-[var(--ivory-text-3)]">{project.description}</p>
+        )}
+        {project.instructions ? (
+          <div>
+            <div className="flex items-center gap-1 mb-1">
+              <BookOpen size={10} className="text-[var(--ivory-text-3)]" />
+              <span className="text-[10px] text-[var(--ivory-text-3)]">Instructions active</span>
+            </div>
+            <pre className="text-[10px] text-[var(--ivory-text-2)] bg-[var(--ivory-bg)] p-2 rounded-[var(--radius-sm)] border border-[var(--ivory-border)] max-h-24 overflow-y-auto whitespace-pre-wrap break-all">
+              {project.instructions.slice(0, 300)}{project.instructions.length > 300 ? '...' : ''}
+            </pre>
+          </div>
+        ) : (
+          <p className="text-[10px] text-[var(--ivory-text-3)] italic">No project instructions set.</p>
+        )}
+        {project.root_path ? (
+          <div className="text-[10px] text-[var(--ivory-text-3)] break-all">
+            📁 {project.root_path}
+          </div>
+        ) : (
+          <p className="text-[10px] text-[var(--ivory-text-3)] italic">No local folder selected.</p>
         )}
       </div>
     </div>
