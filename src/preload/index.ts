@@ -80,6 +80,16 @@ const api = {
     ipcRenderer.invoke('provider:setBaseUrl', providerId, baseUrl),
   providerModels: (providerId: string): Promise<any[]> =>
     ipcRenderer.invoke('provider:models', providerId),
+  providerCreateFromAdapter: (adapterSlug: string): Promise<any> =>
+    ipcRenderer.invoke('provider:createFromAdapter', adapterSlug),
+  providerCreateCustom: (input: { name: string; slug: string; baseUrl: string; apiKey?: string }): Promise<any> =>
+    ipcRenderer.invoke('provider:createCustom', input),
+  providerDelete: (providerId: string): Promise<boolean> =>
+    ipcRenderer.invoke('provider:delete', providerId),
+  providerTestConnection: (providerId: string): Promise<{ success: boolean; message: string }> =>
+    ipcRenderer.invoke('provider:testConnection', providerId),
+  providerSetDefaultModel: (providerId: string, modelId: string): Promise<boolean> =>
+    ipcRenderer.invoke('provider:setDefaultModel', providerId, modelId),
   modelAllEnabled: (): Promise<any[]> =>
     ipcRenderer.invoke('model:allEnabled'),
   modelToggleEnabled: (modelId: string, enabled: boolean): Promise<boolean> =>

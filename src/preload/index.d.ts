@@ -44,6 +44,11 @@ export interface IpcApi {
   providerToggleEnabled: (providerId: string, enabled: boolean) => Promise<boolean>
   providerSetBaseUrl: (providerId: string, baseUrl: string) => Promise<boolean>
   providerModels: (providerId: string) => Promise<any[]>
+  providerCreateFromAdapter: (adapterSlug: string) => Promise<any>
+  providerCreateCustom: (input: { name: string; slug: string; baseUrl: string; apiKey?: string }) => Promise<any>
+  providerDelete: (providerId: string) => Promise<boolean>
+  providerTestConnection: (providerId: string) => Promise<{ success: boolean; message: string }>
+  providerSetDefaultModel: (providerId: string, modelId: string) => Promise<boolean>
   modelAllEnabled: () => Promise<any[]>
   modelToggleEnabled: (modelId: string, enabled: boolean) => Promise<boolean>
   settingsGet: (key: string) => Promise<string | null>

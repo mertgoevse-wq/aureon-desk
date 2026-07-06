@@ -21,6 +21,7 @@ export interface ModelRow {
   is_default: number
   is_enabled: number
   created_at: string
+  capabilities?: string | null
 }
 
 export interface ProviderWithModels extends ProviderRow {
@@ -47,4 +48,8 @@ export interface ProviderAdapterInfo {
   description: string
   defaultBaseUrl: string
   defaultModels: { name: string; displayName: string; contextWindow: number }[]
+  authType: 'api_key' | 'oauth' | 'none'
+  capabilities: ProviderCapability[]
 }
+
+export type ProviderCapability = 'text' | 'vision' | 'tool_use' | 'streaming' | 'json_mode' | 'embeddings' | 'local'

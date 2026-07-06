@@ -3,7 +3,7 @@ import { getDb } from '../db/connection'
 import { providers, models } from '../db/schema'
 import { vault } from '../security/vault'
 import { logger } from '../utils/logger'
-import type { ProviderRow, ModelRow, NewProvider } from '../../shared/types/provider'
+import type { ProviderRow, ModelRow, NewProvider, ProviderAdapterInfo } from '../../shared/types/provider'
 import { eq } from 'drizzle-orm'
 
 export const providerService = {
@@ -107,6 +107,170 @@ export const providerService = {
       .set({ base_url: baseUrl, updated_at: now } as never)
       .where(eq(providers.id, providerId))
       .run()
+  },
+
+  /** Create a provider from an adapter definition (seeds models too) */
+  createFromAdapter(adapter: ProviderAdapterInfo): ProviderRow {
+    const db = getDb()
+    const now = new Date().toISOString()
+    const id = uuid()
+
+    // Check if already exists
+    const existing = db.select({ id: providers.id })
+      .from(providers)
+      .where(eq(providers.slug, adapter.slug))
+      .get()
+    if (existing) {
+      throw new Error(`Provider ${adapter.slug} already exists`)
+    }
+
+    db.insert(providers).values({
+      id,
+      name: adapter.name,
+      slug: adapter.slug,
+      adapter: adapter.slug,
+      base_url: adapter.defaultBaseUrl,
+      api_key_enc: null,
+      is_enabled: 1,
+      created_at: now,
+      updated_at: now
+    } as never).run()
+
+    // Seed default models
+    for (const modelDef of adapter.defaultModels) {
+      db.insert(models).values({
+        id: uuid(),
+        provider_id: id,
+        name: modelDef.name,
+        display_name: modelDef.displayName,
+        context_window: modelDef.contextWindow,
+        is_default: 0,
+        is_enabled: 1,
+        created_at: now
+      } as never).run()
+    }
+
+    logger.info(`Created provider from adapter: ${adapter.name}`)
+    return this.getProvider(id)!
+  },
+
+  /** Create a custom provider with user-specified details */
+  createCustomProvider(input: { name: string; slug: string; baseUrl: string; apiKey?: string }): ProviderRow {
+    const db = getDb()
+    const now = new Date().toISOString()
+    const id = uuid()
+
+    // Check slug uniqueness
+    const existing = db.select({ id: providers.id })
+      .from(providers)
+      .where(eq(providers.slug, input.slug))
+      .get()
+    if (existing) throw new Error(`Provider slug "${input.slug}" already exists`)
+
+    db.insert(providers).values({
+      id, name: input.name, slug: input.slug, adapter: 'custom',
+      base_url: input.baseUrl || 'http://localhost:8000/v1',
+      api_key_enc: null, is_enabled: 1, created_at: now, updated_at: now
+    } as never).run()
+
+    // Seed a generic model
+    db.insert(models).values({
+      id: uuid(), provider_id: id, name: 'custom-model',
+      display_name: 'Custom Model', context_window: 128000,
+      is_default: 1, is_enabled: 1, created_at: now
+    } as never).run()
+
+    // Store API key if provided
+    if (input.apiKey) {
+      this.setApiKey(id, input.apiKey)
+    }
+
+    logger.info(`Created custom provider: ${input.name}`)
+    return this.getProvider(id)!
+  },
+
+  /** Delete a provider (cascade deletes models) */
+  deleteProvider(providerId: string): boolean {
+    const db = getDb()
+    // Delete models first (cascade)
+    db.delete(models).where(eq(models.provider_id, providerId)).run()
+    const result = db.delete(providers).where(eq(providers.id, providerId)).run()
+    logger.info(`Deleted provider: ${providerId}`)
+    return result.changes > 0
+  },
+
+  /** Test connection to a provider by making a health/status check */
+  async testConnection(providerId: string): Promise<{ success: boolean; message: string }> {
+    const provider = this.getProvider(providerId)
+    if (!provider) return { success: false, message: 'Provider not found' }
+
+    const apiKey = this.getApiKey(providerId)
+    const baseUrl = provider.base_url || ''
+
+    // For local providers, skip API key check
+    if (provider.adapter === 'ollama' || provider.adapter === 'lmstudio') {
+      try {
+        const response = await fetch(`${baseUrl}/models`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          signal: AbortSignal.timeout(5000)
+        })
+        if (response.ok) {
+          return { success: true, message: `Connected to ${provider.name}` }
+        }
+        return { success: false, message: `${provider.name} returned status ${response.status}` }
+      } catch (err) {
+        return { success: false, message: `Cannot reach ${provider.name} at ${baseUrl}: ${String(err)}` }
+      }
+    }
+
+    // For remote providers, check if API key is configured
+    if (!apiKey) {
+      return { success: false, message: `No API key configured for ${provider.name}` }
+    }
+
+    // Try a simple models endpoint
+    try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (provider.adapter === 'anthropic') {
+        headers['x-api-key'] = apiKey
+      } else {
+        headers['Authorization'] = `Bearer ${apiKey}`
+      }
+
+      const response = await fetch(`${baseUrl}/models`, {
+        method: 'GET',
+        headers,
+        signal: AbortSignal.timeout(10000)
+      })
+
+      if (response.ok) {
+        return { success: true, message: `Connected to ${provider.name}` }
+      }
+      // Some providers don't have /models endpoint, try a different check
+      if (response.status === 401 || response.status === 403) {
+        return { success: false, message: `Authentication failed for ${provider.name}. Check your API key.` }
+      }
+      return { success: true, message: `${provider.name} responded (status ${response.status})` }
+    } catch (err) {
+      return { success: false, message: `Cannot reach ${provider.name} at ${baseUrl}: ${String(err)}` }
+    }
+  },
+
+  /** Set a model as default for its provider */
+  setDefaultModel(providerId: string, modelId: string): void {
+    const db = getDb()
+    // Unset all defaults for this provider
+    db.update(models)
+      .set({ is_default: 0 } as never)
+      .where(eq(models.provider_id, providerId))
+      .run()
+    // Set the selected one
+    db.update(models)
+      .set({ is_default: 1 } as never)
+      .where(eq(models.id, modelId))
+      .run()
+    logger.info(`Set default model ${modelId} for provider ${providerId}`)
   },
 
   /** Get enabled models for a provider */

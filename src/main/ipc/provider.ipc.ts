@@ -54,6 +54,29 @@ export function registerProviderIPC(): void {
     return providerService.getModels(providerId)
   })
 
+  ipcMain.handle('provider:createFromAdapter', (_event, adapterSlug: string) => {
+    const adapter = PROVIDER_ADAPTERS.find(a => a.slug === adapterSlug)
+    if (!adapter) throw new Error(`Adapter ${adapterSlug} not found`)
+    return providerService.createFromAdapter(adapter)
+  })
+
+  ipcMain.handle('provider:createCustom', (_event, input: { name: string; slug: string; baseUrl: string; apiKey?: string }) => {
+    return providerService.createCustomProvider(input)
+  })
+
+  ipcMain.handle('provider:delete', (_event, providerId: string) => {
+    return providerService.deleteProvider(providerId)
+  })
+
+  ipcMain.handle('provider:testConnection', async (_event, providerId: string) => {
+    return await providerService.testConnection(providerId)
+  })
+
+  ipcMain.handle('provider:setDefaultModel', (_event, providerId: string, modelId: string) => {
+    providerService.setDefaultModel(providerId, modelId)
+    return true
+  })
+
   ipcMain.handle('model:allEnabled', () => {
     return providerService.getAllEnabledModels()
   })
