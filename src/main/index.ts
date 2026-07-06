@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, dialog } from 'electron'
 import { registerAllIPC } from './ipc'
 import { runMigrations } from './db/migrate'
 import { seed } from './db/seed'
@@ -29,33 +29,57 @@ app.whenReady().then(async () => {
   logger.init()
   logger.info('Aureon Desk starting...')
 
-  // Initialize security vault
-  vault.init()
-  logger.info(`SafeStorage available: ${vault.isAvailable()}`)
-
-  // Run database migrations
-  runMigrations()
-
-  // Seed default data
   try {
-    await seed()
-  } catch (err) {
-    logger.error('Seeding failed', err)
-  }
+    // Initialize security vault
+    vault.init()
+    logger.info(`SafeStorage available: ${vault.isAvailable()}`)
 
-  // Register IPC handlers
-  registerAllIPC()
+    // Run database migrations (this is where better-sqlite3 is first loaded)
+    runMigrations()
 
-  // Create main window
-  createMainWindow()
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createMainWindow()
+    // Seed default data
+    try {
+      await seed()
+    } catch (err) {
+      logger.error('Seeding failed', err)
     }
-  })
 
-  logger.info('Aureon Desk ready')
+    // Register IPC handlers
+    registerAllIPC()
+
+    // Create main window
+    createMainWindow()
+
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createMainWindow()
+      }
+    })
+
+    logger.info('Aureon Desk ready')
+  } catch (err) {
+    const msg = String(err)
+    logger.error('Failed to start Aureon Desk', err instanceof Error ? err : undefined)
+
+    // Check if this is a native module issue
+    if (msg.includes('better-sqlite3') || msg.includes('NODE_MODULE_VERSION') || msg.includes('Could not locate')) {
+      dialog.showErrorBox(
+        'Native Module Missing',
+        'Aureon Desk cannot start because the SQLite native module is missing or incompatible.\n\n' +
+        'To fix this on Windows:\n' +
+        '  1. Install Visual Studio Build Tools\n' +
+        '     (select "Desktop development with C++" during install)\n' +
+        '     https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022\n\n' +
+        '  2. Open a terminal in the project folder and run:\n' +
+        '     npm run rebuild:native\n\n' +
+        '  3. Then run:\n' +
+        '     npm start\n\n' +
+        `Error details: ${msg}`
+      )
+    } else {
+      dialog.showErrorBox('Startup Error', `Aureon Desk encountered an error during startup:\n\n${msg}`)
+    }
+  }
 })
 
 app.on('window-all-closed', () => {

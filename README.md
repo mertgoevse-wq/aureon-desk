@@ -13,6 +13,34 @@ A Windows-first desktop AI workspace with multi-provider chat, projects, and too
 
 ## Quick Start
 
+### Windows Native Dependencies
+
+The project uses `better-sqlite3`, which requires a compiled native addon. On Windows, you need **Visual Studio Build Tools** with the **Desktop development with C++** workload.
+
+**One-time setup:**
+1. Download and install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
+2. During installation, select **"Desktop development with C++"**
+3. After installation, run:
+   ```bash
+   npm install
+   npm run rebuild:native
+   ```
+
+**Verify the native module is ready:**
+```bash
+npm run verify:native
+```
+
+**If you get a blank screen or "native module missing" error:**
+```bash
+npm run rebuild:native
+```
+
+**Without Visual Studio Build Tools:**
+- CI/CD (GitHub Actions) builds automatically — no local VS needed
+- For packaging only: `npm run dist:win -- --config.npmRebuild=false`
+- For development: VS Build Tools are required for the native SQLite module
+
 ```bash
 # Install dependencies
 npm install

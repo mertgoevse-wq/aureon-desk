@@ -13,6 +13,15 @@
 
 ## Manual Click-Test Checklist
 
+### Native Dependency Verification
+
+| # | Feature | Test Steps | Expected Result | Pass/Fail | Notes |
+|---|---------|-----------|-----------------|-----------|-------|
+| 0a | Native binary check | `npm run verify:native` | ✅ Native binary found and loadable | | |
+| 0b | Native rebuild | `npm run rebuild:native` | Rebuilds better-sqlite3 for Electron ABI | | |
+| 0c | Missing native module | Delete `node_modules/better-sqlite3/build`, run `npm run verify:native` | ❌ Clear error with fix instructions | | |
+| 0d | Startup with missing module | Delete native binary, run `npm start` | Error dialog appears with fix steps (not blank screen) | | |
+
 ### Startup & Navigation
 
 | # | Feature | Test Steps | Expected Result | Pass/Fail | Notes |

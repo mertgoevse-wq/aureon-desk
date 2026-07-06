@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.9.3] - 2026-07-06
+
+### Added — Native SQLite Workflow Hardening
+- **`verify:native` script** (`scripts/verify-native.js`): Checks if `better_sqlite3.node` binary exists and is loadable, provides clear fix instructions if missing
+- **`rebuild:native` script**: Alias for `electron-builder install-app-deps` — rebuilds native modules for Electron's Node ABI
+- **Startup resilience**: Database initialization and migrations wrapped in try/catch with clear error dialog if the native module is missing or incompatible
+- **Actionable error messages**: Both the CLI (`verify:native`) and the app (error dialog) provide step-by-step fix instructions for missing native modules
+
+### Changed
+- **`.npmrc`**: Removed unsupported `enable-pre-post-scripts=true` config
+- **`README.md`**: New Windows Native Dependencies section with one-time setup instructions, verify/rebuild commands, and CI guidance
+- **`MVP_TEST_PLAN.md`**: Added native dependency startup test case
+- **`connection.ts`**: Wraps `new Database()` in try/catch with descriptive error for missing native bindings
+- **`index.ts`**: Wraps full startup sequence in try/catch with `dialog.showErrorBox()` on failure, distinguishing native module errors from other startup errors
+
 ## [0.9.2] - 2026-07-06
 
 ### Added — Real Chat Completion Engine
