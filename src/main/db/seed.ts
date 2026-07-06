@@ -72,6 +72,8 @@ export async function seed(): Promise<void> {
       description: 'The default system prompt applied to all new chats',
       content: 'You are a helpful AI assistant. You provide clear, thoughtful, and accurate responses. You aim to be direct and efficient while remaining warm and professional.',
       is_default: 1,
+      is_archived: 0,
+      priority: 0,
       created_at: now,
       updated_at: now
     }).run()

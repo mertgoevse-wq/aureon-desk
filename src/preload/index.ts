@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { ChatRow, ChatWithMessages, ChatListItem, NewChat, NewMessage, MessageRow } from '../shared/types/chat'
-import type { SystemPromptRow, NewSystemPrompt, PromptRow, NewPrompt } from '../shared/types/prompt'
+import type { SystemPromptRow, NewSystemPrompt, PromptRow, NewPrompt, HierarchyInput, ResolvedPrompt } from '../shared/types/prompt'
 import type { ProviderAdapterInfo } from '../shared/types/provider'
 import type { AppSettings } from '../shared/types/settings'
 
@@ -33,18 +33,30 @@ const api = {
     ipcRenderer.invoke('message:clear', chatId),
 
   // System Prompts
-  systemPromptList: (): Promise<SystemPromptRow[]> =>
-    ipcRenderer.invoke('systemPrompt:list'),
+  systemPromptList: (includeArchived?: boolean): Promise<SystemPromptRow[]> =>
+    ipcRenderer.invoke('systemPrompt:list', includeArchived),
   systemPromptGet: (id: string): Promise<SystemPromptRow | undefined> =>
     ipcRenderer.invoke('systemPrompt:get', id),
   systemPromptGetDefault: (): Promise<SystemPromptRow | undefined> =>
     ipcRenderer.invoke('systemPrompt:getDefault'),
   systemPromptCreate: (input: NewSystemPrompt): Promise<SystemPromptRow> =>
     ipcRenderer.invoke('systemPrompt:create', input),
-  systemPromptUpdate: (id: string, input: Partial<NewSystemPrompt>): Promise<SystemPromptRow | undefined> =>
+  systemPromptUpdate: (id: string, input: Partial<NewSystemPrompt & { is_archived?: boolean }>): Promise<SystemPromptRow | undefined> =>
     ipcRenderer.invoke('systemPrompt:update', id, input),
   systemPromptDelete: (id: string): Promise<boolean> =>
     ipcRenderer.invoke('systemPrompt:delete', id),
+  systemPromptArchive: (id: string): Promise<SystemPromptRow | undefined> =>
+    ipcRenderer.invoke('systemPrompt:archive', id),
+  systemPromptRestore: (id: string): Promise<SystemPromptRow | undefined> =>
+    ipcRenderer.invoke('systemPrompt:restore', id),
+  systemPromptDuplicate: (id: string): Promise<SystemPromptRow | undefined> =>
+    ipcRenderer.invoke('systemPrompt:duplicate', id),
+  systemPromptResolveHierarchy: (input: HierarchyInput): Promise<ResolvedPrompt> =>
+    ipcRenderer.invoke('systemPrompt:resolveHierarchy', input),
+  systemPromptValidateSecrets: (content: string): Promise<{ hasSecrets: boolean; matches: string[] }> =>
+    ipcRenderer.invoke('systemPrompt:validateSecrets', content),
+  systemPromptValidateToolBypass: (content: string): Promise<boolean> =>
+    ipcRenderer.invoke('systemPrompt:validateToolBypass', content),
 
   // Providers
   providerList: (): Promise<any[]> =>

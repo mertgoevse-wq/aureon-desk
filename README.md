@@ -34,10 +34,11 @@ npm start
 - ✅ Ivory warm theme with serif display typography
 - ✅ Chat with message persistence (SQLite)
 - ✅ Provider & API key management (8 providers)
-- ✅ System prompt profiles with CRUD
+- ✅ **System Prompt Profile Engine** (CRUD, archive, duplicate, hierarchy resolver, safety checks)
 - ✅ Prompt library with tags, categories, search
 - ✅ Slash command integration in chat input
 - ✅ Secure credential vault (safeStorage)
+- ✅ Unit tests (15 passing for hierarchy resolver)
 - 🔜 Projects & local file access
 - 🔜 Tools & MCP integration
 - 🔜 GitHub imports
@@ -51,6 +52,7 @@ npm start
 | `npm run build` | Production build |
 | `npm run start` | Run from build output |
 | `npm run typecheck` | TypeScript check |
+| `npm run test` | Run Vitest unit tests |
 | `npm run lint` | Lint check (typecheck) |
 | `npm run pack` | Package for distribution |
 | `npm run dist` | Build installer |

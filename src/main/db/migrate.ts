@@ -1,11 +1,10 @@
 import Database from 'better-sqlite3'
 import { getDbPath } from '../utils/paths'
 import { logger } from '../utils/logger'
-import * as schema from './schema'
 
 /**
  * Run migrations programmatically by creating tables if they don't exist.
- * In production, use drizzle-kit generate + migrate. This is a dev convenience.
+ * Schema changes are additive — new columns are added with ALTER TABLE.
  */
 export function runMigrations(): void {
   const dbPath = getDbPath()
@@ -44,7 +43,11 @@ export function runMigrations(): void {
       name TEXT NOT NULL,
       description TEXT,
       content TEXT NOT NULL,
+      tags TEXT,
+      category TEXT,
       is_default INTEGER NOT NULL DEFAULT 0,
+      is_archived INTEGER NOT NULL DEFAULT 0,
+      priority INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
@@ -136,11 +139,26 @@ export function runMigrations(): void {
     );
   `)
 
+  // Additive migrations: add new columns if they don't exist
+  const existingCols = sqlite.pragma('table_info(system_prompts)') as { name: string }[]
+  const colNames = existingCols.map(c => c.name)
+
+  const addCol = (name: string, ddl: string) => {
+    if (!colNames.includes(name)) {
+      logger.info(`Adding column: system_prompts.${name}`)
+      sqlite.exec(`ALTER TABLE system_prompts ADD COLUMN ${name} ${ddl}`)
+    }
+  }
+
+  addCol('tags', 'TEXT')
+  addCol('category', 'TEXT')
+  addCol('is_archived', "INTEGER NOT NULL DEFAULT 0")
+  addCol('priority', 'INTEGER NOT NULL DEFAULT 0')
+
   sqlite.close()
   logger.info('Migrations complete')
 }
 
-// Run directly with: tsx src/main/db/migrate.ts
 const isDirectRun = process.argv[1]?.includes('migrate.ts')
 if (isDirectRun) {
   try {
