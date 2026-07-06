@@ -2,7 +2,6 @@ import type { MessageRow } from '../../shared/types/chat'
 import type { ModelRow, ProviderRow } from '../../shared/types/provider'
 import type { SystemPromptRow, ResolvedPrompt } from '../../shared/types/prompt'
 import { providerService } from './provider.service'
-import { vault } from '../security/vault'
 import { logger } from '../utils/logger'
 import { redactSecrets } from './log-redacter'
 

@@ -24,22 +24,11 @@ export interface ModelRow {
   capabilities?: string | null
 }
 
-export interface ProviderWithModels extends ProviderRow {
-  models: ModelRow[]
-}
-
 export interface NewProvider {
   name: string
   slug: string
   adapter: string
   base_url?: string
-}
-
-export interface NewModel {
-  provider_id: string
-  name: string
-  display_name: string
-  context_window?: number
 }
 
 export interface ProviderAdapterInfo {

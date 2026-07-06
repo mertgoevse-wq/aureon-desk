@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import {
-  Key, Eye, EyeOff, Trash2, Check, AlertTriangle, ExternalLink, Plus,
+  Eye, EyeOff, Trash2, Check, AlertTriangle, Plus,
   Wifi, Shield, Zap, Server, Monitor, Globe, Star, X, Wrench
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'

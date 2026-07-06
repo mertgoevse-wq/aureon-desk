@@ -25,17 +25,6 @@ export interface MessageRow {
   sort_order: number
 }
 
-export interface AttachmentRow {
-  id: string
-  message_id: string
-  file_name: string
-  file_path: string
-  mime_type: string | null
-  file_size: number | null
-  content: string | null
-  created_at: string
-}
-
 export interface NewChat {
   title?: string
   model_id?: string

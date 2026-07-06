@@ -3,8 +3,6 @@
 import type { ProviderAdapterInfo } from './types/provider'
 
 export const APP_NAME = 'Aureon Desk'
-export const DB_FILENAME = 'ivory.db'
-export const IMPORTS_DIR = 'imports'
 
 export const PROVIDER_ADAPTERS: ProviderAdapterInfo[] = [
   {

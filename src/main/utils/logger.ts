@@ -50,19 +50,3 @@ class Logger {
 }
 
 export const logger = new Logger()
-
-export function readRecentLogs(lines: number = 200): string {
-  const logPath = getLogsPath()
-  if (!fs.existsSync(logPath)) return ''
-
-  const content = fs.readFileSync(logPath, 'utf-8')
-  const allLines = content.split('\n').filter(Boolean)
-  return allLines.slice(-lines).join('\n')
-}
-
-export function clearLogs(): void {
-  const logPath = getLogsPath()
-  if (fs.existsSync(logPath)) {
-    fs.unlinkSync(logPath)
-  }
-}
