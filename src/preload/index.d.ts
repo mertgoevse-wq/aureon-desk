@@ -53,6 +53,17 @@ export interface IpcApi {
   credentialsIsAvailable: () => Promise<boolean>
   credentialsMaskKey: (key: string) => Promise<string>
   routingAnalyze: (input: import('../shared/types/routing').AnalyzePromptInput) => Promise<import('../shared/types/routing').AnalyzePromptOutput>
+  githubListRepos: () => Promise<import('../shared/types/github').ImportedRepo[]>
+  githubGetRepo: (id: string) => Promise<import('../shared/types/github').ImportedRepo | undefined>
+  githubImportRepo: (input: import('../shared/types/github').ImportRepoInput) => Promise<import('../shared/types/github').ImportResult>
+  githubImportBulk: (urls: string[]) => Promise<import('../shared/types/github').ImportResult[]>
+  githubDeleteRepo: (id: string) => Promise<boolean>
+  githubIsAlreadyImported: (url: string) => Promise<boolean>
+  githubListItems: (filters?: import('../shared/types/github').ImportItemFilter) => Promise<import('../shared/types/github').ImportedItem[]>
+  githubGetItem: (id: string) => Promise<import('../shared/types/github').ImportedItem | undefined>
+  githubUpdateItemStatus: (id: string, status: string) => Promise<import('../shared/types/github').ImportedItem | undefined>
+  githubDeleteItem: (id: string) => Promise<boolean>
+  githubGetWarnings: (itemId?: string, repoUrl?: string) => Promise<import('../shared/types/github').ImportWarning[]>
 }
 
 declare global {

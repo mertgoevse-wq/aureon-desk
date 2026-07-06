@@ -4,6 +4,7 @@ import type { SystemPromptRow, NewSystemPrompt, PromptRow, NewPrompt, HierarchyI
 import type { ProviderAdapterInfo } from '../shared/types/provider'
 import type { AppSettings } from '../shared/types/settings'
 import type { AnalyzePromptInput, AnalyzePromptOutput } from '../shared/types/routing'
+import type { ImportedRepo, ImportedItem, ImportWarning, ImportResult, ImportRepoInput, ImportItemFilter } from '../shared/types/github'
 
 // Define the IPC API exposed to the renderer
 const api = {
@@ -128,7 +129,31 @@ const api = {
 
   // Routing
   routingAnalyze: (input: AnalyzePromptInput): Promise<AnalyzePromptOutput> =>
-    ipcRenderer.invoke('routing:analyze', input)
+    ipcRenderer.invoke('routing:analyze', input),
+
+  // GitHub Imports
+  githubListRepos: (): Promise<ImportedRepo[]> =>
+    ipcRenderer.invoke('github:listRepos'),
+  githubGetRepo: (id: string): Promise<ImportedRepo | undefined> =>
+    ipcRenderer.invoke('github:getRepo', id),
+  githubImportRepo: (input: ImportRepoInput): Promise<ImportResult> =>
+    ipcRenderer.invoke('github:importRepo', input),
+  githubImportBulk: (urls: string[]): Promise<ImportResult[]> =>
+    ipcRenderer.invoke('github:importBulk', urls),
+  githubDeleteRepo: (id: string): Promise<boolean> =>
+    ipcRenderer.invoke('github:deleteRepo', id),
+  githubIsAlreadyImported: (url: string): Promise<boolean> =>
+    ipcRenderer.invoke('github:isAlreadyImported', url),
+  githubListItems: (filters?: ImportItemFilter): Promise<ImportedItem[]> =>
+    ipcRenderer.invoke('github:listItems', filters),
+  githubGetItem: (id: string): Promise<ImportedItem | undefined> =>
+    ipcRenderer.invoke('github:getItem', id),
+  githubUpdateItemStatus: (id: string, status: string): Promise<ImportedItem | undefined> =>
+    ipcRenderer.invoke('github:updateItemStatus', id, status),
+  githubDeleteItem: (id: string): Promise<boolean> =>
+    ipcRenderer.invoke('github:deleteItem', id),
+  githubGetWarnings: (itemId?: string, repoUrl?: string): Promise<ImportWarning[]> =>
+    ipcRenderer.invoke('github:getWarnings', itemId, repoUrl)
 }
 
 // Expose the API in the main world

@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.5.0] - 2026-07-06
+
+### Added — Secure GitHub Star List Importer
+- **GitHub Imports screen**: Full-page UI with single URL input, bulk URL textarea, "Import Mert's Star List" button, repo table with expandable item list
+- **Mert's Star List preset**: 29 curated repositories covering system prompts, agent frameworks, prompt engineering, MCP servers, and AI tooling
+- **Repo classifier**: 8-category classification (system-prompt-pack, prompt-library, agent-framework-reference, skill-pack, mcp-server-list, local-model-reference, research/reference, unrelated/reference)
+- **Import parser**: Multi-format support (Markdown, YAML, JSON, TXT, TOML) with title/content/tag extraction and item type detection
+- **Safety engine**: Secret detection (API keys, tokens), prompt injection detection, proprietary content detection — all imported content marked untrusted by default
+- **File discovery**: Whitelist of accepted extensions (.md/.mdx/.txt/.json/.yaml/.yml/.toml), 5MB size limit, skip patterns for node_modules/.git/build dirs
+- **Shell injection protection**: Branch name sanitized to `[a-zA-Z0-9._/-]` before passing to git commands
+- **4 database tables**: `imported_repositories`, `imported_items`, `import_warnings`, `import_logs` with additive migration
+- **26 unit tests**: File acceptance, Markdown/YAML/JSON parsing, safety checks (secrets, injection, proprietary), repo classification
+- **IPC layer**: 12 handlers for repo management, item management, and warning retrieval
+
+### Changed
+- `App.tsx` route `/settings/github` now renders full `GitHubImportsPage` instead of placeholder
+- `github_imports` table renamed to `imported_repositories` with enriched columns (status, category, commit_hash, item counts)
+
+### Security
+- All imported content is `is_untrusted = 1` by default
+- Never executes imported code — static parsing only
+- Shell scripts blocked by extension filter
+- Branch names sanitized against injection
+- Secrets stripped from imports
+
 ## [0.4.0] - 2026-07-06
 
 ### Added — Prompt Intelligence Engine (Agent Skill Router)

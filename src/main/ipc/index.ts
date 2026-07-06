@@ -5,6 +5,7 @@ import { registerPromptLibraryIPC } from './promptLibrary.ipc'
 import { registerSettingsIPC } from './settings.ipc'
 import { registerCredentialsIPC } from './credentials.ipc'
 import { registerRoutingIPC } from './routing.ipc'
+import { registerGitHubIPC } from './github.ipc'
 import { logger } from '../utils/logger'
 
 export function registerAllIPC(): void {
@@ -17,6 +18,7 @@ export function registerAllIPC(): void {
   registerSettingsIPC()
   registerCredentialsIPC()
   registerRoutingIPC()
+  registerGitHubIPC()
 
   logger.info('All IPC handlers registered')
 }

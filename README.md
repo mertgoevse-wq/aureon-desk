@@ -35,7 +35,8 @@ npm start
 - ✅ Chat with message persistence (SQLite)
 - ✅ Provider & API key management (8 providers)
 - ✅ **System Prompt Profile Engine** (CRUD, archive, duplicate, hierarchy resolver, safety checks)
-- ✅ **Prompt Intelligence Engine** (12 intents, 12 agents, 28 skills, rule-based routing, risk assessment, subagent planner)
+- ✅ **GitHub Star List Importer** (29 repos, multi-format parser, safety engine, classifier, 77 tests total)
+- ✅ Prompt Intelligence Engine (12 intents, 12 agents, 28 skills, rule-based routing)
 - ✅ Prompt library with tags, categories, search, favorites, usage tracking
 - ✅ Slash command integration with combined built-in + library palette
 - ✅ Right inspector panel now shows routing analysis on every message

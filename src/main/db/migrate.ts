@@ -126,6 +126,55 @@ export function runMigrations(): void {
       updated_at TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS imported_repositories (
+      id TEXT PRIMARY KEY,
+      repo_url TEXT NOT NULL,
+      branch TEXT DEFAULT 'main',
+      local_path TEXT NOT NULL,
+      category TEXT,
+      status TEXT NOT NULL DEFAULT 'pending',
+      detected_categories TEXT,
+      last_synced TEXT,
+      commit_hash TEXT,
+      item_count INTEGER NOT NULL DEFAULT 0,
+      prompt_count INTEGER NOT NULL DEFAULT 0,
+      system_prompt_count INTEGER NOT NULL DEFAULT 0,
+      skill_count INTEGER NOT NULL DEFAULT 0,
+      warning_count INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS imported_items (
+      id TEXT PRIMARY KEY,
+      repo_id TEXT NOT NULL REFERENCES imported_repositories(id) ON DELETE CASCADE,
+      repo_url TEXT NOT NULL,
+      item_type TEXT NOT NULL DEFAULT 'unknown',
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      description TEXT,
+      tags TEXT,
+      category TEXT,
+      source_file TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'unreviewed',
+      safety_warnings TEXT,
+      is_untrusted INTEGER NOT NULL DEFAULT 1,
+      original_content TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS import_warnings (
+      id TEXT PRIMARY KEY,
+      item_id TEXT REFERENCES imported_items(id) ON DELETE CASCADE,
+      repo_url TEXT NOT NULL,
+      type TEXT NOT NULL,
+      message TEXT NOT NULL,
+      severity TEXT NOT NULL DEFAULT 'medium',
+      line_number INTEGER,
+      context TEXT,
+      created_at TEXT NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS github_imports (
       id TEXT PRIMARY KEY,
       repo_url TEXT NOT NULL,
@@ -133,6 +182,14 @@ export function runMigrations(): void {
       local_path TEXT NOT NULL,
       import_type TEXT NOT NULL,
       last_synced TEXT,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS import_logs (
+      id TEXT PRIMARY KEY,
+      repo_url TEXT NOT NULL,
+      message TEXT NOT NULL,
+      level TEXT NOT NULL DEFAULT 'info',
       created_at TEXT NOT NULL
     );
 

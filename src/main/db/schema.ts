@@ -121,13 +121,61 @@ export const tools = sqliteTable('tools', {
 })
 
 // --- GitHub Imports ---
-export const githubImports = sqliteTable('github_imports', {
+export const githubImports = sqliteTable('imported_repositories', {
   id: text('id').primaryKey(),
   repo_url: text('repo_url').notNull(),
   branch: text('branch').default('main'),
   local_path: text('local_path').notNull(),
-  import_type: text('import_type').notNull(),
+  category: text('category'),
+  status: text('status').notNull().default('pending'),
+  detected_categories: text('detected_categories'),
   last_synced: text('last_synced'),
+  commit_hash: text('commit_hash'),
+  item_count: integer('item_count').notNull().default(0),
+  prompt_count: integer('prompt_count').notNull().default(0),
+  system_prompt_count: integer('system_prompt_count').notNull().default(0),
+  skill_count: integer('skill_count').notNull().default(0),
+  warning_count: integer('warning_count').notNull().default(0),
+  created_at: text('created_at').notNull(),
+  updated_at: text('updated_at').notNull()
+})
+
+export const importedItems = sqliteTable('imported_items', {
+  id: text('id').primaryKey(),
+  repo_id: text('repo_id').notNull().references(() => githubImports.id, { onDelete: 'cascade' }),
+  repo_url: text('repo_url').notNull(),
+  item_type: text('item_type').notNull().default('unknown'),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  description: text('description'),
+  tags: text('tags'),
+  category: text('category'),
+  source_file: text('source_file').notNull(),
+  status: text('status').notNull().default('unreviewed'),
+  safety_warnings: text('safety_warnings'),
+  is_untrusted: integer('is_untrusted').notNull().default(1),
+  original_content: text('original_content').notNull(),
+  created_at: text('created_at').notNull()
+})
+
+export const importWarnings = sqliteTable('import_warnings', {
+  id: text('id').primaryKey(),
+  item_id: text('item_id').references(() => importedItems.id, { onDelete: 'cascade' }),
+  repo_url: text('repo_url').notNull(),
+  type: text('type').notNull(),
+  message: text('message').notNull(),
+  severity: text('severity').notNull().default('medium'),
+  line_number: integer('line_number'),
+  context: text('context'),
+  created_at: text('created_at').notNull()
+})
+
+// --- Import Logs ---
+export const importLogs = sqliteTable('import_logs', {
+  id: text('id').primaryKey(),
+  repo_url: text('repo_url').notNull(),
+  message: text('message').notNull(),
+  level: text('level').notNull().default('info'),
   created_at: text('created_at').notNull()
 })
 
