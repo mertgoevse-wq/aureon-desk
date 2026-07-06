@@ -5,6 +5,7 @@ import type { ProviderAdapterInfo } from '../shared/types/provider'
 import type { AppSettings } from '../shared/types/settings'
 import type { AnalyzePromptInput, AnalyzePromptOutput } from '../shared/types/routing'
 import type { ImportedRepo, ImportedItem, ImportWarning, ImportResult, ImportRepoInput, ImportItemFilter } from '../shared/types/github'
+import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolExecuteInput, ToolExecuteResult } from '../shared/types/tool'
 
 // Define the IPC API exposed to the renderer
 const api = {
@@ -153,7 +154,29 @@ const api = {
   githubDeleteItem: (id: string): Promise<boolean> =>
     ipcRenderer.invoke('github:deleteItem', id),
   githubGetWarnings: (itemId?: string, repoUrl?: string): Promise<ImportWarning[]> =>
-    ipcRenderer.invoke('github:getWarnings', itemId, repoUrl)
+    ipcRenderer.invoke('github:getWarnings', itemId, repoUrl),
+
+  // Tools / MCP
+  toolList: (): Promise<ToolRow[]> =>
+    ipcRenderer.invoke('tool:list'),
+  toolGet: (id: string): Promise<ToolRow | undefined> =>
+    ipcRenderer.invoke('tool:get', id),
+  toolCreate: (input: any): Promise<ToolRow> =>
+    ipcRenderer.invoke('tool:create', input),
+  toolUpdate: (id: string, input: any): Promise<ToolRow | undefined> =>
+    ipcRenderer.invoke('tool:update', id, input),
+  toolDelete: (id: string): Promise<boolean> =>
+    ipcRenderer.invoke('tool:delete', id),
+  toolSetEnabled: (id: string, enabled: boolean): Promise<ToolRow | undefined> =>
+    ipcRenderer.invoke('tool:setEnabled', id, enabled),
+  toolSetTrusted: (id: string, trusted: boolean): Promise<ToolRow | undefined> =>
+    ipcRenderer.invoke('tool:setTrusted', id, trusted),
+  toolCheckSafety: (toolId: string, input: Record<string, unknown>): Promise<SafetyCheckResult> =>
+    ipcRenderer.invoke('tool:checkSafety', toolId, input),
+  toolExecute: (toolId: string, input: Record<string, unknown>): Promise<ToolExecuteResult> =>
+    ipcRenderer.invoke('tool:execute', toolId, input),
+  toolGetCallLogs: (toolId?: string): Promise<ToolCallLog[]> =>
+    ipcRenderer.invoke('tool:getCallLogs', toolId)
 }
 
 // Expose the API in the main world

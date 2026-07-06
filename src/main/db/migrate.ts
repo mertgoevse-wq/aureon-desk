@@ -116,14 +116,38 @@ export function runMigrations(): void {
     CREATE TABLE IF NOT EXISTS tools (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      type TEXT NOT NULL,
-      config TEXT NOT NULL,
       description TEXT,
-      is_enabled INTEGER NOT NULL DEFAULT 1,
+      version TEXT NOT NULL DEFAULT '1.0.0',
       source TEXT,
       source_path TEXT,
+      transport TEXT NOT NULL DEFAULT 'local',
+      command TEXT,
+      config TEXT NOT NULL,
+      permissions TEXT,
+      is_enabled INTEGER NOT NULL DEFAULT 1,
+      is_trusted INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS tool_permissions (
+      id TEXT PRIMARY KEY,
+      tool_id TEXT NOT NULL REFERENCES tools(id) ON DELETE CASCADE,
+      permission TEXT NOT NULL,
+      granted INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS tool_call_logs (
+      id TEXT PRIMARY KEY,
+      tool_id TEXT NOT NULL,
+      tool_name TEXT NOT NULL,
+      status TEXT NOT NULL,
+      input_preview TEXT NOT NULL DEFAULT '',
+      output_preview TEXT,
+      permission_checks TEXT,
+      error_message TEXT,
+      created_at TEXT NOT NULL
     );
 
     CREATE TABLE IF NOT EXISTS imported_repositories (
@@ -229,6 +253,21 @@ export function runMigrations(): void {
   addPromptCol('variables', 'TEXT')
   addPromptCol('favorite', 'INTEGER NOT NULL DEFAULT 0')
   addPromptCol('usage_count', 'INTEGER NOT NULL DEFAULT 0')
+
+  // Tool columns additive migration
+  const toolCols = sqlite.pragma('table_info(tools)') as { name: string }[]
+  const toolColNames = toolCols.map(c => c.name)
+  const addToolCol = (name: string, ddl: string) => {
+    if (!toolColNames.includes(name)) {
+      logger.info(`Adding column: tools.${name}`)
+      sqlite.exec(`ALTER TABLE tools ADD COLUMN ${name} ${ddl}`)
+    }
+  }
+  addToolCol('version', "TEXT NOT NULL DEFAULT '1.0.0'")
+  addToolCol('transport', "TEXT NOT NULL DEFAULT 'local'")
+  addToolCol('command', 'TEXT')
+  addToolCol('permissions', 'TEXT')
+  addToolCol('is_trusted', 'INTEGER NOT NULL DEFAULT 0')
 
   sqlite.close()
   logger.info('Migrations complete')

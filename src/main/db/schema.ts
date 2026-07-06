@@ -110,14 +110,38 @@ export const projects = sqliteTable('projects', {
 export const tools = sqliteTable('tools', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
-  type: text('type').notNull(),
-  config: text('config').notNull(),
   description: text('description'),
-  is_enabled: integer('is_enabled').notNull().default(1),
+  version: text('version').notNull().default('1.0.0'),
   source: text('source'),
   source_path: text('source_path'),
+  transport: text('transport').notNull().default('local'),
+  command: text('command'),
+  config: text('config').notNull(),
+  permissions: text('permissions'),
+  is_enabled: integer('is_enabled').notNull().default(1),
+  is_trusted: integer('is_trusted').notNull().default(0),
   created_at: text('created_at').notNull(),
   updated_at: text('updated_at').notNull()
+})
+
+export const toolPermissions = sqliteTable('tool_permissions', {
+  id: text('id').primaryKey(),
+  tool_id: text('tool_id').notNull().references(() => tools.id, { onDelete: 'cascade' }),
+  permission: text('permission').notNull(),
+  granted: integer('granted').notNull().default(0),
+  created_at: text('created_at').notNull()
+})
+
+export const toolCallLogs = sqliteTable('tool_call_logs', {
+  id: text('id').primaryKey(),
+  tool_id: text('tool_id').notNull(),
+  tool_name: text('tool_name').notNull(),
+  status: text('status').notNull(),
+  input_preview: text('input_preview').notNull().default(''),
+  output_preview: text('output_preview'),
+  permission_checks: text('permission_checks'),
+  error_message: text('error_message'),
+  created_at: text('created_at').notNull()
 })
 
 // --- GitHub Imports ---

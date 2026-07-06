@@ -1,6 +1,6 @@
 import type {
   RoutingResult, SubagentPlan, SubagentStep,
-  AnalyzePromptInput, AnalyzePromptOutput
+  AnalyzePromptInput, AnalyzePromptOutput, ToolSuggestion
 } from '../../shared/types/routing'
 import { analyzePrompt } from './prompt-analyzer'
 import { findAgentsForIntent, getSupportingAgents } from './agent-registry'
@@ -34,6 +34,7 @@ export function routePrompt(input: AnalyzePromptInput): AnalyzePromptOutput {
         selectedSkills: [],
         suggestedSystemPromptId: null,
         requiredTools: [],
+        suggestedTools: [],
         subagentPlan: null,
         riskWarnings: [],
         requiresConfirmation: false,
@@ -97,6 +98,13 @@ export function routePrompt(input: AnalyzePromptInput): AnalyzePromptOutput {
     analysis.requiredPermissions.includes('git_push') ||
     analysis.requiredPermissions.includes('file_delete')
 
+  // Resolve tool suggestions from requiredTools list
+  const suggestedTools: ToolSuggestion[] = requiredTools.map(t => ({
+    id: t,
+    name: t,
+    description: `Suggested tool: ${t}`
+  }))
+
   const routing: RoutingResult = {
     analysis,
     primaryAgent,
@@ -104,6 +112,7 @@ export function routePrompt(input: AnalyzePromptInput): AnalyzePromptOutput {
     selectedSkills,
     suggestedSystemPromptId: null,  // Will be resolved by the prompt service
     requiredTools,
+    suggestedTools,
     subagentPlan,
     riskWarnings,
     requiresConfirmation,

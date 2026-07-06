@@ -1,6 +1,32 @@
 # Changelog
 
-## [0.5.0] - 2026-07-06
+## [0.6.0] - 2026-07-06
+
+### Added — MCP-Style Tool Manager & Safety Gate
+- **Tools & MCP Page**: Full-page UI listing installed tools with enable/disable toggles, trust status, permission badges, transport type indicators, config preview, JSON test input, safety check, and call log viewer
+- **Tool model**: 12-column tool schema (id, name, description, version, source, transport, command, config, permissions, enabled, trusted, timestamps) with 5 transport types (stdio, http, sse, websocket, local)
+- **Permission model**: 9 granular permissions (file_read, file_write, shell_command, network, browser, git, database, clipboard, secrets) with icon and color per type
+- **Safety Gate**: Every tool call passes through `checkToolSafety` — blocks disabled tools, blocks untrusted imported tools, blocks unknown tools, requires confirmation for destructive permissions, provides dry-run previews
+- **Log redaction**: API keys, Bearer tokens, and secrets auto-redacted from tool call logs before storage
+- **3 built-in mock tools**: `file_search_mock`, `git_status_mock`, `project_summary_mock` — never touch real files, return simulated JSON responses
+- **Seed system**: Mock tools auto-seeded on app startup if they don't exist
+- **Tool call logs**: `tool_call_logs` table records every attempt (approved, denied, blocked_untrusted, blocked_disabled, blocked_unknown, error) with input preview, output preview, and permission checks
+- **RightInspector integration**: Suggested tools from the routing engine now shown in the Router panel with tool names visible but not auto-executed
+- **Routing type extension**: New `ToolSuggestion` interface and `suggestedTools` field on `RoutingResult` for inspector display
+- **16 unit tests**: Permission model coverage, transport types, log redaction patterns, disabled-by-default for imports, destructive classification, unknown tool blocking
+- **3 new DB tables**: `tools` (enriched), `tool_permissions`, `tool_call_logs` with additive migration for existing databases
+
+### Changed
+- `App.tsx` route `/tools` and `/settings/tools` now render the full `ToolsPage` instead of placeholder
+- `Seed.ts` now calls `toolService.seedMockTools()` after system prompt seeding
+- `RoutingPolicy` now populates `suggestedTools` list for inspector display
+- `tool.service.ts` `toggleEnabled` fixed from placeholder to real toggle
+
+### Security
+- All tool calls logged with redacted secrets
+- Imported tools disabled and untrusted by default
+- Destructive permissions (file_write, shell_command, git, database, secrets) require explicit confirmation
+- Unknown tools always blocked — no auto-discovery or auto-registration
 
 ### Added — Secure GitHub Star List Importer
 - **GitHub Imports screen**: Full-page UI with single URL input, bulk URL textarea, "Import Mert's Star List" button, repo table with expandable item list

@@ -86,6 +86,12 @@ export interface PromptAnalysis {
 
 // --- Routing Result ---
 
+export interface ToolSuggestion {
+  id: string
+  name: string
+  description: string
+}
+
 export interface RoutingResult {
   analysis: PromptAnalysis
   primaryAgent: AgentDefinition
@@ -93,6 +99,7 @@ export interface RoutingResult {
   selectedSkills: SkillDefinition[]
   suggestedSystemPromptId: string | null
   requiredTools: string[]
+  suggestedTools: ToolSuggestion[]
   subagentPlan: SubagentPlan | null
   riskWarnings: string[]
   requiresConfirmation: boolean

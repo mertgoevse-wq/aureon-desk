@@ -183,6 +183,23 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
         </Section>
       )}
 
+      {/* Suggested Tools */}
+      {routing.suggestedTools && routing.suggestedTools.length > 0 && (
+        <Section icon={<Wrench size={12} />} title="Suggested Tools">
+          <div className="space-y-1">
+            {routing.suggestedTools.map(tool => (
+              <div key={tool.id} className="flex items-center gap-1.5 text-[11px]">
+                <Zap size={10} className="text-[var(--ivory-accent)]" />
+                <span className="text-[var(--ivory-text)]">{tool.name}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-[9px] text-[var(--ivory-text-3)] mt-1">
+            Tools are suggested but not auto-executed. Review in the Tools panel.
+          </p>
+        </Section>
+      )}
+
       {/* Permissions */}
       {pa.requiredPermissions.length > 0 && (
         <Section icon={<Shield size={12} />} title="Required Permissions">

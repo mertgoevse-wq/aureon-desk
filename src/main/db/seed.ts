@@ -3,6 +3,7 @@ import { getDb } from './connection'
 import { providers, models, systemPrompts } from './schema'
 import { PROVIDER_ADAPTERS } from '../../shared/constants'
 import { logger } from '../utils/logger'
+import { toolService } from '../services/tool.service'
 
 /**
  * Seed default providers, models, and a default system prompt.
@@ -81,6 +82,9 @@ export async function seed(): Promise<void> {
   }
 
   logger.info('Seeding complete')
+
+  // Seed built-in mock tools
+  toolService.seedMockTools()
 }
 
 // Run directly with: npx tsx src/main/db/seed.ts

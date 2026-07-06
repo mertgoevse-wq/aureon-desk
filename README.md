@@ -36,6 +36,7 @@ npm start
 - ✅ Provider & API key management (8 providers)
 - ✅ **System Prompt Profile Engine** (CRUD, archive, duplicate, hierarchy resolver, safety checks)
 - ✅ **GitHub Star List Importer** (29 repos, multi-format parser, safety engine, classifier, 77 tests total)
+- ✅ **MCP-Style Tool Manager & Safety Gate** (3 mock tools, 9 permissions, call logs, safety gate, 93 tests total)
 - ✅ Prompt Intelligence Engine (12 intents, 12 agents, 28 skills, rule-based routing)
 - ✅ Prompt library with tags, categories, search, favorites, usage tracking
 - ✅ Slash command integration with combined built-in + library palette
@@ -43,8 +44,7 @@ npm start
 - ✅ Secure credential vault (safeStorage)
 - ✅ Unit tests (15 passing for hierarchy resolver)
 - 🔜 Projects & local file access
-- 🔜 Tools & MCP integration
-- 🔜 GitHub imports
+- 🔜 MCP server import & real tool integration
 - 🔜 Keyboard shortcuts & resize
 
 ## Commands

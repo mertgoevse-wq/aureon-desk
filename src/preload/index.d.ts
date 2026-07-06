@@ -64,6 +64,16 @@ export interface IpcApi {
   githubUpdateItemStatus: (id: string, status: string) => Promise<import('../shared/types/github').ImportedItem | undefined>
   githubDeleteItem: (id: string) => Promise<boolean>
   githubGetWarnings: (itemId?: string, repoUrl?: string) => Promise<import('../shared/types/github').ImportWarning[]>
+  toolList: () => Promise<import('../shared/types/tool').ToolRow[]>
+  toolGet: (id: string) => Promise<import('../shared/types/tool').ToolRow | undefined>
+  toolCreate: (input: any) => Promise<import('../shared/types/tool').ToolRow>
+  toolUpdate: (id: string, input: any) => Promise<import('../shared/types/tool').ToolRow | undefined>
+  toolDelete: (id: string) => Promise<boolean>
+  toolSetEnabled: (id: string, enabled: boolean) => Promise<import('../shared/types/tool').ToolRow | undefined>
+  toolSetTrusted: (id: string, trusted: boolean) => Promise<import('../shared/types/tool').ToolRow | undefined>
+  toolCheckSafety: (toolId: string, input: Record<string, unknown>) => Promise<import('../shared/types/tool').SafetyCheckResult>
+  toolExecute: (toolId: string, input: Record<string, unknown>) => Promise<import('../shared/types/tool').ToolExecuteResult>
+  toolGetCallLogs: (toolId?: string) => Promise<import('../shared/types/tool').ToolCallLog[]>
 }
 
 declare global {

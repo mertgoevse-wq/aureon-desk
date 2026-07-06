@@ -7,6 +7,7 @@ import { PromptLibrary } from './pages/PromptLibrary'
 import { ProvidersPage } from './pages/settings/ProvidersPage'
 import { PromptsPage } from './pages/settings/PromptsPage'
 import { GitHubImportsPage } from './pages/settings/GitHubImportsPage'
+import { ToolsPage } from './pages/settings/ToolsPage'
 
 // Placeholder pages for settings sections not yet implemented
 function PlaceholderPage({ title }: { title: string }): React.ReactElement {
@@ -28,7 +29,7 @@ const router = createHashRouter([
       { index: true, element: <ChatWorkspace /> },
       { path: 'prompts', element: <PromptLibrary /> },
       { path: 'projects', element: <PlaceholderPage title="Projects" /> },
-      { path: 'tools', element: <PlaceholderPage title="Tools & MCP" /> },
+      { path: 'tools', element: <ToolsPage /> },
       {
         path: 'settings',
         element: <SettingsLayout />,
@@ -38,7 +39,7 @@ const router = createHashRouter([
           { path: 'prompts', element: <PromptsPage /> },
           { path: 'appearance', element: <PlaceholderPage title="Appearance" /> },
           { path: 'projects', element: <PlaceholderPage title="Projects" /> },
-          { path: 'tools', element: <PlaceholderPage title="Tools" /> },
+          { path: 'tools', element: <ToolsPage /> },
           { path: 'github', element: <GitHubImportsPage /> },
           { path: 'logs', element: <PlaceholderPage title="Logs & Debug" /> }
         ]
