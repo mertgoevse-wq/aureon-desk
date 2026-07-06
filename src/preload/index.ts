@@ -7,6 +7,7 @@ import type { AnalyzePromptInput, AnalyzePromptOutput } from '../shared/types/ro
 import type { ImportedRepo, ImportedItem, ImportWarning, ImportResult, ImportRepoInput, ImportItemFilter } from '../shared/types/github'
 import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolExecuteInput, ToolExecuteResult } from '../shared/types/tool'
 import type { ProjectRow, NewProject, ProjectUpdate, FileTreeNode, ProjectContext, FileTreeOptions } from '../shared/types/project'
+import type { AppLogRow, LogFilter, DebugBundle } from '../shared/types/log'
 
 // Define the IPC API exposed to the renderer
 const api = {
@@ -211,7 +212,27 @@ const api = {
   projectGetContext: (projectId: string, selectedFilePaths: string[]): Promise<ProjectContext | null> =>
     ipcRenderer.invoke('project:getContext', projectId, selectedFilePaths),
   projectIsPathIgnored: (filePath: string): Promise<boolean> =>
-    ipcRenderer.invoke('project:isPathIgnored', filePath)
+    ipcRenderer.invoke('project:isPathIgnored', filePath),
+
+  // Logs & Debug
+  logWrite: (input: { level: string; category: string; message: string; metadata?: Record<string, unknown>; chatId?: string; projectId?: string }): Promise<AppLogRow> =>
+    ipcRenderer.invoke('log:write', input),
+  logQuery: (filter: LogFilter): Promise<AppLogRow[]> =>
+    ipcRenderer.invoke('log:query', filter),
+  logCount: (filter: LogFilter): Promise<number> =>
+    ipcRenderer.invoke('log:count', filter),
+  logGet: (id: string): Promise<AppLogRow | undefined> =>
+    ipcRenderer.invoke('log:get', id),
+  logCategories: (): Promise<string[]> =>
+    ipcRenderer.invoke('log:categories'),
+  logClear: (): Promise<number> =>
+    ipcRenderer.invoke('log:clear'),
+  logClearToolCallLogs: (): Promise<number> =>
+    ipcRenderer.invoke('log:clearToolCallLogs'),
+  logClearImportLogs: (): Promise<number> =>
+    ipcRenderer.invoke('log:clearImportLogs'),
+  logExportDebugBundle: (): Promise<DebugBundle> =>
+    ipcRenderer.invoke('log:exportDebugBundle')
 }
 
 // Expose the API in the main world

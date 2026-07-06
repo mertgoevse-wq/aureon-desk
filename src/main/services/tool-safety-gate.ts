@@ -3,6 +3,7 @@ import { getDb } from '../db/connection'
 import { tools, toolCallLogs } from '../db/schema'
 import { eq } from 'drizzle-orm'
 import { logger } from '../utils/logger'
+import { redactSecrets } from './log-redacter'
 import type { ToolRow, SafetyCheckResult, ToolCallLog, ToolPermission } from '../../shared/types/tool'
 
 /**
@@ -27,13 +28,9 @@ const PERMISSION_DESCRIPTIONS: Record<ToolPermission, string> = {
   secrets: 'Access stored credentials and secrets',
 }
 
-/** Redact secrets from input/output previews */
+/** Redact secrets from input/output previews — delegates to unified redacter */
 function redactForLog(text: string): string {
-  return text
-    .slice(0, 200)
-    .replace(/sk-[a-zA-Z0-9_-]{20,}/g, '[REDACTED_KEY]')
-    .replace(/Bearer\s+[a-zA-Z0-9._-]{20,}/gi, '[REDACTED_TOKEN]')
-    .replace(/(?:api[_-]?key|apikey|secret|password)\s*[:=]\s*["']?[^\s"']+/gi, '$1=[REDACTED]')
+  return redactSecrets(text).slice(0, 200)
 }
 
 /** Check if tool has destructive permissions */

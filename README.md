@@ -44,6 +44,7 @@ npm start
 - ✅ Secure credential vault (safeStorage)
 - ✅ Unit tests (15 passing for hierarchy resolver)
 - ✅ **Projects & Local Folder Access** (file tree, context builder, instructions, defaults, 117 tests total)
+- ✅ **Logs & Debug Panel** (unified redaction, audit trail, debug bundle export, 142 tests total)
 - 🔜 MCP server import & real tool integration
 - 🔜 Keyboard shortcuts & resize
 

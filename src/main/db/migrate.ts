@@ -221,6 +221,17 @@ export function runMigrations(): void {
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS app_logs (
+      id TEXT PRIMARY KEY,
+      timestamp TEXT NOT NULL,
+      level TEXT NOT NULL,
+      category TEXT NOT NULL,
+      message TEXT NOT NULL,
+      metadata TEXT,
+      chat_id TEXT,
+      project_id TEXT
+    );
   `)
 
   // Additive migrations: add new columns if they don't exist

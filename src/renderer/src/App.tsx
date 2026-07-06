@@ -9,6 +9,7 @@ import { PromptsPage } from './pages/settings/PromptsPage'
 import { GitHubImportsPage } from './pages/settings/GitHubImportsPage'
 import { ToolsPage } from './pages/settings/ToolsPage'
 import { ProjectsPage } from './pages/ProjectsPage'
+import { LogsPage } from './pages/settings/LogsPage'
 
 // Placeholder pages for settings sections not yet implemented
 function PlaceholderPage({ title }: { title: string }): React.ReactElement {
@@ -42,7 +43,7 @@ const router = createHashRouter([
           { path: 'projects', element: <ProjectsPage /> },
           { path: 'tools', element: <ToolsPage /> },
           { path: 'github', element: <GitHubImportsPage /> },
-          { path: 'logs', element: <PlaceholderPage title="Logs & Debug" /> }
+          { path: 'logs', element: <LogsPage /> }
         ]
       }
     ]

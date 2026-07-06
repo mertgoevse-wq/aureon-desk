@@ -213,3 +213,15 @@ export const settings = sqliteTable('settings', {
   key: text('key').primaryKey(),
   value: text('value').notNull()
 })
+
+// --- App Logs (audit trail) ---
+export const appLogs = sqliteTable('app_logs', {
+  id: text('id').primaryKey(),
+  timestamp: text('timestamp').notNull(),
+  level: text('level').notNull(),
+  category: text('category').notNull(),
+  message: text('message').notNull(),
+  metadata: text('metadata'),
+  chat_id: text('chat_id'),
+  project_id: text('project_id')
+})

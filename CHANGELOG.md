@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.8.0] - 2026-07-06
+
+### Added — Logs, Debug Panel & Audit Trail
+- **LogsPage**: Full-page UI with log table (level, timestamp, category, message), detail panel, copy sanitized log, filter by level/category/limit, search, clear logs modal, and debug bundle export
+- **Unified redaction utility** (`log-redacter.ts`): 9 redaction patterns (Anthropic keys, OpenAI keys, generic sk- keys, Google AI keys, Bearer tokens, x-api-key headers, Authorization headers, secret/token/password assignments, private key blocks) with ordered application (specific before generic)
+- **Log model**: 8-field `app_logs` table (id, timestamp, level, category, message, metadata JSON, chat_id, project_id) with 9 categories (app, routing, provider, tool, import, chat, project, security, system)
+- **Log service**: CRUD operations, filtering by level/category/search/date range, log counting, bulk clear, debug bundle export (app version, platform, arch, settings, recent logs, tool call logs, import logs)
+- **Debug bundle export**: Downloads a sanitized JSON file with all secrets redacted — safe to share for debugging
+- **Redaction consolidation**: `request-builder.ts` and `tool-safety-gate.ts` now delegate to the unified `redactSecrets` from `log-redacter.ts`, eliminating duplicate redaction logic
+- **25 unit tests**: Redaction coverage (OpenAI, Anthropic, Google, generic sk-, Bearer, x-api-key, api_key, secret, password, Authorization, private keys), containsSecrets, redactObject, debug bundle safety (no plaintext secrets), log filtering (level, category, search, combined)
+- **IPC layer**: 9 handlers for log write, query, count, categories, get, clear (app/tool/import), and debug bundle export
+
+### Changed
+- `App.tsx` route `/settings/logs` now renders full `LogsPage` instead of placeholder
+- `request-builder.ts`: `redactForLog` now aliases unified `redactSecrets`
+- `tool-safety-gate.ts`: Internal redaction delegated to unified `redactSecrets`
+
+### Security
+- All log entries sanitized before DB storage — API keys, tokens, and secrets are never stored in plaintext
+- Debug bundle export automatically redacts all secrets
+- Redaction patterns applied in order: specific key formats (Anthropic, OpenAI, Google) before generic catch-alls
+
 ## [0.7.0] - 2026-07-06
 
 ### Added — Projects & Local Folder Access

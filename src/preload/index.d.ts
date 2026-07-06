@@ -90,6 +90,15 @@ export interface IpcApi {
   projectGetFileTree: (rootPath: string, options?: import('../shared/types/project').FileTreeOptions) => Promise<import('../shared/types/project').FileTreeNode[]>
   projectGetContext: (projectId: string, selectedFilePaths: string[]) => Promise<import('../shared/types/project').ProjectContext | null>
   projectIsPathIgnored: (filePath: string) => Promise<boolean>
+  logWrite: (input: { level: string; category: string; message: string; metadata?: Record<string, unknown>; chatId?: string; projectId?: string }) => Promise<import('../shared/types/log').AppLogRow>
+  logQuery: (filter: import('../shared/types/log').LogFilter) => Promise<import('../shared/types/log').AppLogRow[]>
+  logCount: (filter: import('../shared/types/log').LogFilter) => Promise<number>
+  logGet: (id: string) => Promise<import('../shared/types/log').AppLogRow | undefined>
+  logCategories: () => Promise<string[]>
+  logClear: () => Promise<number>
+  logClearToolCallLogs: () => Promise<number>
+  logClearImportLogs: () => Promise<number>
+  logExportDebugBundle: () => Promise<import('../shared/types/log').DebugBundle>
 }
 
 declare global {

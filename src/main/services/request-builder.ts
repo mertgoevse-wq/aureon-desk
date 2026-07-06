@@ -4,6 +4,7 @@ import type { SystemPromptRow, ResolvedPrompt } from '../../shared/types/prompt'
 import { providerService } from './provider.service'
 import { vault } from '../security/vault'
 import { logger } from '../utils/logger'
+import { redactSecrets } from './log-redacter'
 
 /**
  * Request Builder — assembles all components into a sendable API request.
@@ -34,14 +35,9 @@ export interface BuildRequestInput {
 
 /**
  * Sanitize a string for log output — redacts API keys, Bearer tokens, and secrets.
+ * Delegates to the unified log-redacter.
  */
-export function redactForLog(text: string): string {
-  return text
-    .replace(/sk-[a-zA-Z0-9_-]{20,}/g, '[REDACTED_KEY]')
-    .replace(/Bearer\s+[a-zA-Z0-9._\-+/=]{20,}/gi, 'Bearer [REDACTED]')
-    .replace(/(?:x-api-key|api-key|api_key|apikey)\s*[:=]\s*[^\s,&]+/gi, '$1=[REDACTED]')
-    .replace(/Authorization\s*[:=]\s*[^\s,&]+/gi, 'Authorization=[REDACTED]')
-}
+export const redactForLog = redactSecrets
 
 /**
  * Build a complete API request from all components.
