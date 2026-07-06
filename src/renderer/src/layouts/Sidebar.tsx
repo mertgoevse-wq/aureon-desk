@@ -68,17 +68,22 @@ export function Sidebar(): React.ReactElement {
 
   if (sidebarCollapsed) {
     return (
-      <div className="flex flex-col items-center w-12 h-full border-r border-[var(--ivory-border)] bg-[var(--ivory-surface)] py-3 gap-2">
+      <div
+        className="flex flex-col items-center w-12 h-full border-r border-[var(--ivory-border)] bg-[var(--ivory-surface)] py-3 gap-2"
+        role="navigation"
+        aria-label="Sidebar navigation"
+      >
         <button
           onClick={toggleSidebar}
-          className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors mb-2"
+          className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all duration-[var(--transition-fast)] mb-2"
+          aria-label="Expand sidebar"
         >
           <ChevronLeft size={16} className="rotate-180" />
         </button>
         <button
           onClick={handleNewChat}
-          className="p-2 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
-          title="New Chat"
+          className="p-2 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all duration-[var(--transition-fast)]"
+          aria-label="New chat"
         >
           <Plus size={18} />
         </button>
@@ -86,8 +91,8 @@ export function Sidebar(): React.ReactElement {
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
-            className="p-2 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
-            title={item.label}
+            className="p-2 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all duration-[var(--transition-fast)]"
+            aria-label={item.label}
           >
             {item.icon}
           </button>
@@ -100,6 +105,8 @@ export function Sidebar(): React.ReactElement {
     <div
       className="flex flex-col h-full border-r border-[var(--ivory-border)] bg-[var(--ivory-surface)]"
       style={{ width: sidebarWidth }}
+      role="navigation"
+      aria-label="Main sidebar"
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--ivory-border)]">
@@ -108,20 +115,23 @@ export function Sidebar(): React.ReactElement {
         </h1>
         <button
           onClick={toggleSidebar}
-          className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
+          className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all duration-[var(--transition-fast)]"
+          aria-label="Collapse sidebar"
         >
           <ChevronLeft size={16} />
         </button>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation tabs */}
       <div className="flex items-center gap-1 px-3 py-2 border-b border-[var(--ivory-border)]">
         {navItems.map((item) => (
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-[var(--radius-md)] text-xs
-              text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
+              text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]
+              transition-all duration-[var(--transition-fast)]"
+            aria-label={`Navigate to ${item.label}`}
           >
             {item.icon}
             <span className="hidden sm:inline">{item.label}</span>
@@ -136,7 +146,8 @@ export function Sidebar(): React.ReactElement {
           className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-md)]
             text-sm text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]
             hover:bg-[var(--ivory-surface-2)] border border-dashed border-[var(--ivory-border)]
-            hover:border-[var(--ivory-border-2)] transition-colors"
+            hover:border-[var(--ivory-border-2)] transition-all duration-[var(--transition-fast)]"
+          aria-label="Create new chat"
         >
           <Plus size={16} />
           New Chat
@@ -153,7 +164,9 @@ export function Sidebar(): React.ReactElement {
         <button
           onClick={() => navigate('/settings')}
           className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-md)]
-            text-sm text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
+            text-sm text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]
+            transition-all duration-[var(--transition-fast)]"
+          aria-label="Open settings"
         >
           <Settings size={16} />
           Settings

@@ -15,15 +15,15 @@ export function EmptyState({
   action
 }: EmptyStateProps): React.ReactElement {
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-      <div className="text-[var(--ivory-text-3)] mb-4">
+    <div className="flex flex-col items-center justify-center py-16 px-4 text-center animate-fade-in">
+      <div className="text-[var(--ivory-text-3)] mb-4 opacity-60">
         {icon || <MessageSquare size={40} strokeWidth={1.5} />}
       </div>
-      <h3 className="text-base font-semibold text-[var(--ivory-text)] mb-1 display-text">
+      <h3 className="text-base font-semibold text-[var(--ivory-text)] mb-1.5 display-text">
         {title}
       </h3>
       {description && (
-        <p className="text-sm text-[var(--ivory-text-3)] max-w-sm mb-4">
+        <p className="text-sm text-[var(--ivory-text-3)] max-w-sm mb-5 leading-relaxed">
           {description}
         </p>
       )}

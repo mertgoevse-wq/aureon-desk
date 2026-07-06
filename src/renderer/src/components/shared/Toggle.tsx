@@ -26,12 +26,12 @@ export function Toggle({
           className="sr-only"
         />
         <div
-          className={`w-9 h-5 rounded-full transition-colors duration-200 
+          className={`w-9 h-5 rounded-full transition-all duration-[var(--transition-normal)] 
             ${checked ? 'bg-[var(--ivory-accent)]' : 'bg-[var(--ivory-border-2)]'}
-            ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
         >
           <div
-            className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 mt-0.5
+            className={`w-3.5 h-3.5 rounded-full bg-white shadow-[var(--shadow-sm)] transition-all duration-[var(--transition-normal)] mt-[3px]
               ${checked ? 'translate-x-[18px]' : 'translate-x-[2px]'}`}
           />
         </div>

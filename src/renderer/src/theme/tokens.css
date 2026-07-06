@@ -1,5 +1,5 @@
-/* Ivory Desktop — Design Tokens */
-/* Warm ivory / Anthropic-inspired theme */
+/* Aureon Desk — Design Tokens */
+/* Warm ivory professional desktop theme */
 
 :root {
   /* === COLOR PALETTE === */
@@ -27,7 +27,8 @@
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
 
-  /* Font sizes */
+  /* Font sizes — refined scale */
+  --text-2xs: 0.625rem;  /* 10px */
   --text-xs: 0.75rem;    /* 12px */
   --text-sm: 0.8125rem;  /* 13px */
   --text-base: 0.875rem; /* 14px */
@@ -51,20 +52,36 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+  --radius-full: 9999px;
 
-  /* === SHADOWS === */
-  --shadow-sm: 0 1px 2px rgba(44, 36, 22, 0.04);
-  --shadow-md: 0 2px 8px rgba(44, 36, 22, 0.06);
-  --shadow-lg: 0 4px 16px rgba(44, 36, 22, 0.08);
+  /* === SHADOWS — refined for depth === */
+  --shadow-none: 0 0 0 0 transparent;
+  --shadow-xs: 0 1px 2px rgba(44, 36, 22, 0.03);
+  --shadow-sm: 0 1px 3px rgba(44, 36, 22, 0.05);
+  --shadow-md: 0 4px 12px rgba(44, 36, 22, 0.06);
+  --shadow-lg: 0 8px 24px rgba(44, 36, 22, 0.08);
+  --shadow-xl: 0 16px 40px rgba(44, 36, 22, 0.10);
+  --shadow-overlay: 0 4px 16px rgba(44, 36, 22, 0.12);
+
+  /* === FOCUS === */
+  --focus-ring-color: var(--ivory-accent);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
 
   /* === LAYOUT === */
   --sidebar-width: 280px;
   --inspector-width: 340px;
   --header-height: 48px;
+  --page-max-width: 960px;
+  --transition-fast: 120ms;
+  --transition-normal: 200ms;
+  --transition-slow: 300ms;
 }
 
 /* === GLOBAL RESETS === */
-* {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -84,6 +101,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  text-rendering: optimizeLegibility;
 }
 
 /* Selection */
@@ -92,7 +110,7 @@ body {
   color: var(--ivory-text);
 }
 
-/* Scrollbar styling */
+/* === SCROLLBAR STYLING === */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -104,18 +122,23 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: var(--ivory-border-2);
-  border-radius: 3px;
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--ivory-text-3);
 }
 
-/* Focus visible */
+/* === FOCUS VISIBLE — accessible keyboard focus === */
 :focus-visible {
-  outline: 2px solid var(--ivory-accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
   border-radius: var(--radius-sm);
+}
+
+/* Remove focus ring for mouse clicks */
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* === UTILITY CLASSES === */
@@ -134,7 +157,19 @@ body {
   font-size: 0.8125rem;
 }
 
-/* Animation for message appearance */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* === ANIMATIONS === */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -146,6 +181,72 @@ body {
   }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 .animate-in {
-  animation: fadeInUp 0.25s ease-out;
+  animation: fadeInUp var(--transition-normal) ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-normal) ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--transition-normal) ease-out;
+}
+
+.animate-slide-in {
+  animation: slideInRight var(--transition-normal) ease-out;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* === SKELETON LOADING === */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--ivory-surface) 25%,
+    var(--ivory-surface-2) 50%,
+    var(--ivory-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
 }

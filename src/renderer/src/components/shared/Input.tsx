@@ -31,9 +31,10 @@ export function Input({
         className={`px-3 py-2 text-sm rounded-[var(--radius-md)] bg-[var(--ivory-surface)]
           border border-[var(--ivory-border)] text-[var(--ivory-text)]
           placeholder:text-[var(--ivory-text-3)]
+          hover:border-[var(--ivory-border-2)]
           focus:outline-none focus:border-[var(--ivory-accent)] focus:ring-1 focus:ring-[var(--ivory-accent)]
-          transition-colors duration-150
-          ${error ? 'border-[var(--ivory-error)] focus:border-[var(--ivory-error)] focus:ring-[var(--ivory-error)]' : ''}
+          transition-colors duration-[var(--transition-fast)]
+          ${error ? 'border-[var(--ivory-error)] hover:border-[var(--ivory-error)] focus:border-[var(--ivory-error)] focus:ring-[var(--ivory-error)]' : ''}
           ${className}`}
         {...props}
       />
@@ -76,8 +77,9 @@ export function Textarea({
         className={`px-3 py-2 text-sm rounded-[var(--radius-md)] bg-[var(--ivory-surface)]
           border border-[var(--ivory-border)] text-[var(--ivory-text)]
           placeholder:text-[var(--ivory-text-3)]
+          hover:border-[var(--ivory-border-2)]
           focus:outline-none focus:border-[var(--ivory-accent)] focus:ring-1 focus:ring-[var(--ivory-accent)]
-          transition-colors duration-150 resize-vertical min-h-[80px]
+          transition-colors duration-[var(--transition-fast)] resize-vertical min-h-[80px]
           ${error ? 'border-[var(--ivory-error)]' : ''}
           ${className}`}
         {...props}

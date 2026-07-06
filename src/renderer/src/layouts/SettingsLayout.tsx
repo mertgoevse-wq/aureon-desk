@@ -28,7 +28,11 @@ export function SettingsLayout(): React.ReactElement {
   return (
     <div className="flex h-full bg-[var(--ivory-bg)]">
       {/* Settings nav */}
-      <div className="w-56 border-r border-[var(--ivory-border)] bg-[var(--ivory-surface)] flex flex-col">
+      <div
+        className="w-56 border-r border-[var(--ivory-border)] bg-[var(--ivory-surface)] flex flex-col"
+        role="navigation"
+        aria-label="Settings navigation"
+      >
         <div className="px-4 py-3 border-b border-[var(--ivory-border)]">
           <h2 className="text-sm font-semibold display-text text-[var(--ivory-text)] flex items-center gap-2">
             <Settings size={16} />
@@ -36,19 +40,23 @@ export function SettingsLayout(): React.ReactElement {
           </h2>
         </div>
         <div className="flex-1 py-2">
-          {navItems.map((item) => (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2.5 transition-colors
-                ${location.pathname === item.path
-                  ? 'bg-[var(--ivory-surface-2)] text-[var(--ivory-text)] font-medium'
-                  : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-            >
-              {item.icon}
-              {item.label}
-            </button>
-          ))}
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path
+            return (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                aria-current={isActive ? 'page' : undefined}
+                className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2.5 transition-all duration-[var(--transition-fast)]
+                  ${isActive
+                    ? 'bg-[var(--ivory-surface-2)] text-[var(--ivory-text)] font-medium border-r-2 border-r-[var(--ivory-accent)]'
+                    : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              >
+                {item.icon}
+                {item.label}
+              </button>
+            )
+          })}
         </div>
         <div className="p-3 border-t border-[var(--ivory-border)]">
           <Button
@@ -56,6 +64,7 @@ export function SettingsLayout(): React.ReactElement {
             size="sm"
             onClick={() => navigate('/')}
             className="w-full"
+            aria-label="Back to Chat"
           >
             ← Back to Chat
           </Button>

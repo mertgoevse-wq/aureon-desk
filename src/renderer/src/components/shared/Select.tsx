@@ -43,7 +43,7 @@ export function Select({
           className={`appearance-none w-full px-3 py-2 pr-8 text-sm rounded-[var(--radius-md)]
             bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text)]
             focus:outline-none focus:border-[var(--ivory-accent)] focus:ring-1 focus:ring-[var(--ivory-accent)]
-            transition-colors duration-150 cursor-pointer ${className}`}
+            hover:border-[var(--ivory-border-2)] transition-colors duration-[var(--transition-fast)] cursor-pointer ${className}`}
         >
           <option value="" disabled>{placeholder}</option>
           {options.map((opt) => (

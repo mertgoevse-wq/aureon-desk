@@ -1,7 +1,7 @@
 /* Google Fonts Import */
 @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-/* Display Serif */
+/* === HEADINGS — serif display === */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 600;
@@ -10,17 +10,17 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.01em;
 }
 
-h1 { font-size: var(--text-3xl); }
-h2 { font-size: var(--text-2xl); }
-h3 { font-size: var(--text-xl); }
-h4 { font-size: var(--text-lg); }
+h1 { font-size: var(--text-3xl); line-height: 1.2; }
+h2 { font-size: var(--text-2xl); line-height: 1.25; }
+h3 { font-size: var(--text-xl); line-height: 1.3; }
+h4 { font-size: var(--text-lg); line-height: 1.35; }
 
-/* Body */
+/* === BODY === */
 p, span, div, li, td, th, label, input, textarea, select, button {
   font-family: var(--font-body);
 }
 
-/* Code */
+/* === CODE === */
 code, pre, kbd {
   font-family: var(--font-mono);
 }
@@ -31,7 +31,7 @@ pre {
   border-radius: var(--radius-md);
   padding: var(--space-md);
   font-size: 0.8125rem;
-  line-height: 1.5;
+  line-height: 1.6;
   overflow-x: auto;
 }
 
@@ -48,10 +48,11 @@ pre code {
   border-radius: 0;
 }
 
-/* Prose styling for markdown in chat */
+/* === PROSE STYLING — for markdown in chat === */
 .prose {
   font-size: var(--text-base);
-  line-height: 1.7;
+  line-height: 1.75;
+  color: var(--ivory-text);
 }
 
 .prose p {
@@ -69,6 +70,7 @@ pre code {
 
 .prose em {
   font-style: italic;
+  color: var(--ivory-text-2);
 }
 
 .prose ul, .prose ol {
@@ -80,19 +82,82 @@ pre code {
   margin-bottom: 0.25em;
 }
 
+.prose li::marker {
+  color: var(--ivory-text-3);
+}
+
 .prose blockquote {
   border-left: 3px solid var(--ivory-accent);
   padding-left: var(--space-md);
   color: var(--ivory-text-2);
   margin: var(--space-md) 0;
+  font-style: italic;
 }
 
 .prose a {
   color: var(--ivory-accent);
   text-decoration: underline;
   text-underline-offset: 2px;
+  transition: color var(--transition-fast) ease;
 }
 
 .prose a:hover {
   color: var(--ivory-accent-hover);
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose h1:first-child,
+.prose h2:first-child,
+.prose h3:first-child {
+  margin-top: 0;
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--ivory-border);
+  margin: var(--space-lg) 0;
+}
+
+.prose img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-md) 0;
+}
+
+.prose th, .prose td {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--ivory-border);
+  text-align: left;
+}
+
+.prose th {
+  background: var(--ivory-surface);
+  font-weight: 600;
+}
+
+/* === KBD === */
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 5px;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  color: var(--ivory-text-2);
+  background: var(--ivory-surface);
+  border: 1px solid var(--ivory-border-2);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 0 var(--ivory-border-2);
 }
