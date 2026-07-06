@@ -12,18 +12,6 @@ import { ProjectsPage } from './pages/ProjectsPage'
 import { LogsPage } from './pages/settings/LogsPage'
 import { AppearancePage } from './pages/settings/AppearancePage'
 
-// Placeholder pages for settings sections not yet implemented
-function PlaceholderPage({ title }: { title: string }): React.ReactElement {
-  return (
-    <div className="max-w-2xl px-8 py-8">
-      <h2 className="text-xl font-semibold display-text mb-2">{title}</h2>
-      <p className="text-sm text-[var(--ivory-text-3)]">
-        This settings page will be available in a future update.
-      </p>
-    </div>
-  )
-}
-
 const router = createHashRouter([
   {
     path: '/',
@@ -40,10 +28,12 @@ const router = createHashRouter([
           { index: true, element: <ProvidersPage /> },
           { path: 'providers', element: <ProvidersPage /> },
           { path: 'prompts', element: <PromptsPage /> },
+          { path: 'system-prompts', element: <PromptsPage /> },
           { path: 'appearance', element: <AppearancePage /> },
           { path: 'projects', element: <ProjectsPage /> },
           { path: 'tools', element: <ToolsPage /> },
           { path: 'github', element: <GitHubImportsPage /> },
+          { path: 'imports', element: <GitHubImportsPage /> },
           { path: 'logs', element: <LogsPage /> }
         ]
       }

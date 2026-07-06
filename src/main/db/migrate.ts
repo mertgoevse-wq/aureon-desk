@@ -303,9 +303,9 @@ const isDirectRun = process.argv[1]?.includes('migrate.ts')
 if (isDirectRun) {
   try {
     runMigrations()
-    console.log('✅ Migrations applied successfully')
+    logger.info('Migrations applied successfully')
   } catch (err) {
-    console.error('❌ Migration failed:', err)
+    logger.error('Migration failed', err)
     process.exit(1)
   }
 }

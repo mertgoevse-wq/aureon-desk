@@ -74,7 +74,7 @@ export function AppShell(): React.ReactElement {
       label: 'GitHub Imports',
       description: 'Import repositories and conversations',
       icon: <Github size={14} />,
-      onSelect: () => navigate('/settings/imports')
+      onSelect: () => navigate('/settings/github')
     },
     {
       id: 'logs',

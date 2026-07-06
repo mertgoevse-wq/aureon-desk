@@ -91,9 +91,9 @@ export async function seed(): Promise<void> {
 const isDirectRun = process.argv[1]?.includes('seed.ts')
 if (isDirectRun) {
   seed().then(() => {
-    console.log('✅ Database seeded successfully')
+    logger.info('Database seeded successfully')
   }).catch((err) => {
-    console.error('❌ Seed failed:', err)
+    logger.error('Seed failed', err)
     process.exit(1)
   })
 }

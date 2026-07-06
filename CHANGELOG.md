@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.1] - 2026-07-06
+
+### Fixed — Stabilization Pass
+- **console.log → logger**: `migrate.ts` and `seed.ts` direct-run paths now use `logger.info/error` instead of `console.log/error`
+- **Missing routes**: Added `/settings/system-prompts` and `/settings/imports` route aliases in App.tsx (CommandPalette now resolves correctly)
+- **Dead code removal**: Removed unused `PlaceholderPage` component from App.tsx
+- **APP_NAME constant**: Fixed from `'Ivory'` to `'Aureon Desk'` in shared constants
+- **CommandPalette path**: Fixed GitHub Imports entry from `/settings/imports` → `/settings/github`
+
+### Added — Documentation
+- **MVP_TEST_PLAN.md**: 59-step manual click-test checklist covering startup, chat, providers, profiles, library, imports, tools, projects, logs, persistence, security, and packaging
+- **SECURITY_NOTES.md**: Comprehensive security documentation covering credential storage (DPAPI), 9-tier secret redaction, import safety, file access, IPC security, packaging safety, and known limitations
+- **ROADMAP.md**: Feature roadmap from v0.9.0 through v1.0.0 with current status and future priorities
+
 ## [0.9.0] - 2026-07-06
 
 ### Added — Windows Packaging & Installer
