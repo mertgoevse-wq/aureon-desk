@@ -82,6 +82,15 @@ export function MessageInput({
     textareaRef.current?.focus()
   }, [])
 
+  // Listen for global focus-composer event (Ctrl+L shortcut)
+  useEffect(() => {
+    const handler = () => {
+      textareaRef.current?.focus()
+    }
+    window.addEventListener('focus-composer', handler)
+    return () => window.removeEventListener('focus-composer', handler)
+  }, [])
+
   const handleSend = useCallback(() => {
     const trimmed = value.trim()
     if (!trimmed || disabled) return

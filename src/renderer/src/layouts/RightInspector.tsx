@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   PanelRightClose, PanelRightOpen, Brain, Target, Shield,
   Users, Wrench, AlertTriangle, Info, Zap, ChevronRight, FolderOpen, BookOpen
@@ -10,13 +10,41 @@ import { Badge } from '../components/shared/Badge'
 import type { ProjectRow } from '@shared/types/project'
 
 export function RightInspector(): React.ReactElement {
-  const { inspectorOpen, toggleInspector, inspectorWidth } = useUIStore()
+  const { inspectorOpen, toggleInspector, inspectorWidth, setInspectorWidth } = useUIStore()
   const { currentAnalysis, isLoading, error } = useRoutingStore()
   const { activeProject } = useProjectStore()
+  const resizeRef = useRef<{ startX: number; startWidth: number } | null>(null)
+
+  // Drag resize handler
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!resizeRef.current) return
+      const delta = resizeRef.current.startX - e.clientX
+      setInspectorWidth(resizeRef.current.startWidth + delta)
+    }
+    const handleMouseUp = () => {
+      resizeRef.current = null
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [setInspectorWidth])
+
+  const handleResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    resizeRef.current = { startX: e.clientX, startWidth: inspectorWidth }
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+  }
 
   if (!inspectorOpen) {
     return (
-      <div className="flex flex-col items-center w-10 h-full border-l border-[var(--ivory-border)] bg-[var(--ivory-surface)] py-3">
+      <div className="flex flex-col items-center w-10 h-full border-l border-[var(--ivory-border)] bg-[var(--ivory-surface)] py-3 shrink-0">
         <button
           onClick={toggleInspector}
           className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
@@ -29,55 +57,63 @@ export function RightInspector(): React.ReactElement {
   }
 
   return (
-    <div
-      className="flex flex-col h-full border-l border-[var(--ivory-border)] bg-[var(--ivory-surface)]"
-      style={{ width: inspectorWidth }}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--ivory-border)]">
-        <div className="flex items-center gap-1.5">
-          <Brain size={14} className="text-[var(--ivory-accent)]" />
-          <h2 className="text-sm font-semibold display-text text-[var(--ivory-text)]">
-            Router
-          </h2>
-        </div>
-        <button
-          onClick={toggleInspector}
-          className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
-        >
-          <PanelRightClose size={16} />
-        </button>
-      </div>
+    <div className="flex h-full shrink-0 relative">
+      {/* Drag resize handle (left edge) */}
+      <div
+        className="absolute top-0 left-0 w-1 h-full cursor-col-resize hover:bg-[var(--ivory-accent)]/30 transition-colors z-10"
+        onMouseDown={handleResizeStart}
+      />
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <p className="text-xs text-[var(--ivory-text-3)] animate-pulse">Analyzing prompt...</p>
+      <div
+        className="flex flex-col h-full border-l border-[var(--ivory-border)] bg-[var(--ivory-surface)]"
+        style={{ width: inspectorWidth }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--ivory-border)]">
+          <div className="flex items-center gap-1.5">
+            <Brain size={14} className="text-[var(--ivory-accent)]" />
+            <h2 className="text-sm font-semibold display-text text-[var(--ivory-text)]">
+              Router
+            </h2>
           </div>
-        ) : error ? (
-          <div className="p-3">
-            <div className="p-3 rounded-[var(--radius-md)] bg-[var(--ivory-error-bg)] border border-[var(--ivory-error-bg)]">
-              <p className="text-xs text-[var(--ivory-error)]">{error}</p>
+          <button
+            onClick={toggleInspector}
+            className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
+          >
+            <PanelRightClose size={16} />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <p className="text-xs text-[var(--ivory-text-3)] animate-pulse">Analyzing prompt...</p>
             </div>
-          </div>
-        ) : !currentAnalysis ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-            <Brain size={28} className="text-[var(--ivory-text-3)] mb-3" strokeWidth={1.5} />
-            <p className="text-sm text-[var(--ivory-text-2)] font-medium mb-1">
-              Prompt Intelligence
-            </p>
-            <p className="text-xs text-[var(--ivory-text-3)] max-w-[200px]">
-              Send a message to see intent classification, agent routing, skill matching, and risk analysis.
-            </p>
-            <ProjectContextSection project={activeProject} />
-          </div>
-        ) : (
-          <div>
-            <AnalysisView analysis={currentAnalysis} />
-            <ProjectContextSection project={activeProject} />
-          </div>
-        )}
+          ) : error ? (
+            <div className="p-3">
+              <div className="p-3 rounded-[var(--radius-md)] bg-[var(--ivory-error-bg)] border border-[var(--ivory-error-bg)]">
+                <p className="text-xs text-[var(--ivory-error)]">{error}</p>
+              </div>
+            </div>
+          ) : !currentAnalysis ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center px-4">
+              <Brain size={28} className="text-[var(--ivory-text-3)] mb-3" strokeWidth={1.5} />
+              <p className="text-sm text-[var(--ivory-text-2)] font-medium mb-1">
+                Prompt Intelligence
+              </p>
+              <p className="text-xs text-[var(--ivory-text-3)] max-w-[200px]">
+                Send a message to see intent classification, agent routing, skill matching, and risk analysis.
+              </p>
+              <ProjectContextSection project={activeProject} />
+            </div>
+          ) : (
+            <div>
+              <AnalysisView analysis={currentAnalysis} />
+              <ProjectContextSection project={activeProject} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -162,7 +198,6 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
 
   return (
     <div className="p-3 space-y-4 text-xs">
-      {/* Intent */}
       <Section icon={<Target size={12} />} title="Intent" collapsible>
         <div className="flex items-center gap-2">
           <span className={`font-semibold text-sm ${intentColors[pa.intent] || ''}`}>
@@ -181,7 +216,6 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
         )}
       </Section>
 
-      {/* Primary Agent */}
       <Section icon={<Users size={12} />} title="Primary Agent">
         <div className="flex items-center gap-1.5">
           <span className="font-medium text-[var(--ivory-text)]">{routing.primaryAgent.name}</span>
@@ -194,7 +228,6 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
         </p>
       </Section>
 
-      {/* Supporting Agents */}
       {routing.supportingAgents.length > 0 && (
         <Section icon={<Users size={12} />} title="Supporting Agents">
           {routing.supportingAgents.map(agent => (
@@ -206,7 +239,6 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
         </Section>
       )}
 
-      {/* Risk Level */}
       <Section icon={<Shield size={12} />} title="Risk Assessment">
         <span className={`px-2 py-0.5 rounded-[var(--radius-sm)] text-[10px] font-medium ${riskColors[pa.riskLevel] || ''}`}>
           {pa.riskLevel.toUpperCase()}
@@ -223,7 +255,6 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
         )}
       </Section>
 
-      {/* Skills */}
       {routing.selectedSkills.length > 0 && (
         <Section icon={<Zap size={12} />} title="Selected Skills">
           <div className="flex flex-wrap gap-1">
@@ -234,7 +265,6 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
         </Section>
       )}
 
-      {/* Suggested Tools */}
       {routing.suggestedTools && routing.suggestedTools.length > 0 && (
         <Section icon={<Wrench size={12} />} title="Suggested Tools">
           <div className="space-y-1">
@@ -251,7 +281,6 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
         </Section>
       )}
 
-      {/* Permissions */}
       {pa.requiredPermissions.length > 0 && (
         <Section icon={<Shield size={12} />} title="Required Permissions">
           <div className="flex flex-wrap gap-1">
@@ -268,7 +297,6 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
         </Section>
       )}
 
-      {/* Subagent Plan */}
       {routing.subagentPlan && (
         <Section icon={<Wrench size={12} />} title="Execution Plan">
           <p className="text-[10px] text-[var(--ivory-text-3)] mb-2">
@@ -293,7 +321,6 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
         </Section>
       )}
 
-      {/* Confirmation needed */}
       {routing.requiresConfirmation && (
         <div className="p-2 rounded-[var(--radius-sm)] bg-red-50 border border-red-200">
           <div className="flex items-center gap-1.5 text-xs font-medium text-red-700">
@@ -306,7 +333,6 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
         </div>
       )}
 
-      {/* Keywords */}
       {pa.detectedKeywords.length > 0 && (
         <Section icon={<Target size={12} />} title="Detected Keywords">
           <div className="flex flex-wrap gap-1">
