@@ -7,6 +7,8 @@ import { Button } from '../../components/shared/Button'
 import { Input } from '../../components/shared/Input'
 import { Toggle } from '../../components/shared/Toggle'
 import { Badge } from '../../components/shared/Badge'
+import { Card } from '../../components/shared/Card'
+import { showToast } from '../../components/shared/Toast'
 import { useIpc } from '../../hooks/useIpc'
 import { useProviderStore } from '../../stores/providerStore'
 import type { ProviderAdapterInfo, ProviderCapability } from '@shared/types/provider'
@@ -56,14 +58,18 @@ export function ProvidersPage(): React.ReactElement {
       setKeyStatus(prev => ({ ...prev, [providerId]: true }))
       setEditingKey(prev => { const n = { ...prev }; delete n[providerId]; return n })
       setShowKey(prev => ({ ...prev, [providerId]: false }))
+      showToast('success', 'API key saved successfully')
     } catch (err) { console.error(err) }
     finally { setSavingKey(null) }
   }, [editingKey, api])
 
   const handleDeleteKey = useCallback(async (providerId: string) => {
     setSavingKey(providerId)
-    try { await api.providerDeleteApiKey(providerId); setKeyStatus(prev => ({ ...prev, [providerId]: false })) }
-    catch (err) { console.error(err) }
+    try {
+      await api.providerDeleteApiKey(providerId)
+      setKeyStatus(prev => ({ ...prev, [providerId]: false }))
+      showToast('info', 'API key removed')
+    } catch (err) { console.error(err) }
     finally { setSavingKey(null) }
   }, [api])
 
@@ -82,13 +88,17 @@ export function ProvidersPage(): React.ReactElement {
     try {
       const result = await api.providerTestConnection(providerId)
       setTestResults(prev => ({ ...prev, [providerId]: result }))
-    } catch (err) { setTestResults(prev => ({ ...prev, [providerId]: { success: false, message: String(err) } })) }
+      showToast(result.success ? 'success' : 'error', result.success ? 'Connection successful' : 'Connection failed')
+    } catch (err) {
+      setTestResults(prev => ({ ...prev, [providerId]: { success: false, message: String(err) } }))
+    }
     finally { setTestingId(null) }
   }, [api])
 
   const handleDeleteProvider = useCallback(async (providerId: string) => {
     if (!confirm('Delete this provider and all its models?')) return
     await api.providerDelete(providerId)
+    showToast('info', 'Provider deleted')
     loadData()
   }, [api, loadData])
 
@@ -108,6 +118,7 @@ export function ProvidersPage(): React.ReactElement {
       })
       setShowCustomForm(false)
       setCustomForm({ name: '', slug: '', baseUrl: '', apiKey: '' })
+      showToast('success', 'Custom provider created')
       loadData()
     } catch (err) { setCustomError(String(err)) }
   }, [customForm, api, loadData])
@@ -141,7 +152,7 @@ export function ProvidersPage(): React.ReactElement {
             <Input label="Display Name" placeholder="My Provider" value={customForm.name}
               onChange={e => setCustomForm(f => ({ ...f, name: e.target.value }))} />
             <Input label="Slug (no spaces)" placeholder="my-provider" value={customForm.slug}
-              onChange={e => setCustomForm(f => ({ ...f, slug: e.target.value.replace(/\s+/g, '-').toLowerCase() }))} />
+              onChange={e => setCustomForm(f => ({ ...f, slug: e.target.value.replace(/\\s+/g, '-').toLowerCase() }))} />
             <Input label="Base URL" placeholder="http://localhost:8000/v1" value={customForm.baseUrl}
               onChange={e => setCustomForm(f => ({ ...f, baseUrl: e.target.value }))} />
             <Input label="API Key (optional)" type="password" placeholder="sk-..." value={customForm.apiKey}
@@ -152,143 +163,145 @@ export function ProvidersPage(): React.ReactElement {
         </div>
       )}
 
-      {adapters.map((adapter: ProviderAdapterInfo) => {
-        const provider = providers.find(p => p.slug === adapter.slug)
-        const hasKey = provider ? keyStatus[provider.id] : false
-        const editing = provider ? editingKey[provider.id] : undefined
-        const showing = provider ? showKey[provider.id] : false
-        const saving = provider ? savingKey === provider.id : false
-        const testResult = provider ? testResults[provider.id] : null
-        const isTesting = provider ? testingId === provider.id : false
+      <div className="space-y-4">
+        {adapters.map((adapter: ProviderAdapterInfo) => {
+          const provider = providers.find(p => p.slug === adapter.slug)
+          const hasKey = provider ? keyStatus[provider.id] : false
+          const editing = provider ? editingKey[provider.id] : undefined
+          const showing = provider ? showKey[provider.id] : false
+          const saving = provider ? savingKey === provider.id : false
+          const testResult = provider ? testResults[provider.id] : null
+          const isTesting = provider ? testingId === provider.id : false
 
-        return (
-          <div key={adapter.slug} className="mb-6 p-5 rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-bg)]">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h3 className="text-base font-semibold display-text">{adapter.name}</h3>
-                <p className="text-xs text-[var(--ivory-text-3)] mt-0.5">{adapter.description}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                {provider && (
-                  <>
-                    <Button variant="ghost" size="sm" onClick={() => handleTestConnection(provider.id)} disabled={isTesting}>
-                      <Wifi size={14} className={isTesting ? 'animate-pulse' : ''} />
-                      {isTesting ? 'Testing...' : 'Test'}
-                    </Button>
-                    <Toggle
-                      checked={provider.is_enabled === 1}
-                      onChange={(enabled) => handleToggleProvider(provider.id, enabled)}
-                    />
-                    <button onClick={() => handleDeleteProvider(provider.id)} className="p-1 text-[var(--ivory-text-3)] hover:text-red-600" title="Delete provider">
-                      <Trash2 size={14} />
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Capabilities */}
-            <div className="flex flex-wrap gap-1 mb-3">
-              {adapter.capabilities.map(cap => (
-                <Badge key={cap} variant={cap === 'local' ? 'success' : 'default'} size="sm">
-                  <span className="flex items-center gap-0.5">
-                    {CAPABILITY_LABELS[cap]?.icon} {CAPABILITY_LABELS[cap]?.label || cap}
-                  </span>
-                </Badge>
-              ))}
-              <Badge variant={adapter.authType === 'none' ? 'success' : 'warning'} size="sm">
-                {adapter.authType === 'none' ? 'No key needed' : 'API key'}
-              </Badge>
-            </div>
-
-            {/* Test result */}
-            {testResult && (
-              <div className={`mb-3 p-2 rounded-[var(--radius-sm)] text-xs ${testResult.success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-                {testResult.success ? <Check size={12} className="inline mr-1" /> : <AlertTriangle size={12} className="inline mr-1" />}
-                {testResult.message}
-              </div>
-            )}
-
-            {/* API Key */}
-            {adapter.authType !== 'none' && (
-              <div className="mb-3">
-                <label className="text-sm font-medium text-[var(--ivory-text)] block mb-1.5">API Key</label>
-                {hasKey ? (
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)] rounded-[var(--radius-md)] px-3 py-2 text-sm text-[var(--ivory-success)] font-mono">
-                      ●●●●●●●● Key configured
-                    </div>
-                    <Button variant="ghost" size="sm" onClick={() => provider && setEditingKey(prev => ({ ...prev, [provider.id]: '' }))}>Change</Button>
-                    <Button variant="ghost" size="sm" onClick={() => provider && handleDeleteKey(provider.id)} disabled={saving}>
-                      <Trash2 size={14} />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex gap-2">
-                    <div className="flex-1 relative">
-                      <Input
-                        value={editing || ''}
-                        onChange={(e) => provider && setEditingKey(prev => ({ ...prev, [provider.id]: e.target.value }))}
-                        placeholder={`Enter your ${adapter.name} API key`}
-                        type={showing ? 'text' : 'password'}
+          return (
+            <Card key={adapter.slug}>
+              {/* Header */}
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h3 className="text-base font-semibold display-text">{adapter.name}</h3>
+                  <p className="text-xs text-[var(--ivory-text-3)] mt-0.5">{adapter.description}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {provider && (
+                    <>
+                      <Button variant="ghost" size="sm" onClick={() => handleTestConnection(provider.id)} disabled={isTesting}>
+                        <Wifi size={14} className={isTesting ? 'animate-pulse' : ''} />
+                        {isTesting ? 'Testing...' : 'Test'}
+                      </Button>
+                      <Toggle
+                        checked={provider.is_enabled === 1}
+                        onChange={(enabled) => handleToggleProvider(provider.id, enabled)}
                       />
-                      <button onClick={() => provider && setShowKey(prev => ({ ...prev, [provider.id]: !showing }))}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]">
-                        {showing ? <EyeOff size={14} /> : <Eye size={14} />}
+                      <button onClick={() => handleDeleteProvider(provider.id)} className="p-1 text-[var(--ivory-text-3)] hover:text-red-600" title="Delete provider">
+                        <Trash2 size={14} />
                       </button>
-                    </div>
-                    <Button size="sm" onClick={() => provider && handleSaveKey(provider.id)} disabled={!editing || saving}>
-                      {saving ? 'Saving...' : 'Save'}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Base URL */}
-            <div className="mb-3">
-              <Input label="Base URL" value={provider?.base_url || adapter.defaultBaseUrl}
-                onChange={(e) => provider && handleSetBaseUrl(provider.id, e.target.value)}
-                placeholder={adapter.defaultBaseUrl} />
-            </div>
-
-            {/* Models */}
-            {provider && (provider as any).models && (provider as any).models.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-[var(--ivory-border)]">
-                <p className="text-xs font-medium text-[var(--ivory-text-2)] mb-2">Models</p>
-                <div className="space-y-1">
-                  {(provider as any).models.map((model: any) => (
-                    <div key={model.id} className="flex items-center justify-between py-1.5 px-2 rounded-[var(--radius-sm)] hover:bg-[var(--ivory-surface)] text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[var(--ivory-text)]">{model.display_name}</span>
-                        <span className="text-[var(--ivory-text-3)] text-[10px]">({model.name})</span>
-                        {model.context_window && (
-                          <span className="text-[10px] text-[var(--ivory-text-3)]">{model.context_window.toLocaleString()} ctx</span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Toggle
-                          checked={model.is_enabled === 1}
-                          onChange={(enabled) => api.modelToggleEnabled(model.id, enabled).then(loadData)}
-                        />
-                        {model.is_default ? (
-                          <Star size={12} className="text-amber-500 fill-current" />
-                        ) : (
-                          <button onClick={() => handleSetDefaultModel(provider.id, model.id)}
-                            className="text-[var(--ivory-text-3)] hover:text-amber-500" title="Set as default">
-                            <Star size={12} />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    </>
+                  )}
                 </div>
               </div>
-            )}
-          </div>
-        )
-      })}
+
+              {/* Capabilities */}
+              <div className="flex flex-wrap gap-1 mb-3">
+                {adapter.capabilities.map(cap => (
+                  <Badge key={cap} variant={cap === 'local' ? 'success' : 'default'} size="sm">
+                    <span className="flex items-center gap-0.5">
+                      {CAPABILITY_LABELS[cap]?.icon} {CAPABILITY_LABELS[cap]?.label || cap}
+                    </span>
+                  </Badge>
+                ))}
+                <Badge variant={adapter.authType === 'none' ? 'success' : 'warning'} size="sm">
+                  {adapter.authType === 'none' ? 'No key needed' : 'API key'}
+                </Badge>
+              </div>
+
+              {/* Test result */}
+              {testResult && (
+                <div className={`mb-3 p-2 rounded-[var(--radius-sm)] text-xs ${testResult.success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                  {testResult.success ? <Check size={12} className="inline mr-1" /> : <AlertTriangle size={12} className="inline mr-1" />}
+                  {testResult.message}
+                </div>
+              )}
+
+              {/* API Key */}
+              {adapter.authType !== 'none' && (
+                <div className="mb-3">
+                  <label className="text-sm font-medium text-[var(--ivory-text)] block mb-1.5">API Key</label>
+                  {hasKey ? (
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)] rounded-[var(--radius-md)] px-3 py-2 text-sm text-[var(--ivory-success)] font-mono">
+                        ●●●●●●●● Key configured
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => provider && setEditingKey(prev => ({ ...prev, [provider.id]: '' }))}>Change</Button>
+                      <Button variant="ghost" size="sm" onClick={() => provider && handleDeleteKey(provider.id)} disabled={saving}>
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <div className="flex-1 relative">
+                        <Input
+                          value={editing || ''}
+                          onChange={(e) => provider && setEditingKey(prev => ({ ...prev, [provider.id]: e.target.value }))}
+                          placeholder={`Enter your ${adapter.name} API key`}
+                          type={showing ? 'text' : 'password'}
+                        />
+                        <button onClick={() => provider && setShowKey(prev => ({ ...prev, [provider.id]: !showing }))}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]">
+                          {showing ? <EyeOff size={14} /> : <Eye size={14} />}
+                        </button>
+                      </div>
+                      <Button size="sm" onClick={() => provider && handleSaveKey(provider.id)} disabled={!editing || saving}>
+                        {saving ? 'Saving...' : 'Save'}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Base URL */}
+              <div className="mb-3">
+                <Input label="Base URL" value={provider?.base_url || adapter.defaultBaseUrl}
+                  onChange={(e) => provider && handleSetBaseUrl(provider.id, e.target.value)}
+                  placeholder={adapter.defaultBaseUrl} />
+              </div>
+
+              {/* Models */}
+              {provider && (provider as any).models && (provider as any).models.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-[var(--ivory-border)]">
+                  <p className="text-xs font-medium text-[var(--ivory-text-2)] mb-2">Models</p>
+                  <div className="space-y-1">
+                    {(provider as any).models.map((model: any) => (
+                      <div key={model.id} className="flex items-center justify-between py-1.5 px-2 rounded-[var(--radius-sm)] hover:bg-[var(--ivory-surface)] text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[var(--ivory-text)]">{model.display_name}</span>
+                          <span className="text-[var(--ivory-text-3)] text-[10px]">({model.name})</span>
+                          {model.context_window && (
+                            <span className="text-[10px] text-[var(--ivory-text-3)]">{model.context_window.toLocaleString()} ctx</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Toggle
+                            checked={model.is_enabled === 1}
+                            onChange={(enabled) => api.modelToggleEnabled(model.id, enabled).then(loadData)}
+                          />
+                          {model.is_default ? (
+                            <Star size={12} className="text-amber-500 fill-current" />
+                          ) : (
+                            <button onClick={() => handleSetDefaultModel(provider.id, model.id)}
+                              className="text-[var(--ivory-text-3)] hover:text-amber-500" title="Set as default">
+                              <Star size={12} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </Card>
+          )
+        })}
+      </div>
     </div>
   )
 }

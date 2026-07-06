@@ -6,6 +6,8 @@ import { Modal } from '../../components/shared/Modal'
 import { EmptyState } from '../../components/shared/EmptyState'
 import { Toggle } from '../../components/shared/Toggle'
 import { Badge } from '../../components/shared/Badge'
+import { Card } from '../../components/shared/Card'
+import { Tabs } from '../../components/shared/Tabs'
 import { TagInput } from '../../components/prompts/TagInput'
 import { useIpc } from '../../hooks/useIpc'
 import { usePromptStore } from '../../stores/promptStore'
@@ -124,14 +126,14 @@ export function PromptsPage(): React.ReactElement {
 
         {/* Tabs + Search */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="flex rounded-[var(--radius-md)] bg-[var(--ivory-surface)] p-0.5">
-            {(['active', 'archived'] as TabMode[]).map(t => (
-              <button key={t} onClick={() => setTab(t)}
-                className={`px-3 py-1 text-xs rounded-[var(--radius-sm)] font-medium transition-colors
-                  ${tab === t ? 'bg-[var(--ivory-bg)] text-[var(--ivory-text)] shadow-sm' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]'}`}
-              >{t === 'active' ? 'Active' : 'Archived'}</button>
-            ))}
-          </div>
+          <Tabs
+            tabs={[
+              { id: 'active', label: 'Active', count: prompts.filter(p => !p.is_archived).length },
+              { id: 'archived', label: 'Archived', count: prompts.filter(p => p.is_archived).length }
+            ]}
+            activeTab={tab}
+            onChange={(id) => setTab(id as TabMode)}
+          />
           <div className="relative flex-1">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--ivory-text-3)]" />
             <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
@@ -144,9 +146,9 @@ export function PromptsPage(): React.ReactElement {
             description={searchQuery ? 'Try adjusting your search.' : 'Create your first system prompt profile to define how the AI responds.'}
             action={!searchQuery && tab === 'active' ? <Button variant="secondary" size="sm" onClick={() => setIsCreateOpen(true)}><Plus size={14} /> Create Profile</Button> : undefined} />
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {displayedPrompts.map(prompt => (
-              <div key={prompt.id} className="p-4 rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-bg)]">
+              <Card key={prompt.id}>
                 {editingId === prompt.id ? (
                   <div className="space-y-3">
                     <Input value={editedPrompt?.name || ''} onChange={e => setEditedPrompt(prev => prev ? { ...prev, name: e.target.value } : prev)} placeholder="Profile name" />
@@ -196,7 +198,7 @@ export function PromptsPage(): React.ReactElement {
                     </div>
                   </div>
                 )}
-              </div>
+              </Card>
             ))}
           </div>
         )}

@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.9.0] - 2026-07-06
+
+### Added — Component Integration & Polish
+- **CommandPalette**: Ctrl+K / Cmd+K global shortcut to open a searchable command palette with 10 navigation items (Chats, Prompts, Projects, Tools, Profiles, Providers, Imports, Logs, Appearance, Settings) with icons and keyboard navigation (ArrowUp/Down/Enter/Escape)
+- **Tabs component** integrated into PromptsPage: Active/Archived tabswitcher with live count badges replacing inline tab buttons
+- **Card component** integrated into PromptsPage and ProvidersPage: Consistent card wrapping with proper hover/clickable styling
+- **Toast notifications** wired into ProvidersPage: 5 toast calls for API key saved, key removed, connection test result, provider deleted, custom provider created — auto-dismiss with type-colored styling
+- **Toast integration**: `showToast(type, message)` with 4 types (success, error, warning, info) and slide-in animation
+
+### Changed
+- `AppShell.tsx`: CommandPalette component with Ctrl+K listener, ToastContainer already present
+- `PromptsPage.tsx`: Inline tab buttons replaced with `<Tabs>`, prompt item divs replaced with `<Card>`
+- `ProvidersPage.tsx`: Provider card divs replaced with `<Card>` in a `space-y-4` container, 5 Toast calls added
+- `CommandPalette.tsx`: `CommandItem` interface now exported for external use
+
+### Fixed
+- Dead imports removed from AppShell (`useLocation`, `Shield` icon)
+- Toast calls corrected to match `showToast(type, message)` signature
+
 ## [0.8.0] - 2026-07-06
 
 ### Added — Logs, Debug Panel & Audit Trail
