@@ -6,23 +6,23 @@
 
 :root {
   /* === COLOR PALETTE === */
-  --color-bg: #FAF8F5;
-  --color-surface: #F5F1EB;
-  --color-surface-hover: #EDE7DD;
-  --color-surface-active: #E5DED3;
-  --color-elevated: #FDFBF9;
-  --color-elevated-hover: #F8F4EE;
-  --color-border: #E0D8CC;
-  --color-border-hover: #D4CBB9;
-  --color-border-strong: #C8BDA8;
-  --color-text: #2C2416;
-  --color-text-secondary: #6B5E4A;
-  --color-text-muted: #9B8D7A;
+  --color-bg: #FAF7F2;          /* Main work area background */
+  --color-surface: #F3EFE6;     /* Left nav and sidebar rail background */
+  --color-surface-hover: #EBE5D8;
+  --color-surface-active: #DFD7C6;
+  --color-elevated: #FFFFFF;    /* Cards, chat bubbles, input composer */
+  --color-elevated-hover: #FAF7F2;
+  --color-border: #E4DEC9;      /* Delicate warm borders */
+  --color-border-hover: #D5CCA8;
+  --color-border-strong: #C4B993;
+  --color-text: #221A0F;        /* Deep brown-charcoal */
+  --color-text-secondary: #5D5241;
+  --color-text-muted: #8E8371;
   --color-accent: #C75B39;
   --color-accent-hover: #B04D2E;
   --color-accent-light: #FDF0EB;
   --color-accent-2: #8B5E3C;
-  --color-active-bg: #EDE4D8;
+  --color-active-bg: #EAE2D1;
   --color-success: #5C8A5E;
   --color-success-bg: #ECF4EC;
   --color-warning: #C2953E;

@@ -362,16 +362,16 @@ export function MessageInput({
               <button
                 type="button"
                 onClick={openPromptMenu}
-                className="inline-flex items-center gap-1.5 h-7 px-2 rounded-full text-[11px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)] transition-colors"
+                className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors cursor-pointer"
                 title="Open commands and prompt library"
               >
-                <BookOpen size={13} />
+                <BookOpen size={13} className="text-[var(--ivory-accent)]" />
                 Prompts
               </button>
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              <span className="hidden sm:inline text-[10px] text-[var(--ivory-text-3)]">
+              <span className="hidden sm:inline text-[10px] text-[var(--ivory-text-3)] font-medium">
                 Enter to send · Shift+Enter for line break
               </span>
               <button
@@ -379,7 +379,7 @@ export function MessageInput({
                 disabled={disabled || !value.trim()}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-all shrink-0
                   bg-[var(--ivory-accent)] text-white shadow-[var(--shadow-sm)] hover:bg-[var(--ivory-accent-hover)] hover:shadow-[var(--shadow-md)]
-                  disabled:bg-[var(--ivory-surface-3)] disabled:text-[var(--ivory-text-3)] disabled:shadow-none"
+                  disabled:bg-[var(--ivory-surface-3)] disabled:text-[var(--ivory-text-3)] disabled:shadow-none cursor-pointer"
                 title="Send message (Enter)"
                 aria-label="Send message"
                 data-testid="send-button"

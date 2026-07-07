@@ -186,23 +186,23 @@ export function ProvidersPage(): React.ReactElement {
   }, [customForm, api, loadData])
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Providers &amp; API Keys</h2>
-          <p className="text-sm text-[var(--ivory-text-3)] mt-1">
+          <h2 className="text-xl font-semibold text-[var(--ivory-text)]">Providers &amp; API Keys</h2>
+          <p className="text-xs text-[var(--ivory-text-3)] mt-1">
             Manage your AI provider connections. Keys are encrypted with your OS credentials (DPAPI on Windows). Never stored in plaintext.
           </p>
         </div>
-        <Button size="sm" onClick={() => setShowCustomForm(true)}>
+        <Button size="sm" onClick={() => setShowCustomForm(true)} className="cursor-pointer">
           <Plus size={14} /> Add Custom
         </Button>
       </div>
 
       {/* Safety notice */}
-      <div className="mb-5 p-3 rounded-[var(--radius-md)] bg-[var(--ivory-warning-bg)] border border-[var(--ivory-warning)]/20 text-xs text-[var(--ivory-warning)] flex items-start gap-2">
+      <div className="p-3.5 rounded-xl bg-[var(--ivory-warning-bg)] border border-[var(--ivory-warning)]/15 text-xs text-[var(--ivory-warning)] flex items-start gap-2.5">
         <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-        <span>Sending messages to remote providers transmits your chat content to external servers. Local files referenced in prompts will also be sent.</span>
+        <span className="leading-relaxed">Sending messages to remote providers transmits your chat content to external servers. Local files referenced in prompts will also be sent.</span>
       </div>
 
       <Card className="mb-5">

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.21] - 2026-07-07
+
+### Changed - Premium Layout Refactor
+- **Visual Design Tokens Contrast**: Tweaked background, surface, and elevated color variables in `tokens.css` to build a beautiful, three-layered layout hierarchy (darker sand sidebar rail -> warm ivory content background -> pure crisp white card bubbles/composers/settings panels).
+- **Expanded Sidebar Rail Layout**: Modernized logo header spacing, redesigned navigation lists with rounded-xl active/hover states, premium unified-height buttons, and polished "New Chat" and "Settings" actions.
+- **Header Selector Dropdowns**: Refactored Model Selector and System Prompts selector dropdown panels to use consistent `--ivory-elevated` background, smooth drop-shadows, matching border-radii (`rounded-[18px]`), and modern inset selection lists.
+- **Workspace Navigation & Panels**: Constrained Settings outlet layout to `max-w-4xl` and wrapped sub-navigation list items with inset hover/active card visual states.
+- **Right Inspector Panel Details**: Polished prompt analyzer Router widgets to render collapsible indicators, rotating chevron icon states, and integrated project context indicators.
+
 ## [0.9.20] - 2026-07-07
 
 ### Added

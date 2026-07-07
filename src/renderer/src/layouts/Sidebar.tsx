@@ -155,23 +155,25 @@ export function Sidebar(): React.ReactElement {
         data-testid="sidebar"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--ivory-border)]">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--ivory-border)] bg-[var(--ivory-surface)]">
           <div className="flex items-center gap-3 select-none">
             {/* Aureon mark */}
-            <svg width="26" height="26" viewBox="0 0 64 64" fill="none" className="shrink-0">
-              <circle cx="32" cy="32" r="30" fill="var(--color-accent-light)" stroke="var(--color-accent)" strokeWidth="1.5" opacity="0.9" />
-              <path d="M18 44L26 20H29L21 44H18Z" fill="var(--color-accent)" />
-              <path d="M46 44L38 20H35L43 44H46Z" fill="var(--color-accent)" />
-              <rect x="23" y="34" width="18" height="3.5" rx="1" fill="var(--color-accent)" />
-              <circle cx="32" cy="40" r="1.5" fill="#E8A45C" opacity="0.8" />
-            </svg>
-            <h1 className="text-lg font-semibold tracking-tight display-text">
+            <div className="w-8 h-8 rounded-xl bg-[var(--ivory-accent-light)] flex items-center justify-center shadow-[var(--shadow-xs)] ring-1 ring-[var(--ivory-accent)]/15 shrink-0">
+              <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="30" fill="var(--color-accent-light)" stroke="var(--color-accent)" strokeWidth="1.5" opacity="0.9" />
+                <path d="M18 44L26 20H29L21 44H18Z" fill="var(--color-accent)" />
+                <path d="M46 44L38 20H35L43 44H46Z" fill="var(--color-accent)" />
+                <rect x="23" y="34" width="18" height="3.5" rx="1" fill="var(--color-accent)" />
+                <circle cx="32" cy="40" r="1.5" fill="#E8A45C" opacity="0.8" />
+              </svg>
+            </div>
+            <h1 className="text-lg font-semibold tracking-tight display-text text-[var(--ivory-text)]">
               Aureon
             </h1>
           </div>
           <button
             onClick={toggleSidebar}
-            className="p-1.5 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all duration-150"
+            className="p-1.5 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all duration-150 cursor-pointer"
             aria-label="Collapse sidebar"
           >
             <ChevronLeft size={16} />
@@ -179,23 +181,24 @@ export function Sidebar(): React.ReactElement {
         </div>
 
         {/* Navigation */}
-        <div className="flex flex-col gap-0.5 px-3 py-3 border-b border-[var(--ivory-border)]">
+        <div className="flex flex-col gap-1 px-3 py-3 border-b border-[var(--ivory-border)]">
           {navItems.map((item) => {
             const active = isNavActive(item.path)
             return (
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-[13px]
-                  transition-all duration-150
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] transition-all duration-150 cursor-pointer
                   ${active
-                    ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold'
+                    ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold shadow-[var(--shadow-xs)]'
                     : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] font-medium'}`}
                 aria-label={`Navigate to ${item.label}`}
                 aria-current={active ? 'page' : undefined}
                 data-testid={`nav-${item.label.toLowerCase()}`}
               >
-                {item.icon}
+                <span className={active ? 'text-[var(--ivory-accent)]' : 'text-[var(--ivory-text-3)]'}>
+                  {item.icon}
+                </span>
                 <span>{item.label}</span>
               </button>
             )
@@ -206,11 +209,11 @@ export function Sidebar(): React.ReactElement {
         <div className="px-3 py-3">
           <button
             onClick={handleNewChat}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg
-              text-[13px] font-medium text-[var(--ivory-text)]
+            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl
+              text-[13px] font-semibold text-[var(--ivory-text)]
               bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/15
-              border border-[var(--ivory-accent)]/20 hover:border-[var(--ivory-accent)]/30
-              transition-all duration-150"
+              border border-[var(--ivory-accent)]/20 hover:border-[var(--ivory-accent)]/35
+              transition-all duration-150 shadow-[var(--shadow-xs)] cursor-pointer"
             aria-label="Create new chat"
             data-testid="new-chat-button"
           >
@@ -225,16 +228,16 @@ export function Sidebar(): React.ReactElement {
         </div>
 
         {/* Settings — anchored at bottom */}
-        <div className="border-t border-[var(--ivory-border)] p-3">
+        <div className="border-t border-[var(--ivory-border)] p-3 bg-[var(--ivory-surface)]">
           <button
             onClick={() => navigate('/settings')}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg
-              text-[13px] font-medium text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]
-              transition-all duration-150"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
+              text-[13px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]
+              transition-all duration-150 cursor-pointer"
             aria-label="Open settings"
             data-testid="nav-settings"
           >
-            <Settings size={16} />
+            <Settings size={16} className="text-[var(--ivory-text-3)]" />
             Settings
           </button>
         </div>

@@ -78,10 +78,10 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps): React.Re
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full right-0 mt-1 w-72 z-20 bg-[var(--ivory-bg)] border border-[var(--ivory-border)] rounded-lg shadow-[var(--shadow-lg)] py-1 max-h-72 overflow-y-auto">
+          <div className="absolute top-full right-0 mt-2 w-72 z-20 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-[18px] shadow-[var(--shadow-xl)] py-1.5 max-h-72 overflow-y-auto p-1">
             <button
               onClick={() => handleSelect(null)}
-              className="w-full text-left px-3 py-2 text-xs text-[var(--ivory-text-3)] hover:bg-[var(--ivory-surface)] border-b border-[var(--ivory-border)]/50"
+              className="w-[calc(100%-8px)] mx-1 text-left px-3 py-2 text-xs text-[var(--ivory-text-3)] hover:bg-[var(--ivory-surface)] rounded-xl border-b border-[var(--ivory-border)]/50 transition-colors cursor-pointer"
             >
               No model selected
             </button>
@@ -90,49 +90,50 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps): React.Re
                 <p className="text-xs text-[var(--ivory-text-3)] mb-2">No models available</p>
                 <button
                   onClick={() => { navigate('/settings/providers'); setIsOpen(false) }}
-                  className="text-xs text-[var(--ivory-accent)] hover:underline"
+                  className="text-xs text-[var(--ivory-accent)] hover:underline cursor-pointer"
                 >
                   Configure providers →
                 </button>
               </div>
             )}
-            {models.map((model) => {
-              const isLocal = model.provider_slug === 'ollama' || model.provider_slug === 'lmstudio'
-              return (
-                <button
-                  key={model.id}
-                  onClick={() => handleSelect(model.id)}
-                  className={`w-full text-left px-3 py-2.5 text-xs hover:bg-[var(--ivory-surface)] transition-colors
-                    ${model.id === value ? 'bg-[var(--ivory-surface)] text-[var(--ivory-text)]' : 'text-[var(--ivory-text-2)]'}`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="truncate font-medium">{model.display_name}</span>
-                        {isLocal ? (
-                          <span className="text-[10px] px-1 py-0.5 rounded-[var(--radius-sm)] bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] font-medium shrink-0">
-                            <Monitor size={10} className="inline mr-0.5" />
-                            Local
-                          </span>
-                        ) : (
-                          <span className="text-[10px] px-1 py-0.5 rounded-[var(--radius-sm)] bg-[var(--ivory-surface-2)] text-[var(--ivory-text-3)] font-medium shrink-0">
-                            <Globe size={10} className="inline mr-0.5" />
-                            Cloud
-                          </span>
-                        )}
+            <div className="space-y-0.5 mt-1">
+              {models.map((model) => {
+                const isLocal = model.provider_slug === 'ollama' || model.provider_slug === 'lmstudio'
+                const isSelected = model.id === value
+                return (
+                  <button
+                    key={model.id}
+                    onClick={() => handleSelect(model.id)}
+                    className={`w-[calc(100%-8px)] mx-1 text-left px-3 py-2 text-xs rounded-xl transition-colors cursor-pointer
+                      ${isSelected ? 'bg-[var(--ivory-surface)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="truncate font-medium">{model.display_name}</span>
+                          {isLocal ? (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] font-medium shrink-0">
+                              Local
+                            </span>
+                          ) : (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] font-medium shrink-0">
+                              Cloud
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[10px] text-[var(--ivory-text-3)] mt-0.5 truncate">
+                          {model.provider_name}
+                          {model.context_window ? ` · ${(model.context_window / 1000).toFixed(0)}k ctx` : ''}
+                        </div>
                       </div>
-                      <div className="text-[10px] text-[var(--ivory-text-3)] mt-0.5 truncate">
-                        {model.provider_name}
-                        {model.context_window ? ` · ${(model.context_window / 1000).toFixed(0)}k ctx` : ''}
-                      </div>
+                      {isSelected && (
+                        <Zap size={12} className="text-[var(--ivory-accent)] shrink-0" />
+                      )}
                     </div>
-                    {model.id === value && (
-                      <Zap size={12} className="text-[var(--ivory-accent)] shrink-0" />
-                    )}
-                  </div>
-                </button>
-              )
-            })}
+                  </button>
+                )
+              })}
+            </div>
           </div>
         </>
       )}

@@ -129,25 +129,28 @@ export function ChatWorkspace(): React.ReactElement {
             {promptsOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setPromptsOpen(false)} />
-                <div className="absolute top-full right-0 mt-2 w-72 z-20 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-[18px] shadow-[var(--shadow-xl)] max-h-72 overflow-y-auto p-1">
+                <div className="absolute top-full right-0 mt-2 w-72 z-20 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-[18px] shadow-[var(--shadow-xl)] max-h-72 overflow-y-auto p-1 space-y-0.5">
                   <button
                     onClick={() => { handlePromptChange(null); setPromptsOpen(false) }}
-                    className={`w-full text-left px-3 py-2 text-xs rounded-[var(--radius-md)] hover:bg-[var(--ivory-surface)] transition-colors
-                      ${!selectedPromptId ? 'bg-[var(--ivory-surface)] text-[var(--ivory-text)] font-medium' : 'text-[var(--ivory-text-3)]'}`}
+                    className={`w-[calc(100%-8px)] mx-1 text-left px-3 py-2 text-xs rounded-xl transition-colors cursor-pointer
+                      ${!selectedPromptId ? 'bg-[var(--ivory-surface)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-3)] hover:bg-[var(--ivory-surface)]'}`}
                   >
                     No profile (bare API call)
                   </button>
-                  {systemPrompts.filter(p => !p.is_archived).map(prompt => (
-                    <button
-                      key={prompt.id}
-                      onClick={() => { handlePromptChange(prompt.id); setPromptsOpen(false) }}
-                      className={`w-full text-left px-3 py-2 text-xs rounded-[var(--radius-md)] hover:bg-[var(--ivory-surface)] transition-colors
-                        ${prompt.id === selectedPromptId ? 'bg-[var(--ivory-surface)] text-[var(--ivory-text)] font-medium' : 'text-[var(--ivory-text-2)]'}`}
-                    >
-                      {prompt.name}
-                      {prompt.is_default === 1 && <span className="text-[var(--ivory-accent)] ml-1">(default)</span>}
-                    </button>
-                  ))}
+                  {systemPrompts.filter(p => !p.is_archived).map(prompt => {
+                    const isSelected = prompt.id === selectedPromptId
+                    return (
+                      <button
+                        key={prompt.id}
+                        onClick={() => { handlePromptChange(prompt.id); setPromptsOpen(false) }}
+                        className={`w-[calc(100%-8px)] mx-1 text-left px-3 py-2 text-xs rounded-xl transition-colors cursor-pointer
+                          ${isSelected ? 'bg-[var(--ivory-surface)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
+                      >
+                        <span className="truncate">{prompt.name}</span>
+                        {prompt.is_default === 1 && <span className="text-[var(--ivory-accent)] ml-1 font-normal text-[10px]">(default)</span>}
+                      </button>
+                    )
+                  })}
                 </div>
               </>
             )}
@@ -161,7 +164,9 @@ export function ChatWorkspace(): React.ReactElement {
       </div>
 
       {/* Chat Panel */}
-      <ChatPanel />
+      <div className="flex-1 min-h-0">
+        <ChatPanel />
+      </div>
     </div>
   )
 }

@@ -26,26 +26,26 @@ export function ChatList({ onSelectChat }: ChatListProps): React.ReactElement {
   }
 
   return (
-    <div className="py-1">
+    <div className="py-2 space-y-1">
       {chats.map((chat) => {
         const isActive = activeChatId === chat.id
         return (
         <button
           key={chat.id}
           onClick={() => onSelectChat(chat.id)}
-          className={`w-full text-left px-3 py-2.5 transition-colors duration-[var(--transition-fast)]
+          className={`text-left px-3 py-2 rounded-xl transition-all duration-[var(--transition-fast)] mx-2 w-[calc(100%-16px)] block cursor-pointer
             ${isActive
-              ? 'bg-[var(--ivory-active-bg)] border-r-2 border-r-[var(--ivory-accent)]'
-              : 'hover:bg-[var(--ivory-surface-2)] border-r-2 border-r-transparent'}`}
+              ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold shadow-[var(--shadow-xs)]'
+              : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
         >
           <div className="flex items-start gap-2.5">
-            <MessageSquare size={14} className={`mt-0.5 shrink-0 ${isActive ? 'text-[var(--ivory-accent)]' : 'text-[var(--ivory-text-3)]'}`} />
+            <MessageSquare size={14} className={`mt-1 shrink-0 ${isActive ? 'text-[var(--ivory-accent)]' : 'text-[var(--ivory-text-3)]'}`} />
             <div className="min-w-0 flex-1">
-              <p className="text-sm text-[var(--ivory-text)] truncate font-medium">
+              <p className="text-[13px] text-[var(--ivory-text)] truncate font-medium">
                 {chat.title}
               </p>
               {chat.last_message_preview && (
-                <p className="text-xs text-[var(--ivory-text-3)] truncate mt-0.5">
+                <p className="text-[11px] text-[var(--ivory-text-3)] truncate mt-0.5">
                   {chat.last_message_preview}
                 </p>
               )}

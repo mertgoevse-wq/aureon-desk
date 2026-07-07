@@ -113,7 +113,7 @@ export function RightInspector(): React.ReactElement {
               <ProjectContextSection project={activeProject} />
             </div>
           ) : (
-            <div className="px-3">
+            <div className="px-3 space-y-3">
               <AnalysisView analysis={currentAnalysis} />
               <ProjectContextSection project={activeProject} />
             </div>
@@ -128,42 +128,38 @@ function ProjectContextSection({ project }: { project: ProjectRow | null }): Rea
   if (!project) return null
 
   return (
-    <div className="border-t border-[var(--ivory-border)] mt-3 mx-3 pt-3 pb-3">
-      <div className="flex items-center gap-1.5 mb-2">
-        <FolderOpen size={11} className="text-[var(--ivory-accent)]" />
-        <span className="text-[10px] font-semibold text-[var(--ivory-text-2)] uppercase tracking-wide">
-          Project Context
-        </span>
-      </div>
-      <div className="space-y-2 text-xs">
-        <div className="flex items-center gap-1.5">
-          <FolderOpen size={12} className="text-[var(--ivory-text-3)]" />
-          <span className="font-medium text-[var(--ivory-text)]">{project.name}</span>
-        </div>
-        {project.description && (
-          <p className="text-[11px] text-[var(--ivory-text-3)]">{project.description}</p>
-        )}
-        {project.instructions ? (
-          <div>
-            <div className="flex items-center gap-1 mb-1">
-              <BookOpen size={10} className="text-[var(--ivory-text-3)]" />
-              <span className="text-[10px] text-[var(--ivory-text-3)]">Instructions active</span>
+    <div className="mt-3">
+      <Section icon={<FolderOpen size={12} />} title="Project Context" defaultOpen={true}>
+        <div className="space-y-2 text-xs pt-1.5">
+          <div className="flex items-center gap-1.5">
+            <FolderOpen size={12} className="text-[var(--ivory-text-3)]" />
+            <span className="font-semibold text-[var(--ivory-text)]">{project.name}</span>
+          </div>
+          {project.description && (
+            <p className="text-[11px] text-[var(--ivory-text-3)] leading-relaxed">{project.description}</p>
+          )}
+          {project.instructions ? (
+            <div className="space-y-1">
+              <div className="flex items-center gap-1">
+                <BookOpen size={10} className="text-[var(--ivory-text-3)]" />
+                <span className="text-[10px] text-[var(--ivory-text-3)] font-medium">Instructions active</span>
+              </div>
+              <pre className="text-[10px] text-[var(--ivory-text-2)] bg-[var(--ivory-bg)] p-2 rounded-[var(--radius-sm)] border border-[var(--ivory-border)] max-h-24 overflow-y-auto whitespace-pre-wrap break-all leading-normal font-mono">
+                {project.instructions.slice(0, 300)}{project.instructions.length > 300 ? '...' : ''}
+              </pre>
             </div>
-            <pre className="text-[10px] text-[var(--ivory-text-2)] bg-[var(--ivory-bg)] p-2 rounded-[var(--radius-sm)] border border-[var(--ivory-border)] max-h-24 overflow-y-auto whitespace-pre-wrap break-all">
-              {project.instructions.slice(0, 300)}{project.instructions.length > 300 ? '...' : ''}
-            </pre>
-          </div>
-        ) : (
-          <p className="text-[10px] text-[var(--ivory-text-3)] italic">No project instructions set.</p>
-        )}
-        {project.root_path ? (
-          <div className="text-[10px] text-[var(--ivory-text-3)] break-all">
-            📁 {project.root_path}
-          </div>
-        ) : (
-          <p className="text-[10px] text-[var(--ivory-text-3)] italic">No local folder selected.</p>
-        )}
-      </div>
+          ) : (
+            <p className="text-[10px] text-[var(--ivory-text-3)] italic">No project instructions set.</p>
+          )}
+          {project.root_path ? (
+            <div className="text-[10px] text-[var(--ivory-text-3)] break-all font-mono leading-normal bg-[var(--ivory-bg)] p-1.5 rounded-lg border border-[var(--ivory-border)]/40 mt-1">
+              📁 {project.root_path}
+            </div>
+          ) : (
+            <p className="text-[10px] text-[var(--ivory-text-3)] italic">No local folder selected.</p>
+          )}
+        </div>
+      </Section>
     </div>
   )
 }
@@ -339,7 +335,7 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
       )}
 
       {pa.detectedKeywords.length > 0 && (
-        <Section icon={<Target size={12} />} title="Detected Keywords">
+        <Section icon={<Target size={12} />} title="Detected Keywords" defaultOpen={false}>
           <div className="flex flex-wrap gap-1">
             {pa.detectedKeywords.slice(0, 15).map(kw => (
               <span key={kw} className="text-[10px] px-1.5 py-0.5 rounded-[var(--radius-sm)] bg-[var(--ivory-bg)] text-[var(--ivory-text-3)]">
@@ -353,22 +349,40 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
   )
 }
 
+interface SectionProps {
+  icon: React.ReactElement
+  title: string
+  children: React.ReactNode
+  collapsible?: boolean
+  defaultOpen?: boolean
+}
+
 function Section({
-  icon, title, children, collapsible = false
-}: {
-  icon: React.ReactElement; title: string; children: React.ReactNode; collapsible?: boolean
-}): React.ReactElement {
-  const [open, setOpen] = React.useState(true)
+  icon, title, children, collapsible = true, defaultOpen = true
+}: SectionProps): React.ReactElement {
+  const [open, setOpen] = React.useState(defaultOpen)
   return (
-    <div className="rounded-lg bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/60 overflow-hidden">
+    <div className="rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/65 overflow-hidden shadow-[var(--shadow-xs)]">
       <button
         onClick={() => collapsible && setOpen(!open)}
-        className="flex items-center gap-1.5 px-3 py-2 text-[10px] font-medium text-[var(--ivory-text-3)] uppercase tracking-wide w-full text-left hover:bg-[var(--ivory-surface)]/50 transition-colors"
+        className={`flex items-center justify-between px-3 py-2.5 text-[10px] font-semibold text-[var(--ivory-text-2)] uppercase tracking-wider w-full text-left transition-colors cursor-pointer
+          ${collapsible ? 'hover:bg-[var(--ivory-surface)]' : ''}`}
       >
-        {icon}
-        {title}
+        <div className="flex items-center gap-2">
+          <span className="text-[var(--ivory-accent)] shrink-0">
+            {icon}
+          </span>
+          <span>{title}</span>
+        </div>
+        {collapsible && (
+          <ChevronRight
+            size={12}
+            className={`text-[var(--ivory-text-3)] transition-transform duration-[var(--transition-fast)]
+              ${open ? 'rotate-90' : ''}`}
+          />
+        )}
       </button>
-      {open && <div className="px-3 pb-3">{children}</div>}
+      {open && <div className="px-3 pb-3 pt-1 border-t border-[var(--ivory-border)]/20 animate-fade-in">{children}</div>}
     </div>
   )
 }

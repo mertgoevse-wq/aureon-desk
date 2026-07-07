@@ -33,13 +33,13 @@ export function SettingsLayout(): React.ReactElement {
         role="navigation"
         aria-label="Settings navigation"
       >
-        <div className="px-4 py-3 border-b border-[var(--ivory-border)]">
+        <div className="px-4 py-4 border-b border-[var(--ivory-border)]">
           <h2 className="text-sm font-semibold text-[var(--ivory-text)] flex items-center gap-2">
-            <Settings size={16} />
+            <Settings size={16} className="text-[var(--ivory-accent)]" />
             Settings
           </h2>
         </div>
-        <div className="flex-1 py-2">
+        <div className="flex-1 py-3 space-y-0.5">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path
             return (
@@ -47,12 +47,14 @@ export function SettingsLayout(): React.ReactElement {
                 key={item.path}
                 onClick={() => navigate(item.path)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`w-full text-left px-4 py-2.5 text-[13px] flex items-center gap-2.5 transition-all duration-[var(--transition-fast)] leading-none
+                className={`text-left px-3 py-2.5 text-[13px] flex items-center gap-2.5 rounded-xl transition-all duration-[var(--transition-fast)] leading-none mx-2 w-[calc(100%-16px)] block cursor-pointer
                   ${isActive
-                    ? 'bg-[var(--ivory-surface-2)] text-[var(--ivory-text)] font-semibold border-r-2 border-r-[var(--ivory-accent)]'
+                    ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold shadow-[var(--shadow-xs)]'
                     : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] font-medium'}`}
               >
-                {item.icon}
+                <span className={isActive ? 'text-[var(--ivory-accent)]' : 'text-[var(--ivory-text-3)]'}>
+                  {item.icon}
+                </span>
                 {item.label}
               </button>
             )
@@ -63,7 +65,7 @@ export function SettingsLayout(): React.ReactElement {
             variant="ghost"
             size="sm"
             onClick={() => navigate('/')}
-            className="w-full"
+            className="w-full cursor-pointer"
             aria-label="Back to Chat"
           >
             ← Back to Chat
@@ -72,8 +74,10 @@ export function SettingsLayout(): React.ReactElement {
       </div>
 
       {/* Settings content */}
-      <div className="flex-1 overflow-y-auto">
-        <Outlet />
+      <div className="flex-1 overflow-y-auto bg-[var(--ivory-bg)]">
+        <div className="max-w-4xl mx-auto px-8 py-8 w-full">
+          <Outlet />
+        </div>
       </div>
     </div>
   )
