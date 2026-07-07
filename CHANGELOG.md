@@ -1,5 +1,307 @@
 # Changelog
 
+## [0.9.18] - 2026-07-07
+
+### Added - Prompt 5 Provider Test Center
+- **Provider Test Center**: Settings now include a consolidated test overview for every provider with key status, enabled/disabled state, local-vs-cloud labeling, sanitized result text, latency, last checked time, per-provider test actions, and a sequential "Test All" flow.
+- **Continuation notes**: Added `CONTINUATION_NOTES.md` so a fresh Codex chat can resume from the analyzed ZIP/chat plan, current implementation state, validation status, and next recommended work.
+- **E2E coverage**: Settings E2E now asserts the Provider Test Center, Test All action, and per-provider status labels are visible.
+
+### Fixed
+- **Tailwind utility reset conflict**: Removed the global margin/padding reset that was overriding layered Tailwind utilities. Settings, cards, buttons, gaps, and input padding now render as designed instead of raw HTML-like controls.
+- **LivePreview idle controls**: Preview status, URL, logs, Stop Server, and Open in Browser controls are now present in the idle/no-sandbox state so the workspace is stable and testable.
+
+### Changed
+- **Claude-like calm UI polish**: Shared cards, buttons, badges, inputs, typography, sidebar logo text, chat empty state, and settings surfaces now use softer radii, shadows, sans-first UI typography, and warmer elevated surfaces while keeping Aureon's own visual identity.
+- **Right inspector scope**: The right inspector is limited to the chat workspace so settings and preview pages have more usable horizontal space.
+- **Provider result safety**: Provider test messages shown in the renderer are sanitized for common API-key and bearer-token patterns before display.
+
+## [0.9.17] - 2026-07-07
+
+### Added — Provider UX Finalization
+- **Provider status badges**: 5-state indicator (Disabled, Tested, Test failed, Local, Configured, No API key) with color-coded badges and icons on each provider card
+- **Test Connection per provider**: Dedicated Test button with spinner animation on each provider card, results displayed inline with success/error banners using design tokens
+- **Local provider help cards**: Friendly setup cards for Ollama (🦙) and LM Studio (🖥️) with default URLs, no-API-key-needed notes, and download links
+- **OpenRouter help card**: Shows `:free` model note for zero-cost testing, API key acquisition link
+- **ModelSelector badges**: Local/Cloud badges with Monitor/Globe icons, providers sorted with local first, provider name + context window display, "Configure providers →" link when no models available
+- **13 security tests**: API key masking verification, log redaction coverage (sk-/OpenAI/Anthropic/Google/Bearer/x-api-key patterns), multi-secret redaction, safe text passthrough, real key vs model name detection, encryption availability
+
+### Changed
+- `ProvidersPage.tsx`: ProviderStatusBadge component, local/OpenRouter help cards, Test Connection button, removed dead Shield import
+- `ModelSelector.tsx`: Local/Cloud badges with Monitor/Globe icons, sorted by local first, wider dropdown (w-72)
+- Removed unused `editingBaseUrl` state from ProvidersPage
+
+## [0.9.16] - 2026-07-07
+
+### Changed — Design System Refinement
+- **Design tokens modernization**: Added clean semantic token names (`--color-bg`, `--color-surface`, `--color-elevated`, `--color-border-strong`, `--shadow-card`, etc.) with backward-compat aliases for all existing `--ivory-*` tokens. Shadows upgraded to multi-layer for richer depth.
+- **Sidebar redesign**: Larger logo mark with accent-light background circle, `px-3` → `px-4` padding, `rounded-lg` on all buttons, New Chat button uses accent-light bg with refined border, `py-3` spacing throughout.
+- **Chat empty state refinement**: Larger 80px mark, 32px inline SVG Aureon icon, quick action cards with icon-containers (`rounded-lg` accent-light bg), `rounded-xl` card borders, wider `max-w-md` layout.
+- **Error bubble refinements**: Softer borders (`/20` opacity), `rounded-xl`, consistent design-token based risk/error colors.
+- **Right Inspector**: Softer cards (`border-[var(--ivory-border)]/60`), `rounded-lg` sections, muted empty state (larger 48px icon, `rounded-xl`), `space-y-2.5` breathing room, consistent risk badge colors.
+- **Subtle transitions**: All hover states use `duration-150`, buttons use `transition-all` for smoother feel.
+
+## [0.9.15] - 2026-07-07
+
+### Fixed — Input Handling, Copy/Paste, and Settings UI Polish
+- **Keyboard handler fixed**: Input/textarea guard now runs BEFORE all global shortcuts. Ctrl+C/V/A copy/paste/select-all now works inside all inputs. Typing any character (including 'k', '/') works correctly in inputs/textareas/contentEditable/role=textbox elements.
+- **Electron Edit menu**: Added native application menu with Edit roles (undo/redo/cut/copy/paste/selectAll) for proper native copy/paste behavior across platforms.
+- **Typography overhaul**: Only h1-h3 use serif display font. h4-h6, sidebar nav, settings nav, project names, prompt cards, modals, empty states now use clean sans-serif (Inter).
+- **Providers page layout**: Wider max-w-4xl layout, improved card spacing, Save button aligned beside API key input, consistent padding, design-token test result styling.
+- **Sidebar & Settings navigation**: Larger padding, sans-serif labels, font-semibold active states, `leading-none` for consistent vertical rhythm.
+- **11 regression tests**: Verify keyboard handler doesn't block typing/paste/copy/select-all inside inputs, textareas, contentEditable, and role=textbox elements.
+
+## [0.9.14] - 2026-07-07
+
+### Fixed — Final Smoothness & Accessibility Pass
+- **ErrorBoundary**: Global React error boundary with fallback UI, reset, and reload — prevents white screen on crashes
+- **MessageBubble overflow**: `break-words`, `overflow-hidden`, and `max-w-full` on message content prevent horizontal page overflow from long text/code
+- **MessageBubble memoization**: `React.memo` prevents unnecessary re-renders of message list items
+- **Smart scroll in chat**: Only auto-scrolls when user is near the bottom; forces scroll during streaming
+- **Paperclip button**: Marked as disabled placeholder until file attachment is implemented
+- **ModelSelector a11y**: `aria-label`, `aria-expanded`, and `aria-haspopup` for screen reader support
+
+## [0.9.13] - 2026-07-07
+
+### Added — Self-Test Coding Agent Demo
+- **Aureon Counter Demo** template: Deterministic HTML app — ivory background, serif title, counter with increment/reset buttons, animated bump effect, footer "Generated by Aureon Desk" — no external APIs, zero secrets
+- **`createDemo()` method**: Generates demo sandbox + starts preview server in one step, returns full result with file list and preview status
+- **CLI demo runner** (`scripts/demo-coding.mjs`): Headless verification — creates sandbox, starts server, runs 9 checks (HTTP 200, title, counter, increment/reset buttons, footer text, script functions, no secrets), exits 0 on pass
+- **CLI demo command**: `npm run demo:coding` — runs the self-test in ~70ms
+- **7 E2E tests** (`10-aureon-coding-demo.spec.ts`): Coding Demo option visibility, demo creation and preview start, counter page HTML verification, Playwright counter clicks (increment/reset), stop button, secret leak check, rapid start/stop stability
+- **AI_QA_REPORT**: Coding Demo section with all 9 verification checks, sandbox safety notes, screenshot path
+
+### Changed
+- `live-preview.service.ts`: Added `DEMO_COUNTER_HTML` template, `'demo'` template type, `createDemo()` method
+- `live-preview.ipc.ts`: Added `preview:createDemo` IPC handler
+- `preload/index.ts` + `index.d.ts`: Added `previewCreateDemo()` API
+- `LivePreview.tsx`: Added "Coding Demo" option to template selector, `handleRunDemo()` with loading state
+- `README.md`: Coding Agent Demo section, `demo:coding` command
+- `package.json`: Added `demo:coding` script
+
+## [0.9.12] - 2026-07-07
+
+### Added — LivePreview Workspace
+- **LivePreview page** (`LivePreview.tsx`): Full-page UI with template type selector (HTML / Vite+React), sandbox create/start/stop controls, live log viewer, URL input, and external browser launcher
+- **LivePreview service** (`live-preview.service.ts`): Sandbox folder creation, HTML template generation, Vite+React project scaffold, dev server process spawn/stop with log capture, port detection, path traversal protection, sandbox cleanup
+- **IPC + Preload**: Full IPC handlers for preview lifecycle (create, start, stop, getStatus, getLogs, writeFile, listSandboxes, cleanup) with preload API exposure
+- **Sidebar navigation**: New "Preview" nav item with `Play` icon in the main sidebar
+- **14 unit tests**: Sandbox creation (HTML + Vite templates), error handling, path validation (escape prevention), sandbox listing/cleanup, idle status, secret redaction from logs
+- **10 E2E tests** (`09-aureon-live-preview.spec.ts`): Preview nav visibility, page navigation, create button, template selector, URL input, status indicator, log panel, external browser button, stop button, crash-free navigation
+
+### Security
+- **Path traversal protection**: All file paths validated against escaping the sandbox directory
+- **Localhost-only binding**: Dev server bound to `127.0.0.1` — not accessible from other machines
+- **Log redaction**: All preview stdout/stderr passes through `redactSecrets()` before display
+- **User confirmation required**: File writes and server starts require explicit user clicks
+- **No arbitrary commands**: Only `npm install` + `npm run dev` in the sandbox directory
+
+### Changed
+- `index.ts` (IPC): Registered LivePreview IPC handlers
+- `preload/index.ts` + `index.d.ts`: LivePreview preload API methods
+- `App.tsx`: Added `/preview` route
+- `Sidebar.tsx`: Added Preview navigation item
+- `README.md`: LivePreview Workspace section
+- `SECURITY_NOTES.md`: LivePreview security details
+
+## [0.9.11] - 2026-07-07
+
+### Added — Secure OpenRouter Free Model Integration Test
+- **OpenRouter CLI smoke test** (`scripts/test-openrouter.mjs`): Reads `OPENROUTER_API_KEY` from environment, sends a tiny prompt to OpenRouter, prints results without ever exposing the key. Gracefully skips if key is missing.
+- **npm script** `test:openrouter`: Runs the CLI smoke test
+- **openrouter/free model**: Added to OpenRouter's default models for smoke testing with free-tier models
+- **6 new unit tests**: OpenRouter free model headers (HTTP-Referer, X-Title), rate limit error (429), secret redaction (no raw API keys in error messages), log redaction verification, missing env key skip pattern, no hardcoded keys in test source
+
+### Security
+- **No hardcoded API keys**: All keys read from `process.env.OPENROUTER_API_KEY` or the secure credential vault
+- **Redaction verified**: Secrets redacted from error messages and log output
+- **Key format detection**: Detects `sk-or-v1-*` format and redacts appropriately
+- **Repo scanned**: `git grep` confirms no leaked keys in the codebase
+
+### Changed
+- `constants.ts`: Added `openrouter/free` model to OpenRouter defaults
+- `chat-completion.test.ts`: 6 new security and integration tests
+- `package.json`: Added `test:openrouter` script
+
+## [0.9.10] - 2026-07-07
+
+### Added — Original Aureon Desk Brand System
+- **Brand assets** (`assets/brand/`): Original SVG mark, wordmark, icon, and full logo
+- **Icon design**: Stylized "A" with warm terracotta on ivory, subtle neural node dots, circular aureole ring — warm, professional, calm aesthetic
+- **Icon generation script**: Updated `scripts/generate-icon.js` to produce the Aureon mark in multi-size ICO (16, 32, 48, 256px)
+- **Canvas-based generator** (`scripts/generate-icons.mjs`): Alternative PNG generator using the `canvas` package for higher quality output
+- **Brand README** (`assets/brand/README.md`): Usage guide with color palette, mark guidelines, and typography specs
+
+### Changed
+- `windows.ts`: Added `icon` property to BrowserWindow for Windows taskbar/Chrome icon
+- `Sidebar.tsx`: Inline SVG Aureon mark beside the "Aureon" heading in the sidebar header
+- `README.md`: Logo header at top, new Brand Assets section
+
+### Design
+- **Mark**: Abstract A-shape with geometric pillars and rounded crossbar
+- **Colors**: Warm ivory (#FAF8F5), terracotta (#C75B39), amber (#E8A45C)
+- **Mood**: Calm, premium, professional — no neon, no gradients, no cartoons
+- Original design, no AI company branding referenced or copied
+
+## [0.9.9] - 2026-07-07
+
+### Added — Premium UX Polish
+
+**Sidebar Refinement:**
+- **Vertical navigation**: Replaced cramped horizontal tab row with clean vertical nav list with icons + labels always visible
+- **Active route states**: Nav items highlight with background and text color change using `useLocation`
+- **Chat list active state**: Active chat gets accent border-right and icon color change for clear visual feedback
+- **Collapsed mode**: Added divider between new-chat and nav items, active state coloring, cleaner spacing
+- **New chat button**: Changed from dashed-border to solid-border for a calmer, more polished appearance
+
+**ChatWorkspace:**
+- **Refined welcome screen**: Grid of 4 feature cards (Multi-Provider, Profiles, Projects, Tools) with icon containers replacing the old bullet list
+- **Header spacing**: Improved padding and gap to prevent control overlap at narrower widths
+
+**ChatPanel:**
+- **Inline empty state**: Cleaner centered design with circular icon background replacing the generic EmptyState component
+
+**MessageInput:**
+- **Refined composer**: Better padding, hover border effect, smaller send/attach icons, consistent vertical alignment
+- **Keyboard hint row**: Split `/` command and `Shift+Enter` hints into left/right aligned footer with styled kbd elements
+
+**RightInspector:**
+- **Card-based sections**: Each analysis section now rendered as a bordered card with background for visual separation
+- **Refined empty state**: Circular Brain icon background, better centered typography
+
+**Design Tokens:**
+- Added `--ivory-accent-light` (#FDF0EB) and `--ivory-active-bg` (#EDE4D8) for active/highlight states
+
+### Changed
+- `Sidebar.tsx`: Vertical nav, active states, cleaner new-chat button
+- `ChatList.tsx`: Active chat indicator with border-right accent
+- `ChatWorkspace.tsx`: Feature card welcome screen
+- `ChatPanel.tsx`: Inline empty state (removed EmptyState import)
+- `MessageInput.tsx`: Refined composer, kbd hint row
+- `RightInspector.tsx`: Card-based analysis sections
+- `tokens.css`: New active-state tokens
+
+## [0.9.8] - 2026-07-07
+
+### Added — Desktop UX Polish
+- **F1 shortcut**: Opens keyboard shortcuts help (alongside existing `Ctrl+/`)
+- **Focus Composer command**: New `Ctrl+L` palette action to jump to message input
+- **Import Star List command**: New palette action to navigate directly to GitHub imports
+- **README shortcuts table**: Full keyboard shortcuts reference with panel resizing instructions
+
+### Changed
+- `ShortcutsHelp.tsx`: Updated F1 key display and footer text
+- `AppShell.tsx`: Added F1 handler, added 2 new command palette items (focus-composer, import-star-list)
+- `ui-desktop-polish.test.ts`: Updated tests for new command palette items and F1 shortcut
+
+### Tests (20 existing + 10 new E2E)
+- 10 E2E tests (`08-aureon-shortcuts.spec.ts`): Ctrl+K, Ctrl+N, Ctrl+,, Ctrl+L, Ctrl+B, Ctrl+I, Esc, F1, palette items, resize handles
+
+## [0.9.7] - 2026-07-07
+
+### Added — Make GitHub Star List Imports Practically Usable
+
+**Approve Imported Items → Real Entities:**
+- **Approve as Prompt**: Converts an imported item into a real prompt in the Prompt Library with source tracking (`github-import:<repo_url>`)
+- **Approve as System Prompt**: Converts an imported item into a system prompt profile in System Prompt Profiles
+- **Approve as Skill**: Converts an imported item into an approved skill that appears in the Skill Registry and is available to the routing engine
+- **Duplicate prevention**: Re-approving an already-enabled item returns a clear error instead of creating duplicates
+- **Approval provenance**: Item description records what it was approved as (`[APPROVED_AS:prompt]` etc.)
+
+**Retry Failed Imports:**
+- **Retry button**: Failed repos now have a retry (↻) button in the repo list that deletes the failed clone and re-imports
+- **Retry state**: Shows spinning animation while retry is in progress
+
+**Warning Details:**
+- **Expandable warnings**: Click the ⚠ badge on any imported item to expand full warning details with severity (high/medium/low), message, and context
+- **Color-coded**: Red for high, amber for medium, muted for low severity
+- **Untrusted indicator**: Shield icon with "This content is marked untrusted" note in the warning panel
+
+**Skill Registry Integration:**
+- **`approved_skills` table**: New DB table storing skills approved from imports
+- **`getAllSkills()`**: Now loads approved skills from DB alongside built-in skills
+- **Skill definitions**: Imported skills get proper metadata (tags, description, source tracking) and appear in the routing engine
+
+**UI Improvements:**
+- **Three approve buttons per item**: 📑 Approve as Prompt, ⚙ Approve as System Prompt, ⚡ Approve as Skill — each with icon, tooltip, and loading spinner
+- **Success/error banners**: Green success banner shows approval result, red error banner for failures, both auto-dismiss
+- **Unified action row**: View content, three approve buttons, enable/disable toggle, delete — all in a clean row
+- **Status badges**: Each item shows its current status (unreviewed/enabled/disabled/rejected) as a colored badge
+
+**Tests (13 new, 197 total):**
+- 7 approve workflow tests (prompt, system_prompt, skill type validation, retry logic, schema verification, skill registry integration, unapproved concept)
+- 6 existing approve unit tests merged with retry and integration tests
+- 7 E2E tests (`07-aureon-github-imports.spec.ts`): page opens, star list button, URL input, empty state, disabled button, security notice, no crash
+
+### Changed
+- `GitHubImportsPage.tsx`: Complete UI rewrite with approve/retry/warning-detail features
+- `github-import.service.ts`: Added `approveItem()` and `retryImport()` methods
+- `skill-registry.ts`: Added `getApprovedSkills()` loading from DB
+- `schema.ts` + `migrate.ts`: Added `approved_skills` table
+- `github.ipc.ts`: Added `github:approveItem` and `github:retryImport` handlers
+- `preload/index.ts` + `index.d.ts`: Added `githubApproveItem()` and `githubRetryImport()` methods
+
+## [0.9.6] - 2026-07-07
+
+### Added — Remote Provider Test Coverage
+- **OpenRouter unit tests**: Header verification (HTTP-Referer, X-Title, Authorization), missing API key handling
+- **Gemini unit tests**: generateContent endpoint payload, safety filter block handling, auth failure
+- **Anthropic unit tests**: Authentication failure error normalization
+- **Remote provider E2E tests** (`06-aureon-remote-providers.spec.ts`): 7 tests — provider listing, API key masking, no raw keys in DOM, security notice, custom provider form, capability badges, enable/disable toggles
+- **README**: Remote provider setup instructions for Anthropic, OpenRouter, Google Gemini with API key acquisition links
+
+### Total Tests: 190 unit tests | 42 E2E tests
+
+## [0.9.5] - 2026-07-07
+
+### Added — Local Provider Improvements
+- **Ollama native /api/chat endpoint**: Direct integration with Ollama's native API with automatic fallback to OpenAI-compatible `/v1/chat/completions` if native fails
+- **Ollama model auto-detection**: `providerService.syncOllamaModels()` fetches available models from `/api/tags` and adds them as selectable models
+- **Ollama model fetching**: `chatCompletionService.fetchOllamaModels()` returns model list for programmatic use
+- **LM Studio model listing**: `testConnection()` now shows how many models are loaded in LM Studio
+- **Friendly offline errors**: When Ollama/LM Studio is unreachable, error messages include actionable fix instructions ("Start Ollama with ollama serve")
+
+### Changed — Provider Connection Testing
+- **Ollama test**: Now uses `/api/tags` instead of `/v1/models` for more reliable detection and model count
+- **LM Studio test**: Now shows loaded model count from `/v1/models` response
+- **Offline detection**: Connection refused errors for local providers include server start instructions
+
+### IPC + Preload
+- **`provider:syncOllamaModels`**: New IPC handler to trigger Ollama model sync from UI
+- **`provider:fetchOllamaModels`**: New IPC handler to fetch Ollama model list
+- **Preload API**: Added `providerSyncOllamaModels()` and `providerFetchOllamaModels()` methods
+
+### Tests (8 new, 22 total for chat completion)
+- Ollama native API payload format test
+- Ollama fallback to OpenAI-compatible on failure
+- Ollama no-API-key-required test
+- LM Studio OpenAI-compatible endpoint test
+- Offline Ollama error test
+- Offline LM Studio error test
+- Ollama model fetching test (+ offline model fetch test)
+
+## [0.9.4] - 2026-07-07
+
+### Added — Playwright Electron QA Harness
+- **Playwright E2E configuration**: `playwright.config.ts` with Electron launch support, artifact capture (screenshots on failure, traces on retry), and HTML reporter
+- **Electron launch helper** (`tests/e2e/helpers/electronApp.ts`): Reusable fixture with `electronApp`, `mainWindow`, `consoleErrors`, `pageErrors` tracking, plus `waitForAppReady`, `checkForErrorPage`, and `screenshot` utilities
+- **4 E2E test suites (29 tests total — all passing)**:
+  - **Smoke test** (`01-aureon-smoke.spec.ts`): 9 tests — app launch, window title, error page detection, sidebar/chat/composer/model visibility (after creating chat), renderer errors, inspector toggle
+  - **Navigation test** (`02-aureon-navigation.spec.ts`): 7 tests — Chats/Prompts/Projects/Tools/Settings clicks, back navigation, rapid transitions without crashes
+  - **Settings test** (`03-aureon-settings.spec.ts`): 6 tests — provider cards, security info, adapter listing, custom provider UI, API key masking, appearance page
+  - **Chat test** (`04-aureon-chat.spec.ts`): 6 tests — new chat creation, composer input, send button states, sending without provider (no crash), router analysis after message
+- **27 `data-testid` attributes**: Added to AppShell, Sidebar (nav items, new-chat, settings), ChatPanel, MessageInput (composer, textarea, send-button), RightInspector (panel + toggle), ModelSelector, ChatWorkspace (system-profile-selector)
+- **NPM scripts**: `test:e2e`, `test:e2e:headed`, `test:e2e:debug`, `test:e2e:report`, `qa:ai` (typecheck + test + build + e2e)
+- **Vitest config** (`vitest.config.ts`): Excludes `tests/e2e/` from unit test runs to prevent Playwright/Vitest import conflicts
+- **AI_QA_REPORT.md**: Automated QA report template with results summary, artifacts paths, and error tracking sections
+
+### Fixed — E2E Test Stabilization
+- **Smoke tests**: Fixed `main-chat-panel`, `chat-composer`, and `model-selector` tests to create a chat first (app shows welcome screen when no chat is active)
+- **Navigation test**: Fixed "Navigate back to Chats" to not assert `main-chat-panel` exists (welcome screen is valid when no chat active)
+- **Playwright config**: Added `retries: 1` outside CI for intermittent Electron launch failures
+- **Electron fixture**: Added 3s cleanup delay between tests for SQLite WAL checkpointing; added renderer crash detection
+- **Test ordering**: Renamed test files with numeric prefixes so smoke tests run first, warming up the database before chat tests
+
 ## [0.9.3] - 2026-07-06
 
 ### Added — Native SQLite Workflow Hardening

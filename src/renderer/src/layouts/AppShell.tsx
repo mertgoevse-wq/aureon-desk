@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { RightInspector } from './RightInspector'
 import { ToastContainer } from '../components/shared/Toast'
@@ -18,6 +18,7 @@ import type { ChatListItem } from '@shared/types/chat'
 
 export function AppShell(): React.ReactElement {
   const navigate = useNavigate()
+  const location = useLocation()
   const api = useIpc()
   const { toggleSidebar, toggleInspector, resetLayout, sidebarCollapsed, inspectorOpen } = useUIStore()
   const { setChats, setActiveChatId, setActiveChat } = useChatStore()
@@ -25,6 +26,7 @@ export function AppShell(): React.ReactElement {
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const paletteOpenRef = useRef(false)
   const shortcutsOpenRef = useRef(false)
+  const showInspector = location.pathname === '/'
 
   // Keep refs in sync with state
   useEffect(() => { paletteOpenRef.current = paletteOpen }, [paletteOpen])
@@ -40,6 +42,23 @@ export function AppShell(): React.ReactElement {
     const handler = (e: KeyboardEvent) => {
       const mod = e.ctrlKey || e.metaKey
 
+      // --- ALWAYS check if user is typing in a field first ---
+      const tag = (e.target as HTMLElement)?.tagName
+      const isEditing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target as HTMLElement)?.isContentEditable || (e.target as HTMLElement)?.getAttribute('role') === 'textbox'
+
+      if (isEditing) {
+        // Inside an input/textarea: only handle Escape (blur + close modals)
+        // Let all other keys pass through — including Ctrl+C/V/A for copy/paste
+        if (e.key === 'Escape') {
+          (e.target as HTMLElement).blur()
+          if (paletteOpenRef.current) setPaletteOpen(false)
+          if (shortcutsOpenRef.current) setShortcutsOpen(false)
+        }
+        return
+      }
+
+      // --- Global shortcuts (only fire when NOT typing) ---
+
       // Ctrl+K — Command palette
       if (mod && e.key === 'k') {
         e.preventDefault()
@@ -47,22 +66,10 @@ export function AppShell(): React.ReactElement {
         return
       }
 
-      // Ctrl+/ — Shortcuts help
-      if (mod && e.key === '/') {
+      // Ctrl+/ or F1 — Shortcuts help
+      if ((mod && e.key === '/') || e.key === 'F1') {
         e.preventDefault()
         setShortcutsOpen(true)
-        return
-      }
-
-      // Don't trigger navigation shortcuts when typing in input/textarea
-      const tag = (e.target as HTMLElement)?.tagName
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) {
-        // Esc blurs the field AND closes any open modals
-        if (e.key === 'Escape') {
-          (e.target as HTMLElement).blur()
-          if (paletteOpenRef.current) setPaletteOpen(false)
-          if (shortcutsOpenRef.current) setShortcutsOpen(false)
-        }
         return
       }
 
@@ -246,6 +253,20 @@ export function AppShell(): React.ReactElement {
       onSelect: () => setShortcutsOpen(true)
     },
     {
+      id: 'focus-composer',
+      label: 'Focus Composer',
+      description: 'Jump to the message input field',
+      icon: <MessageSquare size={14} />,
+      onSelect: () => window.dispatchEvent(new CustomEvent('focus-composer'))
+    },
+    {
+      id: 'import-star-list',
+      label: 'Import Star List',
+      description: 'Import Mert\'s curated GitHub star list (29 repos)',
+      icon: <Github size={14} />,
+      onSelect: () => navigate('/settings/github')
+    },
+    {
       id: 'toggle-theme',
       label: 'Toggle Theme',
       description: 'Switch between light and dark theme',
@@ -255,7 +276,7 @@ export function AppShell(): React.ReactElement {
   ]
 
   return (
-    <div className="flex h-full w-full bg-[var(--ivory-bg)]">
+    <div className="flex h-full w-full bg-[var(--ivory-bg)]" data-testid="app-shell">
       {/* Left Sidebar */}
       <Sidebar />
 
@@ -265,7 +286,7 @@ export function AppShell(): React.ReactElement {
       </div>
 
       {/* Right Inspector */}
-      <RightInspector />
+      {showInspector && <RightInspector />}
 
       {/* Command Palette */}
       <CommandPalette

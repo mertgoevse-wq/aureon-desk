@@ -9,10 +9,10 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<string, string> = {
-  default: 'bg-[var(--ivory-surface-2)] text-[var(--ivory-text-2)]',
-  success: 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)]',
-  warning: 'bg-[var(--ivory-warning-bg)] text-[var(--ivory-warning)]',
-  error: 'bg-[var(--ivory-error-bg)] text-[var(--ivory-error)]'
+  default: 'bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] border border-[var(--ivory-border)]',
+  success: 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] border border-[var(--ivory-success)]/20',
+  warning: 'bg-[var(--ivory-warning-bg)] text-[var(--ivory-warning)] border border-[var(--ivory-warning)]/20',
+  error: 'bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border border-[var(--ivory-error)]/20'
 }
 
 const sizeClasses: Record<string, string> = {
@@ -27,7 +27,7 @@ export function Badge({
 }: BadgeProps): React.ReactElement {
   return (
     <span
-      className={`inline-flex items-center font-medium rounded-[var(--radius-sm)]
+      className={`inline-flex items-center font-medium rounded-[var(--radius-full)]
         ${variantClasses[variant]} ${sizeClasses[size]}`}
     >
       {children}

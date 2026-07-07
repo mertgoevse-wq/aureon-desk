@@ -1,26 +1,58 @@
+@import "tailwindcss";
+@source "../**/*.{ts,tsx}";
+@source "../../shared/**/*.{ts,tsx}";
 /* Aureon Desk — Design Tokens */
 /* Warm ivory professional desktop theme */
 
 :root {
   /* === COLOR PALETTE === */
-  --ivory-bg: #FAF8F5;
-  --ivory-surface: #F5F1EB;
-  --ivory-surface-2: #EDE7DD;
-  --ivory-surface-3: #E5DED3;
-  --ivory-border: #E0D8CC;
-  --ivory-border-2: #D4CBB9;
-  --ivory-text: #2C2416;
-  --ivory-text-2: #6B5E4A;
-  --ivory-text-3: #9B8D7A;
-  --ivory-accent: #C75B39;
-  --ivory-accent-hover: #B04D2E;
-  --ivory-accent-2: #8B5E3C;
-  --ivory-success: #5C8A5E;
-  --ivory-success-bg: #ECF4EC;
-  --ivory-warning: #C2953E;
-  --ivory-warning-bg: #FDF6E8;
-  --ivory-error: #B8453C;
-  --ivory-error-bg: #FBEDEC;
+  --color-bg: #FAF8F5;
+  --color-surface: #F5F1EB;
+  --color-surface-hover: #EDE7DD;
+  --color-surface-active: #E5DED3;
+  --color-elevated: #FDFBF9;
+  --color-elevated-hover: #F8F4EE;
+  --color-border: #E0D8CC;
+  --color-border-hover: #D4CBB9;
+  --color-border-strong: #C8BDA8;
+  --color-text: #2C2416;
+  --color-text-secondary: #6B5E4A;
+  --color-text-muted: #9B8D7A;
+  --color-accent: #C75B39;
+  --color-accent-hover: #B04D2E;
+  --color-accent-light: #FDF0EB;
+  --color-accent-2: #8B5E3C;
+  --color-active-bg: #EDE4D8;
+  --color-success: #5C8A5E;
+  --color-success-bg: #ECF4EC;
+  --color-warning: #C2953E;
+  --color-warning-bg: #FDF6E8;
+  --color-danger: #B8453C;
+  --color-danger-bg: #FBEDEC;
+
+  /* Backward-compat aliases (deprecate over time) */
+  --ivory-bg: var(--color-bg);
+  --ivory-surface: var(--color-surface);
+  --ivory-surface-2: var(--color-surface-hover);
+  --ivory-surface-3: var(--color-surface-active);
+  --ivory-elevated: var(--color-elevated);
+  --ivory-elevated-hover: var(--color-elevated-hover);
+  --ivory-border: var(--color-border);
+  --ivory-border-2: var(--color-border-hover);
+  --ivory-text: var(--color-text);
+  --ivory-text-2: var(--color-text-secondary);
+  --ivory-text-3: var(--color-text-muted);
+  --ivory-accent: var(--color-accent);
+  --ivory-accent-hover: var(--color-accent-hover);
+  --ivory-accent-light: var(--color-accent-light);
+  --ivory-accent-2: var(--color-accent-2);
+  --ivory-active-bg: var(--color-active-bg);
+  --ivory-success: var(--color-success);
+  --ivory-success-bg: var(--color-success-bg);
+  --ivory-warning: var(--color-warning);
+  --ivory-warning-bg: var(--color-warning-bg);
+  --ivory-error: var(--color-danger);
+  --ivory-error-bg: var(--color-danger-bg);
 
   /* === TYPOGRAPHY === */
   --font-display: 'Crimson Text', Georgia, 'Times New Roman', serif;
@@ -54,19 +86,20 @@
   --radius-xl: 16px;
   --radius-full: 9999px;
 
+  /* === FOCUS === */
+  --focus-ring-color: var(--color-accent);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
   /* === SHADOWS — refined for depth === */
   --shadow-none: 0 0 0 0 transparent;
   --shadow-xs: 0 1px 2px rgba(44, 36, 22, 0.03);
-  --shadow-sm: 0 1px 3px rgba(44, 36, 22, 0.05);
-  --shadow-md: 0 4px 12px rgba(44, 36, 22, 0.06);
-  --shadow-lg: 0 8px 24px rgba(44, 36, 22, 0.08);
-  --shadow-xl: 0 16px 40px rgba(44, 36, 22, 0.10);
-  --shadow-overlay: 0 4px 16px rgba(44, 36, 22, 0.12);
-
-  /* === FOCUS === */
-  --focus-ring-color: var(--ivory-accent);
-  --focus-ring-width: 2px;
-  --focus-ring-offset: 2px;
+  --shadow-sm: 0 1px 3px rgba(44, 36, 22, 0.05), 0 1px 2px rgba(44, 36, 22, 0.03);
+  --shadow-md: 0 4px 16px rgba(44, 36, 22, 0.05), 0 1px 4px rgba(44, 36, 22, 0.03);
+  --shadow-lg: 0 8px 32px rgba(44, 36, 22, 0.06), 0 2px 8px rgba(44, 36, 22, 0.04);
+  --shadow-xl: 0 16px 48px rgba(44, 36, 22, 0.08), 0 4px 16px rgba(44, 36, 22, 0.04);
+  --shadow-overlay: 0 4px 24px rgba(44, 36, 22, 0.10);
+  --shadow-card: 0 1px 3px rgba(44, 36, 22, 0.04), 0 1px 2px rgba(44, 36, 22, 0.02);
 
   /* === LAYOUT === */
   --sidebar-width: 280px;
@@ -82,8 +115,6 @@
 *,
 *::before,
 *::after {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
@@ -94,6 +125,7 @@ html, body, #root {
 }
 
 body {
+  margin: 0;
   font-family: var(--font-body);
   font-size: var(--text-base);
   color: var(--ivory-text);

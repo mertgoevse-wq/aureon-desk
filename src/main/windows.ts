@@ -1,5 +1,6 @@
-import { BrowserWindow, shell, app } from 'electron'
+import { BrowserWindow, shell, app, nativeImage } from 'electron'
 import { join } from 'path'
+import { existsSync } from 'fs'
 import { logger } from './utils/logger'
 
 let mainWindow: BrowserWindow | null = null
@@ -12,6 +13,7 @@ export function createMainWindow(): BrowserWindow {
     minHeight: 600,
     show: false,
     title: 'Aureon Desk',
+    icon: getAppIcon(),
     backgroundColor: '#FAF8F5',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -44,6 +46,14 @@ export function createMainWindow(): BrowserWindow {
 
   logger.info('Main window created')
   return mainWindow
+}
+
+function getAppIcon(): string | undefined {
+  // Try the icon.ico path (works in dev and production via electron-builder)
+  const devPath = join(__dirname, '../../build/icon.ico')
+  if (existsSync(devPath)) return devPath
+  // In packaged apps, electron-builder handles the icon automatically
+  return undefined
 }
 
 export function getMainWindow(): BrowserWindow | null {

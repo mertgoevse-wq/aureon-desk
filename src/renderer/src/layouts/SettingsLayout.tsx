@@ -34,7 +34,7 @@ export function SettingsLayout(): React.ReactElement {
         aria-label="Settings navigation"
       >
         <div className="px-4 py-3 border-b border-[var(--ivory-border)]">
-          <h2 className="text-sm font-semibold display-text text-[var(--ivory-text)] flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-[var(--ivory-text)] flex items-center gap-2">
             <Settings size={16} />
             Settings
           </h2>
@@ -47,10 +47,10 @@ export function SettingsLayout(): React.ReactElement {
                 key={item.path}
                 onClick={() => navigate(item.path)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2.5 transition-all duration-[var(--transition-fast)]
+                className={`w-full text-left px-4 py-2.5 text-[13px] flex items-center gap-2.5 transition-all duration-[var(--transition-fast)] leading-none
                   ${isActive
-                    ? 'bg-[var(--ivory-surface-2)] text-[var(--ivory-text)] font-medium border-r-2 border-r-[var(--ivory-accent)]'
-                    : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+                    ? 'bg-[var(--ivory-surface-2)] text-[var(--ivory-text)] font-semibold border-r-2 border-r-[var(--ivory-accent)]'
+                    : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] font-medium'}`}
               >
                 {item.icon}
                 {item.label}

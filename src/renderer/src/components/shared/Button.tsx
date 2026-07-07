@@ -8,10 +8,10 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<string, string> = {
-  primary: 'bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-hover)] active:scale-[0.98] shadow-[var(--shadow-sm)]',
-  secondary: 'bg-[var(--ivory-surface)] text-[var(--ivory-text)] border border-[var(--ivory-border)] hover:bg-[var(--ivory-surface-2)] hover:border-[var(--ivory-border-2)]',
+  primary: 'bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-hover)] active:scale-[0.98] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]',
+  secondary: 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] border border-[var(--ivory-border)] hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-border-2)] shadow-[var(--shadow-xs)]',
   ghost: 'bg-transparent text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)] hover:text-[var(--ivory-text)]',
-  danger: 'bg-[var(--ivory-error)] text-white hover:opacity-90 active:scale-[0.98]'
+  danger: 'bg-[var(--ivory-error)] text-white hover:opacity-90 active:scale-[0.98] shadow-[var(--shadow-sm)]'
 }
 
 const sizeClasses: Record<string, string> = {
@@ -33,7 +33,7 @@ export function Button({
 
   return (
     <button
-      className={`inline-flex items-center justify-center rounded-[var(--radius-md)] 
+      className={`inline-flex items-center justify-center rounded-[var(--radius-lg)] 
         font-medium transition-all duration-[var(--transition-fast)]
         focus-visible:outline-2 focus-visible:outline-[var(--ivory-accent)] 
         focus-visible:outline-offset-2

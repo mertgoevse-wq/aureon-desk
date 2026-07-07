@@ -12,9 +12,16 @@ export function Input({
   hint,
   className = '',
   id,
+  onChange,
+  onInput,
   ...props
 }: InputProps): React.ReactElement {
   const inputId = id || label?.toLowerCase().replace(/\s+/g, '-')
+
+  const handleInput = (event: React.InputEvent<HTMLInputElement>) => {
+    onInput?.(event)
+    onChange?.(event as unknown as React.ChangeEvent<HTMLInputElement>)
+  }
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -28,10 +35,11 @@ export function Input({
       )}
       <input
         id={inputId}
-        className={`px-3 py-2 text-sm rounded-[var(--radius-md)] bg-[var(--ivory-surface)]
+        onInput={handleInput}
+        className={`px-3 py-2 text-sm rounded-[var(--radius-lg)] bg-[var(--ivory-elevated)]
           border border-[var(--ivory-border)] text-[var(--ivory-text)]
           placeholder:text-[var(--ivory-text-3)]
-          hover:border-[var(--ivory-border-2)]
+          shadow-[var(--shadow-xs)] hover:border-[var(--ivory-border-2)]
           focus:outline-none focus:border-[var(--ivory-accent)] focus:ring-1 focus:ring-[var(--ivory-accent)]
           transition-colors duration-[var(--transition-fast)]
           ${error ? 'border-[var(--ivory-error)] hover:border-[var(--ivory-error)] focus:border-[var(--ivory-error)] focus:ring-[var(--ivory-error)]' : ''}
@@ -58,9 +66,16 @@ export function Textarea({
   error,
   className = '',
   id,
+  onChange,
+  onInput,
   ...props
 }: TextareaProps): React.ReactElement {
   const textareaId = id || label?.toLowerCase().replace(/\s+/g, '-')
+
+  const handleInput = (event: React.InputEvent<HTMLTextAreaElement>) => {
+    onInput?.(event)
+    onChange?.(event as unknown as React.ChangeEvent<HTMLTextAreaElement>)
+  }
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -74,10 +89,11 @@ export function Textarea({
       )}
       <textarea
         id={textareaId}
-        className={`px-3 py-2 text-sm rounded-[var(--radius-md)] bg-[var(--ivory-surface)]
+        onInput={handleInput}
+        className={`px-3 py-2 text-sm rounded-[var(--radius-lg)] bg-[var(--ivory-elevated)]
           border border-[var(--ivory-border)] text-[var(--ivory-text)]
           placeholder:text-[var(--ivory-text-3)]
-          hover:border-[var(--ivory-border-2)]
+          shadow-[var(--shadow-xs)] hover:border-[var(--ivory-border-2)]
           focus:outline-none focus:border-[var(--ivory-accent)] focus:ring-1 focus:ring-[var(--ivory-accent)]
           transition-colors duration-[var(--transition-fast)] resize-vertical min-h-[80px]
           ${error ? 'border-[var(--ivory-error)]' : ''}

@@ -49,6 +49,7 @@ export function RightInspector(): React.ReactElement {
           onClick={toggleInspector}
           className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
           title="Open Inspector"
+          data-testid="inspector-toggle"
         >
           <PanelRightOpen size={16} />
         </button>
@@ -67,48 +68,52 @@ export function RightInspector(): React.ReactElement {
       <div
         className="flex flex-col h-full border-l border-[var(--ivory-border)] bg-[var(--ivory-surface)]"
         style={{ width: inspectorWidth }}
+        data-testid="router-panel"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--ivory-border)]">
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--ivory-border)]">
+          <div className="flex items-center gap-2">
             <Brain size={14} className="text-[var(--ivory-accent)]" />
-            <h2 className="text-sm font-semibold display-text text-[var(--ivory-text)]">
+            <h2 className="text-sm font-semibold text-[var(--ivory-text)]">
               Router
             </h2>
           </div>
           <button
             onClick={toggleInspector}
-            className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
+            className="p-1.5 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
+            aria-label="Close inspector"
           >
             <PanelRightClose size={16} />
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto py-3">
           {isLoading ? (
             <div className="flex items-center justify-center py-16">
-              <p className="text-xs text-[var(--ivory-text-3)] animate-pulse">Analyzing prompt...</p>
+              <p className="text-xs text-[var(--ivory-text-3)] animate-pulse-subtle">Analyzing prompt…</p>
             </div>
           ) : error ? (
-            <div className="p-3">
-              <div className="p-3 rounded-[var(--radius-md)] bg-[var(--ivory-error-bg)] border border-[var(--ivory-error-bg)]">
+            <div className="px-4">
+              <div className="p-3 rounded-lg bg-[var(--ivory-error-bg)] border border-[var(--ivory-error)]/15">
                 <p className="text-xs text-[var(--ivory-error)]">{error}</p>
               </div>
             </div>
           ) : !currentAnalysis ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-              <Brain size={28} className="text-[var(--ivory-text-3)] mb-3" strokeWidth={1.5} />
-              <p className="text-sm text-[var(--ivory-text-2)] font-medium mb-1">
+            <div className="flex flex-col items-center justify-center py-16 text-center px-6">
+              <div className="w-12 h-12 rounded-xl bg-[var(--ivory-surface-2)] flex items-center justify-center mb-4">
+                <Brain size={22} className="text-[var(--ivory-text-3)]" strokeWidth={1.5} />
+              </div>
+              <p className="text-[13px] text-[var(--ivory-text-2)] font-medium mb-2">
                 Prompt Intelligence
               </p>
-              <p className="text-xs text-[var(--ivory-text-3)] max-w-[200px]">
-                Send a message to see intent classification, agent routing, skill matching, and risk analysis.
+              <p className="text-xs text-[var(--ivory-text-3)] max-w-[200px] leading-relaxed">
+                Send a message to see intent analysis, agent routing, skill matching, and risk assessment.
               </p>
               <ProjectContextSection project={activeProject} />
             </div>
           ) : (
-            <div>
+            <div className="px-3">
               <AnalysisView analysis={currentAnalysis} />
               <ProjectContextSection project={activeProject} />
             </div>
@@ -167,10 +172,10 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
   const { analysis: pa, routing } = analysis
 
   const riskColors: Record<string, string> = {
-    low: 'bg-green-100 text-green-700',
-    medium: 'bg-amber-100 text-amber-700',
-    high: 'bg-orange-100 text-orange-700',
-    destructive: 'bg-red-100 text-red-700',
+    low: 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)]',
+    medium: 'bg-[var(--ivory-warning-bg)] text-[var(--ivory-warning)]',
+    high: 'bg-orange-50 text-orange-700',
+    destructive: 'bg-[var(--ivory-error-bg)] text-[var(--ivory-error)]',
   }
 
   const intentColors: Record<string, string> = {
@@ -197,7 +202,7 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
   }
 
   return (
-    <div className="p-3 space-y-4 text-xs">
+    <div className="space-y-2.5 text-xs">
       <Section icon={<Target size={12} />} title="Intent" collapsible>
         <div className="flex items-center gap-2">
           <span className={`font-semibold text-sm ${intentColors[pa.intent] || ''}`}>
@@ -220,7 +225,7 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
         <div className="flex items-center gap-1.5">
           <span className="font-medium text-[var(--ivory-text)]">{routing.primaryAgent.name}</span>
           {routing.primaryAgent.isDestructive && (
-            <AlertTriangle size={10} className="text-red-500" />
+            <AlertTriangle size={10} className="text-[var(--ivory-error)]" />
           )}
         </div>
         <p className="text-[10px] text-[var(--ivory-text-3)] mt-0.5">
@@ -247,7 +252,7 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
           <div className="mt-1.5 space-y-1">
             {routing.riskWarnings.map((w, i) => (
               <div key={i} className="flex items-start gap-1 text-[10px] text-[var(--ivory-text-2)]">
-                <Info size={10} className="mt-0.5 shrink-0 text-amber-500" />
+                <Info size={10} className="mt-0.5 shrink-0 text-[var(--ivory-warning)]" />
                 <span>{w}</span>
               </div>
             ))}
@@ -312,7 +317,7 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
                   <p className="text-[11px] font-medium text-[var(--ivory-text)]">{step.agentName}</p>
                   <p className="text-[10px] text-[var(--ivory-text-3)]">{step.description}</p>
                   {step.requiresConfirmation && (
-                    <span className="inline-block mt-1 text-[9px] text-red-600">⚠️ Requires confirmation</span>
+                    <span className="inline-block mt-1 text-[9px] text-[var(--ivory-error)]">⚠️ Requires confirmation</span>
                   )}
                 </div>
               </div>
@@ -322,12 +327,12 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
       )}
 
       {routing.requiresConfirmation && (
-        <div className="p-2 rounded-[var(--radius-sm)] bg-red-50 border border-red-200">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-red-700">
+        <div className="p-2 rounded-[var(--radius-sm)] bg-[var(--ivory-error-bg)] border border-[var(--ivory-error)]/20">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--ivory-error)]">
             <AlertTriangle size={12} />
             Confirmation Required
           </div>
-          <p className="text-[10px] text-red-600 mt-0.5">
+          <p className="text-[10px] text-[var(--ivory-error)]/80 mt-0.5">
             This operation requires your confirmation before execution.
           </p>
         </div>
@@ -355,15 +360,15 @@ function Section({
 }): React.ReactElement {
   const [open, setOpen] = React.useState(true)
   return (
-    <div className="border-b border-[var(--ivory-border)] pb-3 last:border-0 last:pb-0">
+    <div className="rounded-lg bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/60 overflow-hidden">
       <button
         onClick={() => collapsible && setOpen(!open)}
-        className="flex items-center gap-1.5 mb-1.5 text-[10px] font-medium text-[var(--ivory-text-3)] uppercase tracking-wide w-full text-left"
+        className="flex items-center gap-1.5 px-3 py-2 text-[10px] font-medium text-[var(--ivory-text-3)] uppercase tracking-wide w-full text-left hover:bg-[var(--ivory-surface)]/50 transition-colors"
       >
         {icon}
         {title}
       </button>
-      {open && children}
+      {open && <div className="px-3 pb-3">{children}</div>}
     </div>
   )
 }

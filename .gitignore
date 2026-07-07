@@ -23,6 +23,13 @@ dist/*.msi
 coverage/
 .nyc_output/
 
+# Playwright
+playwright-report/
+test-results/
+tests/e2e/artifacts/*.png
+tests/e2e/artifacts/**/*.png
+!tests/e2e/artifacts/.gitkeep
+
 # Secrets & credentials
 *.pem
 *.key

@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid'
 import fs from 'fs'
 import path from 'path'
 import { getDb } from '../db/connection'
-import { githubImports, importedItems, importWarnings, importLogs } from '../db/schema'
+import { githubImports, importedItems, importWarnings, importLogs, prompts, systemPrompts, approvedSkills } from '../db/schema'
 import { eq } from 'drizzle-orm'
 import { classifyRepo } from './repo-classifier'
 import { parseFileContent, shouldProcessFile } from './import-parser'
@@ -251,6 +251,101 @@ export const githubImportService = {
       }
     }
     return results
+  },
+
+  /** Approve an imported item — converts it to a real prompt, system prompt, or skill */
+  approveItem(id: string, approveAs: 'prompt' | 'system_prompt' | 'skill'): { success: boolean; newId?: string; error?: string } {
+    const db = getDb()
+    const item = this.getItem(id)
+    if (!item) return { success: false, error: 'Item not found' }
+    if (item.status === 'rejected') return { success: false, error: 'Cannot approve a rejected item' }
+    if (item.status === 'enabled') return { success: false, error: 'Item already approved. Disable it first to re-approve.' }
+
+    const now = new Date().toISOString()
+    const newId = uuid()
+
+    try {
+      if (approveAs === 'prompt') {
+        db.insert(prompts).values({
+          id: newId,
+          title: item.title.slice(0, 200),
+          content: item.content,
+          description: item.description || null,
+          variables: null,
+          tags: item.tags || null,
+          category: item.category || null,
+          favorite: 0,
+          usage_count: 0,
+          source: `github-import:${item.repo_url}`,
+          source_path: item.source_file,
+          is_template: 0,
+          created_at: now,
+          updated_at: now
+        } as never).run()
+        logger.info(`Approved imported item "${item.title}" as prompt: ${newId}`)
+      } else if (approveAs === 'system_prompt') {
+        db.insert(systemPrompts).values({
+          id: newId,
+          name: item.title.slice(0, 200),
+          description: item.description || null,
+          content: item.content,
+          tags: item.tags || null,
+          category: item.category || null,
+          is_default: 0,
+          is_archived: 0,
+          priority: 0,
+          created_at: now,
+          updated_at: now
+        } as never).run()
+        logger.info(`Approved imported item "${item.title}" as system prompt: ${newId}`)
+      } else if (approveAs === 'skill') {
+        // Parse tags for skill registry
+        let tags: string[] = []
+        if (item.tags) {
+          try { tags = JSON.parse(item.tags) } catch { /* raw string */ tags = item.tags.split(',').map(t => t.trim()) }
+        }
+        db.insert(approvedSkills).values({
+          id: newId,
+          name: item.title.slice(0, 200),
+          description: item.description || item.content.slice(0, 200),
+          content: item.content,
+          tags: JSON.stringify(tags.length > 0 ? tags : ['imported']),
+          source: `github-import:${item.repo_url}`,
+          source_path: item.source_file,
+          is_enabled: 1,
+          created_at: now
+        } as never).run()
+        logger.info(`Approved imported item "${item.title}" as skill: ${newId}`)
+      }
+
+      // Mark item as enabled + store approval provenance in description
+      const provenanceNote = `[APPROVED_AS:${approveAs}] ${item.description || ''}`
+      db.update(importedItems).set({
+        status: 'enabled' as ItemStatus,
+        description: provenanceNote
+      } as never).where(eq(importedItems.id, id)).run()
+
+      return { success: true, newId }
+    } catch (err) {
+      const msg = String(err)
+      logger.error(`Failed to approve item ${id}: ${msg}`)
+      return { success: false, error: msg }
+    }
+  },
+
+  /** Retry importing a previously failed repo */
+  retryImport(repoId: string): ImportResult {
+    const repo = this.getRepo(repoId)
+    if (!repo) {
+      return { repoId, repoUrl: '', status: 'failed', category: null, itemsFound: 0, itemsImported: 0, warnings: [], errors: ['Repo not found'], commitHash: null }
+    }
+    if (repo.status !== 'failed') {
+      return { repoId, repoUrl: repo.repo_url, status: repo.status, category: repo.category as ImportResult['category'], itemsFound: 0, itemsImported: 0, warnings: [], errors: ['Only failed repos can be retried'], commitHash: repo.commit_hash }
+    }
+
+    // Delete the failed repo first, then re-import
+    this.deleteRepo(repoId)
+    return this.importRepo(repo.repo_url, repo.branch)
   },
 
   /** Delete an imported repo and all its items, warnings, and local files */

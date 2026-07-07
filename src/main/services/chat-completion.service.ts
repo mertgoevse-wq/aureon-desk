@@ -1,6 +1,7 @@
 import { chatService } from './chat.service'
 import { providerService } from './provider.service'
 import { promptService } from './prompt.service'
+import { projectService } from './project.service'
 import { buildRequest } from './request-builder'
 import { resolvePrompt } from './hierarchy-resolver'
 import { logger } from '../utils/logger'
@@ -65,9 +66,19 @@ export const chatCompletionService = {
         systemPromptProfile = promptService.getDefaultSystemPrompt()
       }
 
-      if (systemPromptProfile) {
+      // Load project instructions if chat is associated with a project
+      let projectInstructions: string | undefined = undefined
+      if (chat.project_id) {
+        const project = projectService.getProject(chat.project_id)
+        if (project && project.instructions) {
+          projectInstructions = `Project: ${project.name}\n\n${project.instructions}`
+        }
+      }
+
+      if (systemPromptProfile || projectInstructions) {
         const hierarchyInput: HierarchyInput = {
           selectedProfile: systemPromptProfile,
+          projectInstructions,
           chatOverride: undefined,
           taskInstruction: undefined,
         }
@@ -98,7 +109,11 @@ export const chatCompletionService = {
       }
 
       // 6. Send to provider
-      logger.info(`Sending chat completion to ${provider.name} (${model.name})`, { adapter: provider.adapter })
+      const isLocal = provider.adapter === 'ollama' || provider.adapter === 'lmstudio'
+      logger.info(`Sending chat completion to ${provider.name} (${model.name})`, { 
+        adapter: provider.adapter,
+        isLocal 
+      })
       const startTime = Date.now()
 
       const responseText = await this.callProvider(provider, model, built)
@@ -130,6 +145,18 @@ export const chatCompletionService = {
         errorCode = 'timeout'
       } else if (errorMsg.includes('401') || errorMsg.includes('403') || errorMsg.includes('Unauthorized')) {
         errorCode = 'no_api_key'
+      } else if (errorMsg.includes('ECONNREFUSED') || errorMsg.includes('fetch failed') || errorMsg.includes('ENOTFOUND')) {
+        errorCode = 'provider_error'
+        // Give a better message for offline local providers
+        if (errorMsg.includes('127.0.0.1') || errorMsg.includes('localhost') || errorMsg.includes('11434') || errorMsg.includes('1234')) {
+          // Replace raw error with user-friendly message
+          return {
+            success: false,
+            error: `Cannot connect to local provider. Is the server running? Check:\n• Ollama: http://localhost:11434\n• LM Studio: http://localhost:1234\n\nOriginal error: ${errorMsg.slice(0, 200)}`,
+            errorCode: 'provider_error',
+            warnings: warnings.length > 0 ? warnings : undefined,
+          }
+        }
       }
 
       return {
@@ -165,8 +192,10 @@ export const chatCompletionService = {
       case 'google':
         return this.callGoogle(built, model, provider)
       case 'ollama':
+        // Try native Ollama API first, fallback to OpenAI-compatible
+        return this.callOllamaNative(built, model, provider)
       case 'lmstudio':
-        // Use provider's configured base_url (defaults from constants are correct)
+        // LM Studio uses OpenAI-compatible endpoint
         return this.callOpenAICompatible(built, model, provider)
       case 'openai':
       case 'openrouter':
@@ -376,4 +405,88 @@ export const chatCompletionService = {
 
     return candidates[0].content.parts[0].text
   },
+
+  /**
+   * Ollama native /api/chat endpoint.
+   * Falls back to OpenAI-compatible /v1/chat/completions if native fails.
+   */
+  async callOllamaNative(
+    built: ReturnType<typeof buildRequest>,
+    model: ModelRow,
+    provider: ProviderRow,
+  ): Promise<string> {
+    try {
+      return await this._callOllamaApiChat(built, model, provider)
+    } catch (err) {
+      const msg = String(err)
+      // If native API fails with connection error, try OpenAI-compatible
+      if (msg.includes('ECONNREFUSED') || msg.includes('fetch failed') || msg.includes('404')) {
+        logger.info('Ollama native API failed, falling back to OpenAI-compatible endpoint', { error: msg.slice(0, 100) })
+        return this.callOpenAICompatible(built, model, provider)
+      }
+      throw err
+    }
+  },
+
+  /**
+   * Ollama native /api/chat endpoint.
+   */
+  async _callOllamaApiChat(
+    built: ReturnType<typeof buildRequest>,
+    model: ModelRow,
+    provider: ProviderRow,
+  ): Promise<string> {
+    // Strip /v1 suffix from base URL if present for native API
+    const baseUrl = (built.baseUrl || 'http://localhost:11434').replace(/\/v1\/?$/, '')
+    const url = `${baseUrl}/api/chat`
+
+    // Build messages including system prompt
+    const messages: Array<{ role: string; content: string }> = []
+    if (built.systemPrompt) {
+      messages.push({ role: 'system', content: built.systemPrompt })
+    }
+    for (const msg of built.messages) {
+      messages.push({ role: msg.role, content: msg.content })
+    }
+
+    const body = JSON.stringify({
+      model: model.name,
+      messages,
+      stream: false,
+      options: {
+        temperature: 0.7,
+      },
+    })
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    }
+
+    logger.info(`POST ${redactSecrets(url)}`, { model: model.name, msgCount: messages.length })
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body,
+      signal: AbortSignal.timeout(120000),
+    })
+
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => 'Unable to read error body')
+      logger.error(`Ollama error (${response.status}): ${redactSecrets(errorBody.slice(0, 500))}`)
+      throw new Error(`Ollama returned error ${response.status}: ${errorBody.slice(0, 300)}`)
+    }
+
+    const data = await response.json() as Record<string, unknown>
+
+    // Ollama native response: { model, message: { role, content }, done }
+    const message = data.message as { role?: string; content?: string } | undefined
+    if (!message?.content) {
+      logger.error('Unexpected Ollama response format', { data: JSON.stringify(data).slice(0, 500) })
+      throw new Error('Unexpected response format from Ollama')
+    }
+
+    return message.content
+  },
+
 }

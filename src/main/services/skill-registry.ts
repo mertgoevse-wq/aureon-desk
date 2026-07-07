@@ -1,4 +1,6 @@
 import type { SkillDefinition, PermissionType } from '../../shared/types/routing'
+import { getDb } from '../db/connection'
+import { approvedSkills } from '../db/schema'
 
 /**
  * SkillRegistry — built-in skill definitions.
@@ -355,5 +357,47 @@ export function findSkillsByPermissions(allowedPermissions: PermissionType[]): S
 
 /** Merge built-in skills with imported/local skills (from filesystem discovery) */
 export function getAllSkills(importedSkills: SkillDefinition[] = []): SkillDefinition[] {
-  return [...BUILTIN_SKILLS, ...importedSkills]
+  const approved = getApprovedSkills()
+  return [...BUILTIN_SKILLS, ...approved, ...importedSkills]
+}
+
+/** Get skills approved from GitHub imports */
+function getApprovedSkills(): SkillDefinition[] {
+  try {
+    const db = getDb()
+    const rows = db.select().from(approvedSkills).all() as Array<{
+      id: string
+      name: string
+      description: string | null
+      content: string
+      tags: string | null
+      source: string | null
+      source_path: string | null
+      is_enabled: number
+      created_at: string
+    }>
+
+    return rows
+      .filter(r => r.is_enabled)
+      .map(r => {
+        let tags: string[] = ['imported']
+        if (r.tags) {
+          try { tags = JSON.parse(r.tags) } catch { tags = r.tags.split(',').map(t => t.trim()) }
+        }
+        return {
+          id: `imported-${r.id}`,
+          name: r.name,
+          description: r.description || r.content.slice(0, 200),
+          tags,
+          requiredPermissions: [] as PermissionType[],
+          allowedFilePatterns: [] as string[],
+          version: '1.0.0',
+          source: 'imported' as const,
+          isEnabled: true
+        } as SkillDefinition
+      })
+  } catch (err) {
+    // approved_skills table may not exist yet (pre-migration)
+    return []
+  }
 }

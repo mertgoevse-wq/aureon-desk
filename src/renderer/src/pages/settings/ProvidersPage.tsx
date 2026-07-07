@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import {
   Eye, EyeOff, Trash2, Check, AlertTriangle, Plus,
-  Wifi, Shield, Zap, Server, Monitor, Globe, Star, X, Wrench
+  Wifi, Zap, Server, Monitor, Globe, Star, X, Wrench,
+  Activity, Clock
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'
 import { Input } from '../../components/shared/Input'
@@ -23,6 +24,21 @@ const CAPABILITY_LABELS: Record<ProviderCapability, { label: string; icon: React
   local: { label: 'Local', icon: <Monitor size={10} /> },
 }
 
+interface ProviderTestResult {
+  success: boolean
+  message: string
+  latencyMs: number
+  checkedAt: string
+}
+
+function sanitizeTestMessage(message: string): string {
+  return message
+    .replace(/sk-[A-Za-z0-9_-]{12,}/g, '[REDACTED_KEY]')
+    .replace(/AIza[A-Za-z0-9_-]{12,}/g, '[REDACTED_GOOGLE_KEY]')
+    .replace(/Bearer\s+[A-Za-z0-9._-]{12,}/gi, 'Bearer [REDACTED]')
+    .replace(/(x-api-key|api[_-]?key)\s*[:=]\s*[A-Za-z0-9._-]{8,}/gi, '$1=[REDACTED]')
+}
+
 export function ProvidersPage(): React.ReactElement {
   const api = useIpc()
   const { providers, adapters, isLoading, setProviders, setAdapters, updateProvider } = useProviderStore()
@@ -31,8 +47,9 @@ export function ProvidersPage(): React.ReactElement {
   const [savingKey, setSavingKey] = useState<string | null>(null)
   const [keyStatus, setKeyStatus] = useState<Record<string, boolean>>({})
   const [testResults, setTestResults] = useState<Record<string, { success: boolean; message: string } | null>>({})
+  const [testCenterResults, setTestCenterResults] = useState<Record<string, ProviderTestResult>>({})
   const [testingId, setTestingId] = useState<string | null>(null)
-  const [editingBaseUrl, setEditingBaseUrl] = useState<Record<string, string>>({})
+  const [testingAll, setTestingAll] = useState(false)
   const [showCustomForm, setShowCustomForm] = useState(false)
   const [customForm, setCustomForm] = useState({ name: '', slug: '', baseUrl: '', apiKey: '' })
   const [customError, setCustomError] = useState<string | null>(null)
@@ -86,14 +103,59 @@ export function ProvidersPage(): React.ReactElement {
   const handleTestConnection = useCallback(async (providerId: string) => {
     setTestingId(providerId)
     try {
+      const startedAt = performance.now()
       const result = await api.providerTestConnection(providerId)
-      setTestResults(prev => ({ ...prev, [providerId]: result }))
+      const normalized = {
+        success: result.success,
+        message: sanitizeTestMessage(result.message),
+        latencyMs: Math.round(performance.now() - startedAt),
+        checkedAt: new Date().toISOString()
+      }
+      setTestResults(prev => ({ ...prev, [providerId]: { success: normalized.success, message: normalized.message } }))
+      setTestCenterResults(prev => ({ ...prev, [providerId]: normalized }))
       showToast(result.success ? 'success' : 'error', result.success ? 'Connection successful' : 'Connection failed')
     } catch (err) {
-      setTestResults(prev => ({ ...prev, [providerId]: { success: false, message: String(err) } }))
+      const message = sanitizeTestMessage(String(err))
+      setTestResults(prev => ({ ...prev, [providerId]: { success: false, message } }))
+      setTestCenterResults(prev => ({
+        ...prev,
+        [providerId]: { success: false, message, latencyMs: 0, checkedAt: new Date().toISOString() }
+      }))
     }
     finally { setTestingId(null) }
   }, [api])
+
+  const handleRunAllTests = useCallback(async () => {
+    setTestingAll(true)
+    try {
+      for (const provider of providers) {
+        setTestingId(provider.id)
+        const startedAt = performance.now()
+        try {
+          const result = await api.providerTestConnection(provider.id)
+          const normalized = {
+            success: result.success,
+            message: sanitizeTestMessage(result.message),
+            latencyMs: Math.round(performance.now() - startedAt),
+            checkedAt: new Date().toISOString()
+          }
+          setTestResults(prev => ({ ...prev, [provider.id]: { success: normalized.success, message: normalized.message } }))
+          setTestCenterResults(prev => ({ ...prev, [provider.id]: normalized }))
+        } catch (err) {
+          const message = sanitizeTestMessage(String(err))
+          setTestResults(prev => ({ ...prev, [provider.id]: { success: false, message } }))
+          setTestCenterResults(prev => ({
+            ...prev,
+            [provider.id]: { success: false, message, latencyMs: Math.round(performance.now() - startedAt), checkedAt: new Date().toISOString() }
+          }))
+        }
+      }
+      showToast('info', 'Provider checks completed')
+    } finally {
+      setTestingId(null)
+      setTestingAll(false)
+    }
+  }, [api, providers])
 
   const handleDeleteProvider = useCallback(async (providerId: string) => {
     if (!confirm('Delete this provider and all its models?')) return
@@ -124,35 +186,103 @@ export function ProvidersPage(): React.ReactElement {
   }, [customForm, api, loadData])
 
   return (
-    <div className="max-w-2xl px-8 py-8">
-      <div className="flex items-center justify-between mb-1">
-        <h2 className="text-xl font-semibold display-text">Providers & API Keys</h2>
+    <div className="max-w-4xl mx-auto px-6 py-6">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-xl font-semibold">Providers &amp; API Keys</h2>
+          <p className="text-sm text-[var(--ivory-text-3)] mt-1">
+            Manage your AI provider connections. Keys are encrypted with your OS credentials (DPAPI on Windows). Never stored in plaintext.
+          </p>
+        </div>
         <Button size="sm" onClick={() => setShowCustomForm(true)}>
           <Plus size={14} /> Add Custom
         </Button>
       </div>
-      <p className="text-sm text-[var(--ivory-text-3)] mb-6">
-        Manage your AI provider connections. Keys are encrypted with your OS credentials (DPAPI on Windows). Never stored in plaintext.
-      </p>
 
       {/* Safety notice */}
-      <div className="mb-6 p-3 rounded-[var(--radius-md)] bg-[var(--ivory-warning-bg)] border border-[var(--ivory-warning-bg)] text-xs text-[var(--ivory-warning)] flex items-start gap-2">
+      <div className="mb-5 p-3 rounded-[var(--radius-md)] bg-[var(--ivory-warning-bg)] border border-[var(--ivory-warning)]/20 text-xs text-[var(--ivory-warning)] flex items-start gap-2">
         <AlertTriangle size={14} className="shrink-0 mt-0.5" />
         <span>Sending messages to remote providers transmits your chat content to external servers. Local files referenced in prompts will also be sent.</span>
       </div>
 
+      <Card className="mb-5">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Activity size={16} className="text-[var(--ivory-accent)]" />
+              <h3 className="text-base font-semibold">Provider Test Center</h3>
+            </div>
+            <p className="text-xs text-[var(--ivory-text-3)] leading-relaxed">
+              Check credential status, local server reachability, response latency, and sanitized error details without exposing API keys.
+            </p>
+          </div>
+          <Button size="sm" variant="secondary" onClick={handleRunAllTests} disabled={testingAll || providers.length === 0} loading={testingAll}>
+            <Wifi size={14} /> Test All
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+          {providers.map(provider => {
+            const result = testCenterResults[provider.id]
+            const hasKey = keyStatus[provider.id]
+            const isLocal = provider.adapter === 'ollama' || provider.adapter === 'lmstudio'
+            const isTesting = testingId === provider.id
+            return (
+              <div key={provider.id} className="rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-bg)] p-3">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-[var(--ivory-text)] truncate">{provider.name}</p>
+                    <p className="text-[11px] text-[var(--ivory-text-3)] truncate">{provider.base_url || 'No base URL configured'}</p>
+                  </div>
+                  <ProviderStatusBadge
+                    hasKey={hasKey}
+                    isEnabled={provider.is_enabled === 1}
+                    testResult={result ? { success: result.success, message: result.message } : null}
+                    isLocal={isLocal}
+                  />
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                  <Badge variant={provider.is_enabled === 1 ? 'success' : 'default'} size="sm">
+                    {provider.is_enabled === 1 ? 'Enabled' : 'Disabled'}
+                  </Badge>
+                  <Badge variant={isLocal || hasKey ? 'success' : 'warning'} size="sm">
+                    {isLocal ? 'No key needed' : hasKey ? 'Key stored' : 'Missing key'}
+                  </Badge>
+                  {result && (
+                    <Badge variant={result.success ? 'success' : 'error'} size="sm">
+                      <Clock size={10} className="mr-0.5" /> {result.latencyMs} ms
+                    </Badge>
+                  )}
+                </div>
+                <p className={`min-h-10 text-[11px] leading-relaxed ${result ? (result.success ? 'text-[var(--ivory-success)]' : 'text-[var(--ivory-error)]') : 'text-[var(--ivory-text-3)]'}`}>
+                  {isTesting ? 'Testing connection...' : result?.message || 'Not tested yet.'}
+                </p>
+                <div className="flex items-center justify-between mt-3">
+                  <span className="text-[10px] text-[var(--ivory-text-3)]">
+                    {result ? new Date(result.checkedAt).toLocaleTimeString() : 'No result'}
+                  </span>
+                  <Button size="sm" variant="ghost" onClick={() => handleTestConnection(provider.id)} disabled={isTesting || testingAll} loading={isTesting}>
+                    <Wifi size={13} /> Test
+                  </Button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </Card>
+
       {/* Custom Provider Form */}
       {showCustomForm && (
-        <div className="mb-6 p-5 rounded-[var(--radius-lg)] border border-[var(--ivory-accent)] bg-[var(--ivory-bg)]">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold display-text">Add Custom OpenAI-Compatible Provider</h3>
+        <div className="mb-5 p-5 rounded-[var(--radius-lg)] border-2 border-[var(--ivory-accent)]/30 bg-[var(--ivory-bg)]">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold">Add Custom OpenAI-Compatible Provider</h3>
             <button onClick={() => setShowCustomForm(false)} className="text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]"><X size={16} /></button>
           </div>
           <div className="space-y-3">
             <Input label="Display Name" placeholder="My Provider" value={customForm.name}
               onChange={e => setCustomForm(f => ({ ...f, name: e.target.value }))} />
             <Input label="Slug (no spaces)" placeholder="my-provider" value={customForm.slug}
-              onChange={e => setCustomForm(f => ({ ...f, slug: e.target.value.replace(/\\s+/g, '-').toLowerCase() }))} />
+              onChange={e => setCustomForm(f => ({ ...f, slug: e.target.value.replace(/\s+/g, '-').toLowerCase() }))} />
             <Input label="Base URL" placeholder="http://localhost:8000/v1" value={customForm.baseUrl}
               onChange={e => setCustomForm(f => ({ ...f, baseUrl: e.target.value }))} />
             <Input label="API Key (optional)" type="password" placeholder="sk-..." value={customForm.apiKey}
@@ -163,7 +293,7 @@ export function ProvidersPage(): React.ReactElement {
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         {adapters.map((adapter: ProviderAdapterInfo) => {
           const provider = providers.find(p => p.slug === adapter.slug)
           const hasKey = provider ? keyStatus[provider.id] : false
@@ -176,12 +306,25 @@ export function ProvidersPage(): React.ReactElement {
           return (
             <Card key={adapter.slug}>
               {/* Header */}
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h3 className="text-base font-semibold display-text">{adapter.name}</h3>
-                  <p className="text-xs text-[var(--ivory-text-3)] mt-0.5">{adapter.description}</p>
+              <div className="flex items-start justify-between mb-4 gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-base font-semibold">{adapter.name}</h3>
+                    {/* Provider status */}
+                    {provider ? (
+                      <ProviderStatusBadge
+                        hasKey={hasKey}
+                        isEnabled={provider.is_enabled === 1}
+                        testResult={testResult}
+                        isLocal={adapter.capabilities.includes('local')}
+                      />
+                    ) : (
+                      <Badge variant="default" size="sm">Not configured</Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-[var(--ivory-text-3)] mt-0.5 leading-relaxed">{adapter.description}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   {provider && (
                     <>
                       <Button variant="ghost" size="sm" onClick={() => handleTestConnection(provider.id)} disabled={isTesting}>
@@ -192,7 +335,7 @@ export function ProvidersPage(): React.ReactElement {
                         checked={provider.is_enabled === 1}
                         onChange={(enabled) => handleToggleProvider(provider.id, enabled)}
                       />
-                      <button onClick={() => handleDeleteProvider(provider.id)} className="p-1 text-[var(--ivory-text-3)] hover:text-red-600" title="Delete provider">
+                      <button onClick={() => handleDeleteProvider(provider.id)} className="p-1 text-[var(--ivory-text-3)] hover:text-red-600 transition-colors" title="Delete provider" aria-label="Delete provider">
                         <Trash2 size={14} />
                       </button>
                     </>
@@ -200,8 +343,33 @@ export function ProvidersPage(): React.ReactElement {
                 </div>
               </div>
 
+              {/* Local provider help card */}
+              {adapter.capabilities.includes('local') && (
+                <div className="mb-4 p-3 rounded-lg bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-xs text-[var(--ivory-text-2)]">
+                  <p className="font-medium mb-1">
+                    {adapter.slug === 'ollama' ? '\uD83E\uDD99 Running Ollama locally' : '\uD83D\uDDA5\uFE0F Running LM Studio locally'}
+                  </p>
+                  <p className="text-[var(--ivory-text-3)] leading-relaxed">
+                    {adapter.slug === 'ollama'
+                      ? 'No API key needed. Make sure Ollama is running. Default URL: http://localhost:11434. Download from ollama.com.'
+                      : 'No API key needed. Make sure LM Studio is running with a model loaded. Default URL: http://localhost:1234/v1. Download from lmstudio.ai.'
+                    }
+                  </p>
+                </div>
+              )}
+
+              {/* OpenRouter help card */}
+              {adapter.slug === 'openrouter' && (
+                <div className="mb-4 p-3 rounded-lg bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-xs text-[var(--ivory-text-2)]">
+                  <p className="font-medium mb-1">OpenRouter — multi-provider access</p>
+                  <p className="text-[var(--ivory-text-3)] leading-relaxed">
+                    Use models ending with <code className="text-[10px] px-1 py-0.5 rounded bg-[var(--ivory-surface-2)]">:free</code> for zero-cost testing. Get an API key at openrouter.ai/keys.
+                  </p>
+                </div>
+              )}
+
               {/* Capabilities */}
-              <div className="flex flex-wrap gap-1 mb-3">
+              <div className="flex flex-wrap gap-1.5 mb-4">
                 {adapter.capabilities.map(cap => (
                   <Badge key={cap} variant={cap === 'local' ? 'success' : 'default'} size="sm">
                     <span className="flex items-center gap-0.5">
@@ -216,7 +384,7 @@ export function ProvidersPage(): React.ReactElement {
 
               {/* Test result */}
               {testResult && (
-                <div className={`mb-3 p-2 rounded-[var(--radius-sm)] text-xs ${testResult.success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                <div className={`mb-4 p-2.5 rounded-[var(--radius-md)] text-xs ${testResult.success ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] border border-[var(--ivory-success)]/20' : 'bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border border-[var(--ivory-error)]/20'}`}>
                   {testResult.success ? <Check size={12} className="inline mr-1" /> : <AlertTriangle size={12} className="inline mr-1" />}
                   {testResult.message}
                 </div>
@@ -224,8 +392,8 @@ export function ProvidersPage(): React.ReactElement {
 
               {/* API Key */}
               {adapter.authType !== 'none' && (
-                <div className="mb-3">
-                  <label className="text-sm font-medium text-[var(--ivory-text)] block mb-1.5">API Key</label>
+                <div className="mb-4">
+                  <label className="text-sm font-medium text-[var(--ivory-text)] block mb-2">API Key</label>
                   {hasKey ? (
                     <div className="flex items-center gap-2">
                       <div className="flex-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)] rounded-[var(--radius-md)] px-3 py-2 text-sm text-[var(--ivory-success)] font-mono">
@@ -237,8 +405,8 @@ export function ProvidersPage(): React.ReactElement {
                       </Button>
                     </div>
                   ) : (
-                    <div className="flex gap-2">
-                      <div className="flex-1 relative">
+                    <div className="flex flex-col gap-3">
+                      <div className="relative">
                         <Input
                           value={editing || ''}
                           onChange={(e) => provider && setEditingKey(prev => ({ ...prev, [provider.id]: e.target.value }))}
@@ -246,20 +414,23 @@ export function ProvidersPage(): React.ReactElement {
                           type={showing ? 'text' : 'password'}
                         />
                         <button onClick={() => provider && setShowKey(prev => ({ ...prev, [provider.id]: !showing }))}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]">
+                          className="absolute right-2.5 top-[30px] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] transition-colors"
+                          aria-label={showing ? 'Hide API key' : 'Show API key'}>
                           {showing ? <EyeOff size={14} /> : <Eye size={14} />}
                         </button>
                       </div>
-                      <Button size="sm" onClick={() => provider && handleSaveKey(provider.id)} disabled={!editing || saving}>
-                        {saving ? 'Saving...' : 'Save'}
-                      </Button>
+                      <div className="flex justify-end">
+                        <Button size="md" onClick={() => provider && handleSaveKey(provider.id)} disabled={!editing || saving}>
+                          {saving ? 'Saving...' : 'Save Key'}
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
               )}
 
               {/* Base URL */}
-              <div className="mb-3">
+              <div className="mb-4">
                 <Input label="Base URL" value={provider?.base_url || adapter.defaultBaseUrl}
                   onChange={(e) => provider && handleSetBaseUrl(provider.id, e.target.value)}
                   placeholder={adapter.defaultBaseUrl} />
@@ -267,7 +438,7 @@ export function ProvidersPage(): React.ReactElement {
 
               {/* Models */}
               {provider && provider.models && provider.models.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-[var(--ivory-border)]">
+                <div className="mt-4 pt-4 border-t border-[var(--ivory-border)]">
                   <p className="text-xs font-medium text-[var(--ivory-text-2)] mb-2">Models</p>
                   <div className="space-y-1">
                     {provider.models.map((model) => (
@@ -304,4 +475,32 @@ export function ProvidersPage(): React.ReactElement {
       </div>
     </div>
   )
+}
+
+// --- Provider Status Badge ---
+
+function ProviderStatusBadge({
+  hasKey, isEnabled, testResult, isLocal
+}: {
+  hasKey: boolean
+  isEnabled: boolean
+  testResult: { success: boolean; message: string } | null
+  isLocal: boolean
+}): React.ReactElement {
+  if (!isEnabled) {
+    return <Badge variant="default" size="sm">Disabled</Badge>
+  }
+  if (testResult) {
+    if (testResult.success) {
+      return <Badge variant="success" size="sm"><Check size={10} className="inline mr-0.5" />Tested</Badge>
+    }
+    return <Badge variant="error" size="sm"><AlertTriangle size={10} className="inline mr-0.5" />Test failed</Badge>
+  }
+  if (isLocal) {
+    return <Badge variant="success" size="sm"><Monitor size={10} className="inline mr-0.5" />Local</Badge>
+  }
+  if (hasKey) {
+    return <Badge variant="success" size="sm">Configured</Badge>
+  }
+  return <Badge variant="warning" size="sm">No API key</Badge>
 }

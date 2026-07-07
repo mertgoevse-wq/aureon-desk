@@ -90,10 +90,12 @@ describe('Command Palette Actions', () => {
     'toggle-inspector',
     'reset-layout',
     'shortcuts',
+    'focus-composer',
+    'import-star-list',
   ]
 
   it('should have all required command palette actions', () => {
-    expect(requiredActionIds.length).toBeGreaterThanOrEqual(14)
+    expect(requiredActionIds.length).toBeGreaterThanOrEqual(16)
     // Verify no duplicates
     expect(new Set(requiredActionIds).size).toBe(requiredActionIds.length)
   })
@@ -123,9 +125,11 @@ describe('Command Palette Actions', () => {
     expect(requiredActionIds).toContain('toggle-inspector')
   })
 
-  it('should include layout and help actions', () => {
+  it('should include layout, help, and utility actions', () => {
     expect(requiredActionIds).toContain('reset-layout')
     expect(requiredActionIds).toContain('shortcuts')
+    expect(requiredActionIds).toContain('focus-composer')
+    expect(requiredActionIds).toContain('import-star-list')
   })
 })
 
@@ -139,7 +143,7 @@ describe('Keyboard Shortcut Mappings', () => {
     { keys: 'Ctrl+B', description: /toggle.*sidebar/i },
     { keys: 'Ctrl+I', description: /toggle.*inspector/i },
     { keys: 'Esc', description: /close.*modal/i },
-    { keys: 'Ctrl+/', description: /shortcuts.*help/i },
+    { keys: 'Ctrl+/ or F1', description: /shortcuts.*help/i },
   ]
 
   it('should have all required shortcuts defined', () => {

@@ -208,6 +208,19 @@ export const importLogs = sqliteTable('import_logs', {
   created_at: text('created_at').notNull()
 })
 
+// --- Approved Skills (imported skills promoted to registry) ---
+export const approvedSkills = sqliteTable('approved_skills', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description'),
+  content: text('content').notNull(),
+  tags: text('tags'),
+  source: text('source'),
+  source_path: text('source_path'),
+  is_enabled: integer('is_enabled').notNull().default(1),
+  created_at: text('created_at').notNull()
+})
+
 // --- Settings (key-value) ---
 export const settings = sqliteTable('settings', {
   key: text('key').primaryKey(),

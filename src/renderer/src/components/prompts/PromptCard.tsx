@@ -33,7 +33,7 @@ export function PromptCard({
           >
             <Star size={14} fill={isFavorite ? 'currentColor' : 'none'} />
           </button>
-          <h3 className="text-sm font-semibold display-text text-[var(--ivory-text)] truncate">
+          <h3 className="text-sm font-semibold text-[var(--ivory-text)] truncate">
             {prompt.title}
           </h3>
           {prompt.is_template === 1 && (

@@ -28,8 +28,8 @@ export function Card({
     <Component
       onClick={onClick}
       className={`rounded-[var(--radius-lg)] border border-[var(--ivory-border)] 
-        bg-[var(--ivory-bg)] ${paddingClasses[padding]}
-        ${hover ? 'hover:border-[var(--ivory-border-2)] hover:shadow-[var(--shadow-sm)] transition-all duration-[var(--transition-fast)]' : ''}
+        bg-[var(--ivory-elevated)] shadow-[var(--shadow-xs)] ${paddingClasses[padding]}
+        ${hover ? 'hover:border-[var(--ivory-border-2)] hover:shadow-[var(--shadow-md)] transition-all duration-[var(--transition-fast)]' : ''}
         ${onClick ? 'cursor-pointer text-left w-full' : ''}
         ${className}`}
     >

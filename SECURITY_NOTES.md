@@ -88,6 +88,147 @@ All imported content is treated as untrusted.
 - Coverage output
 - IDE directories
 
+## OpenRouter Smoke Testing
+
+### Secure Test Pattern
+
+OpenRouter integration can be tested without hardcoding API keys:
+
+```bash
+# CLI smoke test (reads from env, never prints the key)
+npm run test:openrouter
+
+# Requires: OPENROUTER_API_KEY environment variable
+# Windows: set OPENROUTER_API_KEY=sk-or-v1-... && npm run test:openrouter
+# bash:    OPENROUTER_API_KEY=sk-or-v1-... npm run test:openrouter
+```
+
+**Security guarantees:**
+- No API key is ever hardcoded in source code, tests, docs, or config files
+- The CLI script never prints any part of the API key to stdout/stderr
+- If `OPENROUTER_API_KEY` is missing, the test skips gracefully with exit code 0
+- All log output in the app is redacted (sk-or-v1-* keys → `[REDACTED_KEY]`)
+- The test script uses `openrouter/free` model by default (free tier, no cost)
+
+### Key Format
+
+OpenRouter API keys start with `sk-or-v1-` followed by a long random string. These are redacted by the same `sk-[a-zA-Z0-9]{20,}` pattern (pattern #3 in the redaction table).
+
+## Remote Provider Security
+
+### Supported Remote Providers
+
+| Provider | Auth Method | Key Encryption | Redaction Pattern |
+|----------|------------|----------------|-------------------|
+| Anthropic | `x-api-key` header | DPAPI safeStorage | `sk-ant-*` pattern |
+| OpenAI | `Authorization: Bearer` | DPAPI safeStorage | `sk-proj-*`, `sk-org-*` |
+| OpenRouter | `Authorization: Bearer` | DPAPI safeStorage | `sk-*` pattern |
+| Google Gemini | Query param `?key=` | DPAPI safeStorage | `AIza*` pattern |
+| Mistral | `Authorization: Bearer` | DPAPI safeStorage | `sk-*` pattern |
+| Groq | `Authorization: Bearer` | DPAPI safeStorage | `sk-*` pattern |
+| DeepSeek | `Authorization: Bearer` | DPAPI safeStorage | `sk-*` pattern |
+| Custom | `Authorization: Bearer` | DPAPI safeStorage | `sk-*` pattern |
+| Ollama | None (local) | N/A | N/A |
+| LM Studio | None (local) | N/A | N/A |
+
+### API Key Lifecycle
+
+1. **Entry**: User enters key in Settings UI (`input[type="password"]` — never visible in DOM)
+2. **Encryption**: `vault.encryptToBase64(key)` uses Electron `safeStorage` (DPAPI on Windows)
+3. **Storage**: Base64-encoded encrypted blob in `providers.api_key_enc` column
+4. **Decryption**: `vault.decryptFromBase64(blob)` only in main process, never sent to renderer
+5. **Transmission**: Decrypted key sent over HTTPS only to the configured provider's API
+6. **Masking**: Settings UI shows `●●●●●●●● Key configured` or `sk-XXXX...XXXX` when key exists
+
+### Network Transmission
+
+- All remote provider API calls use HTTPS (enforced by provider default URLs)
+- API keys are transmitted in headers (`Authorization: Bearer`, `x-api-key`) or query params (Gemini)
+- No API keys are sent to any domain other than the configured provider's `base_url`
+- Request/response bodies are logged with all secrets redacted
+- Custom provider base URLs are user-configured — users must ensure HTTPS for production use
+
+### Log Sanitization Coverage
+
+Every adapter's auth mechanism is covered by the redaction patterns:
+- **Bearer tokens** (OpenAI, OpenRouter, Mistral, Groq, DeepSeek, Custom): Pattern #5
+- **x-api-key header** (Anthropic): Pattern #6
+- **Query param API key** (Gemini): Pattern #4 + sanitized in URL logging
+- **sk- prefix keys**: Patterns #1, #2, #3 (ordered specific→generic)
+
+All log entries pass through `redactSecrets()` before DB storage. Debug bundle export applies redaction to all fields.
+
+## LivePreview Security
+
+### Sandbox Architecture
+
+LivePreview creates isolated sandbox directories for previewing generated code:
+
+- **Location**: Sandboxes are created under the app's `userData` directory (e.g., `%APPDATA%/aureon-desk/preview-sandboxes/`)
+- **Isolation**: Each preview has its own subfolder with a unique ID — no shared state between previews
+- **Path traversal protection**: All file paths are validated against escaping the sandbox directory (no `../`, no absolute paths outside sandbox)
+- **Template generation**: Templates are hardcoded in the service — no user-provided templates to prevent injection
+
+### Preview Runner Security
+
+When running a local dev server:
+
+- **Command execution**: `npm install` and `npm run dev` are the only allowed commands
+- **Process containment**: The dev server is bound to `127.0.0.1` (localhost only) — not accessible from other machines
+- **Port detection**: The service scans for available ports (3100+) to avoid conflicts
+- **Clean shutdown**: The server process is tracked and killable via the Stop button
+- **No arbitrary commands**: Only pre-approved commands run in the sandbox directory
+
+### Log Safety
+
+All preview stdout/stderr output passes through the same `redactSecrets()` pipeline:
+
+- API keys (`sk-*`, `AIza*`, etc.) → `[REDACTED_KEY]`
+- Bearer tokens → `Bearer [REDACTED]`
+- Authorization headers → `Authorization=[REDACTED]`
+- Private key blocks → `[REDACTED_PRIVATE_KEY]`
+
+### User Confirmation
+
+Before any file write or server start:
+
+1. The user must explicitly click **Create Preview** to generate sandbox files
+2. The user must explicitly click **Start Server** to launch the dev server
+3. The user can stop the server at any time with the **Stop Server** button
+
+### Sandbox Cleanup
+
+- Old sandboxes (24+ hours) can be cleaned up via the service's `cleanupSandboxes()` method
+- Sandboxes are not automatically deleted — users control cleanup
+
+## Connection Test Safety
+
+### Test Connection Flow
+
+Each provider card has a **Test Connection** button that verifies API connectivity without sending sensitive data:
+
+- **What's sent**: A minimal test request with a tiny prompt ("Hello") to the provider's API
+- **No data stored**: Test prompts and responses are never persisted to chat history or logs
+- **Secrets redacted**: All test request/response bodies pass through `redactSecrets()` before display or logging
+- **Graceful failures**: Invalid keys, offline servers, rate limits, and unavailable models all show clear error messages in the UI — never raw stack traces
+- **Fake key safety**: Testing with an invalid key simply shows "Connection failed" — no crash, no data leak
+
+### Provider Test Center
+
+The Settings page also exposes a Provider Test Center for a consolidated provider health view:
+
+- **No raw secrets in renderer text**: Test result messages are sanitized again in the renderer before they are displayed.
+- **Sequential Test All**: Bulk testing runs one provider after another to avoid noisy parallel failures and rate-limit spikes.
+- **Status-only key display**: The UI shows whether a key is stored or missing, never the decrypted key.
+- **Local provider handling**: Ollama and LM Studio are labeled as no-key-needed and only checked against localhost model endpoints.
+- **Timing metadata only**: Latency and last-checked timestamps are stored in component state, not persisted as chat history.
+
+### Local Provider Testing
+
+- **Ollama**: Tests via `/api/tags` (lists available models) — no content sent to remote servers
+- **LM Studio**: Tests via `/v1/models` — no content sent to remote servers
+- **Offline detection**: Connection refused errors include actionable fix instructions (e.g., "Start Ollama with `ollama serve`")
+
 ## Known Security Limitations
 
 1. **No code signing**: The Windows installer is not code-signed. Windows SmartScreen will show a warning.

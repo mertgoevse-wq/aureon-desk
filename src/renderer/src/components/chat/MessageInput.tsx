@@ -204,7 +204,7 @@ export function MessageInput({
   }, [ensurePromptsLoaded])
 
   return (
-    <div className="border-t border-[var(--ivory-border)] bg-[var(--ivory-bg)]">
+    <div className="border-t border-[var(--ivory-border)] bg-[var(--ivory-bg)]" data-testid="chat-composer">
       <div className="mx-auto max-w-3xl px-4 py-3 relative">
         {/* Slash command palette */}
         {showSlashMenu && slashItems.length > 0 && (
@@ -263,12 +263,16 @@ export function MessageInput({
           />
         )}
 
-        <div className="flex items-end gap-2 bg-[var(--ivory-surface)] border border-[var(--ivory-border)] rounded-[var(--radius-lg)] p-2 focus-within:border-[var(--ivory-accent)] focus-within:ring-1 focus-within:ring-[var(--ivory-accent)] transition-colors">
+        <div className="flex items-end gap-2 bg-[var(--ivory-surface)] border border-[var(--ivory-border)] rounded-[var(--radius-lg)] px-3 py-2
+          focus-within:border-[var(--ivory-accent)] focus-within:ring-1 focus-within:ring-[var(--ivory-accent)]
+          hover:border-[var(--ivory-border-2)] transition-all duration-[var(--transition-fast)]">
           <button
-            className="p-1.5 rounded-[var(--radius-sm)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors shrink-0"
-            title="Attach file"
+            className="p-1 rounded-[var(--radius-sm)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface-2)] transition-colors shrink-0 mb-0.5"
+            title="Attach file (coming soon)"
+            aria-label="Attach file"
+            disabled
           >
-            <Paperclip size={18} />
+            <Paperclip size={16} />
           </button>
 
           <textarea
@@ -279,24 +283,32 @@ export function MessageInput({
             placeholder={placeholder}
             disabled={disabled}
             rows={1}
-            className="flex-1 resize-none bg-transparent text-sm text-[var(--ivory-text)] placeholder:text-[var(--ivory-text-3)] outline-none min-h-[24px] max-h-[200px] py-1"
+            className="flex-1 resize-none bg-transparent text-sm text-[var(--ivory-text)] placeholder:text-[var(--ivory-text-3)] outline-none min-h-[24px] max-h-[200px] py-1 leading-relaxed"
+            data-testid="message-textarea"
           />
 
           <button
             onClick={handleSend}
             disabled={disabled || !value.trim()}
-            className="p-1.5 rounded-[var(--radius-sm)] transition-colors shrink-0
+            className="p-1.5 rounded-[var(--radius-sm)] transition-colors shrink-0 mb-0.5
               text-[var(--ivory-accent)] hover:bg-[var(--ivory-accent)]/10
               disabled:text-[var(--ivory-text-3)] disabled:hover:bg-transparent"
             title="Send message (Enter)"
+            aria-label="Send message"
+            data-testid="send-button"
           >
-            <Send size={18} />
+            <Send size={16} />
           </button>
         </div>
 
-        <p className="text-[10px] text-[var(--ivory-text-3)] mt-1.5 px-1 text-center">
-          Type / for commands & prompts. Aureon Desk does not send messages until API keys are configured.
-        </p>
+        <div className="flex items-center justify-between mt-2 px-1">
+          <p className="text-[10px] text-[var(--ivory-text-3)]">
+            <kbd className="text-[9px] mr-0.5">/</kbd> commands & prompts
+          </p>
+          <p className="text-[10px] text-[var(--ivory-text-3)]">
+            <kbd className="text-[9px] mr-0.5">Shift+Enter</kbd> new line
+          </p>
+        </div>
       </div>
     </div>
   )

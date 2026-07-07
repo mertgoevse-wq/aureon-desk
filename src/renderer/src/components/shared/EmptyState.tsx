@@ -19,7 +19,7 @@ export function EmptyState({
       <div className="text-[var(--ivory-text-3)] mb-4 opacity-60">
         {icon || <MessageSquare size={40} strokeWidth={1.5} />}
       </div>
-      <h3 className="text-base font-semibold text-[var(--ivory-text)] mb-1.5 display-text">
+      <h3 className="text-base font-semibold text-[var(--ivory-text)] mb-1.5">
         {title}
       </h3>
       {description && (

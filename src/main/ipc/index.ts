@@ -9,6 +9,7 @@ import { registerGitHubIPC } from './github.ipc'
 import { registerToolIPC } from './tool.ipc'
 import { registerProjectIPC } from './project.ipc'
 import { registerLogIPC } from './log.ipc'
+import { registerLivePreviewIPC } from './live-preview.ipc'
 import { logger } from '../utils/logger'
 
 export function registerAllIPC(): void {
@@ -25,6 +26,7 @@ export function registerAllIPC(): void {
   registerToolIPC()
   registerProjectIPC()
   registerLogIPC()
+  registerLivePreviewIPC()
 
   logger.info('All IPC handlers registered')
 }

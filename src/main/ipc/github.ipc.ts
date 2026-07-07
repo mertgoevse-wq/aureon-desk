@@ -11,6 +11,7 @@ export function registerGitHubIPC(): void {
   ipcMain.handle('github:importBulk', (_e, urls: string[]) => githubImportService.importBulk(urls))
   ipcMain.handle('github:deleteRepo', (_e, id: string) => githubImportService.deleteRepo(id))
   ipcMain.handle('github:isAlreadyImported', (_e, url: string) => githubImportService.isAlreadyImported(url))
+  ipcMain.handle('github:retryImport', (_e, repoId: string) => githubImportService.retryImport(repoId))
 
   // Item management
   ipcMain.handle('github:listItems', (_e, filters?: ImportItemFilter) => githubImportService.listItems(filters))
@@ -18,6 +19,7 @@ export function registerGitHubIPC(): void {
   ipcMain.handle('github:updateItemStatus', (_e, id: string, status: string) => githubImportService.updateItemStatus(id, status as ImportedItem['status']))
   ipcMain.handle('github:deleteItem', (_e, id: string) => githubImportService.deleteItem(id))
   ipcMain.handle('github:getWarnings', (_e, itemId?: string, repoUrl?: string) => githubImportService.getWarnings(itemId, repoUrl))
+  ipcMain.handle('github:approveItem', (_e, id: string, approveAs: string) => githubImportService.approveItem(id, approveAs as 'prompt' | 'system_prompt' | 'skill'))
 
   logger.info('GitHub Import IPC handlers registered')
 }

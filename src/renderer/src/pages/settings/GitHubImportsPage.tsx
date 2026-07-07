@@ -2,26 +2,32 @@ import React, { useCallback, useEffect, useState } from 'react'
 import {
   Github, Plus, Search, Trash2, CheckCircle, XCircle, AlertTriangle,
   Clock, RefreshCw, Eye, EyeOff, Upload, Star, Shield, ExternalLink,
-  ChevronDown, ChevronRight, FileText, Filter, Download
+  ChevronDown, ChevronRight, FileText, Filter, Download, Bookmark,
+  Cpu, Zap, RotateCcw
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'
 import { Badge, type BadgeVariant } from '../../components/shared/Badge'
 import { EmptyState } from '../../components/shared/EmptyState'
 import { useIpc } from '../../hooks/useIpc'
 import { MERTS_STAR_LIST, STAR_LIST_NAME, STAR_LIST_DESCRIPTION } from '@shared/star-list'
-import type { ImportedRepo, ImportedItem, ImportResult, ImportedItemType, RepoCategory } from '@shared/types/github'
+import type { ImportedRepo, ImportedItem, ImportResult, ImportedItemType, RepoCategory, ImportWarning } from '@shared/types/github'
 
 export function GitHubImportsPage(): React.ReactElement {
   const api = useIpc()
   const [repos, setRepos] = useState<ImportedRepo[]>([])
   const [items, setItems] = useState<ImportedItem[]>([])
+  const [warnings, setWarnings] = useState<ImportWarning[]>([])
   const [urlInput, setUrlInput] = useState('')
   const [bulkInput, setBulkInput] = useState('')
   const [importing, setImporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const [selectedRepoId, setSelectedRepoId] = useState<string | null>(null)
   const [itemFilter, setItemFilter] = useState<{ type?: string; status?: string; search?: string }>({})
   const [expandItem, setExpandItem] = useState<string | null>(null)
+  const [expandWarnings, setExpandWarnings] = useState<string | null>(null)
+  const [retryingRepo, setRetryingRepo] = useState<string | null>(null)
+  const [approvingItem, setApprovingItem] = useState<string | null>(null)
 
   useEffect(() => { loadRepos() }, [])
 
@@ -33,6 +39,7 @@ export function GitHubImportsPage(): React.ReactElement {
     try {
       setSelectedRepoId(repoId)
       setItems(await api.githubListItems({ repoId, ...itemFilter }))
+      setWarnings(await api.githubGetWarnings(undefined, undefined))
     } catch (e) { console.error(e) }
   }, [api, itemFilter])
 
@@ -81,6 +88,33 @@ export function GitHubImportsPage(): React.ReactElement {
     loadRepos()
   }, [api, selectedRepoId])
 
+  const handleRetryRepo = useCallback(async (repoId: string) => {
+    setRetryingRepo(repoId); setError(null)
+    try {
+      const result = await api.githubRetryImport(repoId)
+      if (result.status === 'failed') setError(result.errors.join('; '))
+      else setSuccess(`Retry succeeded — imported ${result.itemsImported} items from ${result.repoUrl.replace('https://github.com/', '')}`)
+      loadRepos()
+    } catch (e) { setError(String(e)) }
+    finally { setRetryingRepo(null); setTimeout(() => setSuccess(null), 5000) }
+  }, [api])
+
+  const handleApproveItem = useCallback(async (itemId: string, approveAs: 'prompt' | 'system_prompt' | 'skill') => {
+    setApprovingItem(`${itemId}-${approveAs}`); setError(null)
+    try {
+      const result = await api.githubApproveItem(itemId, approveAs)
+      if (result.success) {
+        const labels = { prompt: 'Prompt Library', system_prompt: 'System Prompt Profiles', skill: 'Skill Registry' }
+        setSuccess(`Approved as ${labels[approveAs]}!`)
+        if (selectedRepoId) loadItems(selectedRepoId)
+        loadRepos()
+      } else {
+        setError(result.error || 'Approval failed')
+      }
+    } catch (e) { setError(String(e)) }
+    finally { setApprovingItem(null); setTimeout(() => setSuccess(null), 4000) }
+  }, [api, selectedRepoId])
+
   const handleToggleItem = useCallback(async (itemId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'enabled' ? 'disabled' : 'enabled'
     await api.githubUpdateItemStatus(itemId, newStatus)
@@ -122,8 +156,35 @@ export function GitHubImportsPage(): React.ReactElement {
     return <Badge variant={(colors[t] || 'default') as BadgeVariant} size="sm">{t.replace('_', ' ')}</Badge>
   }
 
+  const statusBadge = (status: string) => {
+    const colors: Record<string, BadgeVariant> = {
+      unreviewed: 'default',
+      enabled: 'success',
+      disabled: 'default',
+      rejected: 'default'
+    }
+    return <Badge variant={colors[status] || 'default'} size="sm">{status}</Badge>
+  }
+
+  const hasWarnings = (item: ImportedItem) =>
+    item.safety_warnings && item.safety_warnings !== '[]'
+
+  const parseWarnings = (item: ImportedItem): ImportWarning[] => {
+    if (!hasWarnings(item)) return []
+    try { return JSON.parse(item.safety_warnings!) }
+    catch { return [] }
+  }
+
+  const warningSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'high': return 'text-red-600'
+      case 'medium': return 'text-amber-600'
+      default: return 'text-[var(--ivory-text-3)]'
+    }
+  }
+
   return (
-    <div className="flex flex-col h-full bg-[var(--ivory-bg)]">
+    <div className="flex flex-col h-full bg-[var(--ivory-bg)]" data-testid="github-imports-page">
       {/* Header */}
       <div className="px-6 py-4 border-b border-[var(--ivory-border)]">
         <div className="flex items-center justify-between">
@@ -131,7 +192,7 @@ export function GitHubImportsPage(): React.ReactElement {
             <h2 className="text-lg font-semibold display-text text-[var(--ivory-text)]">GitHub Imports</h2>
             <p className="text-xs text-[var(--ivory-text-3)] mt-0.5">{repos.length} repo{repos.length !== 1 ? 's' : ''} imported</p>
           </div>
-          <Button onClick={handleImportStarList} disabled={importing} variant="secondary">
+          <Button onClick={handleImportStarList} disabled={importing} variant="secondary" data-testid="import-star-list-button">
             <Star size={14} /> Import Mert's Star List
           </Button>
         </div>
@@ -146,8 +207,9 @@ export function GitHubImportsPage(): React.ReactElement {
             onKeyDown={e => e.key === 'Enter' && handleImportSingle()}
             placeholder="https://github.com/owner/repo"
             className="flex-1 px-3 py-1.5 text-sm rounded-[var(--radius-md)] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text)] placeholder:text-[var(--ivory-text-3)] focus:outline-none focus:border-[var(--ivory-accent)]"
+            data-testid="import-url-input"
           />
-          <Button onClick={handleImportSingle} disabled={importing || !urlInput.trim()} size="sm">
+          <Button onClick={handleImportSingle} disabled={importing || !urlInput.trim()} size="sm" data-testid="import-single-button">
             <Plus size={14} /> Import
           </Button>
         </div>
@@ -165,12 +227,21 @@ export function GitHubImportsPage(): React.ReactElement {
           </Button>
         </details>
         <p className="text-[10px] text-[var(--ivory-text-3)] flex items-center gap-1">
-          <Shield size={10} /> All imported content is marked untrusted. Review before enabling.
+          <Shield size={10} /> All imported content is marked untrusted. Review before approving.
         </p>
       </div>
 
+      {/* Success Banner */}
+      {success && (
+        <div className="px-6 py-2 text-xs bg-green-50 text-green-700 border-b border-green-100 flex items-center gap-2" data-testid="success-banner">
+          <CheckCircle size={14} /> {success}
+          <button onClick={() => setSuccess(null)} className="ml-auto"><XCircle size={14} /></button>
+        </div>
+      )}
+
+      {/* Error Banner */}
       {error && (
-        <div className="px-6 py-2 text-xs bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border-b border-[var(--ivory-error-bg)] flex items-center gap-2">
+        <div className="px-6 py-2 text-xs bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border-b border-[var(--ivory-error-bg)] flex items-center gap-2" data-testid="error-banner">
           <AlertTriangle size={14} /> {error}
           <button onClick={() => setError(null)} className="ml-auto"><XCircle size={14} /></button>
         </div>
@@ -191,15 +262,15 @@ export function GitHubImportsPage(): React.ReactElement {
           />
         ) : (
           <div className="divide-y divide-[var(--ivory-border)]">
-            {/* Repo table */}
-            <div className="px-6 py-2 text-[10px] text-[var(--ivory-text-3)] grid grid-cols-[1fr_80px_100px_80px_60px_40px] gap-2 items-center font-medium">
+            {/* Repo table header */}
+            <div className="px-6 py-2 text-[10px] text-[var(--ivory-text-3)] grid grid-cols-[1fr_80px_100px_80px_80px_40px] gap-2 items-center font-medium">
               <span>Repository</span><span>Category</span><span>Items</span><span>Warnings</span><span>Status</span><span></span>
             </div>
             {repos.map(repo => (
               <div key={repo.id}>
                 <div
                   onClick={() => loadItems(repo.id)}
-                  className={`px-6 py-2.5 grid grid-cols-[1fr_80px_100px_80px_60px_40px] gap-2 items-center cursor-pointer hover:bg-[var(--ivory-surface)] transition-colors text-xs
+                  className={`px-6 py-2.5 grid grid-cols-[1fr_80px_100px_80px_80px_40px] gap-2 items-center cursor-pointer hover:bg-[var(--ivory-surface)] transition-colors text-xs
                     ${selectedRepoId === repo.id ? 'bg-[var(--ivory-surface)]' : ''}`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
@@ -208,17 +279,32 @@ export function GitHubImportsPage(): React.ReactElement {
                       {repo.repo_url.replace('https://github.com/', '')}
                     </span>
                   </div>
-                  <span>{repo.category ? categoryLabel[repo.category] || repo.category : '—'}</span>
+                  <span className="truncate">{repo.category ? categoryLabel[repo.category] || repo.category : '—'}</span>
                   <span className="text-[var(--ivory-text-2)]">
                     P:{repo.prompt_count} S:{repo.system_prompt_count} K:{repo.skill_count}
                   </span>
-                  <span className={repo.warning_count > 0 ? 'text-amber-600 font-medium' : 'text-[var(--ivory-text-3)]'}>                      {repo.warning_count > 0 ? <span><AlertTriangle size={10} className="inline mr-1" />{repo.warning_count}</span> : '0'}
+                  <span className={repo.warning_count > 0 ? 'text-amber-600 font-medium' : 'text-[var(--ivory-text-3)]'}>
+                    {repo.warning_count > 0 ? <span><AlertTriangle size={10} className="inline mr-1" />{repo.warning_count}</span> : '0'}
                   </span>
-                  <span className="flex items-center gap-1">{statusIcon(repo.status)} {repo.status}</span>
+                  <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-1">{statusIcon(repo.status)} {repo.status}</span>
+                    {repo.status === 'failed' && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleRetryRepo(repo.id) }}
+                        disabled={retryingRepo === repo.id}
+                        className="p-0.5 text-amber-600 hover:text-amber-700 disabled:opacity-50"
+                        title="Retry import"
+                        data-testid={`retry-import-${repo.id}`}
+                      >
+                        <RotateCcw size={12} className={retryingRepo === repo.id ? 'animate-spin' : ''} />
+                      </button>
+                    )}
+                  </span>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDeleteRepo(repo.id) }}
                     className="p-1 text-[var(--ivory-text-3)] hover:text-red-600"
                     title="Delete repo"
+                    data-testid={`delete-repo-${repo.id}`}
                   >
                     <Trash2 size={14} />
                   </button>
@@ -227,12 +313,14 @@ export function GitHubImportsPage(): React.ReactElement {
                 {/* Expanded items list */}
                 {selectedRepoId === repo.id && (
                   <div className="px-6 pb-4 pl-10 space-y-2">
+                    {/* Item filters */}
                     <div className="flex items-center gap-2 pt-2">
                       <Filter size={12} className="text-[var(--ivory-text-3)]" />
                       <select
                         value={itemFilter.type || ''}
                         onChange={e => setItemFilter(f => ({ ...f, type: e.target.value || undefined }))}
                         className="text-[11px] px-2 py-0.5 rounded border border-[var(--ivory-border)] bg-[var(--ivory-bg)] text-[var(--ivory-text-2)]"
+                        data-testid="item-type-filter"
                       >
                         <option value="">All types</option>
                         <option value="prompt">Prompts</option>
@@ -243,6 +331,7 @@ export function GitHubImportsPage(): React.ReactElement {
                         value={itemFilter.status || ''}
                         onChange={e => setItemFilter(f => ({ ...f, status: e.target.value || undefined }))}
                         className="text-[11px] px-2 py-0.5 rounded border border-[var(--ivory-border)] bg-[var(--ivory-bg)] text-[var(--ivory-text-2)]"
+                        data-testid="item-status-filter"
                       >
                         <option value="">All statuses</option>
                         <option value="unreviewed">Unreviewed</option>
@@ -251,45 +340,161 @@ export function GitHubImportsPage(): React.ReactElement {
                         <option value="rejected">Rejected</option>
                       </select>
                     </div>
+
                     {items.length === 0 ? (
                       <p className="text-xs text-[var(--ivory-text-3)] py-4">No items match filters</p>
                     ) : (
-                      items.map(item => (
-                        <div key={item.id} className="border border-[var(--ivory-border)] rounded-[var(--radius-md)] bg-[var(--ivory-bg)] p-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                {typeBadge(item.item_type)}
-                                <span className="text-sm font-medium text-[var(--ivory-text)] truncate">{item.title}</span>
-                                {item.safety_warnings && item.safety_warnings !== '[]' && (
-                                  <AlertTriangle size={12} className="text-amber-500" />
+                      items.map(item => {
+                        const itemWarnings = parseWarnings(item)
+                        const showWarnings = expandWarnings === item.id
+
+                        return (
+                          <div key={item.id} className="border border-[var(--ivory-border)] rounded-[var(--radius-md)] bg-[var(--ivory-bg)] p-3" data-testid={`imported-item-${item.id}`}>
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1 min-w-0">
+                                {/* Title row */}
+                                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                  {typeBadge(item.item_type)}
+                                  {statusBadge(item.status)}
+                                  <span className="text-sm font-medium text-[var(--ivory-text)] truncate">{item.title}</span>
+                                  {itemWarnings.length > 0 && (
+                                    <button
+                                      onClick={() => setExpandWarnings(showWarnings ? null : item.id)}
+                                      className="flex items-center gap-1 text-amber-500 hover:text-amber-600"
+                                    >
+                                      <AlertTriangle size={12} />
+                                      <span className="text-[10px]">{itemWarnings.length}</span>
+                                    </button>
+                                  )}
+                                </div>
+                                <p className="text-[11px] text-[var(--ivory-text-3)] truncate">{item.source_file}</p>
+
+                                {/* Content preview */}
+                                {expandItem === item.id && (
+                                  <pre className="mt-2 p-2 text-[11px] text-[var(--ivory-text-2)] bg-[var(--ivory-surface)] rounded max-h-40 overflow-y-auto font-mono whitespace-pre-wrap">
+                                    {item.content.slice(0, 1000)}
+                                  </pre>
+                                )}
+
+                                {/* Warning details */}
+                                {showWarnings && itemWarnings.length > 0 && (
+                                  <div className="mt-2 p-2 bg-amber-50 border border-amber-100 rounded space-y-1" data-testid={`warnings-${item.id}`}>
+                                    <p className="text-[10px] font-semibold text-amber-700 mb-1">Safety Warnings</p>
+                                    {itemWarnings.map((w, i) => (
+                                      <div key={i} className="flex items-start gap-1.5 text-[10px]">
+                                        <AlertTriangle size={10} className={`mt-0.5 shrink-0 ${warningSeverityColor(w.severity)}`} />
+                                        <span className={warningSeverityColor(w.severity)}>
+                                          [{w.severity}] {w.message}
+                                          {w.context && <span className="text-[var(--ivory-text-3)]"> — {w.context}</span>}
+                                        </span>
+                                      </div>
+                                    ))}
+                                    {item.is_untrusted && (
+                                      <p className="text-[10px] text-amber-600 italic flex items-center gap-1 mt-1">
+                                        <Shield size={10} /> This content is marked untrusted. Review carefully before approving.
+                                      </p>
+                                    )}
+                                  </div>
                                 )}
                               </div>
-                              <p className="text-[11px] text-[var(--ivory-text-3)] truncate">{item.source_file}</p>
-                              {expandItem === item.id && (
-                                <pre className="mt-2 p-2 text-[11px] text-[var(--ivory-text-2)] bg-[var(--ivory-surface)] rounded max-h-40 overflow-y-auto font-mono whitespace-pre-wrap">
-                                  {item.content.slice(0, 1000)}
-                                </pre>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-1 ml-3 shrink-0">
-                              <button onClick={() => setExpandItem(expandItem === item.id ? null : item.id)}
-                                className="p-1 text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]">
-                                {expandItem === item.id ? <EyeOff size={14} /> : <Eye size={14} />}
-                              </button>
-                              <button onClick={() => handleToggleItem(item.id, item.status)}
-                                className={`p-1 ${item.status === 'enabled' ? 'text-green-600' : 'text-[var(--ivory-text-3)] hover:text-green-600'}`}
-                                title={item.status === 'enabled' ? 'Disable' : 'Enable'}>
-                                {item.status === 'enabled' ? <CheckCircle size={14} /> : <XCircle size={14} />}
-                              </button>
-                              <button onClick={() => handleDeleteItem(item.id)}
-                                className="p-1 text-[var(--ivory-text-3)] hover:text-red-600">
-                                <Trash2 size={14} />
-                              </button>
+
+                              {/* Action buttons */}
+                              <div className="flex items-center gap-1 shrink-0">
+                                {/* View content toggle */}
+                                <button
+                                  onClick={() => setExpandItem(expandItem === item.id ? null : item.id)}
+                                  className="p-1 text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]"
+                                  title="View content"
+                                  data-testid={`view-item-${item.id}`}
+                                >
+                                  {expandItem === item.id ? <EyeOff size={14} /> : <Eye size={14} />}
+                                </button>
+
+                                {/* Approve as Prompt */}
+                                <button
+                                  onClick={() => handleApproveItem(item.id, 'prompt')}
+                                  disabled={approvingItem !== null}
+                                  className={`p-1 rounded transition-colors ${
+                                    item.status === 'enabled'
+                                      ? 'text-green-600 hover:text-green-700'
+                                      : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)]'
+                                  }`}
+                                  title="Approve as Prompt — adds to Prompt Library"
+                                  data-testid={`approve-prompt-${item.id}`}
+                                >
+                                  {approvingItem === `${item.id}-prompt` ? (
+                                    <RefreshCw size={14} className="animate-spin" />
+                                  ) : (
+                                    <Bookmark size={14} />
+                                  )}
+                                </button>
+
+                                {/* Approve as System Prompt */}
+                                <button
+                                  onClick={() => handleApproveItem(item.id, 'system_prompt')}
+                                  disabled={approvingItem !== null}
+                                  className={`p-1 rounded transition-colors ${
+                                    item.status === 'enabled'
+                                      ? 'text-green-600 hover:text-green-700'
+                                      : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)]'
+                                  }`}
+                                  title="Approve as System Prompt — adds to System Prompt Profiles"
+                                  data-testid={`approve-system-prompt-${item.id}`}
+                                >
+                                  {approvingItem === `${item.id}-system_prompt` ? (
+                                    <RefreshCw size={14} className="animate-spin" />
+                                  ) : (
+                                    <Cpu size={14} />
+                                  )}
+                                </button>
+
+                                {/* Approve as Skill */}
+                                <button
+                                  onClick={() => handleApproveItem(item.id, 'skill')}
+                                  disabled={approvingItem !== null}
+                                  className={`p-1 rounded transition-colors ${
+                                    item.status === 'enabled'
+                                      ? 'text-green-600 hover:text-green-700'
+                                      : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)]'
+                                  }`}
+                                  title="Approve as Skill — adds to Skill Registry"
+                                  data-testid={`approve-skill-${item.id}`}
+                                >
+                                  {approvingItem === `${item.id}-skill` ? (
+                                    <RefreshCw size={14} className="animate-spin" />
+                                  ) : (
+                                    <Zap size={14} />
+                                  )}
+                                </button>
+
+                                {/* Disable/Reject */}
+                                <button
+                                  onClick={() => handleToggleItem(item.id, item.status)}
+                                  className={`p-1 ${
+                                    item.status === 'enabled'
+                                      ? 'text-green-600 hover:text-red-600'
+                                      : 'text-[var(--ivory-text-3)] hover:text-green-600'
+                                  }`}
+                                  title={item.status === 'enabled' ? 'Disable' : 'Enable'}
+                                  data-testid={`toggle-item-${item.id}`}
+                                >
+                                  {item.status === 'enabled' ? <CheckCircle size={14} /> : <XCircle size={14} />}
+                                </button>
+
+                                {/* Delete */}
+                                <button
+                                  onClick={() => handleDeleteItem(item.id)}
+                                  className="p-1 text-[var(--ivory-text-3)] hover:text-red-600"
+                                  title="Delete item"
+                                  data-testid={`delete-item-${item.id}`}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))
+                        )
+                      })
                     )}
                   </div>
                 )}

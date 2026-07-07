@@ -1,5 +1,6 @@
 import React from 'react'
 import { createHashRouter, RouterProvider } from 'react-router-dom'
+import { ErrorBoundary } from './components/shared/ErrorBoundary'
 import { AppShell } from './layouts/AppShell'
 import { SettingsLayout } from './layouts/SettingsLayout'
 import { ChatWorkspace } from './pages/ChatWorkspace'
@@ -11,6 +12,7 @@ import { ToolsPage } from './pages/settings/ToolsPage'
 import { ProjectsPage } from './pages/ProjectsPage'
 import { LogsPage } from './pages/settings/LogsPage'
 import { AppearancePage } from './pages/settings/AppearancePage'
+import { LivePreview } from './pages/LivePreview'
 
 const router = createHashRouter([
   {
@@ -21,6 +23,7 @@ const router = createHashRouter([
       { path: 'prompts', element: <PromptLibrary /> },
       { path: 'projects', element: <ProjectsPage /> },
       { path: 'tools', element: <ToolsPage /> },
+      { path: 'preview', element: <LivePreview /> },
       {
         path: 'settings',
         element: <SettingsLayout />,
@@ -42,5 +45,9 @@ const router = createHashRouter([
 ])
 
 export function App(): React.ReactElement {
-  return <RouterProvider router={router} />
+  return (
+    <ErrorBoundary>
+      <RouterProvider router={router} />
+    </ErrorBoundary>
+  )
 }

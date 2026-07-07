@@ -4,6 +4,7 @@ import { providers, models, systemPrompts } from './schema'
 import { PROVIDER_ADAPTERS } from '../../shared/constants'
 import { logger } from '../utils/logger'
 import { toolService } from '../services/tool.service'
+import { eq } from 'drizzle-orm'
 
 /**
  * Seed default providers, models, and a default system prompt.
@@ -22,7 +23,7 @@ export async function seed(): Promise<void> {
     // Check if provider already exists
     const existing = db.select({ id: providers.id })
       .from(providers)
-      .where({ slug: adapter.slug } as never)
+      .where(eq(providers.slug, adapter.slug))
       .get()
 
     if (existing) {
@@ -63,7 +64,7 @@ export async function seed(): Promise<void> {
   // Seed default system prompt if none exists
   const existingPrompt = db.select({ id: systemPrompts.id })
     .from(systemPrompts)
-    .where({ is_default: 1 } as never)
+    .where(eq(systemPrompts.is_default, 1))
     .get()
 
   if (!existingPrompt) {

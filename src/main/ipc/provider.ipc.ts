@@ -86,5 +86,13 @@ export function registerProviderIPC(): void {
     return true
   })
 
+  ipcMain.handle('provider:syncOllamaModels', async () => {
+    return await providerService.syncOllamaModels()
+  })
+
+  ipcMain.handle('provider:fetchOllamaModels', async (_event, baseUrl?: string) => {
+    return await providerService.fetchOllamaModels(baseUrl)
+  })
+
   logger.info('Provider IPC handlers registered')
 }

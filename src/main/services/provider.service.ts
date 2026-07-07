@@ -4,11 +4,29 @@ import { providers, models } from '../db/schema'
 import { vault } from '../security/vault'
 import { logger } from '../utils/logger'
 import type { ProviderRow, ModelRow, NewProvider, ProviderAdapterInfo } from '../../shared/types/provider'
+import { PROVIDER_ADAPTERS } from '../../shared/constants'
 import { eq } from 'drizzle-orm'
 
 export const providerService = {
+  /** Ensure built-in provider rows exist, including for older local databases. */
+  ensureDefaultProviders(): void {
+    const db = getDb()
+    for (const adapter of PROVIDER_ADAPTERS) {
+      const existing = db.select({ id: providers.id })
+        .from(providers)
+        .where(eq(providers.slug, adapter.slug))
+        .get()
+
+      if (!existing) {
+        this.createFromAdapter(adapter)
+      }
+    }
+  },
+
   /** List all providers with their models */
   listProviders(): (ProviderRow & { models: ModelRow[] })[] {
+    this.ensureDefaultProviders()
+
     const db = getDb()
     const allProviders = db.select().from(providers).all() as ProviderRow[]
     const allModels = db.select().from(models).all() as ModelRow[]
@@ -207,8 +225,35 @@ export const providerService = {
     const apiKey = this.getApiKey(providerId)
     const baseUrl = provider.base_url || ''
 
-    // For local providers, skip API key check
-    if (provider.adapter === 'ollama' || provider.adapter === 'lmstudio') {
+    // For Ollama, use /api/tags to check connection
+    if (provider.adapter === 'ollama') {
+      try {
+        const ollamaBase = baseUrl.replace(/\/v1\/?$/, '')
+        const response = await fetch(`${ollamaBase}/api/tags`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          signal: AbortSignal.timeout(5000)
+        })
+        if (response.ok) {
+          const data = await response.json() as { models?: Array<{ name: string }> }
+          const modelCount = data.models?.length || 0
+          return {
+            success: true,
+            message: `Connected to ${provider.name}${modelCount > 0 ? ` (${modelCount} model${modelCount !== 1 ? 's' : ''} available)` : ''}`
+          }
+        }
+        return { success: false, message: `${provider.name} returned status ${response.status}` }
+      } catch (err) {
+        const msg = String(err)
+        if (msg.includes('ECONNREFUSED') || msg.includes('fetch failed')) {
+          return { success: false, message: `Ollama is not running. Start it with "ollama serve" or install from https://ollama.com` }
+        }
+        return { success: false, message: `Cannot reach ${provider.name} at ${baseUrl}` }
+      }
+    }
+
+    // For LM Studio, check /v1/models
+    if (provider.adapter === 'lmstudio') {
       try {
         const response = await fetch(`${baseUrl}/models`, {
           method: 'GET',
@@ -216,11 +261,20 @@ export const providerService = {
           signal: AbortSignal.timeout(5000)
         })
         if (response.ok) {
-          return { success: true, message: `Connected to ${provider.name}` }
+          const data = await response.json() as { data?: Array<{ id: string }> }
+          const modelCount = data.data?.length || 0
+          return {
+            success: true,
+            message: `Connected to ${provider.name}${modelCount > 0 ? ` (${modelCount} model${modelCount !== 1 ? 's' : ''} loaded)` : ''}`
+          }
         }
         return { success: false, message: `${provider.name} returned status ${response.status}` }
       } catch (err) {
-        return { success: false, message: `Cannot reach ${provider.name} at ${baseUrl}: ${String(err)}` }
+        const msg = String(err)
+        if (msg.includes('ECONNREFUSED') || msg.includes('fetch failed')) {
+          return { success: false, message: `LM Studio is not running. Start it from https://lmstudio.ai and load a model.` }
+        }
+        return { success: false, message: `Cannot reach ${provider.name} at ${baseUrl}` }
       }
     }
 
@@ -283,6 +337,8 @@ export const providerService = {
 
   /** Get all enabled models across all enabled providers */
   getAllEnabledModels(): (ModelRow & { provider_name: string; provider_slug: string })[] {
+    this.ensureDefaultProviders()
+
     const db = getDb()
     const enabledProviders = db.select()
       .from(providers)
@@ -308,5 +364,109 @@ export const providerService = {
       .set({ is_enabled: enabled ? 1 : 0 } as never)
       .where(eq(models.id, modelId))
       .run()
-  }
+  },
+
+  /**
+   * Fetch available models from Ollama's /api/tags endpoint.
+   * Returns model names that can be used for completion.
+   */
+  async fetchOllamaModels(baseUrl?: string): Promise<Array<{ name: string; size: number }>> {
+    const url = `${baseUrl || 'http://localhost:11434'}/api/tags`
+
+    logger.info(`Fetching Ollama models from ${url}`)
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(10000),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Ollama returned status ${response.status}`)
+      }
+
+      const data = await response.json() as { models?: Array<{ name: string; size: number }> }
+      return data.models || []
+    } catch (err) {
+      const msg = String(err)
+      if (msg.includes('ECONNREFUSED') || msg.includes('fetch failed')) {
+        logger.warn('Ollama server is not running or unreachable')
+        return []
+      }
+      logger.error('Failed to fetch Ollama models', err instanceof Error ? err : msg)
+      return []
+    }
+  },
+
+  /**
+   * Sync models from Ollama's /api/tags endpoint.
+   * Adds any models not already in the database for the Ollama provider.
+   */
+  async syncOllamaModels(): Promise<{ added: number; total: number }> {
+    const db = getDb()
+    const now = new Date().toISOString()
+
+    // Find the Ollama provider
+    const ollamaProvider = db.select().from(providers)
+      .where(eq(providers.slug, 'ollama'))
+      .get() as ProviderRow | undefined
+
+    if (!ollamaProvider) {
+      logger.warn('Ollama provider not found in database')
+      return { added: 0, total: 0 }
+    }
+
+    // Fetch models from Ollama
+    const baseUrl = ollamaProvider.base_url || 'http://localhost:11434/v1'
+    const ollamaBase = baseUrl.replace(/\/v1\/?$/, '')
+
+    let ollamaModels: Array<{ name: string; size: number }> = []
+    try {
+      const response = await fetch(`${ollamaBase}/api/tags`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(10000),
+      })
+
+      if (!response.ok) {
+        logger.warn(`Ollama /api/tags returned status ${response.status}`)
+        return { added: 0, total: 0 }
+      }
+
+      const data = await response.json() as { models?: Array<{ name: string; size: number }> }
+      ollamaModels = data.models || []
+    } catch (err) {
+      logger.warn('Failed to fetch Ollama models', err instanceof Error ? err.message : String(err))
+      return { added: 0, total: 0 }
+    }
+
+    // Get existing models for this provider
+    const existingModels = db.select()
+      .from(models)
+      .where(eq(models.provider_id, ollamaProvider.id))
+      .all() as ModelRow[]
+
+    const existingNames = new Set(existingModels.map(m => m.name))
+    let added = 0
+
+    for (const om of ollamaModels) {
+      if (!existingNames.has(om.name)) {
+        db.insert(models).values({
+          id: uuid(),
+          provider_id: ollamaProvider.id,
+          name: om.name,
+          display_name: om.name,
+          context_window: 128000,
+          is_default: existingModels.length === 0 && added === 0 ? 1 : 0,
+          is_enabled: 1,
+          created_at: now
+        } as never).run()
+        added++
+      }
+    }
+
+    logger.info(`Synced Ollama models: ${added} added, ${ollamaModels.length} total available`)
+    return { added, total: ollamaModels.length }
+  },
 }

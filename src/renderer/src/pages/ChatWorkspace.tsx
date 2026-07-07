@@ -3,7 +3,7 @@ import { ChatPanel } from '../components/chat/ChatPanel'
 import { ModelSelector } from '../components/chat/ModelSelector'
 import { useChatStore } from '../stores/chatStore'
 import { useIpc } from '../hooks/useIpc'
-import { ScrollText, ChevronDown } from 'lucide-react'
+import { MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown } from 'lucide-react'
 import type { SystemPromptRow } from '@shared/types/prompt'
 
 export function ChatWorkspace(): React.ReactElement {
@@ -46,18 +46,42 @@ export function ChatWorkspace(): React.ReactElement {
 
   if (!activeChat) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center px-4">
-        <h2 className="text-2xl font-semibold display-text text-[var(--ivory-text)] mb-2">
+      <div className="flex flex-col items-center justify-center h-full text-center px-6">
+        <h1 className="text-3xl font-semibold text-[var(--ivory-text)] mb-3 tracking-tight display-text">
           Aureon Desk
-        </h2>
-        <p className="text-sm text-[var(--ivory-text-3)] max-w-md mb-6">
+        </h1>
+        <p className="text-sm text-[var(--ivory-text-3)] max-w-md mb-8 leading-relaxed">
           Your personal AI workspace. Select a chat from the sidebar or create a new one to get started.
         </p>
-        <div className="flex flex-col gap-2 text-sm text-[var(--ivory-text-3)]">
-          <span>• Multi-provider chat with API key management</span>
-          <span>• System prompt profiles & prompt library</span>
-          <span>• Project workspaces with local file access</span>
-          <span>• MCP tool integration & tool transcript</span>
+        <div className="grid grid-cols-2 gap-3 text-xs text-[var(--ivory-text-3)] max-w-sm">
+          <div className="flex flex-col items-center gap-1.5 p-3 rounded-[var(--radius-md)] bg-[var(--ivory-surface)]">
+            <div className="w-8 h-8 rounded-[var(--radius-md)] bg-[var(--ivory-bg)] flex items-center justify-center">
+              <MessageSquare size={14} className="text-[var(--ivory-accent)]" />
+            </div>
+            <span className="text-[var(--ivory-text-2)] font-medium">Multi-Provider</span>
+            <span className="text-[10px]">OpenAI · Claude · Gemini · Local</span>
+          </div>
+          <div className="flex flex-col items-center gap-1.5 p-3 rounded-[var(--radius-md)] bg-[var(--ivory-surface)]">
+            <div className="w-8 h-8 rounded-[var(--radius-md)] bg-[var(--ivory-bg)] flex items-center justify-center">
+              <ScrollText size={14} className="text-[var(--ivory-accent)]" />
+            </div>
+            <span className="text-[var(--ivory-text-2)] font-medium">Profiles</span>
+            <span className="text-[10px]">System prompts & routing</span>
+          </div>
+          <div className="flex flex-col items-center gap-1.5 p-3 rounded-[var(--radius-md)] bg-[var(--ivory-surface)]">
+            <div className="w-8 h-8 rounded-[var(--radius-md)] bg-[var(--ivory-bg)] flex items-center justify-center">
+              <FolderOpen size={14} className="text-[var(--ivory-accent)]" />
+            </div>
+            <span className="text-[var(--ivory-text-2)] font-medium">Projects</span>
+            <span className="text-[10px]">Local file access & context</span>
+          </div>
+          <div className="flex flex-col items-center gap-1.5 p-3 rounded-[var(--radius-md)] bg-[var(--ivory-surface)]">
+            <div className="w-8 h-8 rounded-[var(--radius-md)] bg-[var(--ivory-bg)] flex items-center justify-center">
+              <Wrench size={14} className="text-[var(--ivory-accent)]" />
+            </div>
+            <span className="text-[var(--ivory-text-2)] font-medium">Tools</span>
+            <span className="text-[10px]">MCP-style integrations</span>
+          </div>
         </div>
       </div>
     )
@@ -66,11 +90,11 @@ export function ChatWorkspace(): React.ReactElement {
   return (
     <div className="flex flex-col h-full">
       {/* Chat Header */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--ivory-border)] bg-[var(--ivory-bg)] gap-3">
-        <h2 className="text-sm font-semibold display-text text-[var(--ivory-text)] truncate">
+      <div className="flex items-center justify-between px-5 py-2.5 border-b border-[var(--ivory-border)] bg-[var(--ivory-bg)] gap-4 min-w-0">
+        <h2 className="text-base font-semibold text-[var(--ivory-text)] truncate min-w-0">
           {activeChat.title}
         </h2>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2.5 shrink-0">
           {/* System Prompt Profile Selector */}
           <div className="relative">
             <button
@@ -78,6 +102,7 @@ export function ChatWorkspace(): React.ReactElement {
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-[var(--radius-md)]
                 bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)]
                 hover:bg-[var(--ivory-surface-2)] transition-colors"
+              data-testid="system-profile-selector"
             >
               <ScrollText size={12} className="text-[var(--ivory-accent)]" />
               <span className="max-w-[120px] truncate">

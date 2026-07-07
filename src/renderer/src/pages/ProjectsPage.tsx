@@ -255,7 +255,7 @@ export function ProjectsPage(): React.ReactElement {
                 >
                   <div className="flex items-center gap-2">
                     <FolderOpen size={14} className="text-[var(--ivory-text-3)]" />
-                    <span className="text-sm font-medium display-text truncate">{project.name}</span>
+                    <span className="text-sm font-semibold truncate">{project.name}</span>
                     {project.archived === 1 && <Badge variant="warning" size="sm">Archived</Badge>}
                   </div>
                   {project.description && (
@@ -277,7 +277,7 @@ export function ProjectsPage(): React.ReactElement {
               {/* Project Toolbar */}
               <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--ivory-border)] bg-[var(--ivory-bg)]">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-semibold display-text">{selectedProject.name}</h2>
+                  <h2 className="text-sm font-semibold">{selectedProject.name}</h2>
                   {selectedProject.archived === 1 && <Badge variant="warning" size="sm">Archived</Badge>}
                 </div>
                 <div className="flex items-center gap-1">
@@ -429,7 +429,7 @@ export function ProjectsPage(): React.ReactElement {
             /* No project selected */
             <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
               <FolderOpen size={48} className="text-[var(--ivory-text-3)] mb-4" strokeWidth={1} />
-              <h2 className="text-lg font-semibold display-text mb-2">Select or Create a Project</h2>
+              <h2 className="text-lg font-semibold mb-2">Select or Create a Project</h2>
               <p className="text-sm text-[var(--ivory-text-3)] max-w-xs mb-4">
                 Projects let you organize chats with local folders, custom instructions, and default AI settings.
               </p>

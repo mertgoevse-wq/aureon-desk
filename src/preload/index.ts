@@ -94,6 +94,10 @@ const api = {
     ipcRenderer.invoke('provider:testConnection', providerId),
   providerSetDefaultModel: (providerId: string, modelId: string): Promise<boolean> =>
     ipcRenderer.invoke('provider:setDefaultModel', providerId, modelId),
+  providerSyncOllamaModels: (): Promise<{ added: number; total: number }> =>
+    ipcRenderer.invoke('provider:syncOllamaModels'),
+  providerFetchOllamaModels: (baseUrl?: string): Promise<Array<{ name: string; size: number }>> =>
+    ipcRenderer.invoke('provider:fetchOllamaModels', baseUrl),
   modelAllEnabled: (): Promise<any[]> =>
     ipcRenderer.invoke('model:allEnabled'),
   modelToggleEnabled: (modelId: string, enabled: boolean): Promise<boolean> =>
@@ -159,6 +163,8 @@ const api = {
     ipcRenderer.invoke('github:deleteRepo', id),
   githubIsAlreadyImported: (url: string): Promise<boolean> =>
     ipcRenderer.invoke('github:isAlreadyImported', url),
+  githubRetryImport: (repoId: string): Promise<ImportResult> =>
+    ipcRenderer.invoke('github:retryImport', repoId),
   githubListItems: (filters?: ImportItemFilter): Promise<ImportedItem[]> =>
     ipcRenderer.invoke('github:listItems', filters),
   githubGetItem: (id: string): Promise<ImportedItem | undefined> =>
@@ -169,6 +175,26 @@ const api = {
     ipcRenderer.invoke('github:deleteItem', id),
   githubGetWarnings: (itemId?: string, repoUrl?: string): Promise<ImportWarning[]> =>
     ipcRenderer.invoke('github:getWarnings', itemId, repoUrl),
+  githubApproveItem: (id: string, approveAs: string): Promise<{ success: boolean; newId?: string; error?: string }> =>
+    ipcRenderer.invoke('github:approveItem', id, approveAs),
+
+  // LivePreview
+  previewCreateSandbox: (input?: { templateType?: string; port?: number }): Promise<{ success: boolean; sandboxPath: string; error?: string }> =>
+    ipcRenderer.invoke('preview:createSandbox', input),
+  previewStart: (sandboxPath: string, port?: number): Promise<any> =>
+    ipcRenderer.invoke('preview:start', sandboxPath, port),
+  previewStop: (): Promise<any> =>
+    ipcRenderer.invoke('preview:stop'),
+  previewStatus: (): Promise<any> =>
+    ipcRenderer.invoke('preview:status'),
+  previewWriteFile: (sandboxPath: string, relativePath: string, content: string): Promise<{ success: boolean; error?: string }> =>
+    ipcRenderer.invoke('preview:writeFile', sandboxPath, relativePath, content),
+  previewListSandboxes: (): Promise<Array<{ id: string; path: string; createdAt: string }>> =>
+    ipcRenderer.invoke('preview:listSandboxes'),
+  previewCleanup: (maxAgeHours?: number): Promise<number> =>
+    ipcRenderer.invoke('preview:cleanup', maxAgeHours),
+  previewCreateDemo: (port?: number): Promise<any> =>
+    ipcRenderer.invoke('preview:createDemo', port),
 
   // Tools / MCP
   toolList: (): Promise<ToolRow[]> =>

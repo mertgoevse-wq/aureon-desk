@@ -84,7 +84,8 @@ export const PROVIDER_ADAPTERS: ProviderAdapterInfo[] = [
     authType: 'api_key',
     capabilities: ['text', 'tool_use', 'streaming'],
     defaultModels: [
-      { name: 'openrouter/auto', displayName: 'Auto (best model)', contextWindow: 200000 }
+      { name: 'openrouter/auto', displayName: 'Auto (best model)', contextWindow: 200000 },
+      { name: 'openrouter/free', displayName: 'Free (smoke test)', contextWindow: 8000 }
     ]
   },
   {

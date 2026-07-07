@@ -15,7 +15,7 @@ const SHORTCUTS: ShortcutEntry[] = [
   { keys: 'Ctrl+B', description: 'Toggle sidebar' },
   { keys: 'Ctrl+I', description: 'Toggle inspector panel' },
   { keys: 'Esc', description: 'Close modals / command palette' },
-  { keys: 'Ctrl+/', description: 'Show this shortcuts help' },
+  { keys: 'Ctrl+/ or F1', description: 'Show this shortcuts help' },
 ]
 
 interface ShortcutsHelpProps {
@@ -78,7 +78,7 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps): React.Re
 
         {/* Footer */}
         <div className="px-4 py-2 border-t border-[var(--ivory-border)] text-[10px] text-[var(--ivory-text-3)] text-center">
-          Press <kbd className="px-1 py-0.5 rounded bg-[var(--ivory-surface-2)] border border-[var(--ivory-border)] text-[10px] font-mono">Ctrl+/</kbd> anywhere to show this help
+          Press <kbd className="px-1 py-0.5 rounded bg-[var(--ivory-surface-2)] border border-[var(--ivory-border)] text-[10px] font-mono">Ctrl+/</kbd> or <kbd className="px-1 py-0.5 rounded bg-[var(--ivory-surface-2)] border border-[var(--ivory-border)] text-[10px] font-mono">F1</kbd> to show this help
         </div>
       </div>
     </div>

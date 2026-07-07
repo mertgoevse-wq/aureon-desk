@@ -52,7 +52,7 @@ export function Modal({
           animate-in`}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ivory-border)]">
-          <h2 className="text-lg font-semibold display-text">{title}</h2>
+          <h2 className="text-lg font-semibold">{title}</h2>
           <button
             onClick={onClose}
             className="p-1 rounded-[var(--radius-sm)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors"

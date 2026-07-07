@@ -1,0 +1,320 @@
+import React, { useCallback, useEffect, useState, useRef } from 'react'
+import {
+  Play, Square, RefreshCw, ExternalLink, Monitor, Terminal,
+  FileText, Trash2, Plus, AlertTriangle, CheckCircle, XCircle, Clock, Zap
+} from 'lucide-react'
+import { Button } from '../components/shared/Button'
+import { Badge } from '../components/shared/Badge'
+import { EmptyState } from '../components/shared/EmptyState'
+import { useIpc } from '../hooks/useIpc'
+
+interface PreviewStatus {
+  id: string | null
+  status: 'idle' | 'starting' | 'running' | 'error' | 'stopped'
+  sandboxPath: string | null
+  url: string | null
+  port: number | null
+  templateType: string | null
+  logs: Array<{ timestamp: string; stream: 'stdout' | 'stderr'; text: string }>
+  error: string | null
+}
+
+export function LivePreview(): React.ReactElement {
+  const api = useIpc()
+  const [status, setStatus] = useState<PreviewStatus>({
+    id: null, status: 'idle', sandboxPath: null, url: null, port: null,
+    templateType: null, logs: [], error: null
+  })
+  const [templateType, setTemplateType] = useState('html')
+  const [creating, setCreating] = useState(false)
+  const [runningDemo, setRunningDemo] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const logRef = useRef<HTMLDivElement>(null)
+
+  const refreshStatus = useCallback(async () => {
+    try {
+      const s = await api.previewStatus()
+      setStatus(s)
+    } catch { /* ignore */ }
+  }, [api])
+
+  useEffect(() => {
+    refreshStatus()
+    const interval = setInterval(refreshStatus, 2000)
+    return () => clearInterval(interval)
+  }, [refreshStatus])
+
+  useEffect(() => {
+    if (logRef.current) {
+      logRef.current.scrollTop = logRef.current.scrollHeight
+    }
+  }, [status.logs])
+
+  const handleCreateSandbox = async () => {
+    setCreating(true); setError(null)
+    try {
+      const result = await api.previewCreateSandbox({ templateType })
+      if (result.success) {
+        await handleStart(result.sandboxPath)
+      } else {
+        setError(result.error || 'Failed to create sandbox')
+      }
+    } catch (e) { setError(String(e)) }
+    finally { setCreating(false) }
+  }
+
+  const handleRunDemo = async () => {
+    setRunningDemo(true); setError(null)
+    try {
+      const result = await api.previewCreateDemo()
+      if (result.success) {
+        await refreshStatus()
+      } else {
+        setError(result.error || 'Demo failed')
+      }
+    } catch (e) { setError(String(e)) }
+    finally { setRunningDemo(false) }
+  }
+
+  const handleStart = async (sandboxPath?: string) => {
+    setError(null)
+    const path = sandboxPath || status.sandboxPath
+    if (!path) return
+    try {
+      await api.previewStart(path)
+      await refreshStatus()
+    } catch (e) { setError(String(e)) }
+  }
+
+  const handleStop = async () => {
+    setError(null)
+    try {
+      await api.previewStop()
+      await refreshStatus()
+    } catch (e) { setError(String(e)) }
+  }
+
+  const openExternal = () => {
+    if (status.url) {
+      window.open(status.url, '_blank')
+    }
+  }
+
+  const statusBadge = () => {
+    switch (status.status) {
+      case 'running': return <Badge variant="success">Running</Badge>
+      case 'starting': return <Badge variant="warning">Starting</Badge>
+      case 'error': return <Badge variant="error">Error</Badge>
+      case 'stopped': return <Badge>Stopped</Badge>
+      default: return <Badge>Idle</Badge>
+    }
+  }
+
+  const statusIcon = () => {
+    switch (status.status) {
+      case 'running': return <CheckCircle size={16} className="text-green-600" />
+      case 'starting': return <RefreshCw size={16} className="text-amber-600 animate-spin" />
+      case 'error': return <XCircle size={16} className="text-red-600" />
+      case 'stopped': return <Clock size={16} className="text-[var(--ivory-text-3)]" />
+      default: return <Monitor size={16} className="text-[var(--ivory-text-3)]" />
+    }
+  }
+
+  const isRunning = status.status === 'running' || status.status === 'starting'
+  const hasSandbox = !!status.sandboxPath
+
+  return (
+    <div className="flex flex-col h-full bg-[var(--ivory-bg)]" data-testid="live-preview-panel">
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-[var(--ivory-border)]">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold display-text text-[var(--ivory-text)] flex items-center gap-2">
+              <Monitor size={18} className="text-[var(--ivory-accent)]" />
+              Live Preview
+            </h2>
+            <p className="text-xs text-[var(--ivory-text-3)] mt-0.5">
+              Safe sandbox for testing generated code. Runs locally — no data leaves your machine.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="px-6 py-3 border-b border-[var(--ivory-border)] flex items-center gap-3 flex-wrap">
+        {!hasSandbox ? (
+          <>
+            <select
+              value={templateType}
+              onChange={e => setTemplateType(e.target.value)}
+              className="px-3 py-1.5 text-sm rounded-[var(--radius-md)] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text)]"
+              data-testid="preview-template-select"
+            >
+              <option value="html">Simple HTML</option>
+              <option value="demo">Coding Demo</option>
+              <option value="vite-react">Vite + React</option>
+            </select>              <Button onClick={handleCreateSandbox} disabled={creating} size="sm" data-testid="preview-create-btn">
+              <Play size={14} /> Create & Start Preview
+            </Button>
+            <Button onClick={handleStop} variant="secondary" size="sm" disabled data-testid="preview-stop-btn">
+              <Square size={14} /> Stop Server
+            </Button>
+            <Button onClick={openExternal} variant="secondary" size="sm" disabled data-testid="preview-open-external-btn">
+              <ExternalLink size={14} /> Open in Browser
+            </Button>
+          </>
+        ) : (
+          <>
+            {isRunning ? (
+              <Button onClick={handleStop} variant="danger" size="sm" data-testid="preview-stop-btn">
+                <Square size={14} /> Stop Server
+              </Button>
+            ) : (
+              <Button onClick={() => handleStart()} variant="primary" size="sm" data-testid="preview-start-btn">
+                <Play size={14} /> Start Server
+              </Button>
+            )}
+            <Button onClick={refreshStatus} variant="ghost" size="sm" data-testid="preview-refresh-btn">
+              <RefreshCw size={14} /> Refresh
+            </Button>
+            {status.url && (
+              <Button onClick={openExternal} variant="secondary" size="sm" data-testid="preview-open-external-btn">
+                <ExternalLink size={14} /> Open in Browser
+              </Button>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* URL / preview target */}
+      {!error && (
+        <div className="px-6 py-2 border-b border-[var(--ivory-border)]">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-[var(--ivory-text-3)]">URL:</span>
+            <input
+              type="text"
+              value={status.url || ''}
+              readOnly
+              data-testid="preview-url-input"
+              placeholder="No local preview server running"
+              className="flex-1 px-2 py-1 text-xs bg-[var(--ivory-bg)] border border-[var(--ivory-border)] rounded-[var(--radius-sm)] text-[var(--ivory-text-2)]"
+            />
+          </div>
+        </div>
+      )}
+      {/* Error banner */}
+      {error && (
+        <div className="px-6 py-2 text-xs bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border-b border-[var(--ivory-error-bg)] flex items-center gap-2">
+          <AlertTriangle size={14} /> {error}
+          <button onClick={() => setError(null)} className="ml-auto"><XCircle size={14} /></button>
+        </div>
+      )}
+
+      {/* Main content */}
+      <div className="flex-1 overflow-y-auto">
+        {!hasSandbox ? (
+          <div className="p-6 space-y-6">
+            <EmptyState
+              icon={<Monitor size={40} strokeWidth={1.5} />}
+              title="No preview active"
+              description="Create a sandbox to test generated code safely. Choose a template and start a local preview server. No data leaves your machine."
+              action={
+                <Button onClick={handleCreateSandbox} disabled={creating} data-testid="preview-create-btn">
+                  <Play size={14} /> Create & Start Preview
+                </Button>
+              }
+            />
+            <div className="max-w-3xl mx-auto space-y-4">
+              <div className="p-4 rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-xs)]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {statusIcon()}
+                    <span data-testid="preview-status">{statusBadge()}</span>
+                    <span className="text-sm font-medium text-[var(--ivory-text)]">
+                      No sandbox selected
+                    </span>
+                  </div>
+                  <span className="text-xs text-[var(--ivory-text-3)]">Local only</span>
+                </div>
+              </div>
+
+              <div className="rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-xs)] overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--ivory-border)]">
+                  <Terminal size={12} className="text-[var(--ivory-text-3)]" />
+                  <span className="text-xs font-medium text-[var(--ivory-text-2)]">Server Logs</span>
+                  <span className="text-[10px] text-[var(--ivory-text-3)] ml-auto">
+                    {status.logs.length} entries — secrets redacted
+                  </span>
+                </div>
+                <div ref={logRef} className="max-h-48 overflow-y-auto font-mono text-xs" data-testid="preview-log-panel">
+                  <p className="p-4 text-[var(--ivory-text-3)] text-xs">No logs yet. Start a sandbox to see server output.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="p-6 space-y-4">
+            {/* Status card */}
+            <div className="p-4 rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-surface)]">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  {statusIcon()}
+                  <span data-testid="preview-status">{statusBadge()}</span>
+                  <span className="text-sm font-medium text-[var(--ivory-text)]">
+                    {status.templateType === 'vite-react' ? 'Vite + React' : 'Simple HTML'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-[var(--ivory-text-3)]">
+                  {status.port && <span>Port: {status.port}</span>}
+                  {status.url && (
+                    <a
+                      href={status.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[var(--ivory-accent)] hover:underline flex items-center gap-1"
+                      data-testid="preview-url-link"
+                    >
+                      {status.url} <ExternalLink size={10} />
+                    </a>
+                  )}
+                </div>
+              </div>
+              {status.error && (
+                <div className="p-2 rounded-[var(--radius-sm)] bg-[var(--ivory-error-bg)] text-xs text-[var(--ivory-error)]">
+                  {status.error}
+                </div>
+              )}
+            </div>
+
+            {/* Logs */}
+            <div className="rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-surface)] overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--ivory-border)]">
+                <Terminal size={12} className="text-[var(--ivory-text-3)]" />
+                <span className="text-xs font-medium text-[var(--ivory-text-2)]">Server Logs</span>
+                <span className="text-[10px] text-[var(--ivory-text-3)] ml-auto">
+                  {status.logs.length} entries — secrets redacted
+                </span>
+              </div>
+              <div ref={logRef} className="max-h-64 overflow-y-auto font-mono text-xs" data-testid="preview-log-panel">
+                {status.logs.length === 0 ? (
+                  <p className="p-4 text-[var(--ivory-text-3)] text-xs">No logs yet. Start the server to see output.</p>
+                ) : (
+                  status.logs.map((entry, i) => (
+                    <div key={i} className={`px-4 py-1.5 border-b border-[var(--ivory-border)]/30 last:border-0 flex gap-2 ${
+                      entry.stream === 'stderr' ? 'text-[var(--ivory-error)] bg-[var(--ivory-error-bg)]/30' : 'text-[var(--ivory-text-2)]'
+                    }`}>
+                      <span className="text-[var(--ivory-text-3)] shrink-0">
+                        {new Date(entry.timestamp).toLocaleTimeString()}
+                      </span>
+                      <span className="break-all">{entry.text.trim()}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
