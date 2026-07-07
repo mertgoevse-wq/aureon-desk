@@ -4,6 +4,12 @@ import { usePromptLibraryStore } from '../../stores/promptLibraryStore'
 import { useIpc } from '../../hooks/useIpc'
 import { VariableFiller } from '../prompts/VariableFiller'
 
+declare global {
+  interface WindowEventMap {
+    'composer-insert': CustomEvent<{ text: string; mode?: 'replace' | 'append' }>
+  }
+}
+
 // Local helpers (avoids importing node module in renderer)
 function safeParseTags(tags: string | null): string[] {
   if (!tags) return []
@@ -56,7 +62,7 @@ const BUILTIN_COMMANDS: Omit<SlashItem, 'isPrompt'>[] = [
 export function MessageInput({
   onSend,
   disabled = false,
-  placeholder = 'Type a message... (Shift+Enter for new line, / for commands & prompts)'
+  placeholder = 'Ask Aureon to write, inspect, plan, or build...'
 }: MessageInputProps): React.ReactElement {
   const [value, setValue] = useState('')
   const [showSlashMenu, setShowSlashMenu] = useState(false)
@@ -68,6 +74,13 @@ export function MessageInput({
   const prompts = usePromptLibraryStore(s => s.prompts)
   const loadPrompts = usePromptLibraryStore(s => s.setPrompts)
   const api = useIpc()
+
+  const resizeTextarea = useCallback(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = Math.min(el.scrollHeight, 220) + 'px'
+  }, [])
 
   const ensurePromptsLoaded = useCallback(async () => {
     if (prompts.length === 0) {
@@ -82,14 +95,29 @@ export function MessageInput({
     textareaRef.current?.focus()
   }, [])
 
-  // Listen for global focus-composer event (Ctrl+L shortcut)
+  // Listen for global composer events from empty-state prompt chips and shortcuts.
   useEffect(() => {
     const handler = () => {
       textareaRef.current?.focus()
     }
+    const insertHandler = (event: WindowEventMap['composer-insert']) => {
+      const incoming = event.detail?.text || ''
+      if (!incoming) return
+      setValue(current => event.detail?.mode === 'append' && current.trim()
+        ? `${current.trimEnd()}\n\n${incoming}`
+        : incoming)
+      requestAnimationFrame(() => {
+        resizeTextarea()
+        textareaRef.current?.focus()
+      })
+    }
     window.addEventListener('focus-composer', handler)
-    return () => window.removeEventListener('focus-composer', handler)
-  }, [])
+    window.addEventListener('composer-insert', insertHandler)
+    return () => {
+      window.removeEventListener('focus-composer', handler)
+      window.removeEventListener('composer-insert', insertHandler)
+    }
+  }, [resizeTextarea])
 
   const handleSend = useCallback(() => {
     const trimmed = value.trim()
@@ -127,6 +155,29 @@ export function MessageInput({
     replaceSlash(text)
   }, [replaceSlash])
 
+  const openPromptMenu = useCallback(() => {
+    setValue('/')
+    setSlashQuery('')
+    setSlashItems(BUILTIN_COMMANDS.slice(0, 10).map(item => ({ ...item, isPrompt: false })))
+    setSlashIndex(0)
+    setShowSlashMenu(true)
+    requestAnimationFrame(() => textareaRef.current?.focus())
+    ensurePromptsLoaded().then(() => {
+      const currentPrompts = usePromptLibraryStore.getState().prompts
+      const promptItems: SlashItem[] = currentPrompts.slice(0, 4).map(p => ({
+        id: p.id,
+        label: p.title,
+        description: p.description || p.content.slice(0, 80),
+        content: p.content,
+        variables: p.variables ? safeParseVars(p.variables) : extractTemplateVars(p.content),
+        icon: <BookOpen size={14} className="text-[var(--ivory-accent)]" />,
+        category: 'prompts',
+        isPrompt: true
+      }))
+      setSlashItems([...BUILTIN_COMMANDS.slice(0, 8).map(item => ({ ...item, isPrompt: false })), ...promptItems].slice(0, 12))
+    })
+  }, [ensurePromptsLoaded])
+
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (showSlashMenu && slashItems.length > 0) {
       if (e.key === 'ArrowDown') {
@@ -162,10 +213,9 @@ export function MessageInput({
     const newValue = e.target.value
     setValue(newValue)
 
-    const el = e.target
-    el.style.height = 'auto'
-    el.style.height = Math.min(el.scrollHeight, 200) + 'px'
+    resizeTextarea()
 
+    const el = e.target
     const cursorPos = el.selectionStart
     const textBefore = newValue.slice(0, cursorPos)
     const slashMatch = textBefore.match(/\/(\S*)$/)
@@ -203,12 +253,32 @@ export function MessageInput({
     }
   }, [ensurePromptsLoaded])
 
+  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const text = e.clipboardData.getData('text')
+    if (!text) return
+    e.preventDefault()
+
+    const el = e.currentTarget
+    const start = el.selectionStart ?? value.length
+    const end = el.selectionEnd ?? value.length
+    const nextValue = value.slice(0, start) + text + value.slice(end)
+    const cursor = start + text.length
+
+    setValue(nextValue)
+    setShowSlashMenu(false)
+    requestAnimationFrame(() => {
+      resizeTextarea()
+      textareaRef.current?.setSelectionRange(cursor, cursor)
+      textareaRef.current?.focus()
+    })
+  }, [resizeTextarea, value])
+
   return (
-    <div className="border-t border-[var(--ivory-border)] bg-[var(--ivory-bg)]" data-testid="chat-composer">
-      <div className="mx-auto max-w-3xl px-4 py-3 relative">
+    <div className="bg-gradient-to-t from-[var(--ivory-bg)] via-[var(--ivory-bg)] to-[var(--ivory-bg)]/80" data-testid="chat-composer">
+      <div className="mx-auto max-w-3xl px-4 pt-2 pb-4 relative">
         {/* Slash command palette */}
         {showSlashMenu && slashItems.length > 0 && (
-          <div className="absolute bottom-full left-8 right-8 mb-2 bg-[var(--ivory-bg)] border border-[var(--ivory-border)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] z-20 max-h-80 overflow-y-auto">
+          <div className="absolute bottom-full left-8 right-8 mb-3 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-[18px] shadow-[var(--shadow-xl)] z-20 max-h-80 overflow-y-auto">
             <div className="px-3 py-1.5 text-[10px] text-[var(--ivory-text-3)] border-b border-[var(--ivory-border)] font-medium flex items-center justify-between">
               <span>Commands & Prompts</span>
               <span className="text-[var(--ivory-text-3)]/60">↑↓ navigate · ↵ insert · esc close</span>
@@ -263,51 +333,61 @@ export function MessageInput({
           />
         )}
 
-        <div className="flex items-end gap-2 bg-[var(--ivory-surface)] border border-[var(--ivory-border)] rounded-[var(--radius-lg)] px-3 py-2
+        <div className="bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-[22px] px-3 py-2 shadow-[var(--shadow-composer)]
           focus-within:border-[var(--ivory-accent)] focus-within:ring-1 focus-within:ring-[var(--ivory-accent)]
           hover:border-[var(--ivory-border-2)] transition-all duration-[var(--transition-fast)]">
-          <button
-            className="p-1 rounded-[var(--radius-sm)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface-2)] transition-colors shrink-0 mb-0.5"
-            title="Attach file (coming soon)"
-            aria-label="Attach file"
-            disabled
-          >
-            <Paperclip size={16} />
-          </button>
-
           <textarea
             ref={textareaRef}
             value={value}
             onChange={handleInput}
+            onPaste={handlePaste}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={disabled}
             rows={1}
-            className="flex-1 resize-none bg-transparent text-sm text-[var(--ivory-text)] placeholder:text-[var(--ivory-text-3)] outline-none min-h-[24px] max-h-[200px] py-1 leading-relaxed"
+            className="w-full resize-none bg-transparent text-[15px] text-[var(--ivory-text)] placeholder:text-[var(--ivory-text-3)] outline-none min-h-[42px] max-h-[220px] px-2 pt-2 pb-1 leading-relaxed"
             data-testid="message-textarea"
           />
 
-          <button
-            onClick={handleSend}
-            disabled={disabled || !value.trim()}
-            className="p-1.5 rounded-[var(--radius-sm)] transition-colors shrink-0 mb-0.5
-              text-[var(--ivory-accent)] hover:bg-[var(--ivory-accent)]/10
-              disabled:text-[var(--ivory-text-3)] disabled:hover:bg-transparent"
-            title="Send message (Enter)"
-            aria-label="Send message"
-            data-testid="send-button"
-          >
-            <Send size={16} />
-          </button>
-        </div>
+          <div className="flex items-center justify-between gap-3 border-t border-[var(--ivory-border)]/60 pt-2">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <button
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)] transition-colors shrink-0"
+                title="Attach file (coming soon)"
+                aria-label="Attach file"
+                disabled
+              >
+                <Paperclip size={15} />
+              </button>
+              <button
+                type="button"
+                onClick={openPromptMenu}
+                className="inline-flex items-center gap-1.5 h-7 px-2 rounded-full text-[11px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)] transition-colors"
+                title="Open commands and prompt library"
+              >
+                <BookOpen size={13} />
+                Prompts
+              </button>
+            </div>
 
-        <div className="flex items-center justify-between mt-2 px-1">
-          <p className="text-[10px] text-[var(--ivory-text-3)]">
-            <kbd className="text-[9px] mr-0.5">/</kbd> commands & prompts
-          </p>
-          <p className="text-[10px] text-[var(--ivory-text-3)]">
-            <kbd className="text-[9px] mr-0.5">Shift+Enter</kbd> new line
-          </p>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="hidden sm:inline text-[10px] text-[var(--ivory-text-3)]">
+                Enter to send · Shift+Enter for line break
+              </span>
+              <button
+                onClick={handleSend}
+                disabled={disabled || !value.trim()}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-all shrink-0
+                  bg-[var(--ivory-accent)] text-white shadow-[var(--shadow-sm)] hover:bg-[var(--ivory-accent-hover)] hover:shadow-[var(--shadow-md)]
+                  disabled:bg-[var(--ivory-surface-3)] disabled:text-[var(--ivory-text-3)] disabled:shadow-none"
+                title="Send message (Enter)"
+                aria-label="Send message"
+                data-testid="send-button"
+              >
+                <Send size={15} />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

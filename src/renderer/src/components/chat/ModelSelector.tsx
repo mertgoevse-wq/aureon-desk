@@ -49,17 +49,26 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps): React.Re
     <div className="relative" data-testid="model-selector">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-[var(--radius-md)]
-          bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)]
-          hover:bg-[var(--ivory-surface-2)] transition-colors"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full
+          bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)]
+          hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-border-2)] transition-all cursor-pointer"
         aria-label={isOpen ? 'Close model selector' : `Select model${selectedModel ? ` (current: ${selectedModel.display_name})` : ''}`}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
         <Zap size={12} className="text-[var(--ivory-accent)]" />
-        <span className="max-w-[140px] truncate">
+        <span className="max-w-[140px] truncate font-medium">
           {selectedModel ? selectedModel.display_name : 'Select model'}
         </span>
+        {selectedModel && (
+          <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${
+            selectedModel.provider_slug === 'ollama' || selectedModel.provider_slug === 'lmstudio'
+              ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)]'
+              : 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)]'
+          }`}>
+            {selectedModel.provider_slug === 'ollama' || selectedModel.provider_slug === 'lmstudio' ? 'Local' : 'Cloud'}
+          </span>
+        )}
         <ChevronDown size={12} />
       </button>
 

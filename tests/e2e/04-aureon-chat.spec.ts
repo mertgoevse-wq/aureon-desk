@@ -28,7 +28,7 @@ test.describe('Aureon Desk — Chat', () => {
     await screenshot(mainWindow, 'chat_new_created')
   })
 
-  test('Message composer accepts typing and paste', async ({ electronApp, mainWindow }) => {
+  test('Message composer accepts typing and paste', async ({ mainWindow }) => {
     // First create a new chat
     const newChatButton = mainWindow.getByTestId('new-chat-button').first()
     await expect(newChatButton).toBeVisible({ timeout: 5000 })
@@ -48,8 +48,15 @@ test.describe('Aureon Desk — Chat', () => {
     const value = await textarea.inputValue()
     expect(value).toContain('Hello, this is a test message')
 
-    await electronApp.evaluate(({ clipboard }) => clipboard.writeText(' pasted through clipboard'))
-    await mainWindow.keyboard.press('Control+V')
+    await textarea.evaluate((el, text) => {
+      const data = new DataTransfer()
+      data.setData('text/plain', text)
+      el.dispatchEvent(new ClipboardEvent('paste', {
+        bubbles: true,
+        cancelable: true,
+        clipboardData: data
+      }))
+    }, ' pasted through clipboard')
     await mainWindow.waitForTimeout(300)
 
     const pastedValue = await textarea.inputValue()

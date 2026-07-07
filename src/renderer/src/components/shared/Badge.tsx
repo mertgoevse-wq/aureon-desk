@@ -27,7 +27,7 @@ export function Badge({
 }: BadgeProps): React.ReactElement {
   return (
     <span
-      className={`inline-flex items-center font-medium rounded-[var(--radius-full)]
+      className={`inline-flex items-center justify-center font-medium rounded-[var(--radius-full)] whitespace-nowrap
         ${variantClasses[variant]} ${sizeClasses[size]}`}
     >
       {children}

@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 // Design System & Layout Regression Tests
 // Tests invariants that matter: token relationships, component logic, architecture constraints
@@ -110,6 +112,11 @@ describe('Design System & Layout Regression', () => {
     }
   })
 
+  it('composer should have a dedicated elevated shadow token', () => {
+    const tokens = readFileSync(join(process.cwd(), 'src/renderer/src/theme/tokens.css'), 'utf8')
+    expect(tokens).toContain('--shadow-composer')
+  })
+
   // --- Focus ring ---
   it('focus ring should be visible', () => {
     const focusRingWidth = 2
@@ -138,5 +145,14 @@ describe('Design System & Layout Regression', () => {
     const messageMaxWidth = 'max-w-3xl'
     const composerMaxWidth = 'max-w-3xl'
     expect(messageMaxWidth).toBe(composerMaxWidth)
+  })
+
+  it('empty chat starter prompts should insert text into the composer', () => {
+    const chatPanel = readFileSync(join(process.cwd(), 'src/renderer/src/components/chat/ChatPanel.tsx'), 'utf8')
+    const messageInput = readFileSync(join(process.cwd(), 'src/renderer/src/components/chat/MessageInput.tsx'), 'utf8')
+
+    expect(chatPanel).toContain('STARTER_PROMPTS')
+    expect(chatPanel).toContain('composer-insert')
+    expect(messageInput).toContain("window.addEventListener('composer-insert'")
   })
 })

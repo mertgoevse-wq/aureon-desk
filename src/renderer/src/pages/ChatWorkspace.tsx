@@ -7,7 +7,7 @@ import { MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown } from 'luci
 import type { SystemPromptRow } from '@shared/types/prompt'
 
 export function ChatWorkspace(): React.ReactElement {
-  const { activeChat, activeChatId, updateChatInList } = useChatStore()
+  const { activeChat, activeChatId } = useChatStore()
   const api = useIpc()
   const [promptsOpen, setPromptsOpen] = useState(false)
   const [systemPrompts, setSystemPrompts] = useState<SystemPromptRow[]>([])
@@ -26,23 +26,35 @@ export function ChatWorkspace(): React.ReactElement {
   const selectedPrompt = systemPrompts.find(p => p.id === selectedPromptId)
 
   const handleModelChange = useCallback(async (modelId: string | null) => {
-    if (!activeChatId) return
+    if (!activeChatId || !activeChat) return
     try {
       await api.chatUpdate(activeChatId, { model_id: modelId })
+      useChatStore.setState({
+        activeChat: {
+          ...activeChat,
+          model_id: modelId
+        }
+      })
     } catch (err) {
       console.error('Failed to update chat model:', err)
     }
-  }, [activeChatId, api])
+  }, [activeChatId, activeChat, api])
 
   const handlePromptChange = useCallback(async (promptId: string | null) => {
-    if (!activeChatId) return
+    if (!activeChatId || !activeChat) return
     try {
       await api.chatUpdate(activeChatId, { system_prompt_id: promptId })
       setSelectedPromptId(promptId)
+      useChatStore.setState({
+        activeChat: {
+          ...activeChat,
+          system_prompt_id: promptId
+        }
+      })
     } catch (err) {
       console.error('Failed to update chat prompt:', err)
     }
-  }, [activeChatId, api])
+  }, [activeChatId, activeChat, api])
 
   if (!activeChat) {
     return (
@@ -89,19 +101,23 @@ export function ChatWorkspace(): React.ReactElement {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Chat Header */}
-      <div className="flex items-center justify-between px-5 py-2.5 border-b border-[var(--ivory-border)] bg-[var(--ivory-bg)] gap-4 min-w-0">
-        <h2 className="text-base font-semibold text-[var(--ivory-text)] truncate min-w-0">
-          {activeChat.title}
-        </h2>
+      <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--ivory-border)] bg-[var(--ivory-elevated)]/80 gap-4 min-w-0 shadow-[var(--shadow-xs)]">
+        <div className="min-w-0">
+          <h2 className="text-[15px] font-semibold text-[var(--ivory-text)] truncate min-w-0">
+            {activeChat.title}
+          </h2>
+          <p className="text-[11px] text-[var(--ivory-text-3)] mt-0.5 truncate">
+            {selectedPrompt ? selectedPrompt.name : 'No system profile'} · {activeChat.model_id ? 'Model selected' : 'Choose a model to start'}
+          </p>
+        </div>
         <div className="flex items-center gap-2.5 shrink-0">
           {/* System Prompt Profile Selector */}
           <div className="relative">
             <button
               onClick={() => { setPromptsOpen(!promptsOpen); api.systemPromptList(false).then(setSystemPrompts) }}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-[var(--radius-md)]
-                bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)]
-                hover:bg-[var(--ivory-surface-2)] transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full
+                bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)]
+                hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-border-2)] transition-all"
               data-testid="system-profile-selector"
             >
               <ScrollText size={12} className="text-[var(--ivory-accent)]" />
@@ -113,11 +129,11 @@ export function ChatWorkspace(): React.ReactElement {
             {promptsOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setPromptsOpen(false)} />
-                <div className="absolute top-full right-0 mt-1 w-64 z-20 bg-[var(--ivory-bg)] border border-[var(--ivory-border)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] max-h-60 overflow-y-auto">
+                <div className="absolute top-full right-0 mt-2 w-72 z-20 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-[18px] shadow-[var(--shadow-xl)] max-h-72 overflow-y-auto p-1">
                   <button
                     onClick={() => { handlePromptChange(null); setPromptsOpen(false) }}
-                    className={`w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--ivory-surface)] transition-colors
-                      ${!selectedPromptId ? 'bg-[var(--ivory-surface)] text-[var(--ivory-text)]' : 'text-[var(--ivory-text-3)]'}`}
+                    className={`w-full text-left px-3 py-2 text-xs rounded-[var(--radius-md)] hover:bg-[var(--ivory-surface)] transition-colors
+                      ${!selectedPromptId ? 'bg-[var(--ivory-surface)] text-[var(--ivory-text)] font-medium' : 'text-[var(--ivory-text-3)]'}`}
                   >
                     No profile (bare API call)
                   </button>
@@ -125,7 +141,7 @@ export function ChatWorkspace(): React.ReactElement {
                     <button
                       key={prompt.id}
                       onClick={() => { handlePromptChange(prompt.id); setPromptsOpen(false) }}
-                      className={`w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--ivory-surface)] transition-colors
+                      className={`w-full text-left px-3 py-2 text-xs rounded-[var(--radius-md)] hover:bg-[var(--ivory-surface)] transition-colors
                         ${prompt.id === selectedPromptId ? 'bg-[var(--ivory-surface)] text-[var(--ivory-text)] font-medium' : 'text-[var(--ivory-text-2)]'}`}
                     >
                       {prompt.name}

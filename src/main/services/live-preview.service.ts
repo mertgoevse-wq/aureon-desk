@@ -215,21 +215,22 @@ function isNpmAvailable(): boolean {
 }
 
 function findAvailablePort(basePort: number): number {
-  const net = require('net') as typeof import('net')
+  const { execSync } = require('child_process') as typeof import('child_process')
   for (let offset = 0; offset < 100; offset++) {
     const port = basePort + offset
     try {
-      const server = new net.Server()
-      server.listen(port, '127.0.0.1')
-      server.close()
+      // Run a synchronous child process to verify if the port is open.
+      // Must set ELECTRON_RUN_AS_NODE to execute as pure Node CLI in Electron env.
+      execSync(
+        `"${process.execPath}" -e "const s = require('net').createServer(); s.once('error', () => process.exit(1)); s.once('listening', () => { s.close(); process.exit(0); }); s.listen(${port}, '127.0.0.1');"`,
+        { stdio: 'ignore', timeout: 2000, env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' } }
+      )
       return port
-    } catch { /* busy */ }
+    } catch {
+      // Port is busy or check failed, try next offset
+    }
   }
-  const server = new net.Server()
-  server.listen(0, '127.0.0.1')
-  const p = (server.address() as { port: number }).port
-  server.close()
-  return p
+  return basePort + Math.floor(Math.random() * 1000)
 }
 
 function buildStaticServerScript(sandboxPath: string, port: number): string {
@@ -407,7 +408,9 @@ export const livePreviewService = {
       } else {
         const script = buildStaticServerScript(sandboxPath, actualPort)
         proc = spawn(process.execPath, ['-e', script], {
-          cwd: sandboxPath, env: { ...process.env, NODE_ENV: 'development' }, stdio: ['ignore', 'pipe', 'pipe'],
+          cwd: sandboxPath,
+          env: { ...process.env, NODE_ENV: 'development', ELECTRON_RUN_AS_NODE: '1' },
+          stdio: ['ignore', 'pipe', 'pipe'],
         })
       }
 

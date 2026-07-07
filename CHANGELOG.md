@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.9.20] - 2026-07-07
+
+### Added
+- **Model Auto-Selection**: Chats created without an explicit model ID will now automatically assign the enabled default model or fallback to the first active model, preventing users from starting in an unconfigured state.
+- **Model Setup Assist Cards**: If a chat has no selected model, a polished setup assistant card is shown (with options for OpenRouter cloud, Ollama local, LM Studio local, and Settings). In chats with history, a resume warning banner is displayed.
+- **Model Badges in Header**: The header model selector button now displays a distinct, polished "Local" or "Cloud" badge corresponding to the selected model.
+
+### Fixed
+- **Controlled Input Keyboard / Paste Actions**: Removed the custom input paste/input event override hooks in `Input.tsx` and `Textarea.tsx` that interfered with React controlled state synchronization, restoring standard typing, copy, paste, select all, and native editing keys.
+- **Chat State Store Synchronization**: Updated `ChatWorkspace.tsx` to update `useChatStore` immediately on model or system prompt changes so all dependent UI elements refresh instantly.
+
+### Verified
+- Added 6 unit tests in `tests/unit/model-selection-and-provider-polish.test.ts` for default model selection and API key redaction.
+- Added 2 E2E tests in `tests/e2e/11-aureon-model-selection.spec.ts` verifying automatic selection and setup assistant cards.
+
+## [0.9.19] - 2026-07-07
+
+### Changed - Prompt 8 Premium UX Audit
+- **Claude-like workspace flow, original Aureon UI**: Re-read the ChatGPT ZIP handoff and applied the requested calm desktop direction without copying Anthropic/Claude assets, branding, exact layouts, fonts, colors, or private behavior.
+- **Empty chat start surface**: Reworked the first-run chat view into a quieter assistant start page with compact starter prompts that insert useful text directly into the composer.
+- **Composer polish**: The message composer now uses a larger elevated rounded surface, a calmer toolbar, a dedicated prompt-library button, a rounded send affordance, and a `composer-insert` event for prompt chips.
+- **Message rhythm**: User messages now render as soft right-aligned bubbles while assistant messages keep a readable left-aligned working-answer layout with Aureon identity and copy controls.
+- **Chat header polish**: Active chat headers now show title, current system-profile state, and model-selection state in a softer elevated toolbar.
+
+### Added
+- **UX regression checks**: Visual regression tests now assert the elevated composer token and the empty-chat starter-prompt insertion path.
+
 ## [0.9.18] - 2026-07-07
 
 ### Added - Prompt 5 Provider Test Center

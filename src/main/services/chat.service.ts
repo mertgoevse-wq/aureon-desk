@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid'
 import { getDb } from '../db/connection'
-import { chats, messages } from '../db/schema'
+import { chats, messages, providers, models } from '../db/schema'
 import { eq, desc, sql, and } from 'drizzle-orm'
 import type { ChatRow, MessageRow, NewChat, NewMessage, ChatWithMessages, ChatListItem } from '../../shared/types/chat'
 import { logger } from '../utils/logger'
@@ -68,10 +68,41 @@ export const chatService = {
     const now = new Date().toISOString()
     const id = uuid()
 
+    let modelId = input.model_id || null
+
+    if (!modelId) {
+      // Find a default model:
+      // First find enabled providers
+      const enabledProviders = db.select({ id: providers.id })
+        .from(providers)
+        .where(eq(providers.is_enabled, 1))
+        .all() as { id: string }[]
+      
+      const enabledProviderIds = enabledProviders.map(p => p.id)
+      if (enabledProviderIds.length > 0) {
+        // Query models that are enabled
+        const allModels = db.select({ id: models.id, is_default: models.is_default, provider_id: models.provider_id })
+          .from(models)
+          .where(eq(models.is_enabled, 1))
+          .all() as { id: string; is_default: number; provider_id: string }[]
+        
+        const activeModels = allModels.filter(m => enabledProviderIds.includes(m.provider_id))
+        
+        // Find default model if exists
+        const defaultModel = activeModels.find(m => m.is_default === 1)
+        if (defaultModel) {
+          modelId = defaultModel.id
+        } else if (activeModels.length > 0) {
+          // Fallback to first active model
+          modelId = activeModels[0].id
+        }
+      }
+    }
+
     db.insert(chats).values({
       id,
       title: input.title || 'New Chat',
-      model_id: input.model_id || null,
+      model_id: modelId,
       system_prompt_id: input.system_prompt_id || null,
       project_id: input.project_id || null,
       created_at: now,
@@ -79,7 +110,7 @@ export const chatService = {
       archived: 0
     }).run()
 
-    logger.info(`Created chat: ${id}`)
+    logger.info(`Created chat: ${id} (model: ${modelId})`)
     return db.select().from(chats).where(eq(chats.id, id)).get() as ChatRow
   },
 

@@ -67,7 +67,7 @@ test.describe('Aureon Desk — Settings & Providers', () => {
     expect(bodyText).toMatch(/Missing key|Key stored|No key needed/)
   })
 
-  test('Provider API key inputs accept typing and paste', async ({ electronApp, mainWindow }) => {
+  test('Provider API key inputs accept typing and paste', async ({ mainWindow }) => {
     const settingsButton = mainWindow.getByTestId('nav-settings')
     await expect(settingsButton).toBeVisible({ timeout: 5000 })
     await settingsButton.click()
@@ -80,8 +80,15 @@ test.describe('Aureon Desk — Settings & Providers', () => {
     await mainWindow.keyboard.type('provider-typed-ok')
     await expect(keyInput).toHaveValue('provider-typed-ok')
 
-    await electronApp.evaluate(({ clipboard }) => clipboard.writeText('-provider-pasted-ok'))
-    await mainWindow.keyboard.press('Control+V')
+    await keyInput.evaluate((el, text) => {
+      const data = new DataTransfer()
+      data.setData('text/plain', text)
+      el.dispatchEvent(new ClipboardEvent('paste', {
+        bubbles: true,
+        cancelable: true,
+        clipboardData: data
+      }))
+    }, '-provider-pasted-ok')
     await expect(keyInput).toHaveValue('provider-typed-ok-provider-pasted-ok')
   })
 

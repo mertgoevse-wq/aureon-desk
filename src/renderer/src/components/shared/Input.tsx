@@ -12,16 +12,9 @@ export function Input({
   hint,
   className = '',
   id,
-  onChange,
-  onInput,
   ...props
 }: InputProps): React.ReactElement {
   const inputId = id || label?.toLowerCase().replace(/\s+/g, '-')
-
-  const handleInput = (event: React.InputEvent<HTMLInputElement>) => {
-    onInput?.(event)
-    onChange?.(event as unknown as React.ChangeEvent<HTMLInputElement>)
-  }
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -35,7 +28,6 @@ export function Input({
       )}
       <input
         id={inputId}
-        onInput={handleInput}
         className={`px-3 py-2 text-sm rounded-[var(--radius-lg)] bg-[var(--ivory-elevated)]
           border border-[var(--ivory-border)] text-[var(--ivory-text)]
           placeholder:text-[var(--ivory-text-3)]
@@ -66,16 +58,9 @@ export function Textarea({
   error,
   className = '',
   id,
-  onChange,
-  onInput,
   ...props
 }: TextareaProps): React.ReactElement {
   const textareaId = id || label?.toLowerCase().replace(/\s+/g, '-')
-
-  const handleInput = (event: React.InputEvent<HTMLTextAreaElement>) => {
-    onInput?.(event)
-    onChange?.(event as unknown as React.ChangeEvent<HTMLTextAreaElement>)
-  }
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -89,7 +74,6 @@ export function Textarea({
       )}
       <textarea
         id={textareaId}
-        onInput={handleInput}
         className={`px-3 py-2 text-sm rounded-[var(--radius-lg)] bg-[var(--ivory-elevated)]
           border border-[var(--ivory-border)] text-[var(--ivory-text)]
           placeholder:text-[var(--ivory-text-3)]

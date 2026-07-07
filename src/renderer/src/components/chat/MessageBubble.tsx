@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
-import { User, Sparkles, Copy, Check } from 'lucide-react'
+import { Sparkles, Copy, Check } from 'lucide-react'
 import type { MessageRow } from '@shared/types/chat'
 
 interface MessageBubbleProps {
@@ -53,47 +53,35 @@ export const MessageBubble = memo(function MessageBubble({ message }: MessageBub
     )
   }
 
+  if (isUser) {
+    return (
+      <div className="px-4 py-3 animate-in">
+        <div className="mx-auto max-w-3xl flex justify-end">
+          <div className="max-w-[82%] rounded-[22px] rounded-br-[8px] bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] px-4 py-3 shadow-[var(--shadow-xs)]">
+            <div className="text-sm leading-relaxed text-[var(--ivory-text)] break-words whitespace-pre-wrap overflow-hidden">
+              {message.content}
+            </div>
+            <div className="flex items-center justify-end gap-2 mt-1.5">
+              <span className="text-[10px] text-[var(--ivory-text-3)]">
+                {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className={`px-4 py-3 animate-in ${isUser ? '' : 'bg-[var(--ivory-bg)]'}`}>
+    <div className="px-4 py-4 animate-in">
       <div className="mx-auto max-w-3xl flex gap-3">
-        {/* Avatar */}
-        <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5
-          ${isUser
-            ? 'bg-[var(--ivory-accent)] text-white'
-            : 'bg-[var(--ivory-surface-3)] text-[var(--ivory-text-2)]'}`}
-        >
-          {isUser ? <User size={14} /> : <Sparkles size={14} />}
+        <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] ring-1 ring-[var(--ivory-accent)]/10">
+          <Sparkles size={14} />
         </div>
 
-        {/* Content */}
         <div className="min-w-0 flex-1">
-          <div className={`text-sm leading-relaxed break-words overflow-hidden ${isAssistant ? 'prose max-w-full' : 'whitespace-pre-wrap'}`}>
-            {isUser ? (
-              <p className="text-[var(--ivory-text)] break-words whitespace-pre-wrap">{message.content}</p>
-            ) : (
-              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-                {message.content}
-              </ReactMarkdown>
-            )}
-          </div>
-
-          {/* Copy button (assistant messages only) */}
-          {isAssistant && (
-            <div className="flex items-center justify-end mt-1">
-              <button
-                onClick={handleCopy}
-                className="inline-flex items-center gap-1 text-[10px] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] transition-colors px-1 py-0.5 rounded hover:bg-[var(--ivory-surface)]"
-                aria-label={copied ? 'Copied' : 'Copy message'}
-                title={copied ? 'Copied!' : 'Copy message'}
-              >
-                {copied ? <Check size={10} className="text-green-600" /> : <Copy size={10} />}
-                <span>{copied ? 'Copied' : 'Copy'}</span>
-              </button>
-            </div>
-          )}
-
-          {/* Metadata */}
-          <div className="flex items-center gap-2 mt-0.5">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-semibold text-[var(--ivory-text-2)]">Aureon</span>
             <span className="text-[10px] text-[var(--ivory-text-3)]">
               {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
@@ -103,6 +91,26 @@ export const MessageBubble = memo(function MessageBubble({ message }: MessageBub
               </span>
             )}
           </div>
+
+          <div className={`text-sm leading-relaxed break-words overflow-hidden ${isAssistant ? 'prose max-w-full' : 'whitespace-pre-wrap'}`}>
+            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+              {message.content}
+            </ReactMarkdown>
+          </div>
+
+          {isAssistant && (
+            <div className="flex items-center justify-start mt-2">
+              <button
+                onClick={handleCopy}
+                className="inline-flex items-center gap-1.5 text-[10px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] transition-colors px-2 py-1 rounded-full hover:bg-[var(--ivory-surface)]"
+                aria-label={copied ? 'Copied' : 'Copy message'}
+                title={copied ? 'Copied!' : 'Copy message'}
+              >
+                {copied ? <Check size={10} className="text-green-600" /> : <Copy size={10} />}
+                <span>{copied ? 'Copied' : 'Copy'}</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

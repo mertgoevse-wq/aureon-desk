@@ -16,6 +16,21 @@ import {
 } from 'lucide-react'
 import type { ChatListItem } from '@shared/types/chat'
 
+function insertClipboardText(target: HTMLInputElement | HTMLTextAreaElement, text: string): void {
+  const start = target.selectionStart ?? target.value.length
+  const end = target.selectionEnd ?? target.value.length
+  const nextValue = target.value.slice(0, start) + text + target.value.slice(end)
+  target.value = nextValue
+  const cursor = start + text.length
+  target.setSelectionRange(cursor, cursor)
+  target.dispatchEvent(new InputEvent('input', {
+    bubbles: true,
+    cancelable: true,
+    inputType: 'insertFromPaste',
+    data: text
+  }))
+}
+
 export function AppShell(): React.ReactElement {
   const navigate = useNavigate()
   const location = useLocation()
@@ -48,7 +63,18 @@ export function AppShell(): React.ReactElement {
 
       if (isEditing) {
         // Inside an input/textarea: only handle Escape (blur + close modals)
-        // Let all other keys pass through — including Ctrl+C/V/A for copy/paste
+        // Let all other keys pass through. Ctrl+V gets a fallback because
+        // some Electron/Windows paths do not emit an input event for React.
+        if (mod && e.key.toLowerCase() === 'v' && (tag === 'INPUT' || tag === 'TEXTAREA')) {
+          e.preventDefault()
+          const target = e.target as HTMLInputElement | HTMLTextAreaElement
+          navigator.clipboard?.readText()
+            .then(text => {
+              if (text) insertClipboardText(target, text)
+            })
+            .catch(() => {})
+          return
+        }
         if (e.key === 'Escape') {
           (e.target as HTMLElement).blur()
           if (paletteOpenRef.current) setPaletteOpen(false)

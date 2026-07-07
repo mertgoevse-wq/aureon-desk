@@ -22,7 +22,7 @@ npm run demo:coding
 | Check | Result |
 |-------|--------|
 | Typecheck (`npm run typecheck`) | ✅ PASS |
-| Unit Tests (`npm test`) | ✅ PASS (267 tests) |
+| Unit Tests (`npm test`) | ✅ PASS (275 tests) |
 | Build (`npm run build`) | ✅ PASS |
 | E2E Smoke Tests | ✅ PASS (9 tests) |
 | E2E Navigation Tests | ✅ PASS (7 tests) |
@@ -30,19 +30,20 @@ npm run demo:coding
 | E2E Settings Tests | ✅ PASS (8 tests in latest targeted run) |
 | E2E LivePreview Tests | ✅ PASS (10 tests) |
 | E2E Coding Demo Tests | ✅ PASS (6 tests) |
+| E2E Model Selection Tests | ✅ PASS (2 tests) |
 | Coding Demo CLI (`npm run demo:coding`) | ✅ PASS |
-| **Latest targeted E2E** | **✅ 18/18 PASS (Settings + LivePreview)** |
+| **Latest targeted E2E** | **✅ 8/8 PASS (Model Selection + Coding Demo)** |
 
 ### Latest Continuation Validation
 
-Run on 2026-07-07 after Provider Test Center, LivePreview idle-state, input handling, and UI polish changes:
+Run on 2026-07-07 after model selection UX assist, input key handlers, state store synchronization, and visual badges:
 
 | Check | Result |
 |-------|--------|
 | Typecheck (`npm run typecheck`) | ✅ PASS |
-| Unit Tests (`npm test`) | ✅ PASS (267 tests) |
+| Unit Tests (`npm test`) | ✅ PASS (275 tests) |
 | Build (`npm run build`) | ✅ PASS |
-| Targeted E2E (`03-aureon-settings` + `09-aureon-live-preview`) | ✅ PASS (18 tests) |
+| Targeted E2E (`11-aureon-model-selection` + `10-aureon-coding-demo`) | ✅ PASS (8 tests) |
 | Secret Scan | ✅ PASS for real keys; only intentional fake keys in redaction tests matched |
 
 ---
@@ -164,6 +165,10 @@ The Coding Agent Demo proves Aureon Desk can:
 - ✅ Stop button stops demo preview server
 - ✅ Demo does not crash or leak secrets
 - ✅ App handles rapid demo start/stop without crash
+
+### Model Selection Tests (11-aureon-model-selection.spec.ts)
+- ✅ New chat auto-selects default model and shows selector
+- ✅ Deselecting model displays the polished setup card
 
 ---
 

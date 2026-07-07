@@ -69,6 +69,15 @@ UI polish:
 - Reserved display serif styling for brand/display text and kept normal UI text sans-serif.
 - Limited the right inspector to the chat workspace so settings and preview pages have more room.
 
+Prompt 8 premium UX follow-up:
+
+- Re-read the ZIP handoff and applied the requested calm desktop direction while keeping Aureon original and not copying Claude/Anthropic assets, branding, exact layout, fonts, colors, or private behavior.
+- Reworked the empty-chat start surface with compact starter prompts that insert text directly into the composer.
+- Added a `composer-insert` browser event so prompt chips and future workspace actions can draft text without bypassing normal user send behavior.
+- Polished the composer into a larger elevated rounded surface with a quiet toolbar, prompt-library trigger, and rounded send button.
+- Reworked message rhythm: user prompts are right-aligned soft bubbles; assistant answers are left-aligned reading blocks with Aureon identity and copy controls.
+- Added a dedicated `--shadow-composer` token and regression checks for the starter-prompt insertion path.
+
 LivePreview:
 
 - Made the Preview idle/no-sandbox state expose status, URL, logs, Stop Server, and Open in Browser controls.
@@ -102,6 +111,9 @@ The final publish pass should still rerun targeted checks after all documentatio
 - `src/renderer/src/components/shared/Badge.tsx`
 - `src/renderer/src/layouts/AppShell.tsx`
 - `src/renderer/src/pages/LivePreview.tsx`
+- `src/renderer/src/components/chat/ChatPanel.tsx`
+- `src/renderer/src/components/chat/MessageInput.tsx`
+- `src/renderer/src/components/chat/MessageBubble.tsx`
 - `tests/e2e/03-aureon-settings.spec.ts`
 - `tests/e2e/09-aureon-live-preview.spec.ts`
 - `tests/unit/input-handling.test.ts`
