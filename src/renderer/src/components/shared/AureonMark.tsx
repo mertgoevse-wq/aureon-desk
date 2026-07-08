@@ -4,13 +4,29 @@ interface AureonMarkProps {
   size?: number
   className?: string
   withRing?: boolean
+  /** Use PNG image (from Nano Banana) instead of inline SVG. Faster for large sizes. */
+  variant?: 'svg' | 'png'
 }
 
 /**
  * Shared Aureon Desk brand mark — the stylized "A" with aureole ring.
- * Use this instead of inline SVGs scattered across components.
+ * Use `variant="png"` for branded images, `variant="svg"` (default) for theme-responsive inline rendering.
  */
-export function AureonMark({ size = 32, className = '', withRing = true }: AureonMarkProps): React.ReactElement {
+export function AureonMark({ size = 32, className = '', withRing = true, variant = 'svg' }: AureonMarkProps): React.ReactElement {
+  if (variant === 'png') {
+    return (
+      <img
+        src="/brand/aureon-mark.png"
+        alt="Aureon Desk"
+        width={size}
+        height={size}
+        className={className}
+        style={{ objectFit: 'contain' }}
+        draggable={false}
+      />
+    )
+  }
+
   const viewBox = withRing ? '0 0 64 64' : '10 12 44 40'
   return (
     <svg
@@ -39,5 +55,22 @@ export function AureonMark({ size = 32, className = '', withRing = true }: Aureo
         <circle cx="32" cy="40" r="1.5" fill="#E8A45C" opacity="0.8" />
       )}
     </svg>
+  )
+}
+
+/**
+ * Aureon full logo — mark + "Aureon Desk" wordmark as an image.
+ * Best for README, documentation, and splash screens.
+ */
+export function AureonLogo({ width = 360, className = '' }: { width?: number; className?: string }): React.ReactElement {
+  return (
+    <img
+      src="/brand/aureon-logo.png"
+      alt="Aureon Desk"
+      width={width}
+      className={className}
+      style={{ objectFit: 'contain' }}
+      draggable={false}
+    />
   )
 }

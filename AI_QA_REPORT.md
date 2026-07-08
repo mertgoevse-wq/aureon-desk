@@ -4,6 +4,27 @@
 
 ---
 
+## Brand Asset Integration (Nano Banana) — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (305 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| Icon generation (Nano Banana PNG) | ✅ PASS — `build/icon.ico` (66KB), `build/icon.png` (61KB) |
+| Asset organization | ✅ PASS — `assets/brand/nano-banana/`, `public/brand/`, `assets/brand/` |
+
+### Manual GitHub Update Steps
+
+Since `gh` CLI authentication is not available, update the repo manually:
+
+1. Go to https://github.com/mertgoevse-wq/aureon-desk/settings
+2. Set description: *"A calm desktop AI workspace for chat, code, projects, tools, and live preview."*
+3. Add topics: `electron`, `react`, `typescript`, `tailwindcss`, `desktop-app`, `ai-workspace`, `ai-chat`, `openrouter`, `ollama`, `lm-studio`, `live-preview`, `local-first`, `windows`, `sqlite`
+4. Set social preview image to `assets/brand/aureon-github-banner.png`
+
+---
+
 ## Premium UI Polish (Brand, Sidebar, Typography, Providers) — 2026-07-08
 
 | Check | Result |

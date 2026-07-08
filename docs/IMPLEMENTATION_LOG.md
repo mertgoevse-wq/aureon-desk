@@ -1,5 +1,37 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 16:15 +02:00 — Nano Banana Brand Asset Integration
+
+Branch: `main`
+Commit at start: `180e9d3`
+
+### Session Purpose
+Integrate 5 Nano Banana brand images across the app: app icon, mark, logo, wordmark, GitHub banner.
+
+### Files Changed
+- **New:** `scripts/generate-nano-icon.js` — ICO/PNG generation from Nano Banana PNG
+- **New:** `docs/BRAND_GUIDELINES.md` — full brand guidelines
+- **New:** `assets/brand/aureon-mark.png`, `aureon-logo.png`, `aureon-wordmark.png`, `aureon-app-icon.png`, `aureon-github-banner.png`
+- **New:** `public/brand/aureon-mark.png`, `aureon-logo.png`, `aureon-github-banner.png`
+- **Modified:** `src/renderer/src/components/shared/AureonMark.tsx` — PNG variant support, AureonLogo component, absolute paths
+- **Modified:** `README.md` — GitHub banner, subtitle, repo setup instructions
+- **Modified:** `package.json` — `canvas` as devDependency
+- **Modified:** `build/icon.ico`, `build/icon.png` — regenerated from Nano Banana PNG
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (305 tests) |
+| `npm run build` | ✅ PASS |
+| `node scripts/generate-nano-icon.js` | ✅ ICO 66KB, PNG 61KB |
+
+### GitHub Manual Steps Documented
+- Repo description, topics, social preview in README and AI_QA_REPORT
+
+---
+
 ## 2026-07-08 16:00 +02:00 — Premium UI Polish (Brand, Sidebar, Typography, Providers)
 
 Branch: `main`

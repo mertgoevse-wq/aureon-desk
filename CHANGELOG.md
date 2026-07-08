@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.9.29] - 2026-07-08
+
+### Added (Nano Banana Brand Asset Integration)
+
+**Assets Organized:**
+- Copied 5 Nano Banana brand images to `assets/brand/nano-banana/`, `assets/brand/`, and `public/brand/`
+- Created `assets/brand/aureon-mark.png`, `aureon-logo.png`, `aureon-wordmark.png`, `aureon-app-icon.png`, `aureon-github-banner.png`
+- Public web-accessible copies in `public/brand/` for renderer use
+
+**App Icon:**
+- Created `scripts/generate-nano-icon.js` — generates multi-size ICO from Nano Banana PNG
+- Installed `canvas` as devDependency for icon generation
+- Generated `build/icon.ico` (66KB) and `build/icon.png` (61KB) from Nano Banana source
+- Fallback to programmatic `generate-icon.js` when canvas is unavailable
+
+**AureonMark Component:**
+- Added `variant="png"` support for Nano Banana PNG rendering
+- Added `AureonLogo` component for full logo display (mark + wordmark)
+- Fixed image paths to use absolute `/brand/` references for Electron compatibility
+
+**Documentation:**
+- Updated `README.md` with Nano Banana GitHub banner and repo setup instructions
+- Created `docs/BRAND_GUIDELINES.md` — full brand guidelines with asset inventory, colors, typography, do's/don'ts
+- Added GitHub manual setup steps to README and AI_QA_REPORT
+
+### Changed
+- `electron-builder.yml` — already references `build/icon.ico` (no change needed)
+- `src/main/windows.ts` — already references `build/icon.ico` (no change needed)
+
+### Verified
+- `npm run verify:native` — ✅ PASS
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (305 tests)
+- `npm run build` — ✅ PASS
+- Icon generation — ✅ PASS
+
 ## [0.9.28] - 2026-07-08
 
 ### Changed (Premium UI Polish — Brand, Sidebar, Typography, Providers)

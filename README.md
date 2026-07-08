@@ -1,10 +1,12 @@
 # Aureon Desk
 
 <p align="center">
-  <img src="assets/brand/aureon-logo.svg" alt="Aureon Desk" width="360" />
+  <img src="assets/brand/nano-banana/aureon-github-banner.png" alt="Aureon Desk" width="800" style="max-width:100%;" />
 </p>
 
-A Windows-first desktop AI workspace with multi-provider chat, projects, and tool integrations.
+<p align="center">
+  <strong>A calm desktop AI workspace for chat, code, projects, tools, and live preview.</strong>
+</p>
 
 ## Tech Stack
 
@@ -193,6 +195,15 @@ The test uses the `openrouter/free` model (free tier, no cost) and never prints 
 | `npm run dist:win` | Build Windows NSIS installer + portable |
 | `npm run package` | Build + package for Windows |
 | `npm run pack` | Directory-only build (for testing) |
+| `node scripts/generate-nano-icon.js` | Generate build/icon.ico + PNGs from Nano Banana brand assets |
+
+## GitHub Repository Setup
+
+To update the repo description and topics manually:
+1. Go to https://github.com/mertgoevse-wq/aureon-desk/settings
+2. Set description: **"A calm desktop AI workspace for chat, code, projects, tools, and live preview."**
+3. Add topics: `electron`, `react`, `typescript`, `tailwindcss`, `desktop-app`, `ai-workspace`, `ai-chat`, `openrouter`, `ollama`, `lm-studio`, `live-preview`, `local-first`, `windows`, `sqlite`
+4. Set social preview image to `assets/brand/aureon-github-banner.png`
 
 ## Keyboard Shortcuts
 
