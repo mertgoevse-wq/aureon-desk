@@ -14,6 +14,7 @@ import {
   SendHorizontal,
   Settings,
   SlidersHorizontal,
+  Sparkles,
   UserCircle,
   Wrench
 } from 'lucide-react'
@@ -163,6 +164,14 @@ export function Sidebar(): React.ReactElement {
         </button>
         <div className="w-5 border-t border-[var(--ivory-border)] my-1" />
         <button
+          onClick={() => navigate('/studio')}
+          className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/studio') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+          aria-label="Studio"
+          data-testid="nav-studio"
+        >
+          <Sparkles size={18} />
+        </button>
+        <button
           onClick={() => navigate('/')}
           className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
           aria-label="Chat"
@@ -255,7 +264,17 @@ export function Sidebar(): React.ReactElement {
             <Search size={13} />
             <span className="truncate">Search chats, prompts, commands</span>
           </button>
-          <div className="grid grid-cols-3 gap-1" aria-label="Workspace shortcuts">
+          <div className="grid grid-cols-4 gap-1" aria-label="Workspace shortcuts">
+            <button
+              type="button"
+              onClick={() => navigate('/studio')}
+              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/studio') ? 'border-[var(--ivory-accent)]/20 bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)]' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              aria-label="Studio"
+              title="Studio"
+              data-testid="nav-studio"
+            >
+              <Sparkles size={13} />
+            </button>
             <button
               type="button"
               onClick={() => navigate('/')}

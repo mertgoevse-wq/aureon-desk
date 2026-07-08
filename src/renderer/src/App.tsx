@@ -18,6 +18,8 @@ import { LogsPage } from './pages/settings/LogsPage'
 import { AppearancePage } from './pages/settings/AppearancePage'
 import { LivePreview } from './pages/LivePreview'
 import { VibeCoding } from './pages/VibeCoding'
+import { Studio } from './pages/Studio'
+import { ConnectorsPage } from './pages/settings/ConnectorsPage'
 import { CapabilitiesPage } from './pages/settings/CapabilitiesPage'
 
 const router = createHashRouter([
@@ -31,6 +33,7 @@ const router = createHashRouter([
       { path: 'projects', element: <ProjectsPage /> },
       { path: 'tools', element: <ToolsPage /> },
       { path: 'preview', element: <LivePreview /> },
+      { path: 'studio', element: <Studio /> },
       { path: 'vibe', element: <VibeCoding /> },
       {
         path: 'settings',
@@ -44,6 +47,7 @@ const router = createHashRouter([
           { path: 'appearance', element: <AppearancePage /> },
           { path: 'projects', element: <ProjectsPage /> },
           { path: 'tools', element: <ToolsPage /> },
+          { path: 'connectors', element: <ConnectorsPage /> },
           { path: 'github', element: <GitHubImportsPage /> },
           { path: 'imports', element: <GitHubImportsPage /> },
           { path: 'logs', element: <LogsPage /> },

@@ -15,7 +15,7 @@ import {
   MessageSquare, Library, FolderOpen, Wrench, Settings,
   ScrollText, Server, FileText, Github, Eye, Plus, PanelLeft,
   PanelRight, RotateCcw, Keyboard, Sun, Users, Code2,
-  ChevronLeft, ChevronRight, Search
+  ChevronLeft, ChevronRight, Search, Sparkles, Plug
 } from 'lucide-react'
 import type { ChatListItem } from '@shared/types/chat'
 
@@ -44,17 +44,20 @@ export function AppShell(): React.ReactElement {
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const paletteOpenRef = useRef(false)
   const shortcutsOpenRef = useRef(false)
-  const showInspector = location.pathname === '/'
+  const showInspector = location.pathname === '/' || location.pathname.startsWith('/studio')
   const modeItems = [
+    { id: 'studio', label: 'Studio', path: '/studio', icon: <Sparkles size={14} /> },
     { id: 'chat', label: 'Chat', path: '/', icon: <MessageSquare size={14} /> },
     { id: 'cowork', label: 'Cowork', path: '/cowork', icon: <Users size={14} /> },
     { id: 'code', label: 'Code', path: '/preview', icon: <Code2 size={14} /> }
   ]
-  const activeMode = location.pathname.startsWith('/preview')
-    ? 'code'
-    : location.pathname.startsWith('/cowork')
-      ? 'cowork'
-      : 'chat'
+  const activeMode = location.pathname.startsWith('/studio')
+    ? 'studio'
+    : location.pathname.startsWith('/preview')
+      ? 'code'
+      : location.pathname.startsWith('/cowork')
+        ? 'cowork'
+        : 'chat'
 
   // Keep refs in sync with state
   useEffect(() => { paletteOpenRef.current = paletteOpen }, [paletteOpen])
@@ -202,6 +205,13 @@ export function AppShell(): React.ReactElement {
       onSelect: () => handleNewChat()
     },
     {
+      id: 'studio',
+      label: 'Studio',
+      description: 'Choose what you want to build or create',
+      icon: <Sparkles size={14} />,
+      onSelect: () => navigate('/studio')
+    },
+    {
       id: 'home',
       label: 'Chats',
       description: 'View and manage conversations',
@@ -249,6 +259,13 @@ export function AppShell(): React.ReactElement {
       description: 'Define AI behavior across chats',
       icon: <ScrollText size={14} />,
       onSelect: () => navigate('/settings/system-prompts')
+    },
+    {
+      id: 'connectors',
+      label: 'Connectors',
+      description: 'Manage connected apps and services',
+      icon: <Plug size={14} />,
+      onSelect: () => navigate('/settings/connectors')
     },
     {
       id: 'providers',

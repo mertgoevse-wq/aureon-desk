@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.9.44] - 2026-07-08
+
+### Added — Aureon Studio Core & Connector System
+
+**Studio Core (Task Launcher):**
+- Created `src/shared/types/studio-core.ts` — 10 task categories, 5 autonomy levels, capability types, connector types, model routing policies
+- Created `src/shared/capability-registry.ts` — 21 capabilities with risk tiers (safe→destructive) and connector requirements
+- Created `src/main/services/studio-core.service.ts` — orchestrator: classifies intent, routes models by task, generates safety warnings
+- Created `src/main/ipc/studio-core.ipc.ts` — 4 IPC handlers: orchestrate, taskCategories, capabilities, autonomyLevels
+- Created `src/renderer/src/pages/Studio.tsx` — task launcher UI with 10 category cards, inline orchestration results, autonomy selector
+- Added Studio as 4th mode in AppShell topbar (Studio/Chat/Cowork/Code), Sidebar nav, and Router
+
+**Connectors Hub:**
+- Created `src/renderer/src/pages/settings/ConnectorsPage.tsx` — 12 connector cards with status, capabilities, permission scopes, risk notes, configure/test/disconnect actions
+- Added `/settings/connectors` route
+
+**Brand & Logo System:**
+- Created `src/renderer/src/components/connectors/ConnectorIcon.tsx` — safe vendor icon system with 12 connector types, neutral Lucide icons only, factory function pattern
+- Created `docs/BRAND_ASSET_AUDIT.md` — comprehensive audit of all brand assets (SVGs, PNGs, ICOs, sizes, usage)
+- Created `assets/vendor/README.md` — vendor asset attribution policy
+- Updated `docs/BRAND_AND_VENDOR_LOGO_POLICY.md` — no fake logos, neutral icons only, official assets only if licensed
+
+**Tests:**
+- Created `tests/unit/studio-core.test.ts` — 47 tests: task classification, orchestration, model routing, capability registry
+- Created `tests/unit/connector-icon.test.ts` — 13 tests: connector data integrity, brand asset existence, docs existence, unique labels/initials
+- Total test count: 348 → 409 (+61)
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (409 tests, 21 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.43] - 2026-07-08
 
 ### Changed (Product Structure Polish — Reduced Clutter)

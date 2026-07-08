@@ -8,6 +8,7 @@ import type { ImportedRepo, ImportedItem, ImportWarning, ImportResult, ImportRep
 import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolExecuteInput, ToolExecuteResult } from '../shared/types/tool'
 import type { ProjectRow, NewProject, ProjectUpdate, FileTreeNode, ProjectContext, FileTreeOptions } from '../shared/types/project'
 import type { AppLogRow, LogFilter, DebugBundle } from '../shared/types/log'
+import type { StudioIntentInput, StudioOrchestrationResult, TaskCategoryInfo, CapabilityDefinition, AutonomyLevelInfo } from '../shared/types/studio-core'
 
 // Define the IPC API exposed to the renderer
 const api = {
@@ -273,7 +274,17 @@ const api = {
     return () => {
       ipcRenderer.removeListener('window:maximized-state', listener)
     }
-  }
+  },
+
+  // Studio Core
+  studioOrchestrate: (input: StudioIntentInput): Promise<StudioOrchestrationResult> =>
+    ipcRenderer.invoke('studio:orchestrate', input),
+  studioTaskCategories: (): Promise<TaskCategoryInfo[]> =>
+    ipcRenderer.invoke('studio:taskCategories'),
+  studioCapabilities: (): Promise<CapabilityDefinition[]> =>
+    ipcRenderer.invoke('studio:capabilities'),
+  studioAutonomyLevels: (): Promise<AutonomyLevelInfo[]> =>
+    ipcRenderer.invoke('studio:autonomyLevels'),
 }
 
 // Expose the API in the main world
