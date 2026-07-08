@@ -9,8 +9,7 @@ import type { CommandItem } from '../components/shared/CommandPalette'
 import { useUIStore, loadPanelSizes } from '../stores/uiStore'
 import { useChatStore } from '../stores/chatStore'
 import { useIpc } from '../hooks/useIpc'
-import { AureonMark } from '../components/shared/AureonMark'
-import { BrandLockupCompact } from '../components/shared/BrandLockup'
+
 import {
   MessageSquare, Library, FolderOpen, Wrench, Settings,
   ScrollText, Server, FileText, Github, Eye, Plus, PanelLeft,
@@ -386,9 +385,7 @@ export function AppShell(): React.ReactElement {
               </button>
             </div>
 
-            {sidebarCollapsed && (
-              <BrandLockupCompact size={24} showName className="animate-fade-in shrink-0" />
-            )}
+
           </div>
 
           {/* Center Column: Mode Switch */}

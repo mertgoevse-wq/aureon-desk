@@ -1,19 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Archive,
-  CalendarClock,
   ChevronLeft,
-  ChevronDown,
   Code2,
   FolderOpen,
-  Lightbulb,
   Library,
   MessageSquare,
   Plus,
   Search,
-  SendHorizontal,
   Settings,
-  SlidersHorizontal,
   Sparkles,
   UserCircle,
   Wrench
@@ -27,19 +22,6 @@ import { BrandLockup } from '../components/shared/BrandLockup'
 
 import type { ChatListItem } from '@shared/types/chat'
 
-interface WorkflowItem {
-  icon: React.ReactNode
-  label: string
-  hint: string
-}
-
-const workflowItems: WorkflowItem[] = [
-  { icon: <CalendarClock size={15} />, label: 'Scheduled', hint: 'Planned runs' },
-  { icon: <SendHorizontal size={15} />, label: 'Dispatch', hint: 'Agent queue' },
-  { icon: <Lightbulb size={15} />, label: 'Ideas', hint: 'Draft backlog' },
-  { icon: <SlidersHorizontal size={15} />, label: 'Customize', hint: 'Workspace rules' }
-]
-
 export function Sidebar(): React.ReactElement {
   const navigate = useNavigate()
   const location = useLocation()
@@ -47,8 +29,6 @@ export function Sidebar(): React.ReactElement {
   const { setChats, setLoadingChats, setActiveChatId, setActiveChat } = useChatStore()
   const api = useIpc()
   const resizeRef = useRef<{ startX: number; startWidth: number } | null>(null)
-  const [workflowOpen, setWorkflowOpen] = useState(false)
-
   useEffect(() => {
     loadChats()
   }, [])
@@ -236,26 +216,15 @@ export function Sidebar(): React.ReactElement {
         </div>
 
         <div className="px-3 py-2.5 space-y-2 border-b border-[var(--ivory-border)]/40">
-          <div className="flex gap-2">
-            <button
-              onClick={handleNewChat}
-              className="h-8 flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl text-xs font-semibold text-[var(--ivory-text)] bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 transition-all shadow-[var(--shadow-xs)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
-              aria-label="Create new chat"
-              data-testid="new-chat-button"
-            >
-              <Plus size={14} />
-              New Chat
-            </button>
-            <button
-              onClick={handleNewTask}
-              className="h-8 w-8 inline-flex items-center justify-center rounded-xl text-[var(--ivory-text-2)] bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface-2)] border border-[var(--ivory-border)]/60 transition-all shadow-[var(--shadow-xs)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
-              aria-label="Create new task"
-              title="New Task"
-              data-testid="new-task-button"
-            >
-              <Archive size={14} />
-            </button>
-          </div>
+          <button
+            onClick={handleNewChat}
+            className="h-8 w-full inline-flex items-center justify-center gap-1.5 rounded-xl text-xs font-semibold text-[var(--ivory-text)] bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 transition-all shadow-[var(--shadow-xs)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+            aria-label="Create new chat"
+            data-testid="new-chat-button"
+          >
+            <Plus size={14} />
+            New Chat
+          </button>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
             className="w-full h-8 px-3 inline-flex items-center gap-2 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/50 text-[11px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
@@ -306,48 +275,6 @@ export function Sidebar(): React.ReactElement {
               <Code2 size={13} />
             </button>
           </div>
-        </div>
-
-        <div className="px-3 py-1 border-b border-[var(--ivory-border)]/40">
-          <button
-            type="button"
-            onClick={() => setWorkflowOpen(open => !open)}
-            className="w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
-            aria-expanded={workflowOpen}
-          >
-            <span>Workflow</span>
-            <span className="inline-flex items-center gap-1 normal-case tracking-normal text-[11px] font-semibold">
-              {workflowItems.length}
-              <ChevronDown size={11} className={`transition-transform ${workflowOpen ? 'rotate-180' : ''}`} />
-            </span>
-          </button>
-          {workflowOpen && (
-            <div className="mt-1 space-y-1">
-              {workflowItems.map((item) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={() => navigate('/cowork')}
-                  className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
-                    ${location.pathname === '/cowork'
-                      ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)]'
-                      : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-                  data-testid={`workflow-${item.label.toLowerCase()}`}
-                >
-                  <span className="flex items-center gap-2 min-w-0">
-                    <span className="text-[var(--ivory-text-3)] shrink-0">{item.icon}</span>
-                    <span className="min-w-0">
-                      <span className="block text-xs font-semibold truncate">{item.label}</span>
-                      <span className="block text-ui-caption text-[var(--ivory-text-3)] truncate">{item.hint}</span>
-                    </span>
-                  </span>
-                  <span className="shrink-0 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-bg)] px-1.5 py-0.5 text-[9px] font-semibold text-[var(--ivory-text-3)]">
-                    Soon
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
 
         <div className="px-3 py-1 border-b border-[var(--ivory-border)]/40">

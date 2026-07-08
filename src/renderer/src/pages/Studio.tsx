@@ -159,53 +159,7 @@ export function Studio(): React.ReactElement {
                     {card.description}
                   </p>
 
-                  {/* Orchestration result inline */}
-                  {isSelected && orchestration && !showConfirm && (
-                    <div className="mt-3 space-y-2 animate-fade-in">
-                      {/* Safety warnings */}
-                      {orchestration.safetyWarnings.map((warning, i) => (
-                        <div key={i} className="flex items-start gap-1.5 text-[10px] text-[var(--ivory-text-2)] bg-white/60 rounded-lg p-2">
-                          <Info size={11} className="shrink-0 mt-0.5 text-[var(--ivory-accent)]" />
-                          {warning}
-                        </div>
-                      ))}
 
-                      {/* Missing capabilities */}
-                      {orchestration.missingCapabilities.length > 0 && (
-                        <div className="text-[10px] text-amber-600 bg-amber-50 rounded-lg p-2">
-                          ⚠️ Missing capabilities. Go to{' '}
-                          <button onClick={() => navigate('/settings/connectors')}
-                            className="underline font-semibold hover:text-amber-700">
-                            Connectors
-                          </button>{' '}
-                          to set up:{' '}
-                          {orchestration.missingCapabilities.map(c => c.replace(/_/g, ' ')).join(', ')}
-                        </div>
-                      )}
-
-                      {/* Planned steps */}
-                      <div className="text-[10px] text-[var(--ivory-text-2)] space-y-0.5">
-                        {orchestration.plannedSteps.map((step, i) => (
-                          <div key={i} className="flex items-start gap-1.5">
-                            <ArrowRight size={10} className="shrink-0 mt-0.5 text-[var(--ivory-accent)]" />
-                            {step}
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Start button */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleStartTask()
-                        }}
-                        className="inline-flex items-center gap-1.5 mt-1 h-8 px-4 rounded-xl bg-[var(--ivory-accent)] text-white text-[11px] font-semibold hover:bg-[var(--ivory-accent-hover)] transition-colors shadow-[var(--shadow-sm)]"
-                      >
-                        Start <ChevronRight size={12} />
-                      </button>
-                    </div>
-                  )}
 
                   {/* Hover hint */}
                   {!isSelected && (
@@ -225,8 +179,8 @@ export function Studio(): React.ReactElement {
             <ShieldCheck size={14} className="text-[var(--ivory-accent)]" />
             Autonomy Level
           </h2>
-          <div className="grid grid-cols-5 gap-1.5">
-            {AUTONOMY_LEVELS.map(level => {
+          <div className="grid grid-cols-4 gap-1.5">
+            {AUTONOMY_LEVELS.filter(l => l.level > 0).map(level => {
               const isCurrent = autonomyLevel === level.level
               const IconComponent = (() => {
                 switch (level.icon) {
