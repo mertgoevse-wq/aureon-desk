@@ -50,8 +50,6 @@ const SMALL_ICONS: Record<string, React.ReactElement> = {
 const PROJECT_TYPES = [
   { id: 'website', label: 'Website', icon: 'Globe', desc: 'HTML, CSS, and JavaScript web pages' },
   { id: 'desktop-app', label: 'Desktop App', icon: 'Monitor', desc: 'Electron + React desktop apps' },
-  { id: 'android-app', label: 'Android App', icon: 'Smartphone', desc: 'Simple Android applications' },
-  { id: 'mini-game', label: 'Mini-Game', icon: 'Gamepad2', desc: 'Puzzle, clicker, quiz games' },
   { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', desc: 'Charts, stats, and data views' },
   { id: 'ai-tool', label: 'AI Tool', icon: 'Sparkles', desc: 'Chatbot, analyzer, or generator' },
 ]
@@ -61,8 +59,6 @@ const QUICK_ACTIONS = [
   { id: 'improve-ui', label: 'Improve UI', icon: 'Palette', desc: 'Polish the design', color: 'purple' },
   { id: 'add-feature', label: 'Add feature', icon: 'Plus', desc: 'Extend your app', color: 'green' },
   { id: 'explain-code', label: 'Explain code', icon: 'BookOpen', desc: 'Understand any code', color: 'blue' },
-  { id: 'create-preview', label: 'Live Preview', icon: 'Eye', desc: 'See it running', color: 'teal' },
-  { id: 'package-windows', label: 'Package app', icon: 'Package', desc: 'Create .exe', color: 'slate' },
 ]
 
 export function VibeCoding(): React.ReactElement {
@@ -216,7 +212,7 @@ export function VibeCoding(): React.ReactElement {
                 <Star size={15} className="text-[var(--ivory-accent)]" />
                 Choose a project type
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {PROJECT_TYPES.map(type => (
                   <button key={type.id} type="button" onClick={() => handleProjectTypeClick(type.id)}
                     data-testid={`vibe-project-${type.id}`}
@@ -242,7 +238,7 @@ export function VibeCoding(): React.ReactElement {
                 <Zap size={15} className="text-[var(--ivory-accent)]" />
                 Quick actions
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {QUICK_ACTIONS.map(action => (
                   <button key={action.id} type="button" onClick={() => handleQuickAction(action.id)}
                     data-testid={`vibe-action-${action.id}`}
