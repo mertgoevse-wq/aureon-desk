@@ -6,6 +6,7 @@ import { useChatStore } from '../stores/chatStore'
 import { useUIStore } from '../stores/uiStore'
 import { useIpc } from '../hooks/useIpc'
 import { useNavigate } from 'react-router-dom'
+import { AureonMark } from '../components/shared/AureonMark'
 import {
   MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown,
   Plus, Sparkles, SlidersHorizontal, Clock3, AlertTriangle,
@@ -232,17 +233,9 @@ export function ChatWorkspace(): React.ReactElement {
         <div className="min-h-full flex items-center justify-center px-6 py-10">
           <div className="w-full max-w-4xl text-center">
             {/* Greeting & Aureon Mark */}
-            <div className="flex items-center justify-center gap-3.5 mb-6 select-none">
-              <div className="w-12 h-12 rounded-[20px] bg-[var(--ivory-accent-light)] flex items-center justify-center shadow-[var(--shadow-sm)] ring-1 ring-[var(--ivory-accent)]/15">
-                <svg width="24" height="24" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-                  <circle cx="32" cy="32" r="30" fill="var(--ivory-accent-light)" stroke="var(--ivory-accent)" strokeWidth="1.5" opacity="0.9" />
-                  <path d="M18 44L26 20H29L21 44H18Z" fill="var(--ivory-accent)" />
-                  <path d="M46 44L38 20H35L43 44H46Z" fill="var(--ivory-accent)" />
-                  <rect x="23" y="34" width="18" height="3.5" rx="1" fill="var(--ivory-accent)" />
-                  <circle cx="32" cy="40" r="1.5" fill="#E8A45C" opacity="0.8" />
-                </svg>
-              </div>
-              <h1 className="text-[32px] font-semibold text-[var(--ivory-text)] tracking-tight display-text">
+            <div className="flex items-center justify-center gap-4 mb-7 select-none">
+              <AureonMark size={44} />
+              <h1 className="text-[34px] font-semibold text-[var(--ivory-text)] tracking-tight display-text">
                 {getTimeAwareGreeting()}, Mert
               </h1>
             </div>
@@ -351,37 +344,35 @@ export function ChatWorkspace(): React.ReactElement {
             </div>
 
             {/* Suggestions & Recent Chats Row */}
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4 max-w-3xl mx-auto">
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-[1fr_260px] gap-4 max-w-3xl mx-auto">
               {/* Suggestion Chips */}
-              <div className="rounded-[24px] border border-[var(--ivory-border)] bg-[var(--ivory-surface)]/82 p-3 shadow-[var(--shadow-xs)] text-left">
-                <div className="flex items-center gap-2 px-1 mb-2">
+              <div className="rounded-[22px] border border-[var(--ivory-border)]/65 bg-[var(--ivory-surface)]/70 p-4 shadow-[var(--shadow-xs)] text-left">
+                <div className="flex items-center gap-2 px-1 mb-2.5">
                   <Sparkles size={13} className="text-[var(--ivory-accent)]" />
-                  <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)]">Suggestions</p>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--ivory-text-3)]">Try asking</p>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {STARTER_PROMPTS.map(item => (
                     <button
                       key={item.label}
                       type="button"
                       onClick={() => window.dispatchEvent(new CustomEvent('composer-insert', { detail: { text: item.prompt } }))}
                       data-testid={`suggestion-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-                      className="group flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-elevated-hover)] border border-[var(--ivory-border)] hover:border-[var(--ivory-border-2)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] shadow-[var(--shadow-xs)] hover:shadow-[var(--shadow-md)] transition-all duration-150 focus:outline-none"
+                      className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-elevated-hover)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-border-2)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] shadow-[var(--shadow-xs)] hover:shadow-[var(--shadow-sm)] transition-all duration-150 focus:outline-none"
                     >
-                      <div className="w-8 h-8 rounded-full bg-[var(--ivory-accent-light)] flex items-center justify-center shrink-0 text-[var(--ivory-accent)] group-hover:bg-white transition-colors">
-                        {item.icon}
-                      </div>
-                      <span className="text-[13px] font-semibold">{item.label}</span>
+                      <span className="text-[var(--ivory-accent)] shrink-0">{item.icon}</span>
+                      <span className="text-[12px] font-semibold">{item.label}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Recent Chats List */}
-              <div className="rounded-[24px] border border-[var(--ivory-border)] bg-[var(--ivory-surface)]/82 p-3 shadow-[var(--shadow-xs)] text-left">
-                <div className="flex items-center justify-between px-1 mb-2">
+              <div className="rounded-[22px] border border-[var(--ivory-border)]/65 bg-[var(--ivory-surface)]/70 p-4 shadow-[var(--shadow-xs)] text-left">
+                <div className="flex items-center justify-between px-1 mb-2.5">
                   <div className="flex items-center gap-2">
                     <Clock3 size={13} className="text-[var(--ivory-accent)]" />
-                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)]">Recent chats</p>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--ivory-text-3)]">Recent chats</p>
                   </div>
                   {useChatStore.getState().chats.length > 0 && (
                     <button
@@ -407,7 +398,7 @@ export function ChatWorkspace(): React.ReactElement {
                         const fullChat = await api.chatGet(chat.id)
                         setActiveChat(fullChat || null)
                       }}
-                      className="w-full text-left px-3 py-2 rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] hover:bg-[var(--ivory-elevated-hover)] transition-colors focus:outline-none"
+                      className="w-full text-left px-3 py-2 rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:bg-[var(--ivory-elevated-hover)] transition-colors focus:outline-none"
                     >
                       <span className="block text-[12px] font-semibold text-[var(--ivory-text)] truncate">{chat.title}</span>
                       <span className="block text-[10px] text-[var(--ivory-text-3)] truncate">
@@ -416,7 +407,7 @@ export function ChatWorkspace(): React.ReactElement {
                     </button>
                   ))}
                   {useChatStore.getState().chats.length === 0 && (
-                    <div className="px-3 py-4 rounded-2xl bg-[var(--ivory-elevated)] border border-dashed border-[var(--ivory-border)] text-center">
+                    <div className="px-3 py-3 rounded-xl bg-[var(--ivory-elevated)] border border-dashed border-[var(--ivory-border)]/60 text-center">
                       <p className="text-[11px] text-[var(--ivory-text-3)]">No recent chats yet.</p>
                     </div>
                   )}

@@ -1,5 +1,57 @@
 # Changelog
 
+## [0.9.28] - 2026-07-08
+
+### Changed (Premium UI Polish — Brand, Sidebar, Typography, Providers)
+
+**Brand & Identity:**
+- Created shared `AureonMark` component (`src/renderer/src/components/shared/AureonMark.tsx`) — reusable SVG brand mark with configurable size and ring toggle
+- Replaced all inline SVG Aureon marks with `AureonMark` component (Sidebar, AppShell, ChatWorkspace)
+- Enlarged brand mark in sidebar header (34px, was hidden 24px in 48px container) and home greeting (44px)
+- Cleaner brand lockup: "Aureon Desk" + "Personal AI workspace" with better spacing
+
+**Sidebar Refinement:**
+- Reduced default sidebar width from 280px to 260px (less visually dominant)
+- Softer border colors (`border-[var(--ivory-border)]/60`) throughout
+- Tighter spacing: smaller button heights (h-10→h-9, h-9→h-8), reduced gaps
+- Cleaner New Chat button (rounded-xl, softer accent borders)
+- Refined profile footer (smaller avatar, tighter padding)
+- Workflow and Projects sections tightened
+
+**Typography:**
+- Set explicit body font-size (13px) for consistent baseline
+- Improved heading line-height (1.35) and letter-spacing (-0.01em)
+- Added `body` element to sans-serif font stack
+
+**Providers Page:**
+- Fixed API key input layout: side-by-side input + Save Key button (no more overlap)
+- Restored shared `Input` component for Base URL field
+- Softer border colors and reduced font sizes for cleaner card appearance
+- Better capability badges (inline spans instead of Badge component)
+- Model rows: cleaner spacing, removed redundant model ID display
+
+**Cowork Page:**
+- Replaced all native `<input type="checkbox">` elements with custom `Toggle` component from SettingsComponents
+- Softer borders, consistent font-weights
+
+**Settings Components:**
+- Refined Toggle knob proportions (h-3.5 w-3.5, proper translate-x offsets)
+- Added hover state to unchecked Toggle track
+
+**Chat Home:**
+- Chip-style suggestion pills (rounded-full, inline flex-wrap) replacing grid card layout
+- Larger AureonMark in greeting (44px)
+
+### Fixed
+- Updated `ui-desktop-polish.test.ts` sidebar width assertions (280→260)
+
+### Verified
+- `npm run verify:native` — ✅ PASS
+- `npm run typecheck` — ✅ PASS (zero TS errors)
+- `npm test` — ✅ PASS (305 tests)
+- `npm run build` — ✅ PASS
+- Code review — ✅ No issues
+
 ## [0.9.27] - 2026-07-08
 
 ### Added (Freebuff Ingestion & Manual Visual QA Baseline)

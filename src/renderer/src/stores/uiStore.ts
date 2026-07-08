@@ -17,7 +17,7 @@ interface UIState {
   resetLayout: () => void
 }
 
-const DEFAULT_SIDEBAR_WIDTH = 280
+const DEFAULT_SIDEBAR_WIDTH = 260
 const DEFAULT_INSPECTOR_WIDTH = 340
 
 export const useUIStore = create<UIState>((set, get) => ({

@@ -186,15 +186,15 @@ export function ProvidersPage(): React.ReactElement {
   }, [customForm, api, loadData])
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5 max-w-4xl">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h2 className="text-xl font-semibold text-[var(--ivory-text)]">Providers &amp; API Keys</h2>
-          <p className="text-xs text-[var(--ivory-text-3)] mt-1">
-            Manage your AI provider connections. Keys are encrypted with your OS credentials (DPAPI on Windows). Never stored in plaintext.
+          <h2 className="text-xl font-semibold text-[var(--ivory-text)] display-text">Providers &amp; API Keys</h2>
+          <p className="text-xs text-[var(--ivory-text-3)] mt-1 leading-relaxed">
+            Manage your AI provider connections. Keys are encrypted with your OS credentials (DPAPI on Windows).
           </p>
         </div>
-        <Button size="sm" onClick={() => setShowCustomForm(true)} className="cursor-pointer">
+        <Button size="sm" onClick={() => setShowCustomForm(true)} className="shrink-0">
           <Plus size={14} /> Add Custom
         </Button>
       </div>
@@ -306,10 +306,10 @@ export function ProvidersPage(): React.ReactElement {
           return (
             <Card key={adapter.slug}>
               {/* Header */}
-              <div className="flex items-start justify-between mb-4 gap-4">
+              <div className="flex items-start justify-between mb-4 gap-3">
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-base font-semibold">{adapter.name}</h3>
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h3 className="text-[15px] font-semibold text-[var(--ivory-text)]">{adapter.name}</h3>
                     {/* Provider status */}
                     {provider ? (
                       <ProviderStatusBadge
@@ -322,64 +322,59 @@ export function ProvidersPage(): React.ReactElement {
                       <Badge variant="default" size="sm">Not configured</Badge>
                     )}
                   </div>
-                  <p className="text-xs text-[var(--ivory-text-3)] mt-0.5 leading-relaxed">{adapter.description}</p>
+                  <p className="text-[11px] text-[var(--ivory-text-3)] leading-relaxed">{adapter.description}</p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  {provider && (
-                    <>
-                      <Button variant="ghost" size="sm" onClick={() => handleTestConnection(provider.id)} disabled={isTesting}>
-                        <Wifi size={14} className={isTesting ? 'animate-pulse' : ''} />
-                        {isTesting ? 'Testing...' : 'Test'}
-                      </Button>
-                      <Toggle
-                        checked={provider.is_enabled === 1}
-                        onChange={(enabled) => handleToggleProvider(provider.id, enabled)}
-                      />
-                      <button onClick={() => handleDeleteProvider(provider.id)} className="p-1 text-[var(--ivory-text-3)] hover:text-red-600 transition-colors" title="Delete provider" aria-label="Delete provider">
-                        <Trash2 size={14} />
-                      </button>
-                    </>
-                  )}
-                </div>
+                {provider && (
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <Button variant="ghost" size="sm" onClick={() => handleTestConnection(provider.id)} disabled={isTesting} className="text-[11px]">
+                      <Wifi size={13} className={isTesting ? 'animate-pulse' : ''} />
+                      {isTesting ? 'Testing...' : 'Test'}
+                    </Button>
+                    <Toggle
+                      checked={provider.is_enabled === 1}
+                      onChange={(enabled) => handleToggleProvider(provider.id, enabled)}
+                    />
+                    <button onClick={() => handleDeleteProvider(provider.id)} className="p-1.5 text-[var(--ivory-text-3)] hover:text-red-600 transition-colors rounded-lg hover:bg-red-50" title="Delete provider" aria-label="Delete provider">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Local provider help card */}
               {adapter.capabilities.includes('local') && (
-                <div className="mb-4 p-3 rounded-lg bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-xs text-[var(--ivory-text-2)]">
-                  <p className="font-medium mb-1">
-                    {adapter.slug === 'ollama' ? '\uD83E\uDD99 Running Ollama locally' : '\uD83D\uDDA5\uFE0F Running LM Studio locally'}
+                <div className="mb-4 p-3 rounded-xl bg-[var(--ivory-surface)]/60 border border-[var(--ivory-border)]/50 text-[11px] text-[var(--ivory-text-2)]">
+                  <p className="font-semibold mb-1">
+                    {adapter.slug === 'ollama' ? '🦙 Running Ollama locally' : '🖥️ Running LM Studio locally'}
                   </p>
                   <p className="text-[var(--ivory-text-3)] leading-relaxed">
                     {adapter.slug === 'ollama'
-                      ? 'No API key needed. Make sure Ollama is running. Default URL: http://localhost:11434. Download from ollama.com.'
-                      : 'No API key needed. Make sure LM Studio is running with a model loaded. Default URL: http://localhost:1234/v1. Download from lmstudio.ai.'
-                    }
+                      ? 'No API key needed. Make sure Ollama is running. Default: http://localhost:11434'
+                      : 'No API key needed. Load a model in LM Studio. Default: http://localhost:1234/v1'}
                   </p>
                 </div>
               )}
 
               {/* OpenRouter help card */}
               {adapter.slug === 'openrouter' && (
-                <div className="mb-4 p-3 rounded-lg bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-xs text-[var(--ivory-text-2)]">
-                  <p className="font-medium mb-1">OpenRouter — multi-provider access</p>
+                <div className="mb-4 p-3 rounded-xl bg-[var(--ivory-surface)]/60 border border-[var(--ivory-border)]/50 text-[11px] text-[var(--ivory-text-2)]">
+                  <p className="font-semibold mb-1">OpenRouter — multi-provider access</p>
                   <p className="text-[var(--ivory-text-3)] leading-relaxed">
-                    Use models ending with <code className="text-[10px] px-1 py-0.5 rounded bg-[var(--ivory-surface-2)]">:free</code> for zero-cost testing. Get an API key at openrouter.ai/keys.
+                    Use <code className="text-[10px] px-1 py-0.5 rounded bg-[var(--ivory-surface-2)]">:free</code> models for zero-cost testing. Get a key at openrouter.ai/keys.
                   </p>
                 </div>
               )}
 
               {/* Capabilities */}
-              <div className="flex flex-wrap gap-1.5 mb-4">
+              <div className="flex flex-wrap gap-1 mb-4">
                 {adapter.capabilities.map(cap => (
-                  <Badge key={cap} variant={cap === 'local' ? 'success' : 'default'} size="sm">
-                    <span className="flex items-center gap-0.5">
-                      {CAPABILITY_LABELS[cap]?.icon} {CAPABILITY_LABELS[cap]?.label || cap}
-                    </span>
-                  </Badge>
+                  <span key={cap} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--ivory-bg)] text-[var(--ivory-text-2)] border border-[var(--ivory-border)]/60">
+                    {CAPABILITY_LABELS[cap]?.icon} {CAPABILITY_LABELS[cap]?.label || cap}
+                  </span>
                 ))}
-                <Badge variant={adapter.authType === 'none' ? 'success' : 'warning'} size="sm">
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${adapter.authType === 'none' ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] border-[var(--ivory-success)]/20' : 'bg-[var(--ivory-warning-bg)] text-[var(--ivory-warning)] border-[var(--ivory-warning)]/20'}`}>
                   {adapter.authType === 'none' ? 'No key needed' : 'API key'}
-                </Badge>
+                </span>
               </div>
 
               {/* Test result */}
@@ -393,10 +388,10 @@ export function ProvidersPage(): React.ReactElement {
               {/* API Key */}
               {adapter.authType !== 'none' && (
                 <div className="mb-4">
-                  <label className="text-sm font-medium text-[var(--ivory-text)] block mb-2">API Key</label>
+                  <label className="text-[12px] font-semibold text-[var(--ivory-text)] block mb-2">API Key</label>
                   {hasKey ? (
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)] rounded-[var(--radius-md)] px-3 py-2 text-sm text-[var(--ivory-success)] font-mono">
+                      <div className="flex-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/60 rounded-xl px-3 py-2 text-[13px] text-[var(--ivory-success)] font-mono">
                         ●●●●●●●● Key configured
                       </div>
                       <Button variant="ghost" size="sm" onClick={() => provider && setEditingKey(prev => ({ ...prev, [provider.id]: '' }))}>Change</Button>
@@ -405,22 +400,23 @@ export function ProvidersPage(): React.ReactElement {
                       </Button>
                     </div>
                   ) : (
-                    <div className="flex flex-col gap-3">
-                      <div className="relative">
-                        <Input
-                          value={editing || ''}
-                          onChange={(e) => provider && setEditingKey(prev => ({ ...prev, [provider.id]: e.target.value }))}
-                          placeholder={`Enter your ${adapter.name} API key`}
-                          type={showing ? 'text' : 'password'}
-                        />
-                        <button onClick={() => provider && setShowKey(prev => ({ ...prev, [provider.id]: !showing }))}
-                          className="absolute right-2.5 top-[30px] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] transition-colors"
-                          aria-label={showing ? 'Hide API key' : 'Show API key'}>
-                          {showing ? <EyeOff size={14} /> : <Eye size={14} />}
-                        </button>
-                      </div>
-                      <div className="flex justify-end">
-                        <Button size="md" onClick={() => provider && handleSaveKey(provider.id)} disabled={!editing || saving}>
+                    <div className="space-y-3">
+                      <div className="flex gap-2 items-start">
+                        <div className="flex-1 relative">
+                          <input
+                            value={editing || ''}
+                            onChange={(e) => provider && setEditingKey(prev => ({ ...prev, [provider.id]: e.target.value }))}
+                            placeholder={`Enter your ${adapter.name} API key`}
+                            type={showing ? 'text' : 'password'}
+                            className="w-full px-3 py-2 text-[13px] rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] text-[var(--ivory-text)] placeholder:text-[var(--ivory-text-3)] shadow-[var(--shadow-xs)] hover:border-[var(--ivory-border-2)] focus:outline-none focus:border-[var(--ivory-accent)] focus:ring-1 focus:ring-[var(--ivory-accent)] transition-colors"
+                          />
+                          <button onClick={() => provider && setShowKey(prev => ({ ...prev, [provider.id]: !showing }))}
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] transition-colors"
+                            aria-label={showing ? 'Hide API key' : 'Show API key'}>
+                            {showing ? <EyeOff size={14} /> : <Eye size={14} />}
+                          </button>
+                        </div>
+                        <Button size="md" onClick={() => provider && handleSaveKey(provider.id)} disabled={!editing || saving} className="shrink-0">
                           {saving ? 'Saving...' : 'Save Key'}
                         </Button>
                       </div>
@@ -430,7 +426,7 @@ export function ProvidersPage(): React.ReactElement {
               )}
 
               {/* Base URL */}
-              <div className="mb-4">
+              <div className="mb-1">
                 <Input label="Base URL" value={provider?.base_url || adapter.defaultBaseUrl}
                   onChange={(e) => provider && handleSetBaseUrl(provider.id, e.target.value)}
                   placeholder={adapter.defaultBaseUrl} />
@@ -438,19 +434,18 @@ export function ProvidersPage(): React.ReactElement {
 
               {/* Models */}
               {provider && provider.models && provider.models.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-[var(--ivory-border)]">
-                  <p className="text-xs font-medium text-[var(--ivory-text-2)] mb-2">Models</p>
-                  <div className="space-y-1">
+                <div className="mt-4 pt-3 border-t border-[var(--ivory-border)]/60">
+                  <p className="text-[11px] font-semibold text-[var(--ivory-text-2)] mb-2">Models</p>
+                  <div className="space-y-0.5">
                     {provider.models.map((model) => (
-                      <div key={model.id} className="flex items-center justify-between py-1.5 px-2 rounded-[var(--radius-sm)] hover:bg-[var(--ivory-surface)] text-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[var(--ivory-text)]">{model.display_name}</span>
-                          <span className="text-[var(--ivory-text-3)] text-[10px]">({model.name})</span>
+                      <div key={model.id} className="flex items-center justify-between py-2 px-2 rounded-xl hover:bg-[var(--ivory-surface)] text-xs">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-[12px] font-medium text-[var(--ivory-text)] truncate">{model.display_name}</span>
                           {model.context_window && (
-                            <span className="text-[10px] text-[var(--ivory-text-3)]">{model.context_window.toLocaleString()} ctx</span>
+                            <span className="text-[10px] text-[var(--ivory-text-3)] shrink-0">{Math.round(model.context_window / 1000)}k ctx</span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0">
                           <Toggle
                             checked={model.is_enabled === 1}
                             onChange={(enabled) => api.modelToggleEnabled(model.id, enabled).then(loadData)}

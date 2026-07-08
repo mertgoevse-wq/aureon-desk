@@ -22,6 +22,7 @@ import { useUIStore } from '../stores/uiStore'
 import { useChatStore } from '../stores/chatStore'
 import { ChatList } from '../components/sidebar/ChatList'
 import { useIpc } from '../hooks/useIpc'
+import { AureonMark } from '../components/shared/AureonMark'
 import type { ChatListItem } from '@shared/types/chat'
 
 interface WorkflowItem {
@@ -214,24 +215,18 @@ export function Sidebar(): React.ReactElement {
         data-testid="sidebar"
       >
         <div
-          className="flex items-center justify-between px-4 py-4 border-b border-[var(--ivory-border)] bg-[var(--ivory-surface)]"
+          className="flex items-center justify-between px-4 py-4 border-b border-[var(--ivory-border)]/60 bg-[var(--ivory-surface)]"
           style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
         >
           <div className="flex items-center gap-3 select-none min-w-0">
-            <div className="w-9 h-9 rounded-2xl bg-[var(--ivory-accent-light)] flex items-center justify-center shadow-[var(--shadow-xs)] ring-1 ring-[var(--ivory-accent)]/15 shrink-0">
-              <svg width="21" height="21" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-                <circle cx="32" cy="32" r="30" fill="var(--ivory-accent-light)" stroke="var(--ivory-accent)" strokeWidth="1.5" opacity="0.9" />
-                <path d="M18 44L26 20H29L21 44H18Z" fill="var(--ivory-accent)" />
-                <path d="M46 44L38 20H35L43 44H46Z" fill="var(--ivory-accent)" />
-                <rect x="23" y="34" width="18" height="3.5" rx="1" fill="var(--ivory-accent)" />
-                <circle cx="32" cy="40" r="1.5" fill="#E8A45C" opacity="0.8" />
-              </svg>
+            <div className="shrink-0">
+              <AureonMark size={34} />
             </div>
             <div className="min-w-0">
-              <h1 className="text-[16px] font-semibold tracking-tight display-text text-[var(--ivory-text)] truncate">
+              <h1 className="text-[15px] font-semibold tracking-tight display-text text-[var(--ivory-text)] truncate leading-tight">
                 Aureon Desk
               </h1>
-              <p className="text-[10px] text-[var(--ivory-text-3)] truncate">Personal AI workspace</p>
+              <p className="text-[11px] text-[var(--ivory-text-3)] truncate font-medium">Personal AI workspace</p>
             </div>
           </div>
           <button
@@ -240,7 +235,7 @@ export function Sidebar(): React.ReactElement {
             aria-label="Collapse sidebar"
             style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
           >
-            <ChevronLeft size={16} />
+            <ChevronLeft size={15} />
           </button>
         </div>
 
@@ -248,7 +243,7 @@ export function Sidebar(): React.ReactElement {
           <div className="flex gap-2">
             <button
               onClick={handleNewChat}
-              className="h-10 flex-1 inline-flex items-center justify-center gap-2 rounded-2xl text-[12px] font-semibold text-[var(--ivory-text)] bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/15 border border-[var(--ivory-accent)]/20 hover:border-[var(--ivory-accent)]/35 transition-all shadow-[var(--shadow-xs)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+              className="h-9 flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl text-[12px] font-semibold text-[var(--ivory-text)] bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 transition-all shadow-[var(--shadow-xs)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
               aria-label="Create new chat"
               data-testid="new-chat-button"
             >
@@ -257,7 +252,7 @@ export function Sidebar(): React.ReactElement {
             </button>
             <button
               onClick={handleNewTask}
-              className="h-10 w-10 inline-flex items-center justify-center rounded-2xl text-[var(--ivory-text-2)] bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface-2)] border border-[var(--ivory-border)] transition-all shadow-[var(--shadow-xs)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+              className="h-9 w-9 inline-flex items-center justify-center rounded-xl text-[var(--ivory-text-2)] bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface-2)] border border-[var(--ivory-border)]/60 transition-all shadow-[var(--shadow-xs)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
               aria-label="Create new task"
               title="New Task"
               data-testid="new-task-button"
@@ -267,17 +262,17 @@ export function Sidebar(): React.ReactElement {
           </div>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
-            className="w-full h-9 px-3 inline-flex items-center gap-2 rounded-2xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[12px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+            className="w-full h-8 px-3 inline-flex items-center gap-2 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/60 text-[11px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
             data-testid="sidebar-search"
           >
-            <Search size={14} />
+            <Search size={13} />
             <span className="truncate">Search chats, prompts, commands</span>
           </button>
-          <div className="grid grid-cols-3 gap-1.5" aria-label="Workspace shortcuts">
+          <div className="grid grid-cols-3 gap-1" aria-label="Workspace shortcuts">
             <button
               type="button"
               onClick={() => navigate('/')}
-              className={`h-9 inline-flex items-center justify-center rounded-2xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/') ? 'border-[var(--ivory-accent)]/20 bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)]' : 'border-[var(--ivory-border)] bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/') ? 'border-[var(--ivory-accent)]/20 bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)]' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               aria-label="Chat"
               title="Chat"
               data-testid="nav-chats"
@@ -287,7 +282,7 @@ export function Sidebar(): React.ReactElement {
             <button
               type="button"
               onClick={() => navigate('/prompts')}
-              className={`h-9 inline-flex items-center justify-center rounded-2xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/prompts') ? 'border-[var(--ivory-accent)]/20 bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)]' : 'border-[var(--ivory-border)] bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/prompts') ? 'border-[var(--ivory-accent)]/20 bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)]' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               aria-label="Prompts"
               title="Prompts"
               data-testid="nav-prompts"
@@ -297,7 +292,7 @@ export function Sidebar(): React.ReactElement {
             <button
               type="button"
               onClick={() => navigate('/preview')}
-              className={`h-9 inline-flex items-center justify-center rounded-2xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/preview') ? 'border-[var(--ivory-accent)]/20 bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)]' : 'border-[var(--ivory-border)] bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/preview') ? 'border-[var(--ivory-accent)]/20 bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)]' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               aria-label="Code"
               title="Code"
               data-testid="nav-preview"
@@ -307,17 +302,17 @@ export function Sidebar(): React.ReactElement {
           </div>
         </div>
 
-        <div className="px-3 py-2 border-b border-[var(--ivory-border)]">
+        <div className="px-3 py-1.5 border-b border-[var(--ivory-border)]/50">
           <button
             type="button"
             onClick={() => setWorkflowOpen(open => !open)}
-            className="w-full flex items-center justify-between px-2 py-2 rounded-xl text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+            className="w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
             aria-expanded={workflowOpen}
           >
             <span>Workflow</span>
             <span className="inline-flex items-center gap-1 normal-case tracking-normal text-[10px] font-semibold">
               {workflowItems.length}
-              <ChevronDown size={12} className={`transition-transform ${workflowOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown size={11} className={`transition-transform ${workflowOpen ? 'rotate-180' : ''}`} />
             </span>
           </button>
           {workflowOpen && (
@@ -349,8 +344,8 @@ export function Sidebar(): React.ReactElement {
           )}
         </div>
 
-        <div className="px-3 py-2 border-b border-[var(--ivory-border)]">
-          <div className="flex items-center justify-between px-2 mb-2">
+        <div className="px-3 py-1.5 border-b border-[var(--ivory-border)]/50">
+          <div className="flex items-center justify-between px-2 mb-1.5">
             <p className="text-[10px] uppercase tracking-[0.08em] font-bold text-[var(--ivory-text-3)]">Projects</p>
             <button
               type="button"
@@ -361,23 +356,23 @@ export function Sidebar(): React.ReactElement {
               <Plus size={12} />
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 gap-1">
             <button
               onClick={() => navigate('/projects')}
-              className={`h-9 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
+              className={`h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
                 ${isActive('/projects') ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               data-testid="nav-projects"
             >
-              <FolderOpen size={14} className="text-[var(--ivory-accent)]" />
+              <FolderOpen size={13} className="text-[var(--ivory-accent)]" />
               Projects
             </button>
             <button
               onClick={() => navigate('/tools')}
-              className={`h-9 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
+              className={`h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
                 ${isActive('/tools') ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               data-testid="nav-tools"
             >
-              <Wrench size={14} className="text-[var(--ivory-accent)]" />
+              <Wrench size={13} className="text-[var(--ivory-accent)]" />
               Tools
             </button>
           </div>
@@ -397,22 +392,22 @@ export function Sidebar(): React.ReactElement {
           <ChatList onSelectChat={handleSelectChat} />
         </div>
 
-        <div className="border-t border-[var(--ivory-border)] p-3 bg-[var(--ivory-surface)]">
-          <div className="flex items-center gap-2 p-2 rounded-2xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]">
-            <div className="w-8 h-8 rounded-full bg-[var(--ivory-surface-2)] flex items-center justify-center text-[var(--ivory-text-3)] shrink-0">
-              <UserCircle size={18} />
+        <div className="border-t border-[var(--ivory-border)]/60 p-2.5 bg-[var(--ivory-surface)]">
+          <div className="flex items-center gap-2 p-2 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/60">
+            <div className="w-7 h-7 rounded-full bg-[var(--ivory-surface-2)] flex items-center justify-center text-[var(--ivory-text-3)] shrink-0">
+              <UserCircle size={16} />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[12px] font-semibold text-[var(--ivory-text)] truncate">Local profile</p>
+              <p className="text-[11px] font-semibold text-[var(--ivory-text)] truncate">Local profile</p>
               <p className="text-[10px] text-[var(--ivory-text-3)] truncate">Settings and providers</p>
             </div>
             <button
               onClick={() => navigate('/settings')}
-              className="p-2 rounded-xl text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+              className="p-1.5 rounded-xl text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
               aria-label="Open settings"
               data-testid="nav-settings"
             >
-              <Settings size={15} />
+              <Settings size={14} />
             </button>
           </div>
         </div>

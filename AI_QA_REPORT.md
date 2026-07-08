@@ -4,6 +4,26 @@
 
 ---
 
+## Premium UI Polish (Brand, Sidebar, Typography, Providers) — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS — zero TypeScript errors |
+| `npm test` (305 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| Code review | ✅ PASS — no issues |
+
+### Changes Summary
+- Created shared `AureonMark` component, replaced 3 inline SVG instances
+- Sidebar narrowed from 280px → 260px with softer borders
+- ProvidersPage: API key inline layout, restored Input component, cleaner model rows
+- CoworkPage: native checkboxes → custom Toggle
+- ChatWorkspace: chip-style suggestions, larger brand mark
+- Typography: body font-size 13px, improved heading metrics
+- Test: ui-desktop-polish.test.ts updated for new sidebar width
+
+---
+
 ## Freebuff Ingestion & Manual Visual QA — 2026-07-08
 
 | Check | Result |

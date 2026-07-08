@@ -1,5 +1,42 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 16:00 +02:00 — Premium UI Polish (Brand, Sidebar, Typography, Providers)
+
+Branch: `main`
+Commit at start: `3f5964d`
+
+### Session Purpose
+Fix visible UI problems from user video: branding, sidebar width, typography, provider layout, native checkboxes, suggestions.
+
+### Files Changed
+- **New:** `src/renderer/src/components/shared/AureonMark.tsx` — shared SVG brand mark component
+- **Modified:** `src/renderer/src/layouts/Sidebar.tsx` — AureonMark, narrower spacing, softer borders, reduced heights
+- **Modified:** `src/renderer/src/layouts/AppShell.tsx` — AureonMark in collapsed state
+- **Modified:** `src/renderer/src/pages/ChatWorkspace.tsx` — AureonMark (44px), chip-style suggestions
+- **Modified:** `src/renderer/src/pages/settings/ProvidersPage.tsx` — inline API key + Save, cleaner model rows, restored Input for Base URL
+- **Modified:** `src/renderer/src/pages/CoworkPage.tsx` — native checkboxes → Toggle component
+- **Modified:** `src/renderer/src/components/settings/SettingsComponents.tsx` — refined Toggle proportions
+- **Modified:** `src/renderer/src/theme/typography.css` — body font-size 13px, heading metrics
+- **Modified:** `src/renderer/src/stores/uiStore.ts` — DEFAULT_SIDEBAR_WIDTH 280→260
+- **Modified:** `tests/unit/ui-desktop-polish.test.ts` — sidebar width assertions updated
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (305 tests) |
+| `npm run build` | ✅ PASS |
+
+### Key UX Changes
+- Brand mark now 34px in sidebar (was 21px hidden in 48px container)
+- Sidebar 260px (was 280px)
+- API key input and Save button now side-by-side
+- All checkboxes replaced with custom Toggle
+- Suggestions are now chip-style pills instead of cards
+
+---
+
 ## 2026-07-08 15:30 +02:00 — Freebuff Ingestion & Manual Visual QA Baseline
 
 Branch: `main`

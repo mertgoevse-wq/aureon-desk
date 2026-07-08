@@ -6,7 +6,7 @@ import { useUIStore } from '../../src/renderer/src/stores/uiStore'
 describe('UI Store — Panel Sizes', () => {
   beforeEach(() => {
     useUIStore.setState({
-      sidebarWidth: 280,
+      sidebarWidth: 260,
       inspectorWidth: 340,
       sidebarCollapsed: false,
       inspectorOpen: true,
@@ -65,7 +65,7 @@ describe('UI Store — Panel Sizes', () => {
     useUIStore.getState().resetLayout()
 
     const s = useUIStore.getState()
-    expect(s.sidebarWidth).toBe(280)
+    expect(s.sidebarWidth).toBe(260)
     expect(s.inspectorWidth).toBe(340)
     expect(s.sidebarCollapsed).toBe(false)
     expect(s.inspectorOpen).toBe(true)

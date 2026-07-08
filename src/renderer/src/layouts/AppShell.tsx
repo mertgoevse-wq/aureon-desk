@@ -9,6 +9,7 @@ import type { CommandItem } from '../components/shared/CommandPalette'
 import { useUIStore, loadPanelSizes } from '../stores/uiStore'
 import { useChatStore } from '../stores/chatStore'
 import { useIpc } from '../hooks/useIpc'
+import { AureonMark } from '../components/shared/AureonMark'
 import {
   MessageSquare, Library, FolderOpen, Wrench, Settings,
   ScrollText, Server, FileText, Github, Eye, Plus, PanelLeft,
@@ -380,16 +381,9 @@ export function AppShell(): React.ReactElement {
             </div>
 
             {sidebarCollapsed && (
-              <div className="flex items-center gap-1.5 select-none min-w-0 animate-fade-in shrink-0">
-                <div className="w-6 h-6 rounded-lg bg-[var(--ivory-accent-light)] flex items-center justify-center shadow-[var(--shadow-xs)] ring-1 ring-[var(--ivory-accent)]/15">
-                  <svg width="14" height="14" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-                    <circle cx="32" cy="32" r="30" fill="var(--ivory-accent-light)" stroke="var(--ivory-accent)" strokeWidth="1.5" opacity="0.9" />
-                    <path d="M18 44L26 20H29L21 44H18Z" fill="var(--ivory-accent)" />
-                    <path d="M46 44L38 20H35L43 44H46Z" fill="var(--ivory-accent)" />
-                    <rect x="23" y="34" width="18" height="3.5" rx="1" fill="var(--ivory-accent)" />
-                  </svg>
-                </div>
-                <span className="text-[12px] font-semibold tracking-tight display-text text-[var(--ivory-text)] truncate">
+              <div className="flex items-center gap-2 select-none min-w-0 animate-fade-in shrink-0">
+                <AureonMark size={22} />
+                <span className="text-[13px] font-semibold tracking-tight display-text text-[var(--ivory-text)] truncate">
                   Aureon
                 </span>
               </div>

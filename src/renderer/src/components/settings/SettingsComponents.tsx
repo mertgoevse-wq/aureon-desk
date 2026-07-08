@@ -60,14 +60,14 @@ export function Toggle({ checked, onChange, disabled = false, dataTestId }: Togg
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30
-        ${checked ? 'bg-[var(--ivory-accent)]' : 'bg-[var(--ivory-border)]'}
+      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/25
+        ${checked ? 'bg-[var(--ivory-accent)]' : 'bg-[var(--ivory-border)] hover:bg-[var(--ivory-border-2)]'}
         ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
       data-testid={dataTestId}
     >
       <span
-        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
-          ${checked ? 'translate-x-4' : 'translate-x-0'}`}
+        className={`pointer-events-none inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out
+          ${checked ? 'translate-x-[18px]' : 'translate-x-[2px]'}`}
       />
     </button>
   )

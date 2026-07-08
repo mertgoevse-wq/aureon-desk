@@ -20,6 +20,7 @@ import {
   EyeOff
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { Toggle } from '../components/settings/SettingsComponents'
 
 interface TaskItem {
   id: string
@@ -447,16 +448,10 @@ export function CoworkPage(): React.ReactElement {
 
               <div className="space-y-3.5">
                 {/* Browser Use (defaults to off/disabled) */}
-                <div className="rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] p-3">
+                <div className="rounded-2xl border border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] p-3">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[12px] font-bold text-[var(--ivory-text)]">Browser Use</span>
-                    <input
-                      type="checkbox"
-                      checked={browserUse}
-                      onChange={(e) => setBrowserUse(e.target.checked)}
-                      className="w-4 h-4 accent-[var(--ivory-accent)] rounded border-[var(--ivory-border)] text-white focus:ring-0 focus:ring-offset-0 cursor-pointer"
-                      data-testid="toggle-browser-use"
-                    />
+                    <span className="text-[12px] font-semibold text-[var(--ivory-text)]">Browser Use</span>
+                    <Toggle checked={browserUse} onChange={setBrowserUse} dataTestId="toggle-browser-use" />
                   </div>
                   <span className="text-[10px] text-[var(--ivory-text-3)] leading-normal block">
                     Allow the agent to browse and interact with public URLs. (Defaults to Off)
@@ -464,16 +459,10 @@ export function CoworkPage(): React.ReactElement {
                 </div>
 
                 {/* Computer Use (defaults to off/disabled) */}
-                <div className="rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] p-3">
+                <div className="rounded-2xl border border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] p-3">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[12px] font-bold text-[var(--ivory-text)]">Computer Use</span>
-                    <input
-                      type="checkbox"
-                      checked={computerUse}
-                      onChange={(e) => setComputerUse(e.target.checked)}
-                      className="w-4 h-4 accent-[var(--ivory-accent)] rounded border-[var(--ivory-border)] text-white focus:ring-0 focus:ring-offset-0 cursor-pointer"
-                      data-testid="toggle-computer-use"
-                    />
+                    <span className="text-[12px] font-semibold text-[var(--ivory-text)]">Computer Use</span>
+                    <Toggle checked={computerUse} onChange={setComputerUse} dataTestId="toggle-computer-use" />
                   </div>
                   <span className="text-[10px] text-[var(--ivory-text-3)] leading-normal block">
                     Allow mouse, keyboard, and display capture routines. (Disabled / Placeheld)
@@ -501,16 +490,10 @@ export function CoworkPage(): React.ReactElement {
                 </div>
 
                 {/* Shell Commands (defaults to off, requires approval) */}
-                <div className="rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] p-3">
+                <div className="rounded-2xl border border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] p-3">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[12px] font-bold text-[var(--ivory-text)]">Shell Commands</span>
-                    <input
-                      type="checkbox"
-                      checked={approveShell}
-                      onChange={(e) => setApproveShell(e.target.checked)}
-                      className="w-4 h-4 accent-[var(--ivory-accent)] rounded border-[var(--ivory-border)] text-white focus:ring-0 focus:ring-offset-0 cursor-pointer"
-                      data-testid="toggle-shell-commands"
-                    />
+                    <span className="text-[12px] font-semibold text-[var(--ivory-text)]">Shell Commands</span>
+                    <Toggle checked={approveShell} onChange={setApproveShell} dataTestId="toggle-shell-commands" />
                   </div>
                   <span className="text-[10px] text-[var(--ivory-text-3)] leading-normal block">
                     Allow execution of terminal commands (requires prompt approval). (Defaults to Off)
