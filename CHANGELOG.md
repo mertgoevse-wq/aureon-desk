@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.9.42] - 2026-07-08
+
+### Changed (MCP Tools — Master-Detail Layout)
+
+**ToolsPage Redesign:**
+- Converted from single-column expand/collapse cards to a proper master-detail layout
+- **Left panel (260px)**: Scrollable tool list with status icons, source/enabled/trusted/destructive badges, permission icon previews (max 3 + overflow count)
+- **Right panel**: Full detail view — tool header with name/badges/toggle, Transport config, Permissions list, Status & Risk assessment (Enabled, Trusted, Risk Level, Approval Required, Last Run), Test Tool controls with safety check results, Actions footer (Trust/Delete)
+- Auto-selects first tool on load, preserves selection across refreshes
+- "No MCP servers connected" empty state with Add MCP Server button
+- Last-Run timestamp tracking — updates when call logs are loaded
+- Removed dead imports (ChevronDown, ChevronRight, Eye, EyeOff)
+
+**README:**
+- Added Tools & MCP Manager section with feature overview
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (348 tests, 19 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.41] - 2026-07-08
 
 ### Changed (MCP Tools Polish — Tests & UX Consistency)

@@ -4,6 +4,22 @@
 
 ---
 
+## MCP Tools — Master-Detail Layout — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (348 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- ToolsPage redesigned as master-detail layout (left tool list + right detail panel)
+- Added Status & Risk section (Enabled, Trusted, Risk Level, Approval Required, Last Run)
+- Clean empty state: "No MCP servers connected"
+- README updated with Tools & MCP Manager section
+
+---
+
 ## MCP Tools Polish — Tests & UX Consistency — 2026-07-08
 
 | Check | Result |

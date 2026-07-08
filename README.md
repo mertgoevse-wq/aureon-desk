@@ -86,7 +86,7 @@ Output files in `dist/`:
 - ✅ Provider & API key management (8 providers)
 - ✅ **System Prompt Profile Engine** (CRUD, archive, duplicate, hierarchy resolver, safety checks)
 - ✅ **GitHub Star List Importer** (29 repos, multi-format parser, safety engine, classifier, approve→Prompt Library/System Profiles/Skill Registry, retry failed imports, warning details)
-- ✅ **MCP-Style Tool Manager & Safety Gate** (3 mock tools, 9 permissions, call logs, safety gate, 93 tests total)
+- ✅ **MCP-Style Tool Manager & Safety Gate** (master-detail layout, 3 built-in mock tools, 9 permissions, call history with human-friendly labels, safety gate, 31 tool-specific tests, 348 total)
 - ✅ Prompt Intelligence Engine (12 intents, 12 agents, 28 skills, rule-based routing)
 - ✅ Prompt library with tags, categories, search, favorites, usage tracking
 - ✅ Slash command integration with combined built-in + library palette
@@ -224,6 +224,17 @@ To update the repo description and topics manually:
 - **Right inspector**: Drag the left edge to resize (260–600px)
 - Panel sizes are persisted across sessions
 - Use `Ctrl+K` → "Reset Layout" to restore defaults
+
+## Tools & MCP Manager
+
+Manage AI capability tools and MCP servers with a clean master-detail layout:
+
+- **Left panel**: Tool list with status icons, source/enabled/trusted/destructive badges, and permission previews
+- **Right panel**: Full detail view with transport config, permission list, status & risk assessment (enabled/trusted/risk level/approval required/last run), test controls, and safety check results
+- **Safety gate**: Every tool call passes through enabled → trusted → permissions → confirmation for destructive ops
+- **Imported tools**: Disabled by default, must be explicitly trusted before use
+- **Destructive permissions**: file_write, shell_command, git, database, secrets require confirmation
+- **Call history**: Timestamped logs with human-friendly status labels, sanitized input/output previews, no secrets exposed
 
 ## LivePreview Workspace
 

@@ -1,5 +1,35 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 21:30 +02:00 — MCP Tools Master-Detail Layout
+
+Branch: `main`
+Commit at start: `c1df6bb` (MCP tools polish)
+
+### Session Purpose
+Redesign ToolsPage from single-column expand/collapse cards to a proper master-detail layout with left tool list and right detail panel.
+
+### Files Changed
+
+**Modified:**
+- **Modified:** `src/renderer/src/pages/settings/ToolsPage.tsx` — complete master-detail rewrite
+- **Modified:** `README.md` — added Tools & MCP Manager section
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (348 tests) |
+
+### Key Changes
+- Left panel (260px): scrollable tool list with status icons, badges, permission previews
+- Right panel: full detail with Transport, Permissions, Status & Risk (Enabled/Trusted/Risk/Approval/Last Run), Test controls, Actions footer
+- Auto-selects first tool, preserves selection across refreshes
+- Last-Run timestamp tracking
+- Clean "No MCP servers connected" empty state
+
+---
+
 ## 2026-07-08 21:15 +02:00 — MCP Tools Polish (Tests & UX)
 
 Branch: `main`
