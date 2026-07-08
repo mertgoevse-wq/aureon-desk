@@ -1,5 +1,20 @@
 import React from 'react'
 
+function insertPastedText(target: HTMLInputElement | HTMLTextAreaElement, text: string): void {
+  const start = target.selectionStart ?? target.value.length
+  const end = target.selectionEnd ?? target.value.length
+  const nextValue = target.value.slice(0, start) + text + target.value.slice(end)
+  target.value = nextValue
+  const cursor = start + text.length
+  target.setSelectionRange(cursor, cursor)
+  target.dispatchEvent(new InputEvent('input', {
+    bubbles: true,
+    cancelable: true,
+    inputType: 'insertFromPaste',
+    data: text
+  }))
+}
+
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
   error?: string
@@ -12,9 +27,26 @@ export function Input({
   hint,
   className = '',
   id,
+  onChange,
+  onInput,
+  onPaste,
   ...props
 }: InputProps): React.ReactElement {
   const inputId = id || label?.toLowerCase().replace(/\s+/g, '-')
+
+  const handleInput = (event: React.InputEvent<HTMLInputElement>) => {
+    onInput?.(event)
+    onChange?.(event as unknown as React.ChangeEvent<HTMLInputElement>)
+  }
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    onPaste?.(event)
+    if (event.defaultPrevented) return
+    const text = event.clipboardData.getData('text')
+    if (!text) return
+    event.preventDefault()
+    insertPastedText(event.currentTarget, text)
+  }
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -28,6 +60,8 @@ export function Input({
       )}
       <input
         id={inputId}
+        onInput={handleInput}
+        onPaste={handlePaste}
         className={`px-3 py-2 text-sm rounded-[var(--radius-lg)] bg-[var(--ivory-elevated)]
           border border-[var(--ivory-border)] text-[var(--ivory-text)]
           placeholder:text-[var(--ivory-text-3)]
@@ -58,9 +92,26 @@ export function Textarea({
   error,
   className = '',
   id,
+  onChange,
+  onInput,
+  onPaste,
   ...props
 }: TextareaProps): React.ReactElement {
   const textareaId = id || label?.toLowerCase().replace(/\s+/g, '-')
+
+  const handleInput = (event: React.InputEvent<HTMLTextAreaElement>) => {
+    onInput?.(event)
+    onChange?.(event as unknown as React.ChangeEvent<HTMLTextAreaElement>)
+  }
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    onPaste?.(event)
+    if (event.defaultPrevented) return
+    const text = event.clipboardData.getData('text')
+    if (!text) return
+    event.preventDefault()
+    insertPastedText(event.currentTarget, text)
+  }
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -74,6 +125,8 @@ export function Textarea({
       )}
       <textarea
         id={textareaId}
+        onInput={handleInput}
+        onPaste={handlePaste}
         className={`px-3 py-2 text-sm rounded-[var(--radius-lg)] bg-[var(--ivory-elevated)]
           border border-[var(--ivory-border)] text-[var(--ivory-text)]
           placeholder:text-[var(--ivory-text-3)]

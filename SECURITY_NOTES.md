@@ -168,6 +168,8 @@ LivePreview creates isolated sandbox directories for previewing generated code:
 - **Isolation**: Each preview has its own subfolder with a unique ID — no shared state between previews
 - **Path traversal protection**: All file paths are validated against escaping the sandbox directory (no `../`, no absolute paths outside sandbox)
 - **Template generation**: Templates are hardcoded in the service — no user-provided templates to prevent injection
+- **In-Process HTTP Static Preview Server**: For `html` and `demo` templates, the preview server runs directly inside Electron's main process, completely eliminating the need for Windows sub-process spawning, reducing overhead, and ensuring absolute sandboxing as no external Node processes are started.
+- **Canonical Path Containment**: Every request received by the in-process server is strictly checked against directory escaping using `path.resolve` containment checks (`resolvedFile.startsWith(resolvedSandbox)`), returning a secure `403 Forbidden` response for unauthorized access attempts.
 
 ### Preview Runner Security
 

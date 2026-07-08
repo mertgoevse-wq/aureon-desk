@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid'
 import { app } from 'electron'
 import path from 'path'
 import fs from 'fs'
+import http from 'http'
 import { spawn, ChildProcess, execSync } from 'child_process'
 import { logger } from '../utils/logger'
 import { redactSecrets } from './log-redacter'
@@ -262,10 +263,25 @@ srv.on('error',(e)=>{console.error('AUREON_PREVIEW_ERROR:'+e.message);process.ex
 `
 }
 
+const MIME_TYPES: Record<string, string> = {
+  '.html': 'text/html',
+  '.js': 'application/javascript',
+  '.css': 'text/css',
+  '.json': 'application/json',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.ico': 'image/x-icon',
+  '.txt': 'text/plain'
+}
+
 // ── Service ─────────────────────────────────────────────────────
 
 export const livePreviewService = {
   _session: null as PreviewSession | null,
+  _httpServer: null as http.Server | null,
 
   getSandboxRoot(): string {
     const sandboxDir = path.join(app.getPath('userData'), 'preview-sandbox')
@@ -356,7 +372,9 @@ export const livePreviewService = {
 
   startPreview(sandboxPath: string, port = 0): PreviewStatus {
     const existing = this._session
-    if (existing && existing.status === 'running') this.stopPreview()
+    if (existing && (existing.status === 'running' || existing.status === 'starting')) {
+      this.stopPreview()
+    }
 
     const sessionId = uuid()
     const actualPort = port || findAvailablePort(3100)
@@ -382,8 +400,6 @@ export const livePreviewService = {
     this._session = session
 
     try {
-      let proc: ChildProcess
-
       if (hasPackageJson) {
         if (!isNpmAvailable()) {
           session.status = 'error'
@@ -393,7 +409,7 @@ export const livePreviewService = {
         }
         addLog('stdout', 'Running npm install...')
         try {
-          execSync('npm install', { cwd: sandboxPath, stdio: 'pipe', timeout: 120000, env: { ...process.env, NODE_ENV: 'development' } })
+          execSync('npm install', { cwd: sandboxPath, stdio: 'pipe', timeout: 120000, env: { ...process.env, NODE_ENV: 'development' }, shell: true as any })
           addLog('stdout', 'Dependencies installed.')
         } catch (e) {
           const msg = e instanceof Error ? e.message : String(e)
@@ -402,49 +418,117 @@ export const livePreviewService = {
           return this._status()
         }
         addLog('stdout', `Starting Vite on port ${actualPort}...`)
-        proc = spawn('npx', ['vite', '--host', '127.0.0.1', '--port', String(actualPort)], {
-          cwd: sandboxPath, env: { ...process.env, NODE_ENV: 'development' }, stdio: ['ignore', 'pipe', 'pipe'],
+        const proc = spawn('npx', ['vite', '--host', '127.0.0.1', '--port', String(actualPort)], {
+          cwd: sandboxPath, env: { ...process.env, NODE_ENV: 'development' }, stdio: ['ignore', 'pipe', 'pipe'], shell: true
         })
+
+        session.process = proc
+        let readyTimer: ReturnType<typeof setTimeout> | null = null
+        let lastStderr = ''
+
+        proc.stdout?.on('data', (data: Buffer) => {
+          const text = data.toString()
+          addLog('stdout', text)
+          if (text.includes('Local:') && text.includes('http') && session.status === 'starting') {
+            session.status = 'running'
+            if (readyTimer) clearTimeout(readyTimer)
+          }
+        })
+        proc.stderr?.on('data', (data: Buffer) => {
+          const text = data.toString()
+          addLog('stderr', text)
+          lastStderr = (lastStderr + text).slice(-500)
+        })
+        proc.on('error', (err) => {
+          addLog('stderr', `Process error: ${err.message}`)
+          session.status = 'error'; session.error = err.message
+          if (readyTimer) clearTimeout(readyTimer)
+        })
+        proc.on('close', (code) => {
+          if (readyTimer) clearTimeout(readyTimer)
+          addLog('stdout', `Server exited code ${code}`)
+          if (session.status === 'starting' || session.status === 'running') {
+            if (code !== 0) {
+              session.status = 'error'
+              const cleanStderr = lastStderr.trim()
+              session.error = cleanStderr
+                ? `Server exited code ${code}: ${cleanStderr}`
+                : `Server exited code ${code}`
+            } else {
+              session.status = 'stopped'
+            }
+          }
+        })
+
+        readyTimer = setTimeout(() => {
+          if (session.status === 'starting') {
+            session.status = 'error'; session.error = 'Server failed to start within 60s'
+            addLog('stderr', session.error!)
+            try { proc.kill('SIGTERM') } catch { /* nop */ }
+          }
+        }, 60000)
+
       } else {
-        const script = buildStaticServerScript(sandboxPath, actualPort)
-        proc = spawn(process.execPath, ['-e', script], {
-          cwd: sandboxPath,
-          env: { ...process.env, NODE_ENV: 'development', ELECTRON_RUN_AS_NODE: '1' },
-          stdio: ['ignore', 'pipe', 'pipe'],
+        // Start in-process HTTP static server
+        addLog('stdout', `Starting in-process static server on port ${actualPort}...`)
+
+        const server = http.createServer((req, res) => {
+          try {
+            const decoded = decodeURIComponent(req.url || '/')
+            const cleanPath = decoded.split('?')[0]
+
+            const filePath = path.join(sandboxPath, cleanPath === '/' ? 'index.html' : cleanPath)
+
+            // Safety check: ensure resolved filePath starts with resolved sandboxPath
+            const resolvedSandbox = path.resolve(sandboxPath)
+            const resolvedFile = path.resolve(filePath)
+            if (!resolvedFile.startsWith(resolvedSandbox)) {
+              res.writeHead(403, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' })
+              res.end('Forbidden')
+              return
+            }
+
+            if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+              const ext = path.extname(filePath).toLowerCase()
+              const contentType = MIME_TYPES[ext] || 'text/plain'
+              res.writeHead(200, {
+                'Content-Type': contentType,
+                'Access-Control-Allow-Origin': '*'
+              })
+              res.end(fs.readFileSync(filePath))
+            } else {
+              const indexHtml = path.join(sandboxPath, 'index.html')
+              if (fs.existsSync(indexHtml)) {
+                res.writeHead(200, { 'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*' })
+                res.end(fs.readFileSync(indexHtml))
+              } else {
+                res.writeHead(404, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' })
+                res.end('Not Found')
+              }
+            }
+          } catch (e: any) {
+            res.writeHead(500, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' })
+            res.end(`Server Error: ${e.message}`)
+          }
         })
+
+        server.listen(actualPort, '127.0.0.1', () => {
+          addLog('stdout', `Static server listening on http://127.0.0.1:${actualPort}`)
+          if (this._session && this._session.id === sessionId) {
+            this._session.status = 'running'
+          }
+        })
+
+        server.on('error', (err: any) => {
+          addLog('stderr', `Server error: ${err.message}`)
+          if (this._session && this._session.id === sessionId) {
+            this._session.status = 'error'
+            this._session.error = err.message
+          }
+        })
+
+        this._httpServer = server
       }
-
-      session.process = proc
-      let readyTimer: ReturnType<typeof setTimeout> | null = null
-
-      proc.stdout?.on('data', (data: Buffer) => {
-        const text = data.toString()
-        addLog('stdout', text)
-        if (text.includes('AUREON_PREVIEW_READY')) { session.status = 'running'; if (readyTimer) clearTimeout(readyTimer) }
-        if (hasPackageJson && text.includes('Local:') && text.includes('http') && session.status === 'starting') {
-          session.status = 'running'
-        }
-      })
-      proc.stderr?.on('data', (data: Buffer) => { addLog('stderr', data.toString()) })
-      proc.on('error', (err) => {
-        addLog('stderr', `Process error: ${err.message}`)
-        session.status = 'error'; session.error = err.message
-        if (readyTimer) clearTimeout(readyTimer)
-      })
-      proc.on('close', (code) => {
-        if (readyTimer) clearTimeout(readyTimer)
-        addLog('stdout', `Server exited code ${code}`)
-        if (session.status === 'starting') { session.status = 'error'; session.error = `Server exited code ${code}` }
-        else if (session.status === 'running') session.status = 'stopped'
-      })
-
-      readyTimer = setTimeout(() => {
-        if (session.status === 'starting') {
-          session.status = 'error'; session.error = 'Server failed to start within 60s'
-          addLog('stderr', session.error!)
-          try { proc.kill('SIGTERM') } catch { /* nop */ }
-        }
-      }, 60000)
 
       return this._status()
     } catch (err) {
@@ -456,9 +540,31 @@ export const livePreviewService = {
 
   stopPreview(): PreviewStatus {
     const s = this._session
-    if (!s?.process) return this._status()
-    try { s.process.kill('SIGTERM'); setTimeout(() => { try { s.process?.kill('SIGKILL') } catch { /* nop */ } }, 2000) } catch { /* dead */ }
-    s.status = 'stopped'; s.process = null
+
+    if (this._httpServer) {
+      try {
+        this._httpServer.close()
+      } catch (err) {
+        logger.error(`Error closing in-process http server: ${err}`)
+      }
+      this._httpServer = null
+    }
+
+    if (s?.process) {
+      try {
+        s.process.kill('SIGTERM')
+        setTimeout(() => {
+          try { s.process?.kill('SIGKILL') } catch { /* nop */ }
+        }, 2000)
+      } catch {
+        /* dead */
+      }
+      s.process = null
+    }
+
+    if (s) {
+      s.status = 'stopped'
+    }
     return this._status()
   },
 

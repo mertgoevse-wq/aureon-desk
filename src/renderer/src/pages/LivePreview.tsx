@@ -29,6 +29,7 @@ export function LivePreview(): React.ReactElement {
   const [creating, setCreating] = useState(false)
   const [runningDemo, setRunningDemo] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
   const logRef = useRef<HTMLDivElement>(null)
 
   const refreshStatus = useCallback(async () => {
@@ -49,6 +50,14 @@ export function LivePreview(): React.ReactElement {
       logRef.current.scrollTop = logRef.current.scrollHeight
     }
   }, [status.logs])
+
+  const handleCopy = useCallback(() => {
+    if (status.url) {
+      navigator.clipboard.writeText(status.url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }, [status.url])
 
   const handleCreateSandbox = async () => {
     setCreating(true); setError(null)
@@ -90,6 +99,18 @@ export function LivePreview(): React.ReactElement {
     setError(null)
     try {
       await api.previewStop()
+      await refreshStatus()
+    } catch (e) { setError(String(e)) }
+  }
+
+  const handleRestart = async () => {
+    setError(null)
+    try {
+      await api.previewStop()
+      const path = status.sandboxPath
+      if (path) {
+        await api.previewStart(path)
+      }
       await refreshStatus()
     } catch (e) { setError(String(e)) }
   }
@@ -141,85 +162,107 @@ export function LivePreview(): React.ReactElement {
       </div>
 
       {/* Controls */}
-      <div className="px-6 py-3 border-b border-[var(--ivory-border)] flex items-center gap-3 flex-wrap">
+      <div className="px-6 py-3 border-b border-[var(--ivory-border)] flex items-center gap-3 flex-wrap bg-[var(--ivory-surface)]">
         {!hasSandbox ? (
           <>
             <select
               value={templateType}
               onChange={e => setTemplateType(e.target.value)}
-              className="px-3 py-1.5 text-sm rounded-[var(--radius-md)] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text)]"
+              className="px-3 py-1.5 text-xs rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[var(--ivory-text)] font-semibold cursor-pointer outline-none focus:border-[var(--ivory-accent)]"
               data-testid="preview-template-select"
             >
               <option value="html">Simple HTML</option>
               <option value="demo">Coding Demo</option>
               <option value="vite-react">Vite + React</option>
-            </select>              <Button onClick={handleCreateSandbox} disabled={creating} size="sm" data-testid="preview-create-btn">
+            </select>
+            <Button onClick={handleCreateSandbox} disabled={creating} size="sm" data-testid="preview-create-btn" className="cursor-pointer font-semibold rounded-xl">
               <Play size={14} /> Create & Start Preview
             </Button>
-            <Button onClick={handleStop} variant="secondary" size="sm" disabled data-testid="preview-stop-btn">
+            <Button onClick={handleStop} variant="secondary" size="sm" disabled data-testid="preview-stop-btn" className="rounded-xl">
               <Square size={14} /> Stop Server
             </Button>
-            <Button onClick={openExternal} variant="secondary" size="sm" disabled data-testid="preview-open-external-btn">
+            <Button onClick={openExternal} variant="secondary" size="sm" disabled data-testid="preview-open-external-btn" className="rounded-xl">
               <ExternalLink size={14} /> Open in Browser
             </Button>
           </>
         ) : (
           <>
             {isRunning ? (
-              <Button onClick={handleStop} variant="danger" size="sm" data-testid="preview-stop-btn">
-                <Square size={14} /> Stop Server
-              </Button>
+              <>
+                <Button onClick={handleStop} variant="danger" size="sm" data-testid="preview-stop-btn" className="cursor-pointer font-semibold rounded-xl">
+                  <Square size={14} /> Stop Server
+                </Button>
+                <Button onClick={handleRestart} variant="secondary" size="sm" data-testid="preview-restart-btn" className="cursor-pointer font-semibold rounded-xl">
+                  <RefreshCw size={14} /> Restart
+                </Button>
+              </>
             ) : (
-              <Button onClick={() => handleStart()} variant="primary" size="sm" data-testid="preview-start-btn">
+              <Button onClick={() => handleStart()} variant="primary" size="sm" data-testid="preview-start-btn" className="cursor-pointer font-semibold rounded-xl">
                 <Play size={14} /> Start Server
               </Button>
             )}
-            <Button onClick={refreshStatus} variant="ghost" size="sm" data-testid="preview-refresh-btn">
+            <Button onClick={refreshStatus} variant="ghost" size="sm" data-testid="preview-refresh-btn" className="cursor-pointer font-semibold rounded-xl">
               <RefreshCw size={14} /> Refresh
             </Button>
-            {status.url && (
-              <Button onClick={openExternal} variant="secondary" size="sm" data-testid="preview-open-external-btn">
-                <ExternalLink size={14} /> Open in Browser
-              </Button>
-            )}
+            <Button
+              onClick={openExternal}
+              variant="secondary"
+              size="sm"
+              disabled={status.status !== 'running' || !status.url}
+              data-testid="preview-open-external-btn"
+              className="cursor-pointer font-semibold rounded-xl"
+            >
+              <ExternalLink size={14} /> Open in Browser
+            </Button>
           </>
         )}
       </div>
 
       {/* URL / preview target */}
       {!error && (
-        <div className="px-6 py-2 border-b border-[var(--ivory-border)]">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-[var(--ivory-text-3)]">URL:</span>
+        <div className="px-6 py-2 border-b border-[var(--ivory-border)] bg-[var(--ivory-bg)]">
+          <div className="flex items-center gap-2.5 text-sm">
+            <span className="text-[var(--ivory-text-3)] font-semibold text-xs shrink-0">URL:</span>
             <input
               type="text"
               value={status.url || ''}
               readOnly
               data-testid="preview-url-input"
               placeholder="No local preview server running"
-              className="flex-1 px-2 py-1 text-xs bg-[var(--ivory-bg)] border border-[var(--ivory-border)] rounded-[var(--radius-sm)] text-[var(--ivory-text-2)]"
+              className="flex-1 px-3 py-1.5 text-xs bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-xl text-[var(--ivory-text-2)] font-mono outline-none"
             />
+            {status.url && (
+              <Button
+                onClick={handleCopy}
+                variant="secondary"
+                size="sm"
+                className="px-3 py-1 cursor-pointer shrink-0 font-semibold rounded-xl"
+              >
+                {copied ? 'Copied!' : 'Copy URL'}
+              </Button>
+            )}
           </div>
         </div>
       )}
       {/* Error banner */}
       {error && (
-        <div className="px-6 py-2 text-xs bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border-b border-[var(--ivory-error-bg)] flex items-center gap-2">
-          <AlertTriangle size={14} /> {error}
-          <button onClick={() => setError(null)} className="ml-auto"><XCircle size={14} /></button>
+        <div className="px-6 py-2.5 text-xs bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border-b border-[var(--ivory-error-bg)] flex items-center gap-2">
+          <AlertTriangle size={14} className="shrink-0" />
+          <span className="font-semibold flex-1 leading-relaxed">{error}</span>
+          <button onClick={() => setError(null)} className="ml-auto cursor-pointer p-0.5 hover:bg-[var(--ivory-error-bg)] rounded"><XCircle size={14} /></button>
         </div>
       )}
 
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto bg-[var(--ivory-bg)]">
         {!hasSandbox ? (
           <div className="p-6 space-y-6">
             <EmptyState
-              icon={<Monitor size={40} strokeWidth={1.5} />}
+              icon={<Monitor size={40} strokeWidth={1.5} className="text-[var(--ivory-accent)]" />}
               title="No preview active"
               description="Create a sandbox to test generated code safely. Choose a template and start a local preview server. No data leaves your machine."
               action={
-                <Button onClick={handleCreateSandbox} disabled={creating} data-testid="preview-create-btn">
+                <Button onClick={handleCreateSandbox} disabled={creating} data-testid="preview-create-btn" className="cursor-pointer rounded-xl">
                   <Play size={14} /> Create & Start Preview
                 </Button>
               }
@@ -234,20 +277,20 @@ export function LivePreview(): React.ReactElement {
                       No sandbox selected
                     </span>
                   </div>
-                  <span className="text-xs text-[var(--ivory-text-3)]">Local only</span>
+                  <span className="text-xs text-[var(--ivory-text-3)] font-semibold">Local only</span>
                 </div>
               </div>
 
               <div className="rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-xs)] overflow-hidden">
-                <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--ivory-border)]">
+                <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[var(--ivory-border)]">
                   <Terminal size={12} className="text-[var(--ivory-text-3)]" />
-                  <span className="text-xs font-medium text-[var(--ivory-text-2)]">Server Logs</span>
-                  <span className="text-[10px] text-[var(--ivory-text-3)] ml-auto">
+                  <span className="text-xs font-semibold text-[var(--ivory-text-2)]">Server Logs</span>
+                  <span className="text-[10px] text-[var(--ivory-text-3)] ml-auto font-medium">
                     {status.logs.length} entries — secrets redacted
                   </span>
                 </div>
-                <div ref={logRef} className="max-h-48 overflow-y-auto font-mono text-xs" data-testid="preview-log-panel">
-                  <p className="p-4 text-[var(--ivory-text-3)] text-xs">No logs yet. Start a sandbox to see server output.</p>
+                <div ref={logRef} className="max-h-48 overflow-y-auto font-mono text-xs bg-[var(--ivory-bg)]" data-testid="preview-log-panel">
+                  <p className="p-4 text-[var(--ivory-text-3)] text-xs italic">No logs yet. Start a sandbox to see server output.</p>
                 </div>
               </div>
             </div>
@@ -255,23 +298,23 @@ export function LivePreview(): React.ReactElement {
         ) : (
           <div className="p-6 space-y-4">
             {/* Status card */}
-            <div className="p-4 rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-surface)]">
-              <div className="flex items-center justify-between mb-3">
+            <div className="p-4 rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-xs)]">
+              <div className="flex items-center justify-between mb-3 pb-3 border-b border-[var(--ivory-border)]/40">
                 <div className="flex items-center gap-3">
                   {statusIcon()}
                   <span data-testid="preview-status">{statusBadge()}</span>
-                  <span className="text-sm font-medium text-[var(--ivory-text)]">
-                    {status.templateType === 'vite-react' ? 'Vite + React' : 'Simple HTML'}
+                  <span className="text-sm font-semibold text-[var(--ivory-text)]">
+                    {status.templateType === 'vite-react' ? 'Vite + React' : status.templateType === 'demo' ? 'Coding Demo' : 'Simple HTML'}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-[var(--ivory-text-3)]">
-                  {status.port && <span>Port: {status.port}</span>}
+                <div className="flex items-center gap-3 text-xs">
+                  {status.port && <span className="font-semibold text-[var(--ivory-text-3)]">Port: {status.port}</span>}
                   {status.url && (
                     <a
                       href={status.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[var(--ivory-accent)] hover:underline flex items-center gap-1"
+                      className="text-[var(--ivory-accent)] hover:underline flex items-center gap-1 font-semibold"
                       data-testid="preview-url-link"
                     >
                       {status.url} <ExternalLink size={10} />
@@ -280,8 +323,14 @@ export function LivePreview(): React.ReactElement {
                 </div>
               </div>
               {status.error && (
-                <div className="p-2 rounded-[var(--radius-sm)] bg-[var(--ivory-error-bg)] text-xs text-[var(--ivory-error)]">
+                <div className="p-3 rounded-xl bg-[var(--ivory-error-bg)] text-xs text-[var(--ivory-error)] border border-[var(--ivory-error)]/10 font-semibold mb-3 leading-relaxed">
                   {status.error}
+                </div>
+              )}
+              {status.sandboxPath && (
+                <div className="text-[11px] text-[var(--ivory-text-3)] break-all font-mono flex flex-col gap-1 leading-normal">
+                  <span className="font-semibold text-[var(--ivory-text-2)]">Sandbox Directory:</span>
+                  <span className="bg-[var(--ivory-bg)] p-2.5 rounded-xl border border-[var(--ivory-border)]/50 select-text">{status.sandboxPath}</span>
                 </div>
               )}
             </div>

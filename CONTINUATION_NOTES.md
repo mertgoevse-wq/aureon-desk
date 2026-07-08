@@ -1,6 +1,6 @@
 # Aureon Desk Continuation Notes
 
-Last updated: 2026-07-07
+Last updated: 2026-07-08
 
 This file exists so a new Codex chat can continue the same work without needing the full previous context window.
 
@@ -82,23 +82,32 @@ LivePreview:
 
 - Made the Preview idle/no-sandbox state expose status, URL, logs, Stop Server, and Open in Browser controls.
 - Re-ran the LivePreview E2E suite successfully after the fix.
+- Added an in-process Electron main-process HTTP static server for HTML/Coding Demo previews.
+- Kept Vite+React on the npm/Vite runner path with `shell: true` on Windows and clearer stderr-based error propagation.
+- Added Copy URL, Restart, and sandbox directory visibility to the LivePreview UI.
+- Added canonical path containment checks for static preview requests.
+
+Provider/model and input continuation:
+
+- Added provider model sync hooks for LM Studio and OpenRouter, and auto-sync behavior after successful local/OpenRouter provider tests.
+- Restored robust shared `Input` paste handling so Provider API key fields update React state correctly on paste.
 
 Documentation:
 
-- Updated `CHANGELOG.md`, `README.md`, and `SECURITY_NOTES.md`.
+- Updated `CHANGELOG.md`, `README.md`, `SECURITY_NOTES.md`, `ARCHITECTURE.md`, `AI_QA_REPORT.md`, and `docs/UX_DECISIONS.md`.
 - Added this `CONTINUATION_NOTES.md`.
 
 ## Validation already run before this note
 
-Known passing checks in this thread before final publish:
+Known passing checks after the 2026-07-08 continuation:
 
 - `npm run verify:native`
 - `npm run typecheck`
-- `npm test` (267 tests at the time)
+- `npm test` (278 tests)
 - `npm run build`
-- `npx playwright test tests/e2e/09-aureon-live-preview.spec.ts` (10/10 pass)
-
-The final publish pass should still rerun targeted checks after all documentation/test edits.
+- `npm run test:e2e` (79/79 pass)
+- Targeted provider API-key paste E2E after the fix
+- `npm run test:openrouter` reached OpenRouter successfully; the free model response was non-deterministic and did not exactly echo `AUREON_OK`.
 
 ## Current important files
 
@@ -114,6 +123,10 @@ The final publish pass should still rerun targeted checks after all documentatio
 - `src/renderer/src/components/chat/ChatPanel.tsx`
 - `src/renderer/src/components/chat/MessageInput.tsx`
 - `src/renderer/src/components/chat/MessageBubble.tsx`
+- `src/renderer/src/components/shared/Input.tsx`
+- `src/main/services/live-preview.service.ts`
+- `src/main/services/provider.service.ts`
+- `src/main/ipc/provider.ipc.ts`
 - `tests/e2e/03-aureon-settings.spec.ts`
 - `tests/e2e/09-aureon-live-preview.spec.ts`
 - `tests/unit/input-handling.test.ts`
@@ -123,15 +136,15 @@ The final publish pass should still rerun targeted checks after all documentatio
 - `CHANGELOG.md`
 - `SECURITY_NOTES.md`
 - `AI_QA_REPORT.md`
+- `ARCHITECTURE.md`
+- `docs/UX_DECISIONS.md`
 
 ## Next work
 
-1. Run targeted validation:
-   - `npm run typecheck`
-   - `npm test`
-   - `npm run build`
-   - `npx playwright test tests/e2e/03-aureon-settings.spec.ts tests/e2e/09-aureon-live-preview.spec.ts`
-2. Run a secret scan for real provider keys before staging:
-   - `rg -n "sk-or-v1-[A-Za-z0-9_-]{40,}|AIza[A-Za-z0-9_-]{30,}|sk-ant-[A-Za-z0-9_-]{30,}" --glob "!node_modules/**" --glob "!out/**" --glob "!dist/**" --glob "!test-results/**" --glob "!playwright-report/**"`
-3. Commit and push the accumulated project work without reverting unrelated existing changes.
-4. Continue with Prompt 6/7/8/9 if more time remains: deeper LivePreview integration, full Playwright QA, premium UI audit, and repository hygiene.
+1. Implement the top-level `Chat / Cowork / Code` mode switch from the pasted continuation prompt.
+2. Redesign the chat home screen into an Aureon-original Claude/Codex-like start surface with large composer, model/profile/project controls, tool badges, and suggestion chips.
+3. Redesign Settings into a three-column structure: app sidebar, settings category column, detail panel.
+4. Refine the right inspector into quieter collapsible sections for intent, agent, risk, skills, tools, and keywords.
+5. Align Code mode with LivePreview: project selector, preview status, demo runner, logs, and external preview actions.
+6. Add E2E tests for mode switch, home composer, settings three-column layout, Code mode entry points, and no horizontal overflow at 1366x768.
+7. Keep the current safety boundary: no autonomous computer/mouse/keyboard control until explicitly implemented behind confirmations and documented permissions.

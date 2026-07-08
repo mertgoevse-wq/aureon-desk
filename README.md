@@ -219,9 +219,11 @@ The LivePreview workspace lets you generate and preview small apps (HTML, Vite+R
 ### Features
 - **Sandboxed preview**: Creates isolated project folders under your user data directory
 - **Template types**: HTML (single file) or Vite+React (full project scaffold)
-- **Dev server runner**: Starts a local dev server and captures stdout/stderr logs
+- **In-process static runner**: HTML and Coding Demo previews run through an Electron main-process HTTP server bound to `127.0.0.1`
+- **Vite runner**: Vite+React previews still use npm/Vite with captured stdout/stderr logs
 - **Live log viewer**: See server output in real-time within the Preview panel
 - **External browser**: Open the preview URL in your default browser
+- **Copy/restart controls**: Copy the local preview URL or restart the active server from the Preview toolbar
 - **Safety by default**: No destructive commands without confirmation, secrets redacted from logs
 
 ### Coding Agent Demo
@@ -244,10 +246,12 @@ This self-test:
 2. Select a template type (HTML, Coding Demo, or Vite+React)
 3. Click **Create & Start Preview** to generate the sandbox and launch the server
 4. Click **Open in Browser** to view the preview
-5. Click **Stop Server** when done
+5. Use **Copy URL** or **Restart** when needed
+6. Click **Stop Server** when done
 
 ### Security
 - All preview file writes require user confirmation
 - Preview logs redact API keys, tokens, and secrets
 - Sandbox directories are isolated from the rest of your file system
+- Static preview requests use canonical path containment checks and return `403 Forbidden` for traversal attempts
 - See `SECURITY_NOTES.md` for full LivePreview security details

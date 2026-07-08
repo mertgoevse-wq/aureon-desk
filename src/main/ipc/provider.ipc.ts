@@ -90,6 +90,14 @@ export function registerProviderIPC(): void {
     return await providerService.syncOllamaModels()
   })
 
+  ipcMain.handle('provider:syncLMStudioModels', async () => {
+    return await providerService.syncLMStudioModels()
+  })
+
+  ipcMain.handle('provider:syncOpenRouterModels', async () => {
+    return await providerService.syncOpenRouterModels()
+  })
+
   ipcMain.handle('provider:fetchOllamaModels', async (_event, baseUrl?: string) => {
     return await providerService.fetchOllamaModels(baseUrl)
   })

@@ -237,6 +237,11 @@ export const providerService = {
         if (response.ok) {
           const data = await response.json() as { models?: Array<{ name: string }> }
           const modelCount = data.models?.length || 0
+          try {
+            await this.syncOllamaModels()
+          } catch (syncErr) {
+            logger.error('Failed to auto-sync Ollama models during test', syncErr)
+          }
           return {
             success: true,
             message: `Connected to ${provider.name}${modelCount > 0 ? ` (${modelCount} model${modelCount !== 1 ? 's' : ''} available)` : ''}`
@@ -263,6 +268,11 @@ export const providerService = {
         if (response.ok) {
           const data = await response.json() as { data?: Array<{ id: string }> }
           const modelCount = data.data?.length || 0
+          try {
+            await this.syncLMStudioModels()
+          } catch (syncErr) {
+            logger.error('Failed to auto-sync LM Studio models during test', syncErr)
+          }
           return {
             success: true,
             message: `Connected to ${provider.name}${modelCount > 0 ? ` (${modelCount} model${modelCount !== 1 ? 's' : ''} loaded)` : ''}`
@@ -299,6 +309,13 @@ export const providerService = {
       })
 
       if (response.ok) {
+        if (provider.adapter === 'openrouter') {
+          try {
+            await this.syncOpenRouterModels()
+          } catch (syncErr) {
+            logger.error('Failed to auto-sync OpenRouter models during test', syncErr)
+          }
+        }
         return { success: true, message: `Connected to ${provider.name}` }
       }
       // Some providers don't have /models endpoint, try a different check
@@ -468,5 +485,144 @@ export const providerService = {
 
     logger.info(`Synced Ollama models: ${added} added, ${ollamaModels.length} total available`)
     return { added, total: ollamaModels.length }
+  },
+
+  /**
+   * Sync models from LM Studio's /v1/models endpoint.
+   * Adds any models not already in the database for the LM Studio provider.
+   */
+  async syncLMStudioModels(): Promise<{ added: number; total: number }> {
+    const db = getDb()
+    const now = new Date().toISOString()
+
+    // Find the LM Studio provider
+    const lmStudioProvider = db.select().from(providers)
+      .where(eq(providers.slug, 'lmstudio'))
+      .get() as ProviderRow | undefined
+
+    if (!lmStudioProvider) {
+      logger.warn('LM Studio provider not found in database')
+      return { added: 0, total: 0 }
+    }
+
+    // Fetch models from LM Studio
+    const baseUrl = lmStudioProvider.base_url || 'http://localhost:1234/v1'
+
+    let lmStudioModels: Array<{ id: string }> = []
+    try {
+      const response = await fetch(`${baseUrl}/models`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(10000),
+      })
+
+      if (!response.ok) {
+        logger.warn(`LM Studio /models returned status ${response.status}`)
+        return { added: 0, total: 0 }
+      }
+
+      const data = await response.json() as { data?: Array<{ id: string }> }
+      lmStudioModels = data.data || []
+    } catch (err) {
+      logger.warn('Failed to fetch LM Studio models', err instanceof Error ? err.message : String(err))
+      return { added: 0, total: 0 }
+    }
+
+    // Get existing models for this provider
+    const existingModels = db.select()
+      .from(models)
+      .where(eq(models.provider_id, lmStudioProvider.id))
+      .all() as ModelRow[]
+
+    const existingNames = new Set(existingModels.map(m => m.name))
+    let added = 0
+
+    for (const lm of lmStudioModels) {
+      if (!existingNames.has(lm.id)) {
+        db.insert(models).values({
+          id: uuid(),
+          provider_id: lmStudioProvider.id,
+          name: lm.id,
+          display_name: lm.id,
+          context_window: 128000,
+          is_default: existingModels.length === 0 && added === 0 ? 1 : 0,
+          is_enabled: 1,
+          created_at: now
+        } as never).run()
+        added++
+      }
+    }
+
+    logger.info(`Synced LM Studio models: ${added} added, ${lmStudioModels.length} total available`)
+    return { added, total: lmStudioModels.length }
+  },
+
+  /**
+   * Sync models from OpenRouter's /models endpoint.
+   * Adds any models not already in the database for the OpenRouter provider.
+   */
+  async syncOpenRouterModels(): Promise<{ added: number; total: number }> {
+    const db = getDb()
+    const now = new Date().toISOString()
+
+    // Find the OpenRouter provider
+    const openRouterProvider = db.select().from(providers)
+      .where(eq(providers.slug, 'openrouter'))
+      .get() as ProviderRow | undefined
+
+    if (!openRouterProvider) {
+      logger.warn('OpenRouter provider not found in database')
+      return { added: 0, total: 0 }
+    }
+
+    const baseUrl = openRouterProvider.base_url || 'https://openrouter.ai/api/v1'
+
+    let openRouterModels: Array<{ id: string; name?: string }> = []
+    try {
+      const response = await fetch(`${baseUrl}/models`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(15000),
+      })
+
+      if (!response.ok) {
+        logger.warn(`OpenRouter /models returned status ${response.status}`)
+        return { added: 0, total: 0 }
+      }
+
+      const data = await response.json() as { data?: Array<{ id: string; name?: string }> }
+      openRouterModels = data.data || []
+    } catch (err) {
+      logger.warn('Failed to fetch OpenRouter models', err instanceof Error ? err.message : String(err))
+      return { added: 0, total: 0 }
+    }
+
+    // Get existing models for this provider
+    const existingModels = db.select()
+      .from(models)
+      .where(eq(models.provider_id, openRouterProvider.id))
+      .all() as ModelRow[]
+
+    const existingNames = new Set(existingModels.map(m => m.name))
+    let added = 0
+
+    for (const om of openRouterModels) {
+      if (!existingNames.has(om.id)) {
+        db.insert(models).values({
+          id: uuid(),
+          provider_id: openRouterProvider.id,
+          name: om.id,
+          display_name: om.name || om.id,
+          context_window: 128000,
+          is_default: 0,
+          is_enabled: 1,
+          created_at: now
+        } as never).run()
+        added++
+      }
+    }
+
+    logger.info(`Synced OpenRouter models: ${added} added, ${openRouterModels.length} total available`)
+    return { added, total: openRouterModels.length }
   },
 }

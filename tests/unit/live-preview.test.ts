@@ -1,17 +1,34 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Use vi.hoisted so mock objects are available to hoisted vi.mock factories
-const { mockFs } = vi.hoisted(() => ({
-  mockFs: {
-    existsSync: vi.fn(() => false),
-    mkdirSync: vi.fn(),
-    writeFileSync: vi.fn(),
-    readFileSync: vi.fn(),
-    readdirSync: vi.fn(() => []),
-    statSync: vi.fn(() => ({ isDirectory: () => true, birthtime: new Date(), birthtimeMs: Date.now() })),
-    rmSync: vi.fn(),
-  },
-}))
+const { mockFs, mockHttpServer, mockHttpCreateServer } = vi.hoisted(() => {
+  const mockHttpServer: any = {}
+  mockHttpServer.listen = vi.fn().mockImplementation((port, host, callback) => {
+    if (callback) {
+      setImmediate(callback)
+    }
+    return mockHttpServer
+  })
+  mockHttpServer.on = vi.fn().mockImplementation(() => mockHttpServer)
+  mockHttpServer.close = vi.fn().mockImplementation((callback) => {
+    if (callback) callback()
+    return mockHttpServer
+  })
+  const mockHttpCreateServer = vi.fn(() => mockHttpServer)
+  return {
+    mockFs: {
+      existsSync: vi.fn(() => false),
+      mkdirSync: vi.fn(),
+      writeFileSync: vi.fn(),
+      readFileSync: vi.fn(),
+      readdirSync: vi.fn(() => []),
+      statSync: vi.fn(() => ({ isDirectory: () => true, birthtime: new Date(), birthtimeMs: Date.now() })),
+      rmSync: vi.fn(),
+    },
+    mockHttpServer,
+    mockHttpCreateServer
+  }
+})
 
 // Mock Electron app paths
 vi.mock('electron', () => ({
@@ -22,6 +39,14 @@ vi.mock('electron', () => ({
 
 // Mock fs for sandbox operations
 vi.mock('fs', () => ({ default: mockFs, ...mockFs }))
+
+// Mock http module
+vi.mock('http', () => ({
+  default: {
+    createServer: mockHttpCreateServer
+  },
+  createServer: mockHttpCreateServer
+}))
 
 // Mock child_process spawn and execSync
 vi.mock('child_process', () => ({
@@ -277,5 +302,63 @@ describe('LivePreview Service — Secret Redaction', () => {
       expect(redacted).not.toContain('sk-ant')
       expect(redacted).not.toContain('AIza')
     }
+  })
+})
+
+describe('LivePreview Service — In-Process HTTP Server', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockFs.existsSync = vi.fn((p: string) => {
+      if (p.endsWith('package.json') || p.endsWith('.aureon-demo')) return false
+      return true
+    })
+    livePreviewService.reset()
+  })
+
+  it('should start in-process http server and serve index.html', () => {
+    livePreviewService.startPreview('/sandbox/html-app')
+
+    expect(mockHttpCreateServer).toHaveBeenCalled()
+    expect(mockHttpServer.listen).toHaveBeenCalledWith(3100, '127.0.0.1', expect.any(Function))
+
+    const handler = mockHttpCreateServer.mock.calls[0][0]
+    expect(handler).toBeDefined()
+
+    const req = { url: '/', headers: {} }
+    const res = {
+      writeHead: vi.fn(),
+      end: vi.fn()
+    }
+
+    mockFs.readFileSync = vi.fn(() => '<html></html>')
+    mockFs.statSync = vi.fn(() => ({ isFile: () => true }))
+
+    handler(req as any, res as any)
+
+    expect(mockFs.readFileSync).toHaveBeenCalled()
+    expect(res.writeHead).toHaveBeenCalledWith(200, expect.any(Object))
+    expect(res.end).toHaveBeenCalledWith('<html></html>')
+  })
+
+  it('should prevent path traversal outside sandbox', () => {
+    livePreviewService.startPreview('/sandbox/html-app')
+    const handler = mockHttpCreateServer.mock.calls[0][0]
+
+    const req = { url: '/../../etc/passwd', headers: {} }
+    const res = {
+      writeHead: vi.fn(),
+      end: vi.fn()
+    }
+
+    handler(req as any, res as any)
+
+    expect(res.writeHead).toHaveBeenCalledWith(403, expect.any(Object))
+    expect(res.end).toHaveBeenCalledWith('Forbidden')
+  })
+
+  it('should close in-process server when stopPreview is called', () => {
+    livePreviewService.startPreview('/sandbox/html-app')
+    livePreviewService.stopPreview()
+    expect(mockHttpServer.close).toHaveBeenCalled()
   })
 })

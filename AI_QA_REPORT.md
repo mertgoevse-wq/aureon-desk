@@ -1,6 +1,6 @@
 # Aureon Desk — AI QA Report
 
-> **Generated:** 2026-07-07
+> **Generated:** 2026-07-08
 > **Branch:** main
 
 ---
@@ -22,29 +22,32 @@ npm run demo:coding
 | Check | Result |
 |-------|--------|
 | Typecheck (`npm run typecheck`) | ✅ PASS |
-| Unit Tests (`npm test`) | ✅ PASS (275 tests) |
+| Unit Tests (`npm test`) | ✅ PASS (278 tests) |
 | Build (`npm run build`) | ✅ PASS |
 | E2E Smoke Tests | ✅ PASS (9 tests) |
 | E2E Navigation Tests | ✅ PASS (7 tests) |
 | E2E Chat Tests | ✅ PASS (6 tests) |
-| E2E Settings Tests | ✅ PASS (8 tests in latest targeted run) |
+| E2E Settings Tests | ✅ PASS (8 tests) |
 | E2E LivePreview Tests | ✅ PASS (10 tests) |
 | E2E Coding Demo Tests | ✅ PASS (6 tests) |
 | E2E Model Selection Tests | ✅ PASS (2 tests) |
 | Coding Demo CLI (`npm run demo:coding`) | ✅ PASS |
-| **Latest targeted E2E** | **✅ 8/8 PASS (Model Selection + Coding Demo)** |
+| **Full E2E** | **✅ 79/79 PASS** |
 
 ### Latest Continuation Validation
 
-Run on 2026-07-07 after model selection UX assist, input key handlers, state store synchronization, and visual badges:
+Run on 2026-07-08 after LivePreview in-process server, provider model sync hooks, and provider API-key paste hardening:
 
 | Check | Result |
 |-------|--------|
+| Native Verification (`npm run verify:native`) | ✅ PASS |
 | Typecheck (`npm run typecheck`) | ✅ PASS |
-| Unit Tests (`npm test`) | ✅ PASS (275 tests) |
+| Unit Tests (`npm test`) | ✅ PASS (278 tests) |
 | Build (`npm run build`) | ✅ PASS |
-| Targeted E2E (`11-aureon-model-selection` + `10-aureon-coding-demo`) | ✅ PASS (8 tests) |
-| Secret Scan | ✅ PASS for real keys; only intentional fake keys in redaction tests matched |
+| Full E2E (`npm run test:e2e`) | ✅ PASS (79 tests) |
+| Targeted Provider Paste E2E | ✅ PASS |
+| OpenRouter Smoke (`npm run test:openrouter`) | ✅ PASS endpoint, non-deterministic free-model response |
+| Secret Scan | ✅ PASS for real keys; only placeholders and intentional fake keys in docs/tests matched |
 
 ---
 

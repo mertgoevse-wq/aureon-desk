@@ -4,6 +4,16 @@
 > Ivory background, Anthropic-inspired bold serif display typography, warm neutral surfaces.
 > Local-first, secure, modular, daily-driver grade.
 
+> Current product name: **Aureon Desk**. Older `Ivory` references in this document describe the original scaffold naming and should be treated as historical.
+
+## Current Implementation Notes - 2026-07-08
+
+- **LivePreview static server**: Simple HTML and Coding Demo previews now run through an in-process Electron main-process HTTP server instead of a spawned Node subprocess. This keeps Windows preview startup reliable and avoids subprocess failures for static templates.
+- **Vite preview path**: Vite+React previews still use `npm install` and `npx vite` with `shell: true` on Windows, captured stdout/stderr, and explicit error propagation.
+- **Sandbox containment**: Static preview requests resolve both the sandbox root and requested file path with `path.resolve`; requests outside the sandbox are rejected with `403 Forbidden`.
+- **Provider model synchronization**: Provider testing can trigger model sync for Ollama, LM Studio, and OpenRouter so model lists stay closer to the actual runtime endpoints.
+- **Controlled input paste**: Shared renderer inputs dispatch controlled React updates on paste, preserving reliable API-key entry and textarea behavior in Electron/Windows.
+
 ---
 
 ## 1. Technology Stack

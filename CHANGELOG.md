@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.9.22] - 2026-07-07
+
+### Added
+- **In-Process HTTP Static Preview Server**: Moved the static preview server for `html` and `demo` templates directly into Electron's main process, bypassing standard Node.js subprocess spawns on Windows to completely eliminate "Server exited code 1" errors.
+- **Path Traversal Protection**: Implemented a canonical path containment check using `path.resolve` to verify all requested local resources start with the resolved sandbox directory, returning a secure `403 Forbidden` on directory traversals.
+- **Copy URL Affordance**: Added a clipboard copy action directly inside the URL preview target bar in the LivePreview interface.
+- **Live Preview Server Restart**: Added a "Restart" button allowing users to stop and start the active preview server with one click.
+- **Sandbox Directory Display**: Rendered the exact directory path of the active local sandbox inside the status overview panel.
+- **Provider model sync hooks**: Added IPC/service paths for LM Studio and OpenRouter model sync, and auto-sync local/OpenRouter models after successful provider tests.
+
+### Fixed
+- **Windows Vite Execution**: Added `shell: true` to npm install and Vite spawns for the `vite-react` template on Windows, resolving file location failures.
+- **Error Propagation**: Enabled capturing and formatting of child process `stderr` logs to provide helpful, actionable diagnostic descriptions instead of generic exit codes.
+- **Provider API key paste handling**: Shared input fields now handle paste events as controlled React updates, keeping API key entry reliable in Electron/Windows and Playwright.
+- **Full E2E regression**: Re-ran the complete Electron Playwright suite after the paste fix; all 79 tests passed.
+
 ## [0.9.21] - 2026-07-07
 
 ### Changed - Premium Layout Refactor
