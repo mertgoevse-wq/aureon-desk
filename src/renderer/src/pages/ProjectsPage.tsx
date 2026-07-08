@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   FolderOpen, Plus, Search, Trash2, Archive, RotateCcw,
-  ChevronRight, ChevronDown, File, Folder, X,
+  ChevronRight, ChevronDown, File, Folder,
   Settings, Shield, AlertTriangle, BookOpen, Wrench, Zap, Eye, Sparkles
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/shared/Button'
 import { Input } from '../components/shared/Input'
 import { Badge } from '../components/shared/Badge'
+import { Modal } from '../components/shared/Modal'
 import { useIpc } from '../hooks/useIpc'
 import type { ProjectRow, FileTreeNode, ProjectFileContext, ProjectContext } from '@shared/types/project'
 
@@ -451,32 +452,23 @@ export function ProjectsPage(): React.ReactElement {
       </div>
 
       {/* Create Project Modal */}
-      {showCreateForm && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowCreateForm(false)}>
-          <div className="bg-[var(--ivory-bg)] rounded-[var(--radius-lg)] border border-[var(--ivory-border)] shadow-xl w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--ivory-border)]">
-              <h3 className="text-base font-semibold display-text">Create Project</h3>
-              <button onClick={() => setShowCreateForm(false)} className="text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]">
-                <X size={18} />
-              </button>
-            </div>
-            <div className="p-5 space-y-4">
-              <ProjectEditForm
-                form={form} setForm={setForm}
-                prompts={prompts} providers={providers}
-                availableModels={availableModels}
-                formError={formError} saving={saving}
-                onSelectFolder={handleSelectFolder}
-                onSave={handleCreate}
-                onCancel={() => setShowCreateForm(false)}
-                isCreate
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        isOpen={showCreateForm}
+        onClose={() => { setShowCreateForm(false); setFormError(null) }}
+        title="Create Project"
+        size="lg"
+      >
+        <ProjectEditForm
+          form={form} setForm={setForm}
+          prompts={prompts} providers={providers}
+          availableModels={availableModels}
+          formError={formError} saving={saving}
+          onSelectFolder={handleSelectFolder}
+          onSave={handleCreate}
+          onCancel={() => { setShowCreateForm(false); setFormError(null) }}
+          isCreate
+        />
+      </Modal>
     </div>
   )
 }

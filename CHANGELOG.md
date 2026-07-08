@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.9.40] - 2026-07-08
+
+### Added (Drawer & SelectMenu — Compact Overlay System Expansion)
+
+**New Components:**
+- Created `Drawer.tsx`: right-side slide-in panel with focus trap (Tab/Shift+Tab cycling), ESC close, click-outside close, smooth slide animation, ARIA attributes (`role="dialog"`, `aria-modal`), auto-focus first element, restore focus on close, 420px default width
+- Created `SelectMenu.tsx`: compact anchored popover menu with keyboard navigation (arrow keys, enter, esc), auto-focus + `tabIndex={0}` for keyboard accessibility, alignment support (left/right/center), scroll-into-view, ARIA listbox/option roles
+
+**Fixed:**
+- `ProjectsPage.tsx`: Replaced custom inline modal (fixed div with manual X button, no focus trap, no ESC, no ARIA) with shared `Modal` component ("Create Project" → compact 560px dialog with proper focus trapping and accessibility)
+- Removed unused `X` icon import from ProjectsPage
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (331 tests)
+- `npm run build` — ✅ PASS
+
 ## [0.9.39] - 2026-07-08
 
 ### Changed (MCP Tools Capability Manager Repair)

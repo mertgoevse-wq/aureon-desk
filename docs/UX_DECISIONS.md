@@ -2,6 +2,16 @@
 
 Last updated: 2026-07-08
 
+## Drawer & SelectMenu — Overlay System Expansion (2026-07-08)
+
+Decision: Expand the compact overlay system with a Drawer (right slide-in panel) and SelectMenu (simple anchored popover menu without search). Fix ProjectsPage to use the shared Modal instead of its custom inline modal.
+
+Why: The shared overlay system needed a slide-in panel for settings that benefit from side-by-side context (Drawer) and a simpler popover menu for straightforward selections (SelectMenu — lighter than SelectPopover, no search input). ProjectsPage had a custom inline modal with no focus trapping or accessibility — replacing it with the shared Modal brings consistency and proper keyboard/ARIA support.
+
+Components added:
+- **Drawer**: Right slide-in panel (420px default), ESC/click-outside close, focus trap, smooth slide animation, ARIA dialog role
+- **SelectMenu**: Compact popover menu with keyboard nav (arrow keys, enter, esc), auto-focus, alignment support (left/right/center), ARIA listbox/option roles
+
 ## Compact Overlay System (2026-07-08)
 
 Decision: Replace oversized center panels and inline forms with compact modal dialogs and anchored popovers. Create a reusable overlay system that doesn't take over the full center workspace.

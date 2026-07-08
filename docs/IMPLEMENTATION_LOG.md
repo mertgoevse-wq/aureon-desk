@@ -1,5 +1,38 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 21:00 +02:00 — Compact Overlay System Expansion (Drawer & SelectMenu)
+
+Branch: `main`
+Commit at start: `c41d068` (quiet right inspector)
+
+### Session Purpose
+Expand the compact overlay system with Drawer (right slide-in panel) and SelectMenu (simple anchored popover menu). Fix ProjectsPage custom inline modal to use shared Modal component.
+
+### Files Changed
+
+**Created:**
+- **New:** `src/renderer/src/components/shared/Drawer.tsx` — right-side slide-in panel with focus trap, ESC/click-outside close, smooth slide animation, ARIA, auto-focus
+- **New:** `src/renderer/src/components/shared/SelectMenu.tsx` — compact anchored popover menu with keyboard nav (arrow keys, enter, esc), auto-focus, alignment support (left/right/center), ARIA listbox/option
+
+**Modified:**
+- **Modified:** `src/renderer/src/pages/ProjectsPage.tsx` — replaced custom inline modal (fixed div with manual X button, no focus trap/ESC/ARIA) with shared `Modal` component; removed unused `X` icon import
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (331 tests) |
+| `npm run build` | ✅ PASS |
+
+### Key Changes Summary
+- Drawer: 420px right slide-in, focus trapped, ESC closes, click-outside closes
+- SelectMenu: keyboard-navigable popover menu, auto-focus on open, alignment support
+- ProjectsPage: "Create Project" now opens in shared Modal (560px) instead of custom inline modal
+- All existing selectors (ModelSelector, system prompt, project) already compact — no changes needed
+
+---
+
 ## 2026-07-08 20:40 +02:00 — MCP Tools Capability Manager Repair
 
 Branch: `main`

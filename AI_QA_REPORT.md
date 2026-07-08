@@ -4,6 +4,22 @@
 
 ---
 
+## Drawer & SelectMenu — Compact Overlay Expansion — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (331 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- Created `Drawer.tsx` — right-side slide-in panel with focus trap, ESC, click-outside, animation, ARIA
+- Created `SelectMenu.tsx` — compact anchored popover menu with keyboard nav (arrow keys, enter, esc), auto-focus, alignment support
+- Fixed `ProjectsPage.tsx` — replaced custom inline modal (no focus trap, no ARIA) with shared `Modal` component
+- Removed unused `X` icon import
+
+---
+
 ## MCP Tools Repair — 2026-07-08
 
 | Check | Result |
