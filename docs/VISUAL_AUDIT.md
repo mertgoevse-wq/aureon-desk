@@ -1,20 +1,57 @@
 # Aureon Desk — Visual Audit
 
-> **Audit date:** 2026-07-08  
-> **Auditor:** Antigravity/Gemini (code-based inspection + build verification)  
-> **Branch:** main · commit `44323f3`
+> **Audit date:** 2026-07-08
+> **Latest auditor:** Freebuff (DeepSeek V4 Pro) — code-based inspection + build verification
+> **Previous auditor:** Antigravity/Gemini — code-based inspection (earlier session)
+> **Branch:** main · commit `c670501`
 
 ---
 
-## Audit Methodology
+## Freebuff Manual Visual QA Findings (2026-07-08)
 
-This audit is based on:
-1. Full source code inspection of all renderer components
-2. Review of all CSS design tokens (`tokens.css`)
-3. Reading the existing AI_QA_REPORT.md and test results
-4. Comparing implemented code against the target design criteria specified by the user
+### Code-Level Issues Identified
 
-> **Note:** Live screenshots were not captured during this session (E2E tests were stopped per user request). This is a code-based structural audit.
+1. **Aureon Logo Too Small**: The inline SVG Aureon "A" mark is rendered at 24px in a 48px container in the sidebar header. When the sidebar is collapsed, it's only 14px in a 24px container. The logo feels weak and HTML-like rather than a premium desktop brand mark.
+   - *Files:* `Sidebar.tsx` (lines with SVG), `AppShell.tsx` (collapsed state SVG)
+
+2. **Sidebar Too Wide**: Default width is 280px, making it visually dominant. Most premium desktop apps use 220-240px sidebars.
+   - *File:* `uiStore.ts` (sidebar width default)
+
+3. **Typography Scale Inconsistency**: The codebase mixes absolute pixel sizes (`text-[10px]`, `text-[11px]`, `text-[12px]`) with Tailwind's relative scale (`text-xs`, `text-sm`). This creates visual inconsistency. Many labels use 10px which is below readability thresholds.
+   - *Files:* SettingsLayout.tsx, ProvidersPage.tsx, multiple settings pages
+
+4. **Mixed Toggle Components**: CoworkPage.tsx uses native `<input type="checkbox">` elements with `accent-[var(--ivory-accent)]` styling, while the rest of the app uses the custom `Toggle` component from `SettingsComponents.tsx`. There are also TWO Toggle implementations:
+   - `components/shared/Toggle.tsx` (older, basic)
+   - `components/settings/SettingsComponents.tsx` (newer, with StatusPill companion)
+   - *Files:* CoworkPage.tsx, CapabilitiesPage.tsx, Toggle.tsx, SettingsComponents.tsx
+
+5. **Provider Page Button Layout**: The provider cards in `ProvidersPage.tsx` have multiple action buttons (Test, Toggle, Delete, Save Key) that may overlap at narrow widths due to fixed positioning and flex-wrap gaps.
+   - *File:* ProvidersPage.tsx
+
+6. **Inline SVG Duplication**: The Aureon "A" mark SVG is repeated inline in at least 3 files:
+   - `Sidebar.tsx` (sidebar header)
+   - `AppShell.tsx` (collapsed sidebar state)
+   - `ChatWorkspace.tsx` (home page greeting)
+   - Should be extracted into a shared `AureonMark` component.
+
+7. **Native Checkbox in CoworkPage**: The permissions section uses raw `<input type="checkbox">` instead of the custom `Toggle` component, creating visual inconsistency with the rest of the app.
+
+8. **CapabilitiesPage vs CoworkPage Overlap**: Both pages implement browser/computer use toggles independently, with different UI patterns and no shared state.
+
+### Untracked Brand Assets
+
+5 Nano Banana brand assets found untracked at `assets/brand/source/nano-banana/`:
+| File | Description |
+|------|-------------|
+| `aureon-app-icon.png` | App icon |
+| `aureon-dark-logo-presentation.png` | Dark logo presentation |
+| `aureon-github-banner.png` | GitHub banner |
+| `aureon-logo-light.png` | Light logo |
+| `aureon-mark-monochrome.png` | Monochrome mark |
+
+---
+
+## Antigravity Code-Based Audit (2026-07-08, earlier session)
 
 ---
 

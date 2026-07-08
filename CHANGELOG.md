@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.9.27] - 2026-07-08
+
+### Added (Freebuff Ingestion & Manual Visual QA Baseline)
+- **docs/FREEBUFF_PROJECT_MEMORY.md**: Comprehensive project memory document with architecture map, current UI state, known issues, duplicate/dead code suspects, branding assets inventory, and implementation order.
+- **Visual QA code audit**: Full source inspection of all renderer components, main process, preload bridge, shared types, and design tokens. Identified 8 visual issues, 5 duplicate/dead code suspects, and 5 untracked Nano Banana brand assets.
+- **Brand assets inventory**: Located 5 untracked brand assets in `assets/brand/source/nano-banana/` (app icon, dark logo, GitHub banner, light logo, monochrome mark).
+
+### Verified
+- `npm run verify:native` — ✅ PASS (better-sqlite3 binary)
+- `npm run typecheck` — ✅ PASS (zero TS errors)
+- `npm test` — ✅ PASS (305 tests)
+- `npm run build` — ✅ PASS
+- Secret scan (`git grep "sk-or-v1"`) — ✅ PASS (only docs/test references)
+
+### Known Issues (Not Fixed — Deferred to Prompt 5+)
+1. Aureon logo/top-left SVG mark is too small (24px in 48px container)
+2. Sidebar default width 280px is too visually dominant
+3. Typography scale inconsistent across components (mix of px/text-xs/text-sm)
+4. Native HTML checkboxes in CoworkPage instead of custom Toggle component
+5. Provider page button alignment and spacing inconsistencies
+6. Two duplicate Toggle components (shared and settings)
+7. Inline Aureon SVG mark repeated in 3+ files (needs shared component)
+8. Cowork task execution is simulated (intentional placeholder)
+
 ## [0.9.26] - 2026-07-08
 
 ### Added (Settings Redesign & Code Mode Workspace)

@@ -2,6 +2,28 @@
 
 Last updated: 2026-07-08
 
+## Freebuff Ingestion Session (2026-07-08)
+
+Decision: Conducted a full code-based visual audit without running E2E tests or making code changes. Documented 8 visual issues, 5 duplicate/dead code suspects, and inventoried 5 untracked Nano Banana brand assets.
+
+Key findings for future UX work:
+- The inline Aureon SVG mark is too small and repeated in 3+ files — should be a shared component with proper sizing
+- Sidebar at 280px is visually dominant — reduce to 220-240px
+- Typography scale needs normalization — too many custom pixel sizes (10px, 11px, 12px)
+- Two Toggle components exist — deduplicate into one canonical implementation
+- Native HTML checkboxes in CoworkPage break visual consistency — replace with custom Toggle
+- CapabilitiesPage and CoworkPage have overlapping permission controls with different UI patterns
+
+### Brand Asset Integration Plan
+Nano Banana provided 5 brand assets. Integration order:
+1. `aureon-mark-monochrome.png` → Replace inline SVG marks in sidebar/topbar/home page
+2. `aureon-app-icon.png` → Generate new `icon.ico` and update `windows.ts` icon path
+3. `aureon-logo-light.png` → Use for README and documentation
+4. `aureon-github-banner.png` → Use as GitHub social preview
+5. `aureon-dark-logo-presentation.png` → Reserve for dark mode implementation
+
+---
+
 ## Calm Desktop Direction
 
 Decision: Continue moving Aureon Desk toward a calm, premium desktop AI workspace with ivory/light-mode surfaces, rounded but restrained controls, sans-serif UI text, and serif only for brand/display moments.
