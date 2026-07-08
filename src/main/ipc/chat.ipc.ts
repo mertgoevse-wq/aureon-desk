@@ -31,7 +31,7 @@ export function registerChatIPC(): void {
     return chatService.archiveChat(id)
   })
 
-  ipcMain.handle('chat:send', async (_event, input: { chatId: string }): Promise<ChatSendResult> => {
+  ipcMain.handle('chat:send', async (_event, input: { chatId: string; expectedModelId?: string | null }): Promise<ChatSendResult> => {
     return chatCompletionService.send(input)
   })
 
@@ -39,14 +39,33 @@ export function registerChatIPC(): void {
     return chatService.getMessages(chatId)
   })
 
-  ipcMain.handle('message:add', (_event, input: { chat_id: string; role: string; content: string; tool_calls?: string; tool_call_id?: string; token_count?: number }) => {
+  ipcMain.handle('message:add', (_event, input: {
+    chat_id: string
+    role: string
+    content: string
+    tool_calls?: string
+    tool_call_id?: string
+    token_count?: number
+    provider_id?: string
+    provider_name?: string
+    model_id?: string
+    model_label?: string
+    adapter_type?: string
+    latency_ms?: number
+  }) => {
     return chatService.addMessage({
       chat_id: input.chat_id,
       role: input.role as 'system' | 'user' | 'assistant' | 'tool',
       content: input.content,
       tool_calls: input.tool_calls,
       tool_call_id: input.tool_call_id,
-      token_count: input.token_count
+      token_count: input.token_count,
+      provider_id: input.provider_id,
+      provider_name: input.provider_name,
+      model_id: input.model_id,
+      model_label: input.model_label,
+      adapter_type: input.adapter_type,
+      latency_ms: input.latency_ms
     })
   })
 

@@ -1,4 +1,16 @@
+import type { Page } from '@playwright/test'
 import { test, expect, waitForAppReady, checkForErrorPage, screenshot } from './helpers/electronApp'
+
+async function openProviderSettings(mainWindow: Page): Promise<void> {
+  const settingsButton = mainWindow.getByTestId('nav-settings')
+  await expect(settingsButton).toBeVisible({ timeout: 5000 })
+  await settingsButton.click()
+  await mainWindow.waitForTimeout(500)
+  const providersNav = mainWindow.getByTestId('settings-nav-providers-models')
+  await expect(providersNav).toBeVisible({ timeout: 5000 })
+  await providersNav.click()
+  await mainWindow.waitForTimeout(1000)
+}
 
 test.describe('Aureon Desk — Settings & Providers', () => {
   test.beforeEach(async ({ mainWindow }) => {
@@ -6,13 +18,7 @@ test.describe('Aureon Desk — Settings & Providers', () => {
   })
 
   test('Settings page shows provider cards', async ({ mainWindow, pageErrors }) => {
-    // Navigate to Settings
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1000)
-
-    // Settings default tab is Providers
+    await openProviderSettings(mainWindow)
     const bodyText = await mainWindow.textContent('body')
 
     // Should contain provider-related text
@@ -27,10 +33,7 @@ test.describe('Aureon Desk — Settings & Providers', () => {
   })
 
   test('Settings page mentions key encryption/security', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1000)
+    await openProviderSettings(mainWindow)
 
     const bodyText = await mainWindow.textContent('body')
 
@@ -40,10 +43,7 @@ test.describe('Aureon Desk — Settings & Providers', () => {
   })
 
   test('Provider cards show adapter information', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1500)
+    await openProviderSettings(mainWindow)
 
     const bodyText = await mainWindow.textContent('body')
 
@@ -54,10 +54,7 @@ test.describe('Aureon Desk — Settings & Providers', () => {
   })
 
   test('Provider Test Center shows test actions and status labels', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1500)
+    await openProviderSettings(mainWindow)
 
     await expect(mainWindow.getByText('Provider Test Center')).toBeVisible({ timeout: 5000 })
     await expect(mainWindow.getByRole('button', { name: /Test All/i })).toBeVisible()
@@ -68,10 +65,7 @@ test.describe('Aureon Desk — Settings & Providers', () => {
   })
 
   test('Provider API key inputs accept typing and paste', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1000)
+    await openProviderSettings(mainWindow)
 
     const keyInput = mainWindow.locator('input[placeholder^="Enter your"]').first()
     await expect(keyInput).toBeVisible({ timeout: 5000 })
@@ -93,10 +87,7 @@ test.describe('Aureon Desk — Settings & Providers', () => {
   })
 
   test('Add custom provider UI is accessible', async ({ mainWindow, pageErrors }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1000)
+    await openProviderSettings(mainWindow)
 
     // Look for the "Add Custom" button
     const addCustomButton = mainWindow.getByText('Add Custom')
@@ -151,10 +142,7 @@ test.describe('Aureon Desk — Settings & Providers', () => {
   })
 
   test('No API keys are visible in DOM text by default', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1000)
+    await openProviderSettings(mainWindow)
 
     const bodyText = await mainWindow.textContent('body')
 

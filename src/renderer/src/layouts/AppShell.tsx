@@ -12,7 +12,7 @@ import { useIpc } from '../hooks/useIpc'
 import {
   MessageSquare, Library, FolderOpen, Wrench, Settings,
   ScrollText, Server, FileText, Github, Eye, Plus, PanelLeft,
-  PanelRight, RotateCcw, Keyboard, Sun
+  PanelRight, RotateCcw, Keyboard, Sun, Users, Code2
 } from 'lucide-react'
 import type { ChatListItem } from '@shared/types/chat'
 
@@ -42,10 +42,26 @@ export function AppShell(): React.ReactElement {
   const paletteOpenRef = useRef(false)
   const shortcutsOpenRef = useRef(false)
   const showInspector = location.pathname === '/'
+  const modeItems = [
+    { id: 'chat', label: 'Chat', path: '/', icon: <MessageSquare size={14} /> },
+    { id: 'cowork', label: 'Cowork', path: '/cowork', icon: <Users size={14} /> },
+    { id: 'code', label: 'Code', path: '/preview', icon: <Code2 size={14} /> }
+  ]
+  const activeMode = location.pathname.startsWith('/preview')
+    ? 'code'
+    : location.pathname.startsWith('/cowork')
+      ? 'cowork'
+      : 'chat'
 
   // Keep refs in sync with state
   useEffect(() => { paletteOpenRef.current = paletteOpen }, [paletteOpen])
   useEffect(() => { shortcutsOpenRef.current = shortcutsOpen }, [shortcutsOpen])
+
+  useEffect(() => {
+    const openPalette = () => setPaletteOpen(true)
+    window.addEventListener('open-command-palette', openPalette)
+    return () => window.removeEventListener('open-command-palette', openPalette)
+  }, [])
 
   // Load persisted panel sizes on mount
   useEffect(() => {
@@ -188,6 +204,20 @@ export function AppShell(): React.ReactElement {
       onSelect: () => navigate('/')
     },
     {
+      id: 'cowork',
+      label: 'Cowork',
+      description: 'Open the task workflow workspace',
+      icon: <Users size={14} />,
+      onSelect: () => navigate('/cowork')
+    },
+    {
+      id: 'code-workspace',
+      label: 'Code Workspace',
+      description: 'Open LivePreview and code-oriented tools',
+      icon: <Code2 size={14} />,
+      onSelect: () => navigate('/preview')
+    },
+    {
       id: 'prompts',
       label: 'Prompt Library',
       description: 'Browse and create reusable prompts',
@@ -308,7 +338,51 @@ export function AppShell(): React.ReactElement {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 bg-[var(--ivory-bg)]">
-        <Outlet />
+        <header className="h-14 shrink-0 border-b border-[var(--ivory-border)] bg-[var(--ivory-elevated)]/86 backdrop-blur-xl px-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 shadow-[var(--shadow-xs)]">
+          <div className="min-w-0" />
+
+          <div
+            className="inline-flex items-center rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] p-1 shadow-[var(--shadow-xs)]"
+            data-testid="mode-switch"
+            role="tablist"
+            aria-label="Workspace mode"
+          >
+            {modeItems.map((item) => {
+              const selected = activeMode === item.id
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  onClick={() => navigate(item.path)}
+                  className={`h-8 min-w-[76px] px-3 inline-flex items-center justify-center gap-1.5 rounded-xl text-[12px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
+                    ${selected
+                      ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] shadow-[var(--shadow-sm)]'
+                      : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)]'}`}
+                  data-testid={`mode-${item.id}`}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setPaletteOpen(true)}
+            className="hidden md:inline-flex justify-self-end items-center gap-2 h-9 px-3 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] text-[12px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+            data-testid="top-search-button"
+          >
+            <Keyboard size={13} />
+            <span>Search</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--ivory-surface-2)] text-[var(--ivory-text-3)]">Ctrl K</span>
+          </button>
+        </header>
+        <div className="flex-1 min-h-0">
+          <Outlet />
+        </div>
       </div>
 
       {/* Right Inspector */}

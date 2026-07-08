@@ -18,6 +18,7 @@ vi.mock('../../src/main/services/provider.service', () => ({
     listProviders: vi.fn(),
     getApiKey: vi.fn(),
     getProvider: vi.fn(),
+    resolveCanonicalModelReference: vi.fn(),
     fetchOllamaModels: vi.fn(),
     syncOllamaModels: vi.fn(),
   },
@@ -137,8 +138,27 @@ describe('Chat Completion Service', () => {
     tool_calls: null,
     tool_call_id: null,
     token_count: null,
+    provider_id: mockProviderId,
+    provider_name: 'OpenAI',
+    model_id: mockModelId,
+    model_label: 'GPT-4o',
+    adapter_type: 'openai',
+    latency_ms: 42,
     created_at: '2025-01-01T00:00:03.000Z',
     sort_order: 3,
+  }
+
+  const mockCanonicalModel = {
+    providerId: mockProviderId,
+    providerName: 'OpenAI',
+    providerSlug: 'openai',
+    adapterType: 'openai',
+    modelId: mockModelId,
+    modelName: 'gpt-4o',
+    modelLabel: 'GPT-4o',
+    baseUrl: 'https://api.openai.com/v1',
+    isLocal: false,
+    source: 'chat' as const,
   }
 
   beforeEach(() => {
@@ -148,6 +168,7 @@ describe('Chat Completion Service', () => {
     vi.mocked(chatService.addMessage).mockReturnValue(mockAssistantMessage)
     vi.mocked(providerService.listProviders).mockReturnValue([mockProvider])
     vi.mocked(providerService.getProvider).mockReturnValue(mockProvider)
+    vi.mocked(providerService.resolveCanonicalModelReference).mockReturnValue(mockCanonicalModel)
     vi.mocked(providerService.getApiKey).mockReturnValue('sk-test-key-123456789')
     vi.mocked(promptService.getDefaultSystemPrompt).mockReturnValue(undefined)
     vi.mocked(resolvePrompt).mockReturnValue({
@@ -164,6 +185,41 @@ describe('Chat Completion Service', () => {
       text: async () => '{"error": "mock"}',
     })
   })
+
+  function configureSelection(input: {
+    provider: typeof mockProvider
+    model: typeof mockProvider.models[number]
+    response?: unknown
+  }) {
+    vi.mocked(chatService.getChat).mockReturnValue({
+      ...mockChat,
+      model_id: input.model.id,
+      messages: mockChat.messages,
+    })
+    vi.mocked(providerService.getProvider).mockReturnValue({
+      ...input.provider,
+      models: [input.model],
+    })
+    vi.mocked(providerService.resolveCanonicalModelReference).mockReturnValue({
+      providerId: input.provider.id,
+      providerName: input.provider.name,
+      providerSlug: input.provider.slug,
+      adapterType: input.provider.adapter,
+      modelId: input.model.id,
+      modelName: input.model.name,
+      modelLabel: input.model.display_name,
+      baseUrl: input.provider.base_url,
+      isLocal: input.provider.adapter === 'ollama' || input.provider.adapter === 'lmstudio',
+      source: 'renderer',
+    })
+    global.fetch = vi.fn().mockResolvedValue(input.response || {
+      ok: true,
+      json: async () => ({
+        choices: [{ message: { content: 'Routed response' } }],
+      }),
+      text: async () => '{"error": "mock"}',
+    })
+  }
 
   // ---- Test: Missing API Key ----
 
@@ -201,15 +257,149 @@ describe('Chat Completion Service', () => {
 
   describe('disabled provider', () => {
     it('should return error when provider is disabled', async () => {
-      vi.mocked(providerService.listProviders).mockReturnValue([{
-        ...mockProvider,
-        is_enabled: 0,
-      }])
+      vi.mocked(providerService.resolveCanonicalModelReference).mockReturnValue(undefined)
 
       const result = await chatCompletionService.send({ chatId: mockChatId })
 
       expect(result.success).toBe(false)
-      expect(result.errorCode).toBe('no_provider')
+      expect(result.errorCode).toBe('stale_model')
+    })
+  })
+
+  // ---- Test: Canonical provider/model routing ----
+
+  describe('canonical provider/model routing', () => {
+    it('routes Anthropic Claude selection to Anthropic adapter and persists metadata', async () => {
+      const model = {
+        ...mockProvider.models[0],
+        id: 'anthropic-claude-sonnet',
+        provider_id: 'anthropic-provider',
+        name: 'claude-sonnet-4-20250514',
+        display_name: 'Claude Sonnet 4',
+      }
+      const provider = {
+        ...mockProvider,
+        id: 'anthropic-provider',
+        name: 'Anthropic',
+        slug: 'anthropic',
+        adapter: 'anthropic',
+        base_url: 'https://api.anthropic.com/v1',
+        models: [model],
+      }
+      configureSelection({
+        provider,
+        model,
+        response: {
+          ok: true,
+          json: async () => ({ content: [{ type: 'text', text: 'Claude response' }] }),
+          text: async () => '{}',
+        },
+      })
+
+      const result = await chatCompletionService.send({ chatId: mockChatId, expectedModelId: model.id })
+
+      expect(result.success).toBe(true)
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://api.anthropic.com/v1/messages',
+        expect.objectContaining({ method: 'POST' })
+      )
+      expect(chatService.addMessage).toHaveBeenCalledWith(expect.objectContaining({
+        provider_id: 'anthropic-provider',
+        provider_name: 'Anthropic',
+        model_id: 'anthropic-claude-sonnet',
+        model_label: 'Claude Sonnet 4',
+        adapter_type: 'anthropic',
+      }))
+    })
+
+    it('routes Gemini selection to Google adapter', async () => {
+      const model = {
+        ...mockProvider.models[0],
+        id: 'google-gemini-pro',
+        provider_id: 'google-provider',
+        name: 'gemini-2.5-pro',
+        display_name: 'Gemini 2.5 Pro',
+      }
+      const provider = {
+        ...mockProvider,
+        id: 'google-provider',
+        name: 'Google Gemini',
+        slug: 'google',
+        adapter: 'google',
+        base_url: 'https://generativelanguage.googleapis.com/v1beta',
+        models: [model],
+      }
+      configureSelection({
+        provider,
+        model,
+        response: {
+          ok: true,
+          json: async () => ({ candidates: [{ content: { parts: [{ text: 'Gemini response' }] } }] }),
+          text: async () => '{}',
+        },
+      })
+
+      const result = await chatCompletionService.send({ chatId: mockChatId, expectedModelId: model.id })
+
+      expect(result.success).toBe(true)
+      expect(String((global.fetch as any).mock.calls[0][0])).toContain('/models/gemini-2.5-pro:generateContent')
+      expect(chatService.addMessage).toHaveBeenCalledWith(expect.objectContaining({
+        provider_name: 'Google Gemini',
+        model_label: 'Gemini 2.5 Pro',
+        adapter_type: 'google',
+      }))
+    })
+
+    it('routes OpenRouter Claude selection to OpenRouter adapter without implying direct Anthropic', async () => {
+      const model = {
+        ...mockProvider.models[0],
+        id: 'openrouter-claude-sonnet',
+        provider_id: 'openrouter-provider',
+        name: 'anthropic/claude-sonnet-4',
+        display_name: 'Claude Sonnet 4',
+      }
+      const provider = {
+        ...mockProvider,
+        id: 'openrouter-provider',
+        name: 'OpenRouter',
+        slug: 'openrouter',
+        adapter: 'openrouter',
+        base_url: 'https://openrouter.ai/api/v1',
+        models: [model],
+      }
+      configureSelection({ provider, model })
+
+      const result = await chatCompletionService.send({ chatId: mockChatId, expectedModelId: model.id })
+
+      expect(result.success).toBe(true)
+      expect(global.fetch).toHaveBeenCalledWith(
+        'https://openrouter.ai/api/v1/chat/completions',
+        expect.objectContaining({ method: 'POST' })
+      )
+      expect(chatService.addMessage).toHaveBeenCalledWith(expect.objectContaining({
+        provider_name: 'OpenRouter',
+        model_label: 'Claude Sonnet 4',
+        adapter_type: 'openrouter',
+      }))
+    })
+
+    it('rejects stale renderer model references before sending', async () => {
+      const result = await chatCompletionService.send({ chatId: mockChatId, expectedModelId: 'old-model-id' })
+
+      expect(result.success).toBe(false)
+      expect(result.errorCode).toBe('stale_model')
+      expect(global.fetch).not.toHaveBeenCalled()
+    })
+
+    it('fails gracefully when the selected model no longer resolves', async () => {
+      vi.mocked(providerService.resolveCanonicalModelReference).mockReturnValue(undefined)
+
+      const result = await chatCompletionService.send({ chatId: mockChatId, expectedModelId: mockModelId })
+
+      expect(result.success).toBe(false)
+      expect(result.errorCode).toBe('stale_model')
+      expect(result.error).toContain('Selected model no longer exists')
+      expect(global.fetch).not.toHaveBeenCalled()
     })
   })
 
@@ -234,6 +424,12 @@ describe('Chat Completion Service', () => {
         expect.objectContaining({
           chat_id: mockChatId,
           role: 'assistant',
+          provider_id: mockProviderId,
+          provider_name: 'OpenAI',
+          model_id: mockModelId,
+          model_label: 'GPT-4o',
+          adapter_type: 'openai',
+          latency_ms: expect.any(Number),
         })
       )
     })
@@ -535,6 +731,7 @@ describe('Chat Completion Service', () => {
     })
 
     it('should return undefined for unknown model', () => {
+      vi.mocked(providerService.resolveCanonicalModelReference).mockReturnValue(undefined)
       const result = chatCompletionService.findProviderByModel('nonexistent')
       expect(result).toBeUndefined()
     })
@@ -762,6 +959,18 @@ describe('Chat Completion Service', () => {
       }
       vi.mocked(providerService.listProviders).mockReturnValue([openRouterProvider])
       vi.mocked(providerService.getProvider).mockReturnValue(openRouterProvider)
+      vi.mocked(providerService.resolveCanonicalModelReference).mockReturnValue({
+        providerId: openRouterProvider.id,
+        providerName: 'OpenRouter',
+        providerSlug: 'openrouter',
+        adapterType: 'openrouter',
+        modelId: 'openrouter-free',
+        modelName: 'openrouter/free',
+        modelLabel: 'Free (smoke test)',
+        baseUrl: 'https://openrouter.ai/api/v1',
+        isLocal: false,
+        source: 'chat',
+      })
 
       vi.mocked(chatService.getChat).mockReturnValue({
         ...mockChat,
@@ -770,6 +979,8 @@ describe('Chat Completion Service', () => {
           id: '1', chat_id: mockChatId, role: 'user' as const,
           content: 'Reply with one short sentence.',
           tool_calls: null, tool_call_id: null, token_count: null,
+          provider_id: null, provider_name: null, model_id: null,
+          model_label: null, adapter_type: null, latency_ms: null,
           created_at: '2025-01-01T00:00:00.000Z', sort_order: 0,
         }],
       } as never)

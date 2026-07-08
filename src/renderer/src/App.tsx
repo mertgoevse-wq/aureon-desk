@@ -4,8 +4,12 @@ import { ErrorBoundary } from './components/shared/ErrorBoundary'
 import { AppShell } from './layouts/AppShell'
 import { SettingsLayout } from './layouts/SettingsLayout'
 import { ChatWorkspace } from './pages/ChatWorkspace'
+import { CoworkPage } from './pages/CoworkPage'
 import { PromptLibrary } from './pages/PromptLibrary'
 import { ProvidersPage } from './pages/settings/ProvidersPage'
+import { GeneralSettingsPage } from './pages/settings/GeneralSettingsPage'
+import { DeveloperSettingsPage } from './pages/settings/DeveloperSettingsPage'
+import { SettingsPlaceholderPage } from './pages/settings/SettingsPlaceholderPage'
 import { PromptsPage } from './pages/settings/PromptsPage'
 import { GitHubImportsPage } from './pages/settings/GitHubImportsPage'
 import { ToolsPage } from './pages/settings/ToolsPage'
@@ -20,6 +24,7 @@ const router = createHashRouter([
     element: <AppShell />,
     children: [
       { index: true, element: <ChatWorkspace /> },
+      { path: 'cowork', element: <CoworkPage /> },
       { path: 'prompts', element: <PromptLibrary /> },
       { path: 'projects', element: <ProjectsPage /> },
       { path: 'tools', element: <ToolsPage /> },
@@ -28,7 +33,8 @@ const router = createHashRouter([
         path: 'settings',
         element: <SettingsLayout />,
         children: [
-          { index: true, element: <ProvidersPage /> },
+          { index: true, element: <GeneralSettingsPage /> },
+          { path: 'general', element: <GeneralSettingsPage /> },
           { path: 'providers', element: <ProvidersPage /> },
           { path: 'prompts', element: <PromptsPage /> },
           { path: 'system-prompts', element: <PromptsPage /> },
@@ -37,7 +43,11 @@ const router = createHashRouter([
           { path: 'tools', element: <ToolsPage /> },
           { path: 'github', element: <GitHubImportsPage /> },
           { path: 'imports', element: <GitHubImportsPage /> },
-          { path: 'logs', element: <LogsPage /> }
+          { path: 'logs', element: <LogsPage /> },
+          { path: 'developer', element: <DeveloperSettingsPage /> },
+          { path: 'extensions', element: <SettingsPlaceholderPage /> },
+          { path: 'security', element: <SettingsPlaceholderPage /> },
+          { path: 'capabilities', element: <SettingsPlaceholderPage /> }
         ]
       }
     ]

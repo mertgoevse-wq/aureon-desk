@@ -38,6 +38,7 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps): React.Re
   }, [api])
 
   const selectedModel = models.find(m => m.id === value)
+  const selectedLabel = selectedModel ? `${selectedModel.provider_name} · ${selectedModel.display_name}` : 'Select model'
   const hasModels = models.length > 0
 
   const handleSelect = useCallback((modelId: string | null) => {
@@ -57,8 +58,8 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps): React.Re
         aria-haspopup="listbox"
       >
         <Zap size={12} className="text-[var(--ivory-accent)]" />
-        <span className="max-w-[140px] truncate font-medium">
-          {selectedModel ? selectedModel.display_name : 'Select model'}
+        <span className="max-w-[180px] truncate font-medium">
+          {selectedLabel}
         </span>
         {selectedModel && (
           <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${

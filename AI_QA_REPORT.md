@@ -22,7 +22,7 @@ npm run demo:coding
 | Check | Result |
 |-------|--------|
 | Typecheck (`npm run typecheck`) | ✅ PASS |
-| Unit Tests (`npm test`) | ✅ PASS (278 tests) |
+| Unit Tests (`npm test`) | ✅ PASS (283 tests) |
 | Build (`npm run build`) | ✅ PASS |
 | E2E Smoke Tests | ✅ PASS (9 tests) |
 | E2E Navigation Tests | ✅ PASS (7 tests) |
@@ -31,8 +31,30 @@ npm run demo:coding
 | E2E LivePreview Tests | ✅ PASS (10 tests) |
 | E2E Coding Demo Tests | ✅ PASS (6 tests) |
 | E2E Model Selection Tests | ✅ PASS (2 tests) |
+| E2E Workspace UI Tests | ✅ PASS (5 tests) |
 | Coding Demo CLI (`npm run demo:coding`) | ✅ PASS |
-| **Full E2E** | **✅ 79/79 PASS** |
+| **Full E2E** | **✅ 84/84 PASS** |
+
+### Latest Workspace + Routing Validation
+
+Run on 2026-07-08 after the Aureon mode/workspace redesign, sidebar decluttering, settings category layout, and canonical provider/model routing contract:
+
+| Check | Result |
+|-------|--------|
+| Typecheck (`npm run typecheck`) | ✅ PASS |
+| Targeted Chat Completion Unit (`npx vitest run tests/unit/chat-completion.test.ts`) | ✅ PASS (40 tests) |
+| Unit Tests (`npm test`) | ✅ PASS (283 tests) |
+| Build (`npm run build`) | ✅ PASS |
+| Targeted E2E (`05`, `06`, `12`) | ✅ PASS (18 tests) |
+| Full E2E (`npm run test:e2e`) | ✅ PASS (84 tests) |
+
+Key QA coverage added:
+- Provider/model routing rejects stale renderer selections before network requests.
+- Anthropic Claude routes through the Anthropic adapter.
+- Gemini routes through the Google adapter.
+- OpenRouter Claude-style models route through OpenRouter and display OpenRouter metadata.
+- Settings category navigation keeps provider pages reachable.
+- Workspace UI has no horizontal overflow at 1366x768.
 
 ### Latest Continuation Validation
 

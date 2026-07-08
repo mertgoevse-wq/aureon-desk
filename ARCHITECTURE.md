@@ -8,6 +8,11 @@
 
 ## Current Implementation Notes - 2026-07-08
 
+- **Workspace shell**: The renderer now exposes a top `Chat / Cowork / Code` mode switch. The left sidebar is intentionally quieter: one primary chat action, compact shortcuts, collapsed workflow placeholders, projects/tools, recents, and profile/settings.
+- **Canonical model routing**: Chat completion sends are resolved through a single provider/model reference before any provider request is built. The reference includes `providerId`, `providerName`, `providerSlug`, `adapterType`, `modelId`, `modelName`, `modelLabel`, `baseUrl`, `isLocal`, and `source`.
+- **Renderer/main integrity check**: The renderer passes the expected visible model ID when sending. The main process compares it with the chat's current `model_id`; mismatches fail with `stale_model` before network I/O.
+- **Assistant metadata**: Assistant messages persist provider/model metadata (`provider_id`, `provider_name`, `model_id`, `model_label`, `adapter_type`, `latency_ms`) so the UI and logs can show which provider actually answered.
+- **OpenRouter labeling rule**: Models accessed through OpenRouter remain OpenRouter in UI and metadata, e.g. `OpenRouter · Claude Sonnet 4`; the app does not imply direct Anthropic or Google routing unless that adapter was actually used.
 - **LivePreview static server**: Simple HTML and Coding Demo previews now run through an in-process Electron main-process HTTP server instead of a spawned Node subprocess. This keeps Windows preview startup reliable and avoids subprocess failures for static templates.
 - **Vite preview path**: Vite+React previews still use `npm install` and `npx vite` with `shell: true` on Windows, captured stdout/stderr, and explicit error propagation.
 - **Sandbox containment**: Static preview requests resolve both the sandbox root and requested file path with `path.resolve`; requests outside the sandbox are rejected with `403 Forbidden`.

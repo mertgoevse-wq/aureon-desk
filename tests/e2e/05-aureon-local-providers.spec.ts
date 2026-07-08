@@ -1,5 +1,16 @@
 import { test, expect, waitForAppReady, checkForErrorPage, screenshot } from './helpers/electronApp'
 
+async function openProvidersSettings(mainWindow: any): Promise<void> {
+  const settingsButton = mainWindow.getByTestId('nav-settings')
+  await expect(settingsButton).toBeVisible({ timeout: 5000 })
+  await settingsButton.click()
+  await mainWindow.waitForTimeout(500)
+  const providersNav = mainWindow.getByTestId('settings-nav-providers-models')
+  await expect(providersNav).toBeVisible({ timeout: 5000 })
+  await providersNav.click()
+  await mainWindow.waitForTimeout(1000)
+}
+
 test.describe('Aureon Desk — Local Providers', () => {
   test.beforeEach(async ({ mainWindow }) => {
     await waitForAppReady(mainWindow)
@@ -62,11 +73,7 @@ test.describe('Aureon Desk — Local Providers', () => {
   })
 
   test('Provider settings page shows Ollama adapter', async ({ mainWindow }) => {
-    // Navigate to Settings
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1500)
+    await openProvidersSettings(mainWindow)
 
     const bodyText = await mainWindow.textContent('body')
 
@@ -77,10 +84,7 @@ test.describe('Aureon Desk — Local Providers', () => {
   })
 
   test('Provider settings page shows LM Studio adapter', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1500)
+    await openProvidersSettings(mainWindow)
 
     const bodyText = await mainWindow.textContent('body')
 

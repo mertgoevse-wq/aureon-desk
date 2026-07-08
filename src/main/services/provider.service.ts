@@ -3,7 +3,7 @@ import { getDb } from '../db/connection'
 import { providers, models } from '../db/schema'
 import { vault } from '../security/vault'
 import { logger } from '../utils/logger'
-import type { ProviderRow, ModelRow, NewProvider, ProviderAdapterInfo } from '../../shared/types/provider'
+import type { CanonicalModelReference, ProviderRow, ModelRow, NewProvider, ProviderAdapterInfo } from '../../shared/types/provider'
 import { PROVIDER_ADAPTERS } from '../../shared/constants'
 import { eq } from 'drizzle-orm'
 
@@ -51,6 +51,64 @@ export const providerService = {
       .all() as ModelRow[]
 
     return { ...provider, models: providerModels }
+  },
+
+  /**
+   * Resolve one model ID into the exact provider/model pair used for requests.
+   * This is the canonical routing contract for chat completions.
+   */
+  resolveCanonicalModelReference(
+    modelId: string,
+    source: CanonicalModelReference['source'] = 'chat'
+  ): CanonicalModelReference | undefined {
+    this.ensureDefaultProviders()
+
+    const db = getDb()
+    const rows = db.select({
+      providerId: providers.id,
+      providerName: providers.name,
+      providerSlug: providers.slug,
+      adapterType: providers.adapter,
+      baseUrl: providers.base_url,
+      providerEnabled: providers.is_enabled,
+      modelId: models.id,
+      modelName: models.name,
+      modelLabel: models.display_name,
+      modelEnabled: models.is_enabled
+    })
+      .from(models)
+      .innerJoin(providers, eq(models.provider_id, providers.id))
+      .where(eq(models.id, modelId))
+      .all() as Array<{
+        providerId: string
+        providerName: string
+        providerSlug: string
+        adapterType: string
+        baseUrl: string | null
+        providerEnabled: number
+        modelId: string
+        modelName: string
+        modelLabel: string
+        modelEnabled: number
+      }>
+
+    if (rows.length !== 1) return undefined
+
+    const row = rows[0]
+    if (row.providerEnabled !== 1 || row.modelEnabled !== 1) return undefined
+
+    return {
+      providerId: row.providerId,
+      providerName: row.providerName,
+      providerSlug: row.providerSlug,
+      adapterType: row.adapterType,
+      modelId: row.modelId,
+      modelName: row.modelName,
+      modelLabel: row.modelLabel || row.modelName,
+      baseUrl: row.baseUrl,
+      isLocal: row.adapterType === 'ollama' || row.adapterType === 'lmstudio',
+      source
+    }
   },
 
   /** Set (encrypt and store) API key for a provider */
@@ -353,7 +411,13 @@ export const providerService = {
   },
 
   /** Get all enabled models across all enabled providers */
-  getAllEnabledModels(): (ModelRow & { provider_name: string; provider_slug: string })[] {
+  getAllEnabledModels(): (ModelRow & {
+    provider_name: string
+    provider_slug: string
+    adapter_type: string
+    base_url: string | null
+    is_local: boolean
+  })[] {
     this.ensureDefaultProviders()
 
     const db = getDb()
@@ -370,7 +434,10 @@ export const providerService = {
       .map(m => ({
         ...m,
         provider_name: providerMap.get(m.provider_id)!.name,
-        provider_slug: providerMap.get(m.provider_id)!.slug
+        provider_slug: providerMap.get(m.provider_id)!.slug,
+        adapter_type: providerMap.get(m.provider_id)!.adapter,
+        base_url: providerMap.get(m.provider_id)!.base_url,
+        is_local: providerMap.get(m.provider_id)!.adapter === 'ollama' || providerMap.get(m.provider_id)!.adapter === 'lmstudio'
       }))
   },
 

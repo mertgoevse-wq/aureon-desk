@@ -21,6 +21,12 @@ export interface MessageRow {
   tool_calls: string | null // JSON
   tool_call_id: string | null
   token_count: number | null
+  provider_id: string | null
+  provider_name: string | null
+  model_id: string | null
+  model_label: string | null
+  adapter_type: string | null
+  latency_ms: number | null
   created_at: string
   sort_order: number
 }
@@ -39,20 +45,32 @@ export interface NewMessage {
   tool_calls?: string
   tool_call_id?: string
   token_count?: number
+  provider_id?: string
+  provider_name?: string
+  model_id?: string
+  model_label?: string
+  adapter_type?: string
+  latency_ms?: number
 }
 
 export interface ChatWithMessages extends ChatRow {
   messages: MessageRow[]
 }
 
+export interface ChatSendInput {
+  chatId: string
+  expectedModelId?: string | null
+}
+
 export interface ChatSendResult {
   success: boolean
   message?: MessageRow
   error?: string
-  errorCode?: 'no_provider' | 'no_model' | 'no_api_key' | 'provider_error' | 'timeout' | 'unknown'
+  errorCode?: 'no_provider' | 'no_model' | 'stale_model' | 'no_api_key' | 'provider_error' | 'timeout' | 'unknown'
   warnings?: string[]
   providerName?: string
   modelName?: string
+  providerModel?: import('./provider').CanonicalModelReference
 }
 
 export interface ChatListItem {

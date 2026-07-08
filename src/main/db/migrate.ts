@@ -81,6 +81,12 @@ export function runMigrations(): void {
       tool_calls TEXT,
       tool_call_id TEXT,
       token_count INTEGER,
+      provider_id TEXT,
+      provider_name TEXT,
+      model_id TEXT,
+      model_label TEXT,
+      adapter_type TEXT,
+      latency_ms INTEGER,
       created_at TEXT NOT NULL,
       sort_order INTEGER NOT NULL
     );
@@ -306,6 +312,22 @@ export function runMigrations(): void {
   addProjectCol('default_model', 'TEXT')
   addProjectCol('default_system_prompt_id', 'TEXT')
   addProjectCol('enabled_skill_ids', 'TEXT')
+
+  // Message provider/model metadata additive migration
+  const messageCols = sqlite.pragma('table_info(messages)') as { name: string }[]
+  const messageColNames = messageCols.map(c => c.name)
+  const addMessageCol = (name: string, ddl: string) => {
+    if (!messageColNames.includes(name)) {
+      logger.info(`Adding column: messages.${name}`)
+      sqlite.exec(`ALTER TABLE messages ADD COLUMN ${name} ${ddl}`)
+    }
+  }
+  addMessageCol('provider_id', 'TEXT')
+  addMessageCol('provider_name', 'TEXT')
+  addMessageCol('model_id', 'TEXT')
+  addMessageCol('model_label', 'TEXT')
+  addMessageCol('adapter_type', 'TEXT')
+  addMessageCol('latency_ms', 'INTEGER')
 
   sqlite.close()
   logger.info('Migrations complete')

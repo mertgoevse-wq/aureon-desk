@@ -1,15 +1,23 @@
 import { test, expect, waitForAppReady, checkForErrorPage, screenshot } from './helpers/electronApp'
 
+async function openProvidersSettings(mainWindow: any): Promise<void> {
+  const settingsButton = mainWindow.getByTestId('nav-settings')
+  await expect(settingsButton).toBeVisible({ timeout: 5000 })
+  await settingsButton.click()
+  await mainWindow.waitForTimeout(500)
+  const providersNav = mainWindow.getByTestId('settings-nav-providers-models')
+  await expect(providersNav).toBeVisible({ timeout: 5000 })
+  await providersNav.click()
+  await mainWindow.waitForTimeout(1000)
+}
+
 test.describe('Aureon Desk — Remote Providers', () => {
   test.beforeEach(async ({ mainWindow }) => {
     await waitForAppReady(mainWindow)
   })
 
   test('Settings page shows all remote provider adapters', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1500)
+    await openProvidersSettings(mainWindow)
 
     const bodyText = await mainWindow.textContent('body')
 
@@ -22,10 +30,7 @@ test.describe('Aureon Desk — Remote Providers', () => {
   })
 
   test('API key field is password-masked by default', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1500)
+    await openProvidersSettings(mainWindow)
 
     // Look for password-type input fields (API key inputs)
     const passwordInputs = mainWindow.locator('input[type="password"]')
@@ -45,10 +50,7 @@ test.describe('Aureon Desk — Remote Providers', () => {
   })
 
   test('No raw API keys appear in the DOM text', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1500)
+    await openProvidersSettings(mainWindow)
 
     const bodyText = await mainWindow.textContent('body')
 
@@ -65,10 +67,7 @@ test.describe('Aureon Desk — Remote Providers', () => {
   })
 
   test('Security notice about remote providers is visible', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1500)
+    await openProvidersSettings(mainWindow)
 
     const bodyText = await mainWindow.textContent('body')
 
@@ -80,10 +79,7 @@ test.describe('Aureon Desk — Remote Providers', () => {
   })
 
   test('Custom provider form allows creating a new provider', async ({ mainWindow, pageErrors }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1000)
+    await openProvidersSettings(mainWindow)
 
     // Click "Add Custom" button
     const addCustomButton = mainWindow.getByText('Add Custom')
@@ -129,10 +125,7 @@ test.describe('Aureon Desk — Remote Providers', () => {
   })
 
   test('Provider cards show auth type and capabilities', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1500)
+    await openProvidersSettings(mainWindow)
 
     const bodyText = await mainWindow.textContent('body')
 
@@ -147,14 +140,7 @@ test.describe('Aureon Desk — Remote Providers', () => {
   })
 
   test('Enable/disable toggle is visible on provider cards', async ({ mainWindow }) => {
-    const settingsButton = mainWindow.getByTestId('nav-settings')
-    await expect(settingsButton).toBeVisible({ timeout: 5000 })
-    await settingsButton.click()
-    await mainWindow.waitForTimeout(1000)
-
-    // Navigate to Providers page
-    await mainWindow.click('text=Providers')
-    await mainWindow.waitForTimeout(500)
+    await openProvidersSettings(mainWindow)
 
     // Toggle component uses checkbox input (sr-only, visually hidden but in DOM)
     const checkboxes = mainWindow.locator('input[type="checkbox"]')

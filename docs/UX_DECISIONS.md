@@ -23,6 +23,33 @@ Validation:
 - `npm run build` PASS
 - `npm run test:e2e` PASS, 79 tests
 
+## Screenshot-Inspired Workspace Shell
+
+Decision: Implement an original Aureon interpretation of the requested Claude/Codex-style workspace: global `Chat / Cowork / Code` modes, a centered chat home composer, a category-based Settings view, and a less crowded left sidebar.
+
+Why: The app needed the premium spacing and workflow clarity of modern desktop AI tools while staying visually and structurally original.
+
+Refinement after user review:
+- Removed the extra `Aureon Desk` text from the bright top header.
+- Kept the mode switch as the primary top focal point.
+- Simplified the sidebar to one primary `New Chat` button, one compact `New Task` icon, one search row, compact shortcut icons, collapsed workflow placeholders, and a tighter Projects/Tools row.
+- Kept unsupported Cowork actions as explicit placeholders instead of broken controls.
+
+Validation:
+- `npm run typecheck` PASS
+- `npm test` PASS, 283 tests
+- `npm run build` PASS
+
+## Provider/Model Identity Display
+
+Decision: Display provider and model together wherever identity matters, especially for OpenRouter-routed models.
+
+Why: A model name alone can imply the wrong adapter. `OpenRouter · Claude Sonnet 4` is materially different from direct `Anthropic · Claude Sonnet 4`.
+
+UI rule:
+- Header and assistant bubbles may show provider/model metadata.
+- Assistant bubbles use persisted response metadata, not a guessed current selector state.
+
 ## LivePreview Static Server
 
 Decision: Use an Electron main-process in-process HTTP server for static HTML and Coding Demo previews, while keeping Vite+React on the npm/Vite path.
@@ -47,8 +74,7 @@ Validation:
 
 ## Remaining UX Direction
 
-Next major UX work should be a bounded implementation of:
-- Top-level `Chat / Cowork / Code` segmented mode switch.
-- Claude/Codex-inspired but original home screen with large composer, model/profile/project controls, and suggestion chips.
-- Three-column settings layout: app sidebar, settings category column, detail panel.
-- Quieter right inspector with collapsible sections for intent, agent, risk, skills, tools, and keywords.
+Next major UX work should be a bounded refinement of:
+- Visual density after real-world use at 1366x768.
+- Right inspector simplification with collapsible intent, risk, tools, and keywords.
+- Cowork task queue implementation once the placeholder workflow has real backing behavior.

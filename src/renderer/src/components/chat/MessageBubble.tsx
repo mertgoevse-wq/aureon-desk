@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
-import { Sparkles, Copy, Check } from 'lucide-react'
+import { Sparkles, Copy, Check, Server } from 'lucide-react'
 import type { MessageRow } from '@shared/types/chat'
 
 interface MessageBubbleProps {
@@ -32,6 +32,9 @@ export const MessageBubble = memo(function MessageBubble({ message }: MessageBub
   const isAssistant = message.role === 'assistant'
   const isSystem = message.role === 'system'
   const isTool = message.role === 'tool'
+  const providerModelLabel = message.provider_name && message.model_label
+    ? `${message.provider_name} · ${message.model_label}`
+    : message.model_label || message.provider_name || null
 
   if (isSystem) {
     return (
@@ -88,6 +91,17 @@ export const MessageBubble = memo(function MessageBubble({ message }: MessageBub
             {message.token_count && (
               <span className="text-[10px] text-[var(--ivory-text-3)]">
                 {message.token_count} tokens
+              </span>
+            )}
+            {providerModelLabel && (
+              <span
+                className="inline-flex items-center gap-1 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-surface)] px-2 py-0.5 text-[10px] font-medium text-[var(--ivory-text-3)]"
+                title={message.adapter_type ? `Adapter: ${message.adapter_type}` : undefined}
+                data-testid="assistant-provider-model"
+              >
+                <Server size={9} />
+                {providerModelLabel}
+                {message.latency_ms ? ` · ${message.latency_ms}ms` : ''}
               </span>
             )}
           </div>

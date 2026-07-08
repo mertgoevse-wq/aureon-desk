@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.9.23] - 2026-07-08
+
+### Added
+- **Aureon Mode Switch**: Added a top-level `Chat / Cowork / Code` workspace switch with an original Aureon layout interpretation.
+- **Premium Home Composer**: Reworked the empty chat surface with a time-aware greeting, central composer, provider/style/project/tool controls, suggestions, and recent chat context.
+- **Settings Category Layout**: Rebuilt Settings into a category column plus detail panel, with General, Providers & Models, Developer, and placeholder capability pages.
+- **Provider/Model Routing Contract**: Added canonical provider/model resolution for chat sends, including provider ID/name, adapter type, model ID/label, base URL, local/remote source, and stale-selection validation.
+- **Assistant Message Metadata**: Assistant messages now persist subtle provider/model metadata and latency for traceability.
+
+### Changed
+- **Decluttered Sidebar**: Reduced duplicate entries, removed visible text from secondary mode shortcuts, collapsed workflow placeholders by default, and simplified New Task into an icon action.
+- **Top Header Cleanup**: Removed the extra `Aureon Desk` label from the bright top header so the mode switch is the main focal point.
+- **OpenRouter Labeling**: OpenRouter-routed Claude/Gemini/etc. models display as `OpenRouter · Model Name` instead of implying direct provider usage.
+
+### Fixed
+- **Stale Model Sends**: Chat sends now fail clearly when the renderer has an outdated model selection or the selected model/provider is disabled or removed.
+
 ## [0.9.22] - 2026-07-07
 
 ### Added

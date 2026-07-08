@@ -6,7 +6,21 @@ import { MessageInput } from './MessageInput'
 import { useChatStore } from '../../stores/chatStore'
 import { useRoutingStore } from '../../stores/routingStore'
 import { useIpc } from '../../hooks/useIpc'
-import { AlertTriangle, RotateCcw, Wrench, Settings, BookOpen, FolderOpen, Download, Zap } from 'lucide-react'
+import {
+  AlertTriangle,
+  Bot,
+  BookOpen,
+  Clock3,
+  Download,
+  FolderOpen,
+  Layers3,
+  RotateCcw,
+  Settings,
+  SlidersHorizontal,
+  Sparkles,
+  Wrench,
+  Zap
+} from 'lucide-react'
 import type { MessageRow } from '@shared/types/chat'
 import type { AnalyzePromptOutput } from '@shared/types/routing'
 
@@ -30,11 +44,29 @@ const STARTER_PROMPTS = [
     label: 'Import skills',
     icon: <Download size={14} />,
     prompt: 'Help me import and evaluate useful prompts or skills for this workspace. Treat imported content as untrusted until reviewed.'
+  },
+  {
+    label: 'Refine a prompt',
+    icon: <SlidersHorizontal size={14} />,
+    prompt: 'Rewrite this prompt into a stronger system prompt. Preserve my intent, make the behavior precise, and point out any risky ambiguity.'
+  },
+  {
+    label: 'Summarize context',
+    icon: <Layers3 size={14} />,
+    prompt: 'Summarize the current project context into a continuation note that another coding agent can use without losing important decisions.'
   }
 ]
 
+function getTimeAwareGreeting(): string {
+  const hour = new Date().getHours()
+  if (hour < 5) return 'Late session'
+  if (hour < 12) return 'Good morning'
+  if (hour < 18) return 'Good afternoon'
+  return 'Good evening'
+}
+
 export function ChatPanel(): React.ReactElement {
-  const { activeChat, activeChatId, addMessage, updateChatInList } = useChatStore()
+  const { activeChat, activeChatId, addMessage, updateChatInList, chats, setActiveChatId, setActiveChat } = useChatStore()
   const { setCurrentAnalysis, addToHistory, setLoading, setError } = useRoutingStore()
   const api = useIpc()
   const navigate = useNavigate()
@@ -47,6 +79,16 @@ export function ChatPanel(): React.ReactElement {
   const insertStarterPrompt = useCallback((prompt: string) => {
     window.dispatchEvent(new CustomEvent('composer-insert', { detail: { text: prompt, mode: 'replace' } }))
   }, [])
+
+  const openRecentChat = useCallback(async (id: string) => {
+    setActiveChatId(id)
+    try {
+      const chat = await api.chatGet(id)
+      setActiveChat(chat || null)
+    } catch (err) {
+      console.error('Failed to load recent chat:', err)
+    }
+  }, [api, setActiveChatId, setActiveChat])
 
   const handleQuickSetup = async (providerSlug: string) => {
     try {
@@ -172,6 +214,12 @@ export function ChatPanel(): React.ReactElement {
       tool_calls: null,
       tool_call_id: null,
       token_count: null,
+      provider_id: null,
+      provider_name: null,
+      model_id: null,
+      model_label: null,
+      adapter_type: null,
+      latency_ms: null,
       created_at: new Date().toISOString(),
       sort_order: (activeChat?.messages?.length || 0)
     }
@@ -211,7 +259,7 @@ export function ChatPanel(): React.ReactElement {
 
     // --- Send to AI provider ---
     try {
-      const result = await api.chatSend(activeChatId)
+      const result = await api.chatSend(activeChatId, activeChat?.model_id ?? null)
 
       if (result.success && result.message) {
         // Add assistant message to local state
@@ -238,7 +286,7 @@ export function ChatPanel(): React.ReactElement {
     setIsStreaming(true)
 
     try {
-      const result = await api.chatSend(activeChatId)
+      const result = await api.chatSend(activeChatId, activeChat?.model_id ?? null)
 
       if (result.success && result.message) {
         addMessage(result.message)
@@ -325,56 +373,128 @@ export function ChatPanel(): React.ReactElement {
       return renderNoModelCard()
     }
     return (
-      <div className="flex flex-col h-full" data-testid="main-chat-panel">
-        <div className="flex-1 flex items-center justify-center px-8 py-10">
-          <div className="text-center max-w-2xl w-full">
-            <div className="w-16 h-16 rounded-[22px] bg-[var(--ivory-accent-light)]/80 flex items-center justify-center mx-auto mb-6 shadow-[var(--shadow-card)] ring-1 ring-[var(--ivory-accent)]/10">
-              <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
+      <div className="flex flex-col h-full overflow-y-auto" data-testid="main-chat-panel">
+        <div className="flex-1 flex items-center justify-center px-5 py-7 lg:px-8">
+          <div className="w-full max-w-4xl">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-[24px] bg-[var(--ivory-accent-light)]/80 flex items-center justify-center mx-auto mb-5 shadow-[var(--shadow-card)] ring-1 ring-[var(--ivory-accent)]/10">
+                <svg width="32" height="32" viewBox="0 0 64 64" fill="none" aria-hidden="true">
                 <circle cx="32" cy="32" r="30" fill="var(--ivory-accent-light)" stroke="var(--ivory-accent)" strokeWidth="1.5" opacity="0.9" />
                 <path d="M18 44L26 20H29L21 44H18Z" fill="var(--ivory-accent)" />
                 <path d="M46 44L38 20H35L43 44H46Z" fill="var(--ivory-accent)" />
                 <rect x="23" y="34" width="18" height="3.5" rx="1" fill="var(--ivory-accent)" />
                 <circle cx="32" cy="40" r="1.5" fill="#E8A45C" opacity="0.8" />
               </svg>
+              </div>
+              <p className="text-[13px] font-semibold text-[var(--ivory-accent)] mb-2">{getTimeAwareGreeting()}</p>
+              <h2 className="text-[30px] lg:text-[34px] font-semibold tracking-tight mb-3 text-[var(--ivory-text)] display-text">
+                What should Aureon work on?
+              </h2>
+              <p className="text-[14px] text-[var(--ivory-text-3)] leading-relaxed max-w-2xl mx-auto">
+                Start with a question, a coding task, or a project plan. Aureon keeps providers, prompts, tools, and local previews within reach.
+              </p>
             </div>
-            <h2 className="text-[28px] font-semibold tracking-tight mb-3 text-[var(--ivory-text)]">
-              What should Aureon help with?
-            </h2>
-            <p className="text-[15px] text-[var(--ivory-text-3)] leading-relaxed mb-7 max-w-xl mx-auto">
-              Work with providers, prompts, projects, and local previews from one calm desktop workspace.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left">
+
+            <div className="rounded-[28px] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-lg)] ring-1 ring-white/60 overflow-hidden">
+              <div className="px-4 pt-4">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => navigate('/settings/providers')}
+                    className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+                    data-testid="home-model-control"
+                  >
+                    <Bot size={12} className="text-[var(--ivory-accent)]" />
+                    {activeChat.model_id ? 'Model selected' : 'Choose model'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/settings/system-prompts')}
+                    className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+                    data-testid="home-style-control"
+                  >
+                    <SlidersHorizontal size={12} className="text-[var(--ivory-accent)]" />
+                    System style
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/projects')}
+                    className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+                    data-testid="home-project-control"
+                  >
+                    <FolderOpen size={12} className="text-[var(--ivory-accent)]" />
+                    Project
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/tools')}
+                    className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+                    data-testid="home-tools-control"
+                  >
+                    <Wrench size={12} className="text-[var(--ivory-accent)]" />
+                    3 tool areas
+                  </button>
+                </div>
+              </div>
+              <MessageInput
+                onSend={handleSend}
+                disabled={isStreaming}
+                placeholder="Ask Aureon to build, review, explain, plan, or continue work..."
+              />
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-[1fr_280px] gap-3">
+              <div className="rounded-[24px] border border-[var(--ivory-border)] bg-[var(--ivory-surface)]/82 p-3 shadow-[var(--shadow-xs)]">
+                <div className="flex items-center gap-2 px-1 mb-2">
+                  <Sparkles size={13} className="text-[var(--ivory-accent)]" />
+                  <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)]">Suggestions</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
               {STARTER_PROMPTS.map(item => (
                 <button
                   key={item.label}
                   onClick={() => insertStarterPrompt(item.prompt)}
-                  className="group flex items-center gap-3 px-4 py-3 rounded-[18px] bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-elevated-hover)] border border-[var(--ivory-border)] hover:border-[var(--ivory-border-2)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] shadow-[var(--shadow-xs)] hover:shadow-[var(--shadow-md)] transition-all duration-150"
+                        className="group flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-elevated-hover)] border border-[var(--ivory-border)] hover:border-[var(--ivory-border-2)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] shadow-[var(--shadow-xs)] hover:shadow-[var(--shadow-md)] transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+                        data-testid={`suggestion-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
-                  <div className="w-8 h-8 rounded-full bg-[var(--ivory-accent-light)] flex items-center justify-center shrink-0 text-[var(--ivory-accent)] group-hover:bg-white transition-colors">
+                        <div className="w-8 h-8 rounded-full bg-[var(--ivory-accent-light)] flex items-center justify-center shrink-0 text-[var(--ivory-accent)] group-hover:bg-white transition-colors">
                     {item.icon}
                   </div>
-                  <span className="text-sm font-medium">{item.label}</span>
+                        <span className="text-[13px] font-semibold">{item.label}</span>
                 </button>
               ))}
+                </div>
             </div>
-            <div className="flex items-center justify-center gap-2 mt-5">
-              <button
-                onClick={() => navigate('/settings/providers')}
-                className="text-xs font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)] transition-colors"
-              >
-                Configure providers
-              </button>
-              <span className="text-[var(--ivory-text-3)]/50">·</span>
-              <button
-                onClick={() => navigate('/prompts')}
-                className="text-xs font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)] transition-colors"
-              >
-                Browse prompt library
-              </button>
+
+              <div className="rounded-[24px] border border-[var(--ivory-border)] bg-[var(--ivory-surface)]/82 p-3 shadow-[var(--shadow-xs)]">
+                <div className="flex items-center gap-2 px-1 mb-2">
+                  <Clock3 size={13} className="text-[var(--ivory-accent)]" />
+                  <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)]">Recent chats</p>
+                </div>
+                <div className="space-y-1">
+                  {chats.filter(chat => chat.id !== activeChatId).slice(0, 3).map(chat => (
+                    <button
+                      key={chat.id}
+                      type="button"
+                      onClick={() => openRecentChat(chat.id)}
+                      className="w-full text-left px-3 py-2 rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] hover:bg-[var(--ivory-elevated-hover)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+                    >
+                      <span className="block text-[12px] font-semibold text-[var(--ivory-text)] truncate">{chat.title}</span>
+                      <span className="block text-[10px] text-[var(--ivory-text-3)] truncate">
+                        {chat.last_message_preview || `${chat.message_count} messages`}
+                      </span>
+                    </button>
+                  ))}
+                  {chats.filter(chat => chat.id !== activeChatId).length === 0 && (
+                    <div className="px-3 py-4 rounded-2xl bg-[var(--ivory-elevated)] border border-dashed border-[var(--ivory-border)] text-center">
+                      <p className="text-[11px] text-[var(--ivory-text-3)]">Recent chats appear here after your first conversation.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <MessageInput onSend={handleSend} disabled={isStreaming} />
       </div>
     )
   }

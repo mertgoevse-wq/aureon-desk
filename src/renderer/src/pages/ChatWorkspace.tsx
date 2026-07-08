@@ -3,15 +3,24 @@ import { ChatPanel } from '../components/chat/ChatPanel'
 import { ModelSelector } from '../components/chat/ModelSelector'
 import { useChatStore } from '../stores/chatStore'
 import { useIpc } from '../hooks/useIpc'
-import { MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown } from 'lucide-react'
+import { MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown, Plus, Sparkles } from 'lucide-react'
 import type { SystemPromptRow } from '@shared/types/prompt'
+import type { ChatListItem } from '@shared/types/chat'
+
+interface ModelOption {
+  id: string
+  display_name: string
+  provider_name: string
+  provider_slug: string
+}
 
 export function ChatWorkspace(): React.ReactElement {
-  const { activeChat, activeChatId } = useChatStore()
+  const { activeChat, activeChatId, setChats, setActiveChatId, setActiveChat } = useChatStore()
   const api = useIpc()
   const [promptsOpen, setPromptsOpen] = useState(false)
   const [systemPrompts, setSystemPrompts] = useState<SystemPromptRow[]>([])
   const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null)
+  const [enabledModels, setEnabledModels] = useState<ModelOption[]>([])
 
   useEffect(() => {
     if (activeChat?.system_prompt_id) {
@@ -23,7 +32,31 @@ export function ChatWorkspace(): React.ReactElement {
     api.systemPromptList(false).then(setSystemPrompts).catch(console.error)
   }, [activeChat?.system_prompt_id, activeChatId])
 
+  useEffect(() => {
+    api.modelAllEnabled().then((models: ModelOption[]) => setEnabledModels(models || [])).catch(console.error)
+  }, [api, activeChat?.model_id])
+
   const selectedPrompt = systemPrompts.find(p => p.id === selectedPromptId)
+  const selectedModel = enabledModels.find(model => model.id === activeChat?.model_id)
+  const selectedModelLabel = selectedModel
+    ? `${selectedModel.provider_name} · ${selectedModel.display_name}`
+    : activeChat?.model_id
+      ? 'Model selected'
+      : 'Choose a model to start'
+
+  const handleNewChat = useCallback(async () => {
+    const chat = await api.chatCreate({})
+    const newItem: ChatListItem = {
+      id: chat.id,
+      title: chat.title,
+      updated_at: chat.updated_at,
+      message_count: 0,
+      last_message_preview: null
+    }
+    setChats([newItem, ...useChatStore.getState().chats])
+    setActiveChatId(chat.id)
+    setActiveChat({ ...chat, messages: [] })
+  }, [api, setChats, setActiveChatId, setActiveChat])
 
   const handleModelChange = useCallback(async (modelId: string | null) => {
     if (!activeChatId || !activeChat) return
@@ -58,41 +91,57 @@ export function ChatWorkspace(): React.ReactElement {
 
   if (!activeChat) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center px-6">
-        <h1 className="text-3xl font-semibold text-[var(--ivory-text)] mb-3 tracking-tight display-text">
-          Aureon Desk
-        </h1>
-        <p className="text-sm text-[var(--ivory-text-3)] max-w-md mb-8 leading-relaxed">
-          Your personal AI workspace. Select a chat from the sidebar or create a new one to get started.
-        </p>
-        <div className="grid grid-cols-2 gap-3 text-xs text-[var(--ivory-text-3)] max-w-sm">
-          <div className="flex flex-col items-center gap-1.5 p-3 rounded-[var(--radius-md)] bg-[var(--ivory-surface)]">
-            <div className="w-8 h-8 rounded-[var(--radius-md)] bg-[var(--ivory-bg)] flex items-center justify-center">
-              <MessageSquare size={14} className="text-[var(--ivory-accent)]" />
+      <div className="h-full overflow-y-auto bg-[var(--ivory-bg)]">
+        <div className="min-h-full flex items-center justify-center px-6 py-8">
+          <div className="w-full max-w-4xl text-center">
+            <div className="w-16 h-16 rounded-[24px] bg-[var(--ivory-accent-light)]/80 flex items-center justify-center mx-auto mb-5 shadow-[var(--shadow-card)] ring-1 ring-[var(--ivory-accent)]/10">
+              <Sparkles size={24} className="text-[var(--ivory-accent)]" />
             </div>
-            <span className="text-[var(--ivory-text-2)] font-medium">Multi-Provider</span>
-            <span className="text-[10px]">OpenAI · Claude · Gemini · Local</span>
-          </div>
-          <div className="flex flex-col items-center gap-1.5 p-3 rounded-[var(--radius-md)] bg-[var(--ivory-surface)]">
-            <div className="w-8 h-8 rounded-[var(--radius-md)] bg-[var(--ivory-bg)] flex items-center justify-center">
-              <ScrollText size={14} className="text-[var(--ivory-accent)]" />
+            <h1 className="text-[34px] font-semibold text-[var(--ivory-text)] mb-3 tracking-tight display-text">
+              Aureon Desk
+            </h1>
+            <p className="text-[14px] text-[var(--ivory-text-3)] max-w-xl mx-auto mb-6 leading-relaxed">
+              A calm local-first workspace for chats, provider setup, prompt profiles, projects, and live previews.
+            </p>
+            <button
+              type="button"
+              onClick={handleNewChat}
+              className="h-11 px-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--ivory-accent-light)] border border-[var(--ivory-accent)]/20 text-[13px] font-semibold text-[var(--ivory-text)] hover:bg-[var(--ivory-accent)]/15 transition-colors shadow-[var(--shadow-sm)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 mb-6"
+              data-testid="empty-home-new-chat"
+            >
+              <Plus size={15} />
+              Start a new chat
+            </button>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs text-[var(--ivory-text-3)] max-w-3xl mx-auto">
+              <div className="flex flex-col items-center gap-1.5 p-4 rounded-[22px] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] shadow-[var(--shadow-xs)]">
+                <div className="w-9 h-9 rounded-2xl bg-[var(--ivory-bg)] flex items-center justify-center">
+                  <MessageSquare size={14} className="text-[var(--ivory-accent)]" />
+                </div>
+                <span className="text-[var(--ivory-text-2)] font-semibold">Multi-provider</span>
+                <span className="text-[10px]">Cloud and local models</span>
+              </div>
+              <div className="flex flex-col items-center gap-1.5 p-4 rounded-[22px] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] shadow-[var(--shadow-xs)]">
+                <div className="w-9 h-9 rounded-2xl bg-[var(--ivory-bg)] flex items-center justify-center">
+                  <ScrollText size={14} className="text-[var(--ivory-accent)]" />
+                </div>
+                <span className="text-[var(--ivory-text-2)] font-semibold">Profiles</span>
+                <span className="text-[10px]">System prompts</span>
+              </div>
+              <div className="flex flex-col items-center gap-1.5 p-4 rounded-[22px] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] shadow-[var(--shadow-xs)]">
+                <div className="w-9 h-9 rounded-2xl bg-[var(--ivory-bg)] flex items-center justify-center">
+                  <FolderOpen size={14} className="text-[var(--ivory-accent)]" />
+                </div>
+                <span className="text-[var(--ivory-text-2)] font-semibold">Projects</span>
+                <span className="text-[10px]">Workspace context</span>
+              </div>
+              <div className="flex flex-col items-center gap-1.5 p-4 rounded-[22px] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] shadow-[var(--shadow-xs)]">
+                <div className="w-9 h-9 rounded-2xl bg-[var(--ivory-bg)] flex items-center justify-center">
+                  <Wrench size={14} className="text-[var(--ivory-accent)]" />
+                </div>
+                <span className="text-[var(--ivory-text-2)] font-semibold">Tools</span>
+                <span className="text-[10px]">MCP-style setup</span>
+              </div>
             </div>
-            <span className="text-[var(--ivory-text-2)] font-medium">Profiles</span>
-            <span className="text-[10px]">System prompts & routing</span>
-          </div>
-          <div className="flex flex-col items-center gap-1.5 p-3 rounded-[var(--radius-md)] bg-[var(--ivory-surface)]">
-            <div className="w-8 h-8 rounded-[var(--radius-md)] bg-[var(--ivory-bg)] flex items-center justify-center">
-              <FolderOpen size={14} className="text-[var(--ivory-accent)]" />
-            </div>
-            <span className="text-[var(--ivory-text-2)] font-medium">Projects</span>
-            <span className="text-[10px]">Local file access & context</span>
-          </div>
-          <div className="flex flex-col items-center gap-1.5 p-3 rounded-[var(--radius-md)] bg-[var(--ivory-surface)]">
-            <div className="w-8 h-8 rounded-[var(--radius-md)] bg-[var(--ivory-bg)] flex items-center justify-center">
-              <Wrench size={14} className="text-[var(--ivory-accent)]" />
-            </div>
-            <span className="text-[var(--ivory-text-2)] font-medium">Tools</span>
-            <span className="text-[10px]">MCP-style integrations</span>
           </div>
         </div>
       </div>
@@ -107,7 +156,7 @@ export function ChatWorkspace(): React.ReactElement {
             {activeChat.title}
           </h2>
           <p className="text-[11px] text-[var(--ivory-text-3)] mt-0.5 truncate">
-            {selectedPrompt ? selectedPrompt.name : 'No system profile'} · {activeChat.model_id ? 'Model selected' : 'Choose a model to start'}
+            {selectedPrompt ? selectedPrompt.name : 'No system profile'} · {selectedModelLabel}
           </p>
         </div>
         <div className="flex items-center gap-2.5 shrink-0">

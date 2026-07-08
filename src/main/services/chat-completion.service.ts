@@ -6,15 +6,11 @@ import { buildRequest } from './request-builder'
 import { resolvePrompt } from './hierarchy-resolver'
 import { logger } from '../utils/logger'
 import { redactSecrets } from './log-redacter'
-import type { MessageRow, ChatSendResult } from '../../shared/types/chat'
+import type { ChatSendInput, ChatSendResult } from '../../shared/types/chat'
 import type { ModelRow, ProviderRow } from '../../shared/types/provider'
 import type { SystemPromptRow, HierarchyInput } from '../../shared/types/prompt'
 
 // ---- Types ----
-
-export interface ChatSendInput {
-  chatId: string
-}
 
 export type { ChatSendResult }
 
@@ -42,16 +38,29 @@ export const chatCompletionService = {
         return { success: false, error: 'No model selected. Open Settings → Providers to configure.', errorCode: 'no_model' }
       }
 
-      const provider = this.findProviderByModel(chat.model_id)
+      if (input.expectedModelId !== undefined && input.expectedModelId !== chat.model_id) {
+        return {
+          success: false,
+          error: 'The selected model changed before this request was sent. Re-select the model and try again.',
+          errorCode: 'stale_model'
+        }
+      }
+
+      const providerModel = providerService.resolveCanonicalModelReference(chat.model_id, input.expectedModelId ? 'renderer' : 'chat')
+      if (!providerModel) {
+        return {
+          success: false,
+          error: 'Selected model no longer exists, is disabled, or its provider is disabled. Choose a current model in the selector.',
+          errorCode: 'stale_model'
+        }
+      }
+
+      const provider = providerService.getProvider(providerModel.providerId)
       if (!provider) {
         return { success: false, error: 'Provider not found for selected model', errorCode: 'no_provider' }
       }
 
-      if (!provider.is_enabled) {
-        return { success: false, error: `Provider "${provider.name}" is disabled. Enable it in Settings.`, errorCode: 'no_provider' }
-      }
-
-      const model = provider.models.find(m => m.id === chat.model_id)
+      const model = provider.models.find(m => m.id === providerModel.modelId)
       if (!model) {
         return { success: false, error: 'Selected model not found', errorCode: 'no_model' }
       }
@@ -100,17 +109,21 @@ export const chatCompletionService = {
       // 5. Check API key for remote providers
       if (provider.adapter !== 'ollama' && provider.adapter !== 'lmstudio' && !built.apiKey) {
         return {
-          success: false,
-          error: `No API key configured for ${provider.name}. Go to Settings → Providers to add your key.`,
-          errorCode: 'no_api_key',
-          providerName: provider.name,
-          modelName: model.display_name || model.name,
+        success: false,
+        error: `No API key configured for ${provider.name}. Go to Settings → Providers to add your key.`,
+        errorCode: 'no_api_key',
+        providerName: provider.name,
+        modelName: model.display_name || model.name,
+          providerModel,
         }
       }
 
       // 6. Send to provider
       const isLocal = provider.adapter === 'ollama' || provider.adapter === 'lmstudio'
-      logger.info(`Sending chat completion to ${provider.name} (${model.name})`, { 
+      logger.info(`Sending chat completion to ${provider.name} (${model.name})`, {
+        providerId: providerModel.providerId,
+        modelId: providerModel.modelId,
+        modelLabel: providerModel.modelLabel,
         adapter: provider.adapter,
         isLocal 
       })
@@ -119,13 +132,25 @@ export const chatCompletionService = {
       const responseText = await this.callProvider(provider, model, built)
 
       const duration = Date.now() - startTime
-      logger.info(`Chat completion completed in ${duration}ms`, { adapter: provider.adapter })
+      logger.info(`Chat completion completed in ${duration}ms`, {
+        providerId: providerModel.providerId,
+        providerName: providerModel.providerName,
+        modelId: providerModel.modelId,
+        modelLabel: providerModel.modelLabel,
+        adapter: providerModel.adapterType
+      })
 
       // 7. Store assistant message
       const assistantMsg = chatService.addMessage({
         chat_id: chat.id,
         role: 'assistant',
         content: responseText,
+        provider_id: providerModel.providerId,
+        provider_name: providerModel.providerName,
+        model_id: providerModel.modelId,
+        model_label: providerModel.modelLabel,
+        adapter_type: providerModel.adapterType,
+        latency_ms: duration,
       })
 
       return {
@@ -134,6 +159,7 @@ export const chatCompletionService = {
         warnings: warnings.length > 0 ? warnings : undefined,
         providerName: provider.name,
         modelName: model.display_name || model.name,
+        providerModel,
       }
     } catch (err) {
       const errorMsg = String(err)
@@ -172,8 +198,8 @@ export const chatCompletionService = {
    * Find the provider that owns a given model ID.
    */
   findProviderByModel(modelId: string): (ProviderRow & { models: ModelRow[] }) | undefined {
-    const allProviders = providerService.listProviders()
-    return allProviders.find(p => p.models.some(m => m.id === modelId))
+    const resolved = providerService.resolveCanonicalModelReference(modelId)
+    return resolved ? providerService.getProvider(resolved.providerId) : undefined
   },
 
   /**

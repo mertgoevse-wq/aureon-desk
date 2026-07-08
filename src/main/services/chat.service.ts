@@ -168,6 +168,12 @@ export const chatService = {
       tool_calls: input.tool_calls || null,
       tool_call_id: input.tool_call_id || null,
       token_count: input.token_count || null,
+      provider_id: input.provider_id || null,
+      provider_name: input.provider_name || null,
+      model_id: input.model_id || null,
+      model_label: input.model_label || null,
+      adapter_type: input.adapter_type || null,
+      latency_ms: input.latency_ms || null,
       created_at: now,
       sort_order: (maxOrder?.max ?? -1) + 1
     }).run()

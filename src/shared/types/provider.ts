@@ -24,6 +24,19 @@ export interface ModelRow {
   capabilities?: string | null
 }
 
+export interface CanonicalModelReference {
+  providerId: string
+  providerName: string
+  providerSlug: string
+  adapterType: string
+  modelId: string
+  modelName: string
+  modelLabel: string
+  baseUrl: string | null
+  isLocal: boolean
+  source: 'chat' | 'renderer' | 'default' | 'provider'
+}
+
 export interface NewProvider {
   name: string
   slug: string

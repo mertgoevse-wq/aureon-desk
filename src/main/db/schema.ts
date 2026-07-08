@@ -61,6 +61,12 @@ export const messages = sqliteTable('messages', {
   tool_calls: text('tool_calls'),
   tool_call_id: text('tool_call_id'),
   token_count: integer('token_count'),
+  provider_id: text('provider_id'),
+  provider_name: text('provider_name'),
+  model_id: text('model_id'),
+  model_label: text('model_label'),
+  adapter_type: text('adapter_type'),
+  latency_ms: integer('latency_ms'),
   created_at: text('created_at').notNull(),
   sort_order: integer('sort_order').notNull()
 })

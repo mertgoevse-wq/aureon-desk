@@ -41,9 +41,11 @@ test.describe('Aureon Desk — Navigation', () => {
 
     await mainWindow.waitForTimeout(1000)
 
-    // Settings should load the providers page by default
+    // Settings should load the General page by default
     const bodyText = await mainWindow.textContent('body')
-    expect(bodyText).toContain('Providers')
+    expect(bodyText).toContain('General')
+    expect(bodyText).toContain('Browser Use')
+    await expect(mainWindow.getByTestId('settings-category-column')).toBeVisible()
 
     // No errors
     expect(await checkForErrorPage(mainWindow)).toBeNull()

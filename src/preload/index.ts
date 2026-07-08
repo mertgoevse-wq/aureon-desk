@@ -24,8 +24,8 @@ const api = {
     ipcRenderer.invoke('chat:delete', id),
   chatArchive: (id: string): Promise<ChatRow | undefined> =>
     ipcRenderer.invoke('chat:archive', id),
-  chatSend: (chatId: string): Promise<ChatSendResult> =>
-    ipcRenderer.invoke('chat:send', { chatId }),
+  chatSend: (chatId: string, expectedModelId?: string | null): Promise<ChatSendResult> =>
+    ipcRenderer.invoke('chat:send', { chatId, expectedModelId }),
 
   // Messages
   messageList: (chatId: string): Promise<MessageRow[]> =>
