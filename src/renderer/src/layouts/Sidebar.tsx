@@ -23,7 +23,7 @@ import { useChatStore } from '../stores/chatStore'
 import { ChatList } from '../components/sidebar/ChatList'
 import { useIpc } from '../hooks/useIpc'
 import { BrandLockup } from '../components/shared/BrandLockup'
-import { Sparkles } from 'lucide-react'
+
 import type { ChatListItem } from '@shared/types/chat'
 
 interface WorkflowItem {
@@ -133,7 +133,7 @@ export function Sidebar(): React.ReactElement {
   if (sidebarCollapsed) {
     return (
       <div
-        className="flex flex-col items-center w-12 h-full border-r border-[var(--ivory-border)] bg-[var(--ivory-surface)] py-3 gap-1.5 shrink-0"
+        className="flex flex-col items-center w-14 h-full border-r border-[var(--ivory-border)] bg-[var(--ivory-surface)] py-3 gap-1.5 shrink-0"
         role="navigation"
         aria-label="Sidebar navigation"
         data-testid="sidebar"
@@ -215,15 +215,12 @@ export function Sidebar(): React.ReactElement {
         aria-label="Main sidebar"
         data-testid="sidebar"
       >
-        <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--ivory-border)]/40 bg-[var(--ivory-surface)]"
-          style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
-        >
+        <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--ivory-border)]/40 bg-[var(--ivory-surface)]">
           <BrandLockup size={40} />
           <button
             onClick={toggleSidebar}
             className="p-1.5 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
             aria-label="Collapse sidebar"
-            style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
           >
             <ChevronLeft size={15} />
           </button>
@@ -364,15 +361,6 @@ export function Sidebar(): React.ReactElement {
             >
               <Wrench size={13} className="text-[var(--ivory-accent)]" />
               Tools
-            </button>
-            <button
-              onClick={() => navigate('/vibe')}
-              className={`col-span-2 h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
-                ${isActive('/vibe') ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-              data-testid="nav-vibe"
-            >
-              <Sparkles size={13} className="text-[var(--ivory-accent)]" />
-              Vibe Coding
             </button>
           </div>
         </div>

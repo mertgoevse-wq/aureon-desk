@@ -37,20 +37,16 @@ describe('Starter Prompts Configuration', () => {
     'Build a preview',
     'Debug an error',
     'Extract insights',
-    'Polish writing',
-    'Import tools',
     'Create project'
   ]
 
-  it('should have exactly 8 calm suggestion prompts', () => {
-    expect(STARTER_PROMPTS.length).toBe(8)
+  it('should have exactly 6 calm suggestion prompts', () => {
+    expect(STARTER_PROMPTS.length).toBe(6)
     expect(STARTER_PROMPTS).toContain('Plan a feature')
     expect(STARTER_PROMPTS).toContain('Review code')
     expect(STARTER_PROMPTS).toContain('Build a preview')
     expect(STARTER_PROMPTS).toContain('Debug an error')
     expect(STARTER_PROMPTS).toContain('Extract insights')
-    expect(STARTER_PROMPTS).toContain('Polish writing')
-    expect(STARTER_PROMPTS).toContain('Import tools')
     expect(STARTER_PROMPTS).toContain('Create project')
   })
 })

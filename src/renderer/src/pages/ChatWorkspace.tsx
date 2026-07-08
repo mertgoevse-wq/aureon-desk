@@ -10,7 +10,7 @@ import { AureonMark } from '../components/shared/AureonMark'
 import {
   MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown,
   Plus, Sparkles, SlidersHorizontal, Clock3, AlertTriangle,
-  Zap, FileText, Download, BookOpen, Lightbulb, Monitor, Palette, KeyRound
+  Zap, BookOpen, Monitor, Palette
 } from 'lucide-react'
 import type { SystemPromptRow } from '@shared/types/prompt'
 import type { ChatListItem } from '@shared/types/chat'
@@ -49,16 +49,6 @@ const STARTER_PROMPTS = [
     prompt: 'Analyze this data or code and extract key insights, architecture details, or performance optimization opportunities.'
   },
   {
-    label: 'Polish writing',
-    icon: <FileText size={14} />,
-    prompt: 'Polish this text or documentation for clarity, style, tone, and professional formatting.'
-  },
-  {
-    label: 'Import tools',
-    icon: <Download size={14} />,
-    prompt: 'Help me import and evaluate useful prompts or skills for this workspace. Treat imported content as untrusted until reviewed.'
-  },
-  {
     label: 'Create project',
     icon: <Plus size={14} />,
     prompt: 'Help me set up a new project workspace. Define the core guidelines, structures, and tools to get started.'
@@ -66,14 +56,10 @@ const STARTER_PROMPTS = [
 ]
 
 const VIBE_CODING_SUGGESTIONS = [
-  { label: 'Build a small app', icon: <Monitor size={13} />, prompt: 'I want to build a small web app. Help me plan the features, choose the right tech, and generate the starter code. Keep it simple with clean UI. I\'m a beginner so please explain each step in plain English.' },
+  { label: 'Build an app', icon: <Monitor size={13} />, prompt: 'I want to build a small web app. Help me plan the features, choose the right tech, and generate the starter code. Keep it simple with clean UI. I\'m a beginner so please explain each step in plain English.' },
   { label: 'Fix an error', icon: <AlertTriangle size={13} />, prompt: 'I\'m getting this error. Can you explain what it means in simple terms and show me how to fix it step by step?\n\n```\n[paste your error here]\n```' },
   { label: 'Improve UI', icon: <Palette size={13} />, prompt: 'Help me improve the visual design of my app. Make it look more professional with better colors, spacing, typography, and layout. Keep it calm and clean.' },
-  { label: 'Add a feature', icon: <Plus size={13} />, prompt: 'I want to add a new feature to my project. First, ask me what the feature should do, then propose a plan with code changes.' },
-  { label: 'Create Live Preview', icon: <Monitor size={13} />, prompt: 'Build a small self-contained app for me to preview live. Keep it simple — a single page with clean UI.' },
-  { label: 'Connect an AI provider', icon: <KeyRound size={13} />, prompt: 'Help me set up my first AI provider in Aureon Desk. I need guidance on getting an API key and configuring it in Settings.' },
-  { label: 'Import from GitHub', icon: <Download size={13} />, prompt: 'Help me import a project from GitHub into Aureon Desk. Guide me through the steps and ask for the repository URL.' },
-  { label: 'Explain this code', icon: <Lightbulb size={13} />, prompt: 'Please explain this code to me like I\'m a beginner. What does each part do?\n\n```\n[paste your code here]\n```' }
+  { label: 'Add a feature', icon: <Plus size={13} />, prompt: 'I want to add a new feature to my project. First, ask me what the feature should do, then propose a plan with code changes.' }
 ]
 
 function getTimeAwareGreeting(): string {
@@ -399,16 +385,7 @@ export function ChatWorkspace(): React.ReactElement {
                     ))}
                   </div>
                 </div>
-                {/* Vibe Coding CTA */}
-                <button
-                  type="button"
-                  onClick={() => navigate('/vibe')}
-                  data-testid="suggestion-vibe-coding"
-                  className="mt-2.5 w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 text-xs font-semibold text-[var(--ivory-text)] transition-all shadow-[var(--shadow-xs)]"
-                >
-                  <Sparkles size={13} className="text-[var(--ivory-accent)]" />
-                  New to coding? Try Vibe Coding — build apps without writing code
-                </button>
+
               </div>
 
               {/* Recent Chats List */}

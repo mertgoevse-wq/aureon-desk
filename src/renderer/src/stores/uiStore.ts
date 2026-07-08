@@ -17,7 +17,7 @@ interface UIState {
   resetLayout: () => void
 }
 
-const DEFAULT_SIDEBAR_WIDTH = 240
+const DEFAULT_SIDEBAR_WIDTH = 232
 const DEFAULT_INSPECTOR_WIDTH = 340
 
 export const useUIStore = create<UIState>((set, get) => ({
@@ -31,7 +31,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
   toggleInspector: () => set((s) => ({ inspectorOpen: !s.inspectorOpen })),
   setSidebarWidth: (width) => {
-    const clamped = Math.max(192, Math.min(500, Math.round(width)))
+    const clamped = Math.max(188, Math.min(500, Math.round(width)))
     set({ sidebarWidth: clamped })
     // Persist to settings
     try {

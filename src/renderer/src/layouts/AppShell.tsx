@@ -71,18 +71,7 @@ export function AppShell(): React.ReactElement {
     loadPanelSizes()
   }, [])
 
-  const [isMaximized, setIsMaximized] = useState(false)
-  useEffect(() => {
-    if (window.api && window.api.windowIsMaximized) {
-      window.api.windowIsMaximized().then(setIsMaximized).catch(() => {})
-    }
-    if (window.api && window.api.onMaximizedState) {
-      return window.api.onMaximizedState((state: boolean) => {
-        setIsMaximized(state)
-      })
-    }
-    return undefined
-  }, [])
+
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -355,11 +344,10 @@ export function AppShell(): React.ReactElement {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 bg-[var(--ivory-bg)]">
         <header
-          className="h-14 shrink-0 border-b border-[var(--ivory-border)] bg-[var(--ivory-elevated)]/86 backdrop-blur-xl px-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 shadow-[var(--shadow-xs)] select-none"
-          style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+          className="h-12 shrink-0 border-b border-[var(--ivory-border)] bg-[var(--ivory-elevated)]/86 backdrop-blur-xl px-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 shadow-[var(--shadow-xs)] select-none"
         >
           {/* Left Column: Navigation controls & Brand */}
-          <div className="flex items-center gap-3 min-w-0" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
+          <div className="flex items-center gap-3 min-w-0">
             <div className="flex items-center gap-1 border border-[var(--ivory-border)] bg-[var(--ivory-bg)] rounded-xl p-0.5 shadow-[var(--shadow-xs)] shrink-0">
               <button
                 type="button"
@@ -392,7 +380,6 @@ export function AppShell(): React.ReactElement {
             data-testid="mode-switch"
             role="tablist"
             aria-label="Workspace mode"
-            style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
           >
             {modeItems.map((item) => {
               const selected = activeMode === item.id
@@ -416,8 +403,8 @@ export function AppShell(): React.ReactElement {
             })}
           </div>
 
-          {/* Right Column: Search & Custom Window Controls */}
-          <div className="flex items-center justify-end gap-2" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
+          {/* Right Column: Search */}
+          <div className="flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={() => setPaletteOpen(true)}
@@ -428,49 +415,6 @@ export function AppShell(): React.ReactElement {
               <span>Search</span>
               <span className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--ivory-surface-2)] text-[var(--ivory-text-3)]">Ctrl K</span>
             </button>
-
-            {/* Window controls for frameless window layout */}
-            <div className="flex items-center gap-0.5 ml-1 border-l border-[var(--ivory-border)] pl-2 shrink-0">
-              <button
-                type="button"
-                onClick={() => window.api?.windowMinimize?.()}
-                className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none"
-                title="Minimize"
-                data-testid="win-minimize"
-              >
-                <div className="w-2.5 h-[1.5px] bg-current" />
-              </button>
-              <button
-                type="button"
-                onClick={() => window.api?.windowMaximize?.()}
-                className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none"
-                title={isMaximized ? "Restore" : "Maximize"}
-                data-testid="win-maximize"
-              >
-                {isMaximized ? (
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <rect x="1.5" y="3.5" width="5" height="5" rx="0.5" />
-                    <path d="M3.5 3.5V1.5C3.5 1.2 3.7 1 4 1H8C8.3 1 8.5 1.2 8.5 1.5V5.5C8.5 5.8 8.3 6 8 6H6.5" />
-                  </svg>
-                ) : (
-                  <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <rect x="1" y="1" width="7" height="7" rx="0.5" />
-                  </svg>
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => window.api?.windowClose?.()}
-                className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--color-danger)] hover:bg-[var(--ivory-error-bg)] transition-colors focus:outline-none"
-                title="Close"
-                data-testid="win-close"
-              >
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                  <path d="M1.5 1.5L8.5 8.5" />
-                  <path d="M8.5 1.5L1.5 8.5" />
-                </svg>
-              </button>
-            </div>
           </div>
         </header>
         <div className="flex-1 min-h-0">

@@ -4,6 +4,23 @@
 
 ---
 
+## Desktop Shell Simplification — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (331 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- Switched to native Windows frame (removed `frame: false`) — native min/max/close controls replace custom ones
+- Removed custom window controls, drag regions, isMaximized tracking from AppShell
+- Sidebar: default 240→232px, collapsed 48→56px, lighter surface (#F9F6F0)
+- Center: starter prompts 8→6, vibe chips 8→4, removed large CTA banner
+- Tests updated for new sidebar width and starter prompt counts
+
+---
+
 ## Manual QA & UX Baseline — 2026-07-08
 
 | Check | Result |

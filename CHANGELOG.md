@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.9.36] - 2026-07-08
+
+### Changed (Desktop Shell Simplification)
+
+**Window Controls — Switched to Native Frame:**
+- Removed `frame: false` from `windows.ts` — app now uses native Windows title bar with native min/max/close controls
+- Removed custom window control buttons (minimize, maximize, close) from `AppShell.tsx`
+- Removed `WebkitAppRegion` drag regions from topbar — native frame handles window dragging
+- Removed `isMaximized` state tracking and corresponding useEffect
+- Reduced header height: `h-14` → `h-12` (56px → 48px)
+
+**Sidebar Slimming:**
+- Default width: 240px → 232px
+- Minimum clamp: 192px → 188px
+- Collapsed width: 48px (`w-12`) → 56px (`w-14`)
+- Sidebar surface color lightened: `#F7F3EC` → `#F9F6F0` (closer to main bg, less visual divide)
+- Removed Vibe Coding button from sidebar projects grid (accessible from chat home chips)
+- Removed WebkitAppRegion from sidebar header
+
+**Center Workspace Overload Reduction:**
+- STARTER_PROMPTS: 8 → 6 chips (removed "Polish writing" and "Import tools")
+- VIBE_CODING_SUGGESTIONS: 8 → 4 chips
+- Removed large "New to coding? Try Vibe Coding" CTA banner from chat home
+- Cleaned up 4 unused icon imports (`FileText`, `Download`, `Lightbulb`, `KeyRound`)
+
+**Tests:**
+- Updated `ui-desktop-polish.test.ts`: sidebar width assertions (240→232, 192→188)
+- Updated `home-composer-polish.test.ts`: starter prompts count (8→6)
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (331 tests, 19 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.35] - 2026-07-08
 
 ### Added (Manual QA & UX Baseline)

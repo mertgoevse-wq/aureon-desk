@@ -7,7 +7,7 @@
 :root {
   /* === COLOR PALETTE === */
   --color-bg: #FAF7F2;          /* Main work area background */
-  --color-surface: #F7F3EC;     /* Left nav and sidebar rail background */
+  --color-surface: #F9F6F0;     /* Left nav and sidebar rail background */
   --color-surface-hover: #EBE5D8;
   --color-surface-active: #DFD7C6;
   --color-elevated: #FFFFFF;    /* Cards, chat bubbles, input composer */

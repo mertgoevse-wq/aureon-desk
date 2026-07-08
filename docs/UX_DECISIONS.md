@@ -2,6 +2,33 @@
 
 Last updated: 2026-07-08
 
+## Native Window Frame Decision (2026-07-08)
+
+Decision: Remove custom frameless window and switch to native Windows frame with native min/max/close controls.
+
+Why: The custom window controls were problematic — they appeared in a non-standard location and could duplicate native controls on some Windows configurations. Native Windows controls are universally recognized and always positioned correctly in the top-right corner. The premium topbar with mode switch, back/forward, and search remains below the native title bar.
+
+Changes:
+- `windows.ts`: Removed `frame: false` — defaults to native frame
+- `AppShell.tsx`: Removed custom min/max/close buttons, drag regions, and maximize state tracking
+- Header height reduced: 56px→48px (h-14→h-12)
+
+Side effects: The collapsed sidebar brand mark in the topbar no longer needs to appear (native title bar handles brand display). `WebkitAppRegion` drag styling removed from all topbar elements.
+
+## Sidebar Calming (2026-07-08)
+
+Decision: Narrow sidebar default width to 232px (within 228-244px range), widen collapsed state to 56px, lighten surface color closer to background, and collapse the workflow section by default.
+
+Why: The sidebar was visually dominant despite prior narrowing. A lighter surface color (#F9F6F0 vs bg #FAF7F2) creates a gentler visual transition. Collapsing workflow by default reduces initial visual load. Removing the full-width Vibe Coding button from the projects grid simplifies the section to just Projects/Tools.
+
+## Center Workspace Decluttering (2026-07-08)
+
+Decision: Reduce suggestion chips from 8+8 to 6+4, remove the large CTA banner.
+
+Why: The chat home had excessive suggestion chips competing for attention. Progressive disclosure means showing the most useful suggestions and letting the user discover more through the Vibe Coding page or sidebar. The large CTA banner felt like an advertisement rather than a calm assistant feature.
+
+---
+
 ## Vibe Coding Guided Builder Expansion (2026-07-08)
 
 Decision: Expand Vibe Coding into a full dashboard with project type cards, quick actions, template gallery, guided builder with safety instructions, and beginner tutorials. All actions are safe: insert into composer only, never auto-execute.

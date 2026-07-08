@@ -1,10 +1,32 @@
 # Aureon Desk — Visual Audit
 
-> **Latest audit:** 2026-07-08 — DeepSeek V4 Pro (Buffy) — manual QA + app launch (commit `56b8cd9`)
+> **Latest audit:** 2026-07-08 — Desktop Shell Simplification (commit `d60f26c` → new)
+> **Previous auditor:** DeepSeek V4 Pro (Buffy) — manual QA + app launch (commit `56b8cd9`)
 > **Previous auditor:** DeepSeek V4 Pro — source-aware manual QA baseline (commit `c4cea6d`)
-> **Previous auditor:** Freebuff (DeepSeek V4 Pro) — code-based inspection (commit `c670501`)
-> **Earlier auditor:** Antigravity/Gemini — code-based inspection (earlier session)
-> **Branch:** main · commit `56b8cd9`
+> **Branch:** main
+
+---
+
+## Shell Simplification Audit (2026-07-08)
+
+### Window Controls — RESOLVED ✅
+- **Before:** Custom frameless window with hand-built min/max/close buttons; risk of duplication with native controls; drag regions could block inputs
+- **After:** Native Windows frame with native controls positioned correctly top-right
+- Custom topbar with mode switch, back/forward, search preserved below native title bar
+
+### Sidebar Visual Weight — IMPROVED ⚡
+- Default width: 240px → **232px** (within 228-244 target)
+- Collapsed width: 48px → **56px** (within 56-68 target)
+- Surface color: #F7F3EC → **#F9F6F0** (nearly indistinguishable from bg #FAF7F2)
+- Removed Vibe Coding button from projects grid
+
+### Center Workspace — DECLUTTERED ⚡
+- Starter prompts: 8 → **6** chips
+- Vibe coding chips: 8 → **4** chips
+- Removed large CTA banner
+- 4 unused icon imports cleaned
+
+---
 
 ---
 

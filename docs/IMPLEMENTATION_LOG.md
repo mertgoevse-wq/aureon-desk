@@ -1,5 +1,52 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 19:45 +02:00 — Desktop Shell Simplification
+
+Branch: `main`
+Commit at start: `d60f26c`
+
+### Session Purpose
+Simplify the desktop shell: fix window controls (native frame), slim oversized sidebar, reduce center workspace overload, and create a calmer, more desktop-native feel.
+
+### Files Changed
+
+**Main Process:**
+- **Modified:** `src/main/windows.ts` — removed `frame: false` → native Windows frame with native controls
+
+**Renderer:**
+- **Modified:** `src/renderer/src/layouts/AppShell.tsx` — removed custom window controls (min/max/close), removed WebkitAppRegion drag regions, removed isMaximized state, reduced header h-14→h-12
+- **Modified:** `src/renderer/src/layouts/Sidebar.tsx` — collapsed width w-12→w-14 (56px), removed WebkitAppRegion from header, removed Vibe Coding button from projects grid, removed unused Sparkles import
+- **Modified:** `src/renderer/src/stores/uiStore.ts` — DEFAULT_SIDEBAR_WIDTH 240→232, min clamp 192→188
+- **Modified:** `src/renderer/src/pages/ChatWorkspace.tsx` — STARTER_PROMPTS 8→6, VIBE_CODING_SUGGESTIONS 8→4, removed large CTA banner, cleaned 4 unused icon imports
+- **Modified:** `src/renderer/src/theme/tokens.css` — sidebar surface color lighter (#F7F3EC→#F9F6F0)
+
+**Tests:**
+- **Modified:** `tests/unit/ui-desktop-polish.test.ts` — sidebar width and clamp assertions
+- **Modified:** `tests/unit/home-composer-polish.test.ts` — starter prompts count 8→6
+
+**Docs:**
+- **Modified:** `CHANGELOG.md` — v0.9.36 entry
+- **Modified:** `AI_QA_REPORT.md` — shell simplification results
+- **Modified:** `docs/IMPLEMENTATION_LOG.md` — this entry
+- **Modified:** `docs/VISUAL_AUDIT.md` — updated window controls and visual notes
+- **Modified:** `docs/UX_DECISIONS.md` — native frame decision
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (331 tests, 19 files) |
+| `npm run build` | ✅ PASS |
+
+### Key Changes Summary
+- Native Windows frame replaces custom controls (no more duplicate/misplaced controls)
+- Sidebar: lighter, narrower default (232px), wider collapsed (56px)
+- Center: fewer suggestion chips, less visual noise
+- 9 files modified, 2 test files updated
+
+---
+
 ## 2026-07-08 19:15 +02:00 — DeepSeek Manual QA & UX Baseline
 
 Branch: `main`

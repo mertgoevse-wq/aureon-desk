@@ -15,7 +15,7 @@ export function createMainWindow(): BrowserWindow {
     title: 'Aureon Desk',
     icon: getAppIcon(),
     backgroundColor: '#FAF8F5',
-    frame: false, // Frameless window
+
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true,
