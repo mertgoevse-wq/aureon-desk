@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.9.46] - 2026-07-08
+
+### Added — Connectors Hub with Scoped Permissions
+
+**Connector Registry (`src/shared/connectors.ts`):**
+- 12 formal connector definitions with: id, displayName, category, iconKey, status, capabilities, authType, scopes, riskLevel, setupStatus, docsUrl, supportsTestConnection, actions
+- Categories: ai_provider (4), google_service (3), developer (2), local (2), future (1)
+- OAuth scope model with risk levels (read/write/delete/admin), all scopes opt-in (user chooses)
+- OAuth config for Google with safeStorage strategy, loopback redirect pattern
+
+**Gmail Action Contracts:**
+- 7 typed action contracts: read_inbox, search, create_draft, update_draft, send_draft, label, trash
+- Safety-first design: send_draft and trash require double confirmation
+- Every write/account action has a confirmation message
+- No action auto-runs without explicit user approval
+
+**MCP Connector Safety:**
+- Destructive risk level, double confirmation for destructive actions
+- Read-only actions (search, git status, summary) don't require confirmation
+
+**Phone Companion:**
+- Planned status, no capabilities yet, local network only, no cloud relay
+
+**Tests:**
+- Created `tests/unit/connector-registry.test.ts` — 28 tests covering: all 12 connectors defined, Gmail action safety (send requires double confirmation, read is confirmation-free), MCP destructive double confirmation, OAuth scopes are opt-in, safeStorage strategy, phone companion placeholder status
+- Total test count: 409 → 437 (+28)
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (437 tests, 22 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.45] - 2026-07-08
 
 ### Added — Human QA Workflow
