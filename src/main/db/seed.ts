@@ -4,7 +4,7 @@ import { providers, models, systemPrompts } from './schema'
 import { PROVIDER_ADAPTERS } from '../../shared/constants'
 import { logger } from '../utils/logger'
 import { toolService } from '../services/tool.service'
-import { eq } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 
 /**
  * Seed default providers, models, and a default system prompt.
@@ -18,47 +18,57 @@ export async function seed(): Promise<void> {
 
   // Seed providers and their default models
   for (const adapter of PROVIDER_ADAPTERS) {
-    const providerId = uuid()
-
     // Check if provider already exists
     const existing = db.select({ id: providers.id })
       .from(providers)
       .where(eq(providers.slug, adapter.slug))
       .get()
 
-    if (existing) {
-      logger.debug(`Provider ${adapter.slug} already exists, skipping`)
-      continue
-    }
+    let providerId = existing?.id
 
-    // Insert provider
-    db.insert(providers).values({
-      id: providerId,
-      name: adapter.name,
-      slug: adapter.slug,
-      adapter: adapter.slug,
-      base_url: adapter.defaultBaseUrl,
-      api_key_enc: null,
-      is_enabled: 1,
-      created_at: now,
-      updated_at: now
-    }).run()
-
-    // Insert default models for this provider
-    for (const modelDef of adapter.defaultModels) {
-      db.insert(models).values({
-        id: uuid(),
-        provider_id: providerId,
-        name: modelDef.name,
-        display_name: modelDef.displayName,
-        context_window: modelDef.contextWindow,
-        is_default: 0,
+    if (!existing) {
+      providerId = uuid()
+      // Insert provider
+      db.insert(providers).values({
+        id: providerId,
+        name: adapter.name,
+        slug: adapter.slug,
+        adapter: adapter.slug,
+        base_url: adapter.defaultBaseUrl,
+        api_key_enc: null,
         is_enabled: 1,
-        created_at: now
+        created_at: now,
+        updated_at: now
       }).run()
+      logger.debug(`Seeded provider: ${adapter.name}`)
     }
 
-    logger.debug(`Seeded provider: ${adapter.name} with ${adapter.defaultModels.length} models`)
+    // Seed default models (inserting only if model name is missing for this provider)
+    let seededModelsCount = 0
+    for (const modelDef of adapter.defaultModels) {
+      const existingModel = db.select({ id: models.id })
+        .from(models)
+        .where(and(eq(models.provider_id, providerId as string), eq(models.name, modelDef.name)))
+        .get()
+
+      if (!existingModel) {
+        db.insert(models).values({
+          id: uuid(),
+          provider_id: providerId as string,
+          name: modelDef.name,
+          display_name: modelDef.displayName,
+          context_window: modelDef.contextWindow,
+          is_default: 0,
+          is_enabled: 1,
+          created_at: now
+        }).run()
+        seededModelsCount++
+      }
+    }
+
+    if (seededModelsCount > 0) {
+      logger.debug(`Seeded ${seededModelsCount} new models for provider: ${adapter.name}`)
+    }
   }
 
   // Seed default system prompt if none exists

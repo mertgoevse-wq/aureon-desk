@@ -1,9 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { ChatPanel } from '../components/chat/ChatPanel'
 import { ModelSelector } from '../components/chat/ModelSelector'
+import { MessageInput } from '../components/chat/MessageInput'
 import { useChatStore } from '../stores/chatStore'
+import { useUIStore } from '../stores/uiStore'
 import { useIpc } from '../hooks/useIpc'
-import { MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown, Plus, Sparkles } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import {
+  MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown,
+  Plus, Sparkles, SlidersHorizontal, Clock3, AlertTriangle,
+  Zap, FileText, Download, BookOpen
+} from 'lucide-react'
 import type { SystemPromptRow } from '@shared/types/prompt'
 import type { ChatListItem } from '@shared/types/chat'
 
@@ -14,13 +21,74 @@ interface ModelOption {
   provider_slug: string
 }
 
+const STARTER_PROMPTS = [
+  {
+    label: 'Plan a feature',
+    icon: <BookOpen size={14} />,
+    prompt: 'Help me plan the next feature for this project. Start by asking for any missing context, then propose a clear implementation plan.'
+  },
+  {
+    label: 'Review code',
+    icon: <Wrench size={14} />,
+    prompt: 'Review the current code I provide for correctness, security, maintainability, and missing tests. Lead with concrete findings.'
+  },
+  {
+    label: 'Build a preview',
+    icon: <FolderOpen size={14} />,
+    prompt: 'Build a small local preview for this idea. Keep it self-contained, polished, and easy to test.'
+  },
+  {
+    label: 'Debug an error',
+    icon: <AlertTriangle size={14} />,
+    prompt: "I'm encountering an error. Help me debug it by explaining the root cause and proposing a step-by-step fix."
+  },
+  {
+    label: 'Extract insights',
+    icon: <Zap size={14} />,
+    prompt: 'Analyze this data or code and extract key insights, architecture details, or performance optimization opportunities.'
+  },
+  {
+    label: 'Polish writing',
+    icon: <FileText size={14} />,
+    prompt: 'Polish this text or documentation for clarity, style, tone, and professional formatting.'
+  },
+  {
+    label: 'Import tools',
+    icon: <Download size={14} />,
+    prompt: 'Help me import and evaluate useful prompts or skills for this workspace. Treat imported content as untrusted until reviewed.'
+  },
+  {
+    label: 'Create project',
+    icon: <Plus size={14} />,
+    prompt: 'Help me set up a new project workspace. Define the core guidelines, structures, and tools to get started.'
+  }
+]
+
+function getTimeAwareGreeting(): string {
+  const hour = new Date().getHours()
+  if (hour < 5) return 'Late session'
+  if (hour < 12) return 'Good morning'
+  if (hour < 18) return 'Good afternoon'
+  return 'Good evening'
+}
+
 export function ChatWorkspace(): React.ReactElement {
   const { activeChat, activeChatId, setChats, setActiveChatId, setActiveChat } = useChatStore()
   const api = useIpc()
+  const navigate = useNavigate()
   const [promptsOpen, setPromptsOpen] = useState(false)
   const [systemPrompts, setSystemPrompts] = useState<SystemPromptRow[]>([])
   const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null)
   const [enabledModels, setEnabledModels] = useState<ModelOption[]>([])
+
+  // Home states (when activeChat is null)
+  const [homeModelId, setHomeModelId] = useState<string | null>(null)
+  const [homePromptId, setHomePromptId] = useState<string | null>(null)
+  const [homeProjectId, setHomeProjectId] = useState<string | null>(null)
+  const [homePromptsOpen, setHomePromptsOpen] = useState(false)
+  const [homeProjectsOpen, setHomeProjectsOpen] = useState(false)
+  const [toolsCount, setToolsCount] = useState(0)
+  const [projects, setProjects] = useState<any[]>([])
 
   useEffect(() => {
     if (activeChat?.system_prompt_id) {
@@ -35,6 +103,42 @@ export function ChatWorkspace(): React.ReactElement {
   useEffect(() => {
     api.modelAllEnabled().then((models: ModelOption[]) => setEnabledModels(models || [])).catch(console.error)
   }, [api, activeChat?.model_id])
+
+  // Load defaults for the empty home page
+  useEffect(() => {
+    if (activeChat) return
+
+    api.modelAllEnabled()
+      .then((models: ModelOption[]) => {
+        setEnabledModels(models || [])
+        const def = models.find((m: any) => m.is_default === 1 || m.is_enabled === 1) || models[0]
+        if (def) setHomeModelId(def.id)
+      })
+      .catch(console.error)
+
+    api.systemPromptList(false)
+      .then((prompts: SystemPromptRow[]) => {
+        setSystemPrompts(prompts || [])
+        const def = prompts.find((p: SystemPromptRow) => p.is_default === 1) || prompts[0]
+        if (def) setHomePromptId(def.id)
+      })
+      .catch(console.error)
+
+    api.projectList(false)
+      .then((projs: any[]) => {
+        setProjects(projs || [])
+        const active = projs.find((p: any) => p.is_active === 1 || p.is_active === true) || projs[0]
+        if (active) setHomeProjectId(active.id)
+      })
+      .catch(console.error)
+
+    api.toolList()
+      .then((list: any[]) => {
+        const count = list.filter((t: any) => t.is_enabled === 1 || t.is_enabled === true).length
+        setToolsCount(count)
+      })
+      .catch(console.error)
+  }, [api, activeChat])
 
   const selectedPrompt = systemPrompts.find(p => p.id === selectedPromptId)
   const selectedModel = enabledModels.find(model => model.id === activeChat?.model_id)
@@ -57,6 +161,35 @@ export function ChatWorkspace(): React.ReactElement {
     setActiveChatId(chat.id)
     setActiveChat({ ...chat, messages: [] })
   }, [api, setChats, setActiveChatId, setActiveChat])
+
+  const handleHomeSend = useCallback(async (content: string) => {
+    try {
+      const chat = await api.chatCreate({
+        model_id: homeModelId,
+        system_prompt_id: homePromptId,
+        project_id: homeProjectId
+      })
+
+      const newItem: ChatListItem = {
+        id: chat.id,
+        title: chat.title,
+        updated_at: chat.updated_at,
+        message_count: 0,
+        last_message_preview: null
+      }
+
+      setChats([newItem, ...useChatStore.getState().chats])
+      setActiveChatId(chat.id)
+      setActiveChat({ ...chat, messages: [] })
+
+      // Dispatch event for ChatPanel to start streaming completion
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('home-chat-start', { detail: { content } }))
+      }, 100)
+    } catch (err) {
+      console.error('Failed to create home chat:', err)
+    }
+  }, [api, homeModelId, homePromptId, homeProjectId, setChats, setActiveChatId, setActiveChat])
 
   const handleModelChange = useCallback(async (modelId: string | null) => {
     if (!activeChatId || !activeChat) return
@@ -90,56 +223,204 @@ export function ChatWorkspace(): React.ReactElement {
   }, [activeChatId, activeChat, api])
 
   if (!activeChat) {
+    const selectedHomePrompt = systemPrompts.find(p => p.id === homePromptId)
+    const selectedHomeModel = enabledModels.find(m => m.id === homeModelId)
+    const selectedHomeProject = projects.find(p => p.id === homeProjectId)
+
     return (
-      <div className="h-full overflow-y-auto bg-[var(--ivory-bg)]">
-        <div className="min-h-full flex items-center justify-center px-6 py-8">
+      <div className="h-full overflow-y-auto bg-[var(--ivory-bg)]" data-testid="chat-home-page">
+        <div className="min-h-full flex items-center justify-center px-6 py-10">
           <div className="w-full max-w-4xl text-center">
-            <div className="w-16 h-16 rounded-[24px] bg-[var(--ivory-accent-light)]/80 flex items-center justify-center mx-auto mb-5 shadow-[var(--shadow-card)] ring-1 ring-[var(--ivory-accent)]/10">
-              <Sparkles size={24} className="text-[var(--ivory-accent)]" />
+            {/* Greeting & Aureon Mark */}
+            <div className="flex items-center justify-center gap-3.5 mb-6 select-none">
+              <div className="w-12 h-12 rounded-[20px] bg-[var(--ivory-accent-light)] flex items-center justify-center shadow-[var(--shadow-sm)] ring-1 ring-[var(--ivory-accent)]/15">
+                <svg width="24" height="24" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                  <circle cx="32" cy="32" r="30" fill="var(--ivory-accent-light)" stroke="var(--ivory-accent)" strokeWidth="1.5" opacity="0.9" />
+                  <path d="M18 44L26 20H29L21 44H18Z" fill="var(--ivory-accent)" />
+                  <path d="M46 44L38 20H35L43 44H46Z" fill="var(--ivory-accent)" />
+                  <rect x="23" y="34" width="18" height="3.5" rx="1" fill="var(--ivory-accent)" />
+                  <circle cx="32" cy="40" r="1.5" fill="#E8A45C" opacity="0.8" />
+                </svg>
+              </div>
+              <h1 className="text-[32px] font-semibold text-[var(--ivory-text)] tracking-tight display-text">
+                {getTimeAwareGreeting()}, Mert
+              </h1>
             </div>
-            <h1 className="text-[34px] font-semibold text-[var(--ivory-text)] mb-3 tracking-tight display-text">
-              Aureon Desk
-            </h1>
-            <p className="text-[14px] text-[var(--ivory-text-3)] max-w-xl mx-auto mb-6 leading-relaxed">
-              A calm local-first workspace for chats, provider setup, prompt profiles, projects, and live previews.
-            </p>
-            <button
-              type="button"
-              onClick={handleNewChat}
-              className="h-11 px-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--ivory-accent-light)] border border-[var(--ivory-accent)]/20 text-[13px] font-semibold text-[var(--ivory-text)] hover:bg-[var(--ivory-accent)]/15 transition-colors shadow-[var(--shadow-sm)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 mb-6"
-              data-testid="empty-home-new-chat"
-            >
-              <Plus size={15} />
-              Start a new chat
-            </button>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-xs text-[var(--ivory-text-3)] max-w-3xl mx-auto">
-              <div className="flex flex-col items-center gap-1.5 p-4 rounded-[22px] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] shadow-[var(--shadow-xs)]">
-                <div className="w-9 h-9 rounded-2xl bg-[var(--ivory-bg)] flex items-center justify-center">
-                  <MessageSquare size={14} className="text-[var(--ivory-accent)]" />
+
+            {/* Large Centered Composer Card */}
+            <div className="rounded-[28px] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-lg)] ring-1 ring-white/60 overflow-hidden max-w-3xl mx-auto mb-6">
+              <div className="px-4 pt-4 text-left">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  {/* Model Selector */}
+                  <ModelSelector
+                    value={homeModelId}
+                    onChange={setHomeModelId}
+                  />
+
+                  {/* System Prompt Selector */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => { setHomePromptsOpen(!homePromptsOpen); api.systemPromptList(false).then(setSystemPrompts) }}
+                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none"
+                    >
+                      <SlidersHorizontal size={12} className="text-[var(--ivory-accent)]" />
+                      <span>{selectedHomePrompt ? selectedHomePrompt.name : 'System style'}</span>
+                      <ChevronDown size={10} className="text-[var(--ivory-text-3)]" />
+                    </button>
+                    {homePromptsOpen && (
+                      <>
+                        <div className="fixed inset-0 z-10" onClick={() => setHomePromptsOpen(false)} />
+                        <div className="absolute left-0 mt-1.5 w-64 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] p-1.5 shadow-[var(--shadow-lg)] z-20 max-h-72 overflow-y-auto text-left">
+                          <button
+                            onClick={() => { setHomePromptId(null); setHomePromptsOpen(false) }}
+                            className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2
+                              ${!homePromptId ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
+                          >
+                            No system profile
+                          </button>
+                          {systemPrompts.map(p => (
+                            <button
+                              key={p.id}
+                              onClick={() => { setHomePromptId(p.id); setHomePromptsOpen(false) }}
+                              className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2
+                                ${homePromptId === p.id ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
+                            >
+                              <span>{p.name}</span>
+                              {p.is_default === 1 && <span className="text-[9px] px-1 py-0.5 rounded bg-[var(--ivory-surface-2)] text-[var(--ivory-text-3)] ml-auto">default</span>}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Project Selector */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => { setHomeProjectsOpen(!homeProjectsOpen); api.projectList(false).then(setProjects) }}
+                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none"
+                    >
+                      <FolderOpen size={12} className="text-[var(--ivory-accent)]" />
+                      <span>{selectedHomeProject ? selectedHomeProject.name : 'Choose project'}</span>
+                      <ChevronDown size={10} className="text-[var(--ivory-text-3)]" />
+                    </button>
+                    {homeProjectsOpen && (
+                      <>
+                        <div className="fixed inset-0 z-10" onClick={() => setHomeProjectsOpen(false)} />
+                        <div className="absolute left-0 mt-1.5 w-64 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] p-1.5 shadow-[var(--shadow-lg)] z-20 max-h-72 overflow-y-auto text-left">
+                          <button
+                            onClick={() => { setHomeProjectId(null); setHomeProjectsOpen(false) }}
+                            className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2
+                              ${!homeProjectId ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
+                          >
+                            No project context
+                          </button>
+                          {projects.map(p => (
+                            <button
+                              key={p.id}
+                              onClick={() => { setHomeProjectId(p.id); setHomeProjectsOpen(false) }}
+                              className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2
+                                ${homeProjectId === p.id ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
+                            >
+                              <span>{p.name}</span>
+                              {p.is_active === 1 && <span className="text-[9px] px-1 py-0.5 rounded bg-[var(--ivory-surface-2)] text-[var(--ivory-text-3)] ml-auto">active</span>}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Tools Badge */}
+                  <button
+                    type="button"
+                    onClick={() => navigate('/tools')}
+                    className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+                  >
+                    <Wrench size={11} className="text-[var(--ivory-accent)]" />
+                    <span>{toolsCount} tools active</span>
+                  </button>
                 </div>
-                <span className="text-[var(--ivory-text-2)] font-semibold">Multi-provider</span>
-                <span className="text-[10px]">Cloud and local models</span>
               </div>
-              <div className="flex flex-col items-center gap-1.5 p-4 rounded-[22px] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] shadow-[var(--shadow-xs)]">
-                <div className="w-9 h-9 rounded-2xl bg-[var(--ivory-bg)] flex items-center justify-center">
-                  <ScrollText size={14} className="text-[var(--ivory-accent)]" />
+              <MessageInput
+                onSend={handleHomeSend}
+                placeholder="How can Aureon help you today?"
+              />
+            </div>
+
+            {/* Suggestions & Recent Chats Row */}
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4 max-w-3xl mx-auto">
+              {/* Suggestion Chips */}
+              <div className="rounded-[24px] border border-[var(--ivory-border)] bg-[var(--ivory-surface)]/82 p-3 shadow-[var(--shadow-xs)] text-left">
+                <div className="flex items-center gap-2 px-1 mb-2">
+                  <Sparkles size={13} className="text-[var(--ivory-accent)]" />
+                  <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)]">Suggestions</p>
                 </div>
-                <span className="text-[var(--ivory-text-2)] font-semibold">Profiles</span>
-                <span className="text-[10px]">System prompts</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {STARTER_PROMPTS.map(item => (
+                    <button
+                      key={item.label}
+                      type="button"
+                      onClick={() => window.dispatchEvent(new CustomEvent('composer-insert', { detail: { text: item.prompt } }))}
+                      data-testid={`suggestion-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                      className="group flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-elevated-hover)] border border-[var(--ivory-border)] hover:border-[var(--ivory-border-2)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] shadow-[var(--shadow-xs)] hover:shadow-[var(--shadow-md)] transition-all duration-150 focus:outline-none"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-[var(--ivory-accent-light)] flex items-center justify-center shrink-0 text-[var(--ivory-accent)] group-hover:bg-white transition-colors">
+                        {item.icon}
+                      </div>
+                      <span className="text-[13px] font-semibold">{item.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-col items-center gap-1.5 p-4 rounded-[22px] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] shadow-[var(--shadow-xs)]">
-                <div className="w-9 h-9 rounded-2xl bg-[var(--ivory-bg)] flex items-center justify-center">
-                  <FolderOpen size={14} className="text-[var(--ivory-accent)]" />
+
+              {/* Recent Chats List */}
+              <div className="rounded-[24px] border border-[var(--ivory-border)] bg-[var(--ivory-surface)]/82 p-3 shadow-[var(--shadow-xs)] text-left">
+                <div className="flex items-center justify-between px-1 mb-2">
+                  <div className="flex items-center gap-2">
+                    <Clock3 size={13} className="text-[var(--ivory-accent)]" />
+                    <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)]">Recent chats</p>
+                  </div>
+                  {useChatStore.getState().chats.length > 0 && (
+                    <button
+                      onClick={() => {
+                        if (useUIStore.getState().sidebarCollapsed) {
+                          useUIStore.getState().toggleSidebar()
+                        }
+                        window.dispatchEvent(new CustomEvent('open-command-palette'))
+                      }}
+                      className="text-[10px] font-semibold text-[var(--ivory-accent)] hover:underline"
+                    >
+                      View all
+                    </button>
+                  )}
                 </div>
-                <span className="text-[var(--ivory-text-2)] font-semibold">Projects</span>
-                <span className="text-[10px]">Workspace context</span>
-              </div>
-              <div className="flex flex-col items-center gap-1.5 p-4 rounded-[22px] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] shadow-[var(--shadow-xs)]">
-                <div className="w-9 h-9 rounded-2xl bg-[var(--ivory-bg)] flex items-center justify-center">
-                  <Wrench size={14} className="text-[var(--ivory-accent)]" />
+                <div className="space-y-1">
+                  {useChatStore.getState().chats.slice(0, 3).map(chat => (
+                    <button
+                      key={chat.id}
+                      type="button"
+                      onClick={async () => {
+                        setActiveChatId(chat.id)
+                        const fullChat = await api.chatGet(chat.id)
+                        setActiveChat(fullChat || null)
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] hover:bg-[var(--ivory-elevated-hover)] transition-colors focus:outline-none"
+                    >
+                      <span className="block text-[12px] font-semibold text-[var(--ivory-text)] truncate">{chat.title}</span>
+                      <span className="block text-[10px] text-[var(--ivory-text-3)] truncate">
+                        {chat.last_message_preview || `${chat.message_count} messages`}
+                      </span>
+                    </button>
+                  ))}
+                  {useChatStore.getState().chats.length === 0 && (
+                    <div className="px-3 py-4 rounded-2xl bg-[var(--ivory-elevated)] border border-dashed border-[var(--ivory-border)] text-center">
+                      <p className="text-[11px] text-[var(--ivory-text-3)]">No recent chats yet.</p>
+                    </div>
+                  )}
                 </div>
-                <span className="text-[var(--ivory-text-2)] font-semibold">Tools</span>
-                <span className="text-[10px]">MCP-style setup</span>
               </div>
             </div>
           </div>

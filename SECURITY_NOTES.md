@@ -231,6 +231,37 @@ The Settings page also exposes a Provider Test Center for a consolidated provide
 - **LM Studio**: Tests via `/v1/models` — no content sent to remote servers
 - **Offline detection**: Connection refused errors include actionable fix instructions (e.g., "Start Ollama with `ollama serve`")
 
+## Cowork Agent Workspace Safety
+
+### Safe-by-Default Design
+Cowork mode enforces strict safety gates to prevent autonomous desktop control or destructive automation:
+- **No Browser Use**: Web browsing capabilities default to Off/Disabled to prevent arbitrary page scrapes or scraping private credentials.
+- **No Computer Use**: Autonomous mouse, keyboard, or display control routines are disabled to prevent the agent from manipulating the user's host environment.
+- **Sandboxed File System Access**: File system operations default to "Project-Only", locking all read/write side-effects strictly inside the active workspace directory.
+- **Explicit Shell Approvals**: Shell execution tools default to Off and require explicit manual authorization on a per-command basis.
+- **Radio-controlled Network Access**: Connections default to "Providers-Only", blocking connections to unverified third-party domains.
+- **System Permissions**: OS Accessibility and Screen Recording permissions are marked as "Not requested" by default.
+- **Process Blocking (Denied Apps)**: The workspace prevents the agent from inspecting or touching sensitive running application processes (e.g., Slack, Discord, Steam, Google Chrome Passwords, Windows Terminal).
+
+### Interactive Safety Gate (Approval Lifecycle)
+Tasks transition through `Draft` ➔ `Ready` ➔ `Running` ➔ `Waiting for approval` ➔ `Completed` / `Failed`.
+- **Manual Gate Intervention**: If an agent requests a write operation or terminal command, the execution suspends. The UI presents an explicit **Approve / Reject** card showing the exact operation details.
+- **No Accidental Execution**: Shell execution and file writes will abort immediately if the user clicks "Reject" or closes the task.
+
+## Code Mode & LivePreview Safety
+
+### Port Allocation & Conflict Resolution
+- **127.0.0.1 Binding**: The LivePreview static server is explicitly bound to `127.0.0.1` rather than `0.0.0.0` or raw host addresses. This prevents external machines on the same local network from connecting to the running sandbox.
+- **Dynamic Port Selection**: If the target port (default `5173`) is busy, the server automatically searches and binds to the next available port, preventing starting failures.
+
+### Path Containment & Traversal Defense
+- **Strict Sandbox Resolve**: Static file requests are resolved using `path.resolve` against the designated sandbox path.
+- **Traversal Prevention**: If a path tries to read files outside the sandbox directory structure, the request is immediately rejected with a `403 Forbidden` response.
+
+### File Privacy in Code Mode
+- **Omitted Configuration Files**: To prevent credentials from leaking to external provider endpoints, the workspace automatically blocks and hides configuration/dotfiles (e.g. `.env`, `.git/`, `node_modules/`).
+- **Authorization Gate for Edits**: Automated file writes require explicit user confirmation before any content is written back to the active workspace directory.
+
 ## Known Security Limitations
 
 1. **No code signing**: The Windows installer is not code-signed. Windows SmartScreen will show a warning.

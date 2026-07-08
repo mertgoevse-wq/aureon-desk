@@ -213,7 +213,10 @@ export function Sidebar(): React.ReactElement {
         aria-label="Main sidebar"
         data-testid="sidebar"
       >
-        <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--ivory-border)] bg-[var(--ivory-surface)]">
+        <div
+          className="flex items-center justify-between px-4 py-4 border-b border-[var(--ivory-border)] bg-[var(--ivory-surface)]"
+          style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+        >
           <div className="flex items-center gap-3 select-none min-w-0">
             <div className="w-9 h-9 rounded-2xl bg-[var(--ivory-accent-light)] flex items-center justify-center shadow-[var(--shadow-xs)] ring-1 ring-[var(--ivory-accent)]/15 shrink-0">
               <svg width="21" height="21" viewBox="0 0 64 64" fill="none" aria-hidden="true">
@@ -235,6 +238,7 @@ export function Sidebar(): React.ReactElement {
             onClick={toggleSidebar}
             className="p-1.5 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
             aria-label="Collapse sidebar"
+            style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
           >
             <ChevronLeft size={16} />
           </button>

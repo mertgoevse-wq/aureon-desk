@@ -14,8 +14,9 @@ export const PROVIDER_ADAPTERS: ProviderAdapterInfo[] = [
     capabilities: ['text', 'vision', 'tool_use', 'streaming'],
     defaultModels: [
       { name: 'claude-sonnet-4-20250514', displayName: 'Claude Sonnet 4', contextWindow: 200000 },
-      { name: 'claude-opus-4-20250514', displayName: 'Claude Opus 4', contextWindow: 200000 },
-      { name: 'claude-haiku-3-5-20241022', displayName: 'Claude 3.5 Haiku', contextWindow: 200000 }
+      { name: 'claude-3-5-sonnet-20241022', displayName: 'Claude 3.5 Sonnet', contextWindow: 200000 },
+      { name: 'claude-3-5-haiku-20241022', displayName: 'Claude 3.5 Haiku', contextWindow: 200000 },
+      { name: 'claude-opus-4-20250514', displayName: 'Claude Opus 4', contextWindow: 200000 }
     ]
   },
   {
@@ -27,7 +28,9 @@ export const PROVIDER_ADAPTERS: ProviderAdapterInfo[] = [
     capabilities: ['text', 'vision', 'tool_use', 'streaming', 'json_mode', 'embeddings'],
     defaultModels: [
       { name: 'gpt-4o', displayName: 'GPT-4o', contextWindow: 128000 },
-      { name: 'gpt-4o-mini', displayName: 'GPT-4o Mini', contextWindow: 128000 }
+      { name: 'gpt-4o-mini', displayName: 'GPT-4o Mini', contextWindow: 128000 },
+      { name: 'o1-mini', displayName: 'o1-mini', contextWindow: 128000 },
+      { name: 'o3-mini', displayName: 'o3-mini', contextWindow: 200000 }
     ]
   },
   {
@@ -51,7 +54,8 @@ export const PROVIDER_ADAPTERS: ProviderAdapterInfo[] = [
     capabilities: ['text', 'tool_use', 'streaming', 'json_mode'],
     defaultModels: [
       { name: 'mistral-large-latest', displayName: 'Mistral Large', contextWindow: 128000 },
-      { name: 'mistral-small-latest', displayName: 'Mistral Small', contextWindow: 32000 }
+      { name: 'mistral-small-latest', displayName: 'Mistral Small', contextWindow: 32000 },
+      { name: 'codestral-latest', displayName: 'Codestral (Coding)', contextWindow: 32000 }
     ]
   },
   {
@@ -62,6 +66,7 @@ export const PROVIDER_ADAPTERS: ProviderAdapterInfo[] = [
     authType: 'api_key',
     capabilities: ['text', 'tool_use', 'streaming'],
     defaultModels: [
+      { name: 'llama-3.3-70b-versatile', displayName: 'Llama 3.3 70B', contextWindow: 131072 },
       { name: 'llama-4-scout-17b-16e-instruct', displayName: 'Llama 4 Scout', contextWindow: 131072 }
     ]
   },
@@ -73,7 +78,8 @@ export const PROVIDER_ADAPTERS: ProviderAdapterInfo[] = [
     authType: 'api_key',
     capabilities: ['text', 'tool_use', 'streaming'],
     defaultModels: [
-      { name: 'deepseek-chat', displayName: 'DeepSeek Chat', contextWindow: 131072 }
+      { name: 'deepseek-chat', displayName: 'DeepSeek Chat (V3)', contextWindow: 131072 },
+      { name: 'deepseek-coder', displayName: 'DeepSeek Coder', contextWindow: 131072 }
     ]
   },
   {
@@ -85,6 +91,8 @@ export const PROVIDER_ADAPTERS: ProviderAdapterInfo[] = [
     capabilities: ['text', 'tool_use', 'streaming'],
     defaultModels: [
       { name: 'openrouter/auto', displayName: 'Auto (best model)', contextWindow: 200000 },
+      { name: 'deepseek/deepseek-chat', displayName: 'DeepSeek V3', contextWindow: 131072 },
+      { name: 'anthropic/claude-3.5-sonnet', displayName: 'Claude 3.5 Sonnet', contextWindow: 200000 },
       { name: 'openrouter/free', displayName: 'Free (smoke test)', contextWindow: 8000 }
     ]
   },

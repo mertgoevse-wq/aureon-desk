@@ -98,7 +98,9 @@ Output files in `dist/`:
 - ✅ **Real Chat Completion Engine**: Send messages to configured providers (OpenAI, Anthropic, Gemini, Ollama, LM Studio, OpenRouter, Groq, Mistral, DeepSeek, custom) with loading states, error handling, and retry
 - ✅ **Local Provider Support**: Ollama native API + OpenAI-compatible fallback, LM Studio, custom OpenAI-compatible endpoints with offline detection and friendly error messages
 - ✅ **Provider Test Center**: Per-provider connectivity checks, "Test All", key/local status badges, latency, sanitized error details, and last-checked timestamps
-- ✅ **Premium UI polish pass**: Softer settings, provider cards, buttons, badges, inputs, typography, and route-specific right inspector behavior
+- ✅ **Premium UI & Desktop Shell Polish**: Frameless custom titlebar window, integrated navigation history, soft warm ivory themes, time-aware greetings
+- ✅ **Safe Cowork Mode Dashboard**: Safe agent workflows, task creation composer, interactive execution lifecycles, and manual safety gates
+- ✅ **Interactive Code Mode Workspace**: Project selector, file tree summary filtering `.env`/`.git`/`node_modules`, live preview frames, and execution logs console
 - 🔜 Streaming responses & cancel mid-request
 
 ## Local Provider Setup

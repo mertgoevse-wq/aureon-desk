@@ -1,0 +1,37 @@
+import { ipcMain } from 'electron'
+import { getMainWindow } from '../windows'
+import { logger } from '../utils/logger'
+
+export function registerWindowIPC(): void {
+  ipcMain.on('window:minimize', () => {
+    const win = getMainWindow()
+    if (win) {
+      win.minimize()
+    }
+  })
+
+  ipcMain.on('window:maximize', () => {
+    const win = getMainWindow()
+    if (win) {
+      if (win.isMaximized()) {
+        win.unmaximize()
+      } else {
+        win.maximize()
+      }
+    }
+  })
+
+  ipcMain.on('window:close', () => {
+    const win = getMainWindow()
+    if (win) {
+      win.close()
+    }
+  })
+
+  ipcMain.handle('window:isMaximized', () => {
+    const win = getMainWindow()
+    return win ? win.isMaximized() : false
+  })
+
+  logger.info('Window IPC handlers registered')
+}

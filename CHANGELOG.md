@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.9.26] - 2026-07-08
+
+### Added (Settings Redesign & Code Mode Workspace)
+- **Interactive Code Mode Workspace**: Transformed the preview page into a split-pane layout combining project context selector, task brief composer, safety warnings, and live preview iframe sandboxes.
+- **Ignore Secret Files Policy**: Implemented a files summary lists filter to explicitly ignore and hide sensitive files (`.env`, `.git/`, `node_modules/`) from workspace context uploads.
+- **Settings Layout Redesign**: Reorganized the settings layout into a premium three-column desktop experience.
+- **Capabilities Workspace Page**: Fully implemented browser automation and computer use toggles, sandboxing scopes, and OS Accessibility/Screen Recording permission placeholders.
+- **Developer settings panel**: Redesigned developer diagnostics page showing app data paths, E2E checklists, and a working sanitized diagnostics debug bundle exporter.
+- **Dynamic DB Model Sync**: Rewrote the database seeder to dynamically detect and sync missing default models for existing providers on app startup.
+- **Updated Provider Models**: Updated model selections for OpenAI, Anthropic, Gemini, Mistral, DeepSeek, Groq, and OpenRouter to match standard availability on July 8, 2026.
+- **Verification Suites**: Created `code-workspace.test.ts`, `settings-layout.test.ts`, `16-aureon-code-workspace.spec.ts`, and `17-aureon-settings-redesign.spec.ts`. Updated `12-aureon-workspace-ui.spec.ts`.
+
+## [0.9.25] - 2026-07-08
+
+### Added (Desktop Shell Polish & Empty Home Composer Card)
+- **Custom Frameless Window**: Configured `frame: false` for the Electron browser window to create a premium, frameless desktop shell.
+- **Custom Window Controls**: Built custom Minimize, Maximize/Restore, and Close buttons on the right of the titlebar matching Aureon's ivory theme.
+- **Window State IPC**: Wired `window:minimize`, `window:maximize`, `window:unmaximize`, `window:close`, and state query handlers.
+- **Topbar Navigation & Brand**: Added back/forward buttons, integrated search placeholder, and conditional "Aureon" display text when sidebar is collapsed.
+- **Calm Home Page Greeting**: Implemented a time-aware greeting ("Good morning, Mert" / "Good afternoon...") with Aureon's original logo/mark.
+- **Polished Composer Card**: Designed a card with selectors for models, system styles, and projects, a tools/MCP active badge, and multiline textarea.
+- **Calming Suggestions**: Added 8 calm suggestion chips that insert direct task instructions into the active composer.
+- **Recent Chats & View all**: Built a recent chats list displaying up to 3 chats, with a working "View all" link to invoke the command palette.
+- **Verification Suites**: Created `tests/unit/window-ipc.test.ts`, `tests/unit/home-composer-polish.test.ts`, `tests/e2e/13-aureon-window-controls.spec.ts`, and `tests/e2e/14-aureon-chat-home.spec.ts`.
+
 ## [0.9.24] - 2026-07-08
 
 ### Added (Antigravity Ingestion Baseline)

@@ -13,7 +13,7 @@ test.describe('Aureon Desk — Premium workspace UI', () => {
 
     await mainWindow.getByTestId('mode-cowork').click()
     await expect(mainWindow.getByTestId('cowork-page')).toBeVisible({ timeout: 5000 })
-    await expect(mainWindow.getByText('Safe workflow shell')).toBeVisible()
+    await expect(mainWindow.getByRole('heading', { name: 'Cowork Mode' })).toBeVisible()
 
     await mainWindow.getByTestId('mode-code').click()
     await expect(mainWindow.getByTestId('live-preview-panel')).toBeVisible({ timeout: 5000 })
@@ -44,7 +44,7 @@ test.describe('Aureon Desk — Premium workspace UI', () => {
     await expect(mainWindow.getByTestId('settings-category-column')).toBeVisible({ timeout: 5000 })
     await expect(mainWindow.getByTestId('settings-detail-panel')).toBeVisible()
     await expect(mainWindow.getByTestId('settings-general-page')).toBeVisible()
-    await expect(mainWindow.getByText('Browser Use')).toBeVisible()
+    await expect(mainWindow.getByText('Launch on System Startup')).toBeVisible()
 
     await mainWindow.getByTestId('settings-nav-providers-models').click()
     await expect(mainWindow.getByText('Provider Test Center')).toBeVisible({ timeout: 5000 })
@@ -52,7 +52,7 @@ test.describe('Aureon Desk — Premium workspace UI', () => {
 
     await mainWindow.getByTestId('settings-nav-developer').click()
     await expect(mainWindow.getByTestId('settings-developer-page')).toBeVisible({ timeout: 5000 })
-    await expect(mainWindow.getByText('Validation checklist')).toBeVisible()
+    await expect(mainWindow.getByText('Export Diagnostics')).toBeVisible()
   })
 
   test('layout has no horizontal overflow at 1366x768', async ({ mainWindow }) => {

@@ -9,6 +9,7 @@
 ## Current Implementation Notes - 2026-07-08
 
 - **Workspace shell**: The renderer now exposes a top `Chat / Cowork / Code` mode switch. The left sidebar is intentionally quieter: one primary chat action, compact shortcuts, collapsed workflow placeholders, projects/tools, recents, and profile/settings.
+- **Cowork Agent Dashboard**: Cowork mode implements a high-fidelity safe agent workflow dashboard featuring task composition, safety gate authorization dialogs, and simulated status lifecycles (Draft ➔ Ready ➔ Running ➔ Waiting for approval ➔ Completed / Failed). Safety toggles default to restricted states (e.g. Browser Use off, Computer Use off, shell execution off, sandboxed project-only filesystem access).
 - **Canonical model routing**: Chat completion sends are resolved through a single provider/model reference before any provider request is built. The reference includes `providerId`, `providerName`, `providerSlug`, `adapterType`, `modelId`, `modelName`, `modelLabel`, `baseUrl`, `isLocal`, and `source`.
 - **Renderer/main integrity check**: The renderer passes the expected visible model ID when sending. The main process compares it with the chat's current `model_id`; mismatches fail with `stale_model` before network I/O.
 - **Assistant metadata**: Assistant messages persist provider/model metadata (`provider_id`, `provider_name`, `model_id`, `model_label`, `adapter_type`, `latency_ms`) so the UI and logs can show which provider actually answered.

@@ -260,7 +260,20 @@ const api = {
   logClearImportLogs: (): Promise<number> =>
     ipcRenderer.invoke('log:clearImportLogs'),
   logExportDebugBundle: (): Promise<DebugBundle> =>
-    ipcRenderer.invoke('log:exportDebugBundle')
+    ipcRenderer.invoke('log:exportDebugBundle'),
+
+  // Custom Window Controls
+  windowMinimize: (): void => ipcRenderer.send('window:minimize'),
+  windowMaximize: (): void => ipcRenderer.send('window:maximize'),
+  windowClose: (): void => ipcRenderer.send('window:close'),
+  windowIsMaximized: (): Promise<boolean> => ipcRenderer.invoke('window:isMaximized'),
+  onMaximizedState: (callback: (maximized: boolean) => void): (() => void) => {
+    const listener = (_event: any, state: boolean) => callback(state)
+    ipcRenderer.on('window:maximized-state', listener)
+    return () => {
+      ipcRenderer.removeListener('window:maximized-state', listener)
+    }
+  }
 }
 
 // Expose the API in the main world

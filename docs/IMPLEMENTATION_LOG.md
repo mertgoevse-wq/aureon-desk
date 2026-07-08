@@ -146,3 +146,26 @@ Remaining limitations:
 - Computer/browser-use permissions remain inactive placeholders.
 - The full Electron E2E suite is slow on Windows because each test launches Electron sequentially.
 - OpenRouter smoke testing depends on `OPENROUTER_API_KEY` being present in the local environment.
+
+---
+
+## 2026-07-08 14:43:00 +02:00 — Settings Redesign & Code Mode Workspace (Antigravity)
+
+Branch: `main`
+
+### Session Changes
+
+- **Code Mode Layout**: Created a split-pane layout for local files, task briefs, live previews, and logs console stream.
+- **Ignore Secret Files**: Added filters to project files list to block `.env`, `.git/`, and `node_modules/` context uploads.
+- **Premium Settings Redesign**: Redesigned settings into a premium three-column desktop structure.
+- **Capabilities & Permissions**: Fully implemented toggles for browser automation, computer use, and OS permission placeholders.
+- **Developer Panel**: Redesigned developer page with system paths and export diagnostics bundle download.
+- **DB Model Sync**: Dynamic sync logic in `seed.ts` to automatically sync missing default models for existing providers on app startup.
+- **Updated Provider Models**: Updated OpenAI, Anthropic, Gemini, Mistral, DeepSeek, Groq, and OpenRouter default models to July 8, 2026.
+
+### Tests Run
+
+- `npm run typecheck` — PASS
+- `npm test` — PASS (305 tests)
+- `npm run build` — PASS
+- E2E tests: 71/89 passed before cancel (all layout verification passed, zero renderer crashes)

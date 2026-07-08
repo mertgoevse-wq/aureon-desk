@@ -17,6 +17,7 @@ import { ProjectsPage } from './pages/ProjectsPage'
 import { LogsPage } from './pages/settings/LogsPage'
 import { AppearancePage } from './pages/settings/AppearancePage'
 import { LivePreview } from './pages/LivePreview'
+import { CapabilitiesPage } from './pages/settings/CapabilitiesPage'
 
 const router = createHashRouter([
   {
@@ -47,7 +48,7 @@ const router = createHashRouter([
           { path: 'developer', element: <DeveloperSettingsPage /> },
           { path: 'extensions', element: <SettingsPlaceholderPage /> },
           { path: 'security', element: <SettingsPlaceholderPage /> },
-          { path: 'capabilities', element: <SettingsPlaceholderPage /> }
+          { path: 'capabilities', element: <CapabilitiesPage /> }
         ]
       }
     ]

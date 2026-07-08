@@ -15,6 +15,7 @@ export function createMainWindow(): BrowserWindow {
     title: 'Aureon Desk',
     icon: getAppIcon(),
     backgroundColor: '#FAF8F5',
+    frame: false, // Frameless window
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true,
@@ -26,6 +27,14 @@ export function createMainWindow(): BrowserWindow {
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()
     logger.info('Main window shown')
+  })
+
+  mainWindow.on('maximize', () => {
+    mainWindow?.webContents.send('window:maximized-state', true)
+  })
+
+  mainWindow.on('unmaximize', () => {
+    mainWindow?.webContents.send('window:maximized-state', false)
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

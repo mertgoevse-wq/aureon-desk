@@ -4,6 +4,30 @@
 
 ---
 
+## Settings Redesign & Code Mode Workspace — 2026-07-08 (Antigravity)
+
+| Check | Result |
+|-------|--------|
+| `npm run verify:native` | ✅ PASS — better-sqlite3 binary present |
+| `npm run typecheck` | ✅ PASS — zero TypeScript errors |
+| `npm test` (305 unit tests) | ✅ PASS — includes workspace policies & settings redesign unit tests |
+| `npm run build` | ✅ PASS |
+| E2E tests (89 tests) | ⏭ Cancelled by user during execution (71/89 passed, no crashes) |
+| Secret scan (`git grep "sk-or-v1"`) | ✅ PASS — only docs/test mock references |
+
+---
+
+## Desktop Shell Polish & Home Composer Experience — 2026-07-08 (Antigravity)
+|-------|--------|
+| `npm run verify:native` | ✅ PASS — better-sqlite3 binary present |
+| `npm run typecheck` | ✅ PASS — zero TypeScript errors |
+| `npm test` (288 unit tests) | ✅ PASS — includes custom window controls & home suggestions tests |
+| `npm run build` | ✅ PASS |
+| E2E tests (86 tests) | ✅ PASS — includes window controls & home page E2E specs |
+| Secret scan (`git grep "sk-or-v1"`) | ✅ PASS — only docs/test mock references |
+
+---
+
 ## Ingestion Baseline — 2026-07-08 (Antigravity)
 
 | Check | Result |

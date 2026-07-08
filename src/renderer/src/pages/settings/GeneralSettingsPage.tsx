@@ -1,108 +1,103 @@
-import React from 'react'
-import {
-  AppWindow,
-  EyeOff,
-  Globe,
-  Monitor,
-  MousePointer2,
-  ScreenShare,
-  ShieldCheck
-} from 'lucide-react'
-
-interface PermissionRow {
-  title: string
-  description: string
-  status: string
-  icon: React.ReactNode
-}
-
-const permissionRows: PermissionRow[] = [
-  {
-    title: 'Browser Use',
-    description: 'Future browser automation entry point. Currently inactive.',
-    status: 'Placeholder',
-    icon: <Globe size={16} />
-  },
-  {
-    title: 'Computer Use',
-    description: 'Desktop control is not enabled until explicit implementation and permission checks exist.',
-    status: 'Off',
-    icon: <MousePointer2 size={16} />
-  },
-  {
-    title: 'Unhide apps',
-    description: 'App visibility controls will live here when desktop permissions are implemented.',
-    status: 'Not configured',
-    icon: <AppWindow size={16} />
-  },
-  {
-    title: 'Denied apps',
-    description: 'Blocked app rules are shown as a placeholder until there is an app permission registry.',
-    status: 'None',
-    icon: <EyeOff size={16} />
-  },
-  {
-    title: 'Accessibility status',
-    description: 'Aureon is not requesting operating-system accessibility permissions in this build.',
-    status: 'Not requested',
-    icon: <Monitor size={16} />
-  },
-  {
-    title: 'Screen Recording status',
-    description: 'Screen capture permissions are not requested by this workspace shell.',
-    status: 'Not requested',
-    icon: <ScreenShare size={16} />
-  }
-]
+import React, { useState } from 'react'
+import { Settings as SettingsIcon, ShieldCheck } from 'lucide-react'
+import { SettingsSection, SettingsRow, Toggle } from '../../components/settings/SettingsComponents'
 
 export function GeneralSettingsPage(): React.ReactElement {
+  const [startOnBoot, setStartOnBoot] = useState(false)
+  const [defaultMode, setDefaultMode] = useState('chat')
+  const [collapsibleSidebar, setCollapsibleSidebar] = useState(true)
+  const [themeMode, setThemeMode] = useState('ivory')
+  const [unhideApps, setUnhideApps] = useState(false)
+  const [notifications, setNotifications] = useState(true)
+
   return (
-    <div data-testid="settings-general-page">
-      <div className="mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[11px] font-semibold text-[var(--ivory-text-3)] mb-3">
+    <div className="space-y-6" data-testid="settings-general-page">
+      {/* Page Header */}
+      <div>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[11px] font-semibold text-[var(--ivory-text-3)] mb-3 select-none">
           <ShieldCheck size={13} className="text-[var(--ivory-accent)]" />
-          Local workspace defaults
+          Aureon Workspace Defaults
         </div>
         <h1 className="text-[28px] font-semibold tracking-tight text-[var(--ivory-text)] display-text">General</h1>
-        <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-[var(--ivory-text-3)]">
-          Core workspace behavior and permission surfaces. Unsupported desktop features are visible as placeholders so they never look silently broken.
+        <p className="mt-2 max-w-2xl text-xs leading-relaxed text-[var(--ivory-text-3)]">
+          Manage startup options, sidebar configurations, global themes, and notification rules.
         </p>
       </div>
 
-      <section className="rounded-[28px] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-md)] overflow-hidden">
-        <div className="px-5 py-4 border-b border-[var(--ivory-border)]">
-          <h2 className="text-[15px] font-semibold text-[var(--ivory-text)]">Permissions and desktop access</h2>
-          <p className="mt-1 text-[11px] text-[var(--ivory-text-3)]">Rows are intentionally explicit about what is active and what is not.</p>
-        </div>
-        <div className="divide-y divide-[var(--ivory-border)]">
-          {permissionRows.map((row) => (
-            <div key={row.title} className="flex items-center justify-between gap-4 px-5 py-4">
-              <div className="flex items-start gap-3 min-w-0">
-                <div className="w-9 h-9 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] text-[var(--ivory-accent)] flex items-center justify-center shrink-0">
-                  {row.icon}
-                </div>
-                <div className="min-w-0">
-                  <h3 className="text-[13px] font-semibold text-[var(--ivory-text)]">{row.title}</h3>
-                  <p className="mt-1 text-[11px] leading-relaxed text-[var(--ivory-text-3)]">{row.description}</p>
-                </div>
-              </div>
-              <div className="shrink-0 flex items-center gap-3">
-                <span className="rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-bg)] px-2.5 py-1 text-[10px] font-semibold text-[var(--ivory-text-3)]">
-                  {row.status}
-                </span>
-                <button
-                  type="button"
-                  disabled
-                  className="relative h-6 w-11 rounded-full bg-[var(--ivory-surface-2)] border border-[var(--ivory-border)] opacity-70 cursor-not-allowed"
-                  aria-label={`${row.title} disabled placeholder`}
-                >
-                  <span className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-[var(--ivory-elevated)] shadow-[var(--shadow-xs)]" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Startup & Default Modes */}
+      <SettingsSection title="App Startup & Mode" description="Configure when the app launches and which workspace mode is active by default.">
+        <SettingsRow
+          label="Launch on System Startup"
+          description="Automatically launch Aureon Desk when your computer starts so it is always ready."
+          dataTestId="row-startup"
+        >
+          <Toggle checked={startOnBoot} onChange={setStartOnBoot} dataTestId="toggle-startup" />
+        </SettingsRow>
+        
+        <SettingsRow
+          label="Default Mode Workspace"
+          description="Choose which view is shown when Aureon Desk starts."
+          dataTestId="row-default-mode"
+        >
+          <select
+            value={defaultMode}
+            onChange={(e) => setDefaultMode(e.target.value)}
+            className="px-2.5 py-1.5 text-xs rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)] font-semibold cursor-pointer outline-none focus:border-[var(--ivory-accent)]"
+            data-testid="select-default-mode"
+          >
+            <option value="chat">Chat Mode</option>
+            <option value="cowork">Cowork Mode</option>
+            <option value="code">Code Mode</option>
+          </select>
+        </SettingsRow>
+      </SettingsSection>
+
+      {/* Interface Settings */}
+      <SettingsSection title="Interface & Theme" description="Adjust visual sizing, theme coloring, and navigation parameters.">
+        <SettingsRow
+          label="Collapsible Side Panels"
+          description="Allow sidebar and inspector panels to collapse or resize freely using hotkeys."
+          dataTestId="row-sidebar-collapsible"
+        >
+          <Toggle checked={collapsibleSidebar} onChange={setCollapsibleSidebar} dataTestId="toggle-sidebar-collapsible" />
+        </SettingsRow>
+
+        <SettingsRow
+          label="Color Palette Theme"
+          description="Select between sleek dark options and Aureon's premium custom ivory workspace theme."
+          dataTestId="row-theme"
+        >
+          <select
+            value={themeMode}
+            onChange={(e) => setThemeMode(e.target.value)}
+            className="px-2.5 py-1.5 text-xs rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)] font-semibold cursor-pointer outline-none focus:border-[var(--ivory-accent)]"
+            data-testid="select-theme"
+          >
+            <option value="ivory">Calm Ivory Theme</option>
+            <option value="light">Standard Light</option>
+            <option value="dark">Sleek Dark Mode</option>
+          </select>
+        </SettingsRow>
+      </SettingsSection>
+
+      {/* Safety & Notifications */}
+      <SettingsSection title="Notifications & Focus" description="Manage app background behaviors and toast notifications.">
+        <SettingsRow
+          label="Show desktop notifications"
+          description="Send push alerts for finished background tasks or workflow completions."
+          dataTestId="row-notifications"
+        >
+          <Toggle checked={notifications} onChange={setNotifications} dataTestId="toggle-notifications" />
+        </SettingsRow>
+
+        <SettingsRow
+          label="Restore Window Focus"
+          description="Restore Aureon window visibility when agent triggers safety approvals or warnings."
+          dataTestId="row-restore-focus"
+        >
+          <Toggle checked={unhideApps} onChange={setUnhideApps} dataTestId="toggle-restore-focus" />
+        </SettingsRow>
+      </SettingsSection>
     </div>
   )
 }

@@ -19,7 +19,9 @@ import {
   SlidersHorizontal,
   Sparkles,
   Wrench,
-  Zap
+  Zap,
+  FileText,
+  Plus
 } from 'lucide-react'
 import type { MessageRow } from '@shared/types/chat'
 import type { AnalyzePromptOutput } from '@shared/types/routing'
@@ -41,19 +43,29 @@ const STARTER_PROMPTS = [
     prompt: 'Build a small local preview for this idea. Keep it self-contained, polished, and easy to test.'
   },
   {
-    label: 'Import skills',
+    label: 'Debug an error',
+    icon: <AlertTriangle size={14} />,
+    prompt: "I'm encountering an error. Help me debug it by explaining the root cause and proposing a step-by-step fix."
+  },
+  {
+    label: 'Extract insights',
+    icon: <Zap size={14} />,
+    prompt: 'Analyze this data or code and extract key insights, architecture details, or performance optimization opportunities.'
+  },
+  {
+    label: 'Polish writing',
+    icon: <FileText size={14} />,
+    prompt: 'Polish this text or documentation for clarity, style, tone, and professional formatting.'
+  },
+  {
+    label: 'Import tools',
     icon: <Download size={14} />,
     prompt: 'Help me import and evaluate useful prompts or skills for this workspace. Treat imported content as untrusted until reviewed.'
   },
   {
-    label: 'Refine a prompt',
-    icon: <SlidersHorizontal size={14} />,
-    prompt: 'Rewrite this prompt into a stronger system prompt. Preserve my intent, make the behavior precise, and point out any risky ambiguity.'
-  },
-  {
-    label: 'Summarize context',
-    icon: <Layers3 size={14} />,
-    prompt: 'Summarize the current project context into a continuation note that another coding agent can use without losing important decisions.'
+    label: 'Create project',
+    icon: <Plus size={14} />,
+    prompt: 'Help me set up a new project workspace. Define the core guidelines, structures, and tools to get started.'
   }
 ]
 
@@ -279,6 +291,14 @@ export function ChatPanel(): React.ReactElement {
       setIsStreaming(false)
     }
   }, [activeChatId, activeChat, isStreaming, addMessage, api, updateChatInList, setCurrentAnalysis, addToHistory, setLoading, setError])
+
+  useEffect(() => {
+    const handler = (e: CustomEvent<{ content: string }>) => {
+      handleSend(e.detail.content)
+    }
+    window.addEventListener('home-chat-start', handler as any)
+    return () => window.removeEventListener('home-chat-start', handler as any)
+  }, [handleSend])
 
   const handleRetry = useCallback(async () => {
     if (!activeChatId || !activeChat?.messages?.length || isStreaming) return

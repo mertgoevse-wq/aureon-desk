@@ -110,6 +110,11 @@ export interface IpcApi {
   logClearToolCallLogs: () => Promise<number>
   logClearImportLogs: () => Promise<number>
   logExportDebugBundle: () => Promise<import('../shared/types/log').DebugBundle>
+  windowMinimize: () => void
+  windowMaximize: () => void
+  windowClose: () => void
+  windowIsMaximized: () => Promise<boolean>
+  onMaximizedState: (callback: (maximized: boolean) => void) => () => void
 }
 
 declare global {
