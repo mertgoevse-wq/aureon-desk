@@ -2,6 +2,16 @@
 
 Last updated: 2026-07-08
 
+## Product Structure Polish — Reduced Clutter (2026-07-08)
+
+Decision: Reduce visual clutter across key screens by removing redundant actions, collapsed secondary sections, and trimmed suggestion counts.
+
+Chat mode: Starter prompts reduced from 6 to 4 to avoid overwhelming the user. Vibe coding suggestions removed from chat home — they're accessible from the dedicated Vibe Coding page. Recent chats reduced from 3 to 2.
+
+Cowork mode: Removed "Return to Chat" and "Open Live Preview" header buttons — the top mode switch (Chat/Cowork/Code) already provides this navigation, so these buttons were redundant clutter.
+
+Vibe Coding: "All templates" section now collapsed by default, showing only a count badge. Users can expand it when they need more options. This keeps the primary focus on project types and quick actions.
+
 ## Drawer & SelectMenu — Overlay System Expansion (2026-07-08)
 
 Decision: Expand the compact overlay system with a Drawer (right slide-in panel) and SelectMenu (simple anchored popover menu without search). Fix ProjectsPage to use the shared Modal instead of its custom inline modal.

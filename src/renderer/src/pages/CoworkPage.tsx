@@ -5,8 +5,6 @@ import {
   Lightbulb,
   LockKeyhole,
   FileText,
-  MessageSquare,
-  Code2,
   Play,
   Terminal,
   AlertTriangle,
@@ -16,7 +14,6 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 import { Toggle } from '../components/settings/SettingsComponents'
 
 interface TaskItem {
@@ -32,8 +29,6 @@ interface TaskItem {
 }
 
 export function CoworkPage(): React.ReactElement {
-  const navigate = useNavigate()
-
   // Task list state
   const [tasks, setTasks] = useState<TaskItem[]>([
     {
@@ -197,24 +192,7 @@ export function CoworkPage(): React.ReactElement {
               An interactive safe workspace to compose tasks, control agent execution permissions, approve code edits, and review subagent routing.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => navigate('/')}
-              className="inline-flex h-10 items-center gap-2 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] px-4 text-[12px] font-semibold text-[var(--ivory-text-2)] shadow-[var(--shadow-xs)] transition-colors hover:bg-[var(--ivory-surface)] hover:text-[var(--ivory-text)] focus:outline-none"
-            >
-              <MessageSquare size={14} />
-              Return to Chat
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/preview')}
-              className="inline-flex h-10 items-center gap-2 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] px-4 text-[12px] font-semibold text-[var(--ivory-text-2)] shadow-[var(--shadow-xs)] transition-colors hover:bg-[var(--ivory-surface)] hover:text-[var(--ivory-text)] focus:outline-none"
-            >
-              <Code2 size={14} />
-              Open Live Preview
-            </button>
-          </div>
+
         </div>
 
         {/* Compact status summary */}

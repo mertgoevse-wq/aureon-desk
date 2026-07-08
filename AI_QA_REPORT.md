@@ -4,6 +4,21 @@
 
 ---
 
+## Product Structure Polish — Reduced Clutter — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (348 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- Chat: starter prompts 6→4, removed vibe coding section, recents 3→2
+- Cowork: removed redundant nav buttons (mode switch covers navigation)
+- Vibe Coding: "All templates" collapsed by default with count badge
+
+---
+
 ## MCP Tools — Master-Detail Layout — 2026-07-08
 
 | Check | Result |

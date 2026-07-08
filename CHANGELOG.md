@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.9.43] - 2026-07-08
+
+### Changed (Product Structure Polish — Reduced Clutter)
+
+**Chat Mode:**
+- Reduced starter prompts 6→4 (removed "Extract insights" and "Create project")
+- Removed Vibe Coding suggestions section from chat home (accessible via dedicated Vibe page)
+- Reduced recent chats display 3→2
+- Cleaned dead imports (Zap, Monitor, Palette, Plus)
+
+**Cowork Mode:**
+- Removed redundant "Return to Chat" and "Open Live Preview" header buttons (mode switch already handles navigation)
+- Cleaned unused imports (MessageSquare, Code2, useNavigate)
+
+**Vibe Coding:**
+- Made "All templates" section collapsible, collapsed by default to reduce visual noise
+- Shows template count next to section header
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (348 tests)
+- `npm run build` — ✅ PASS
+
 ## [0.9.42] - 2026-07-08
 
 ### Changed (MCP Tools — Master-Detail Layout)

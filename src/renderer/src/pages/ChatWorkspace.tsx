@@ -9,8 +9,8 @@ import { useNavigate } from 'react-router-dom'
 import { AureonMark } from '../components/shared/AureonMark'
 import {
   MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown,
-  Plus, Sparkles, SlidersHorizontal, Clock3, AlertTriangle,
-  Zap, BookOpen, Monitor, Palette
+  Sparkles, SlidersHorizontal, Clock3, AlertTriangle,
+  BookOpen
 } from 'lucide-react'
 import type { SystemPromptRow } from '@shared/types/prompt'
 import type { ChatListItem } from '@shared/types/chat'
@@ -34,32 +34,15 @@ const STARTER_PROMPTS = [
     prompt: 'Review the current code I provide for correctness, security, maintainability, and missing tests. Lead with concrete findings.'
   },
   {
-    label: 'Build a preview',
-    icon: <FolderOpen size={14} />,
-    prompt: 'Build a small local preview for this idea. Keep it self-contained, polished, and easy to test.'
-  },
-  {
     label: 'Debug an error',
     icon: <AlertTriangle size={14} />,
     prompt: "I'm encountering an error. Help me debug it by explaining the root cause and proposing a step-by-step fix."
   },
   {
-    label: 'Extract insights',
-    icon: <Zap size={14} />,
-    prompt: 'Analyze this data or code and extract key insights, architecture details, or performance optimization opportunities.'
-  },
-  {
-    label: 'Create project',
-    icon: <Plus size={14} />,
-    prompt: 'Help me set up a new project workspace. Define the core guidelines, structures, and tools to get started.'
+    label: 'Build a preview',
+    icon: <FolderOpen size={14} />,
+    prompt: 'Build a small local preview for this idea. Keep it self-contained, polished, and easy to test.'
   }
-]
-
-const VIBE_CODING_SUGGESTIONS = [
-  { label: 'Build an app', icon: <Monitor size={13} />, prompt: 'I want to build a small web app. Help me plan the features, choose the right tech, and generate the starter code. Keep it simple with clean UI. I\'m a beginner so please explain each step in plain English.' },
-  { label: 'Fix an error', icon: <AlertTriangle size={13} />, prompt: 'I\'m getting this error. Can you explain what it means in simple terms and show me how to fix it step by step?\n\n```\n[paste your error here]\n```' },
-  { label: 'Improve UI', icon: <Palette size={13} />, prompt: 'Help me improve the visual design of my app. Make it look more professional with better colors, spacing, typography, and layout. Keep it calm and clean.' },
-  { label: 'Add a feature', icon: <Plus size={13} />, prompt: 'I want to add a new feature to my project. First, ask me what the feature should do, then propose a plan with code changes.' }
 ]
 
 function getTimeAwareGreeting(): string {
@@ -342,7 +325,7 @@ export function ChatWorkspace(): React.ReactElement {
 
             {/* Suggestions & Recent Chats Row */}
             <div className="mt-5 grid grid-cols-1 md:grid-cols-[1fr_260px] gap-4 max-w-3xl mx-auto">
-              {/* Suggestion Chips */}
+              {/* Suggestions */}
               <div className="rounded-[22px] border border-[var(--ivory-border)]/65 bg-[var(--ivory-surface)]/70 p-4 shadow-[var(--shadow-xs)] text-left">
                 <div className="flex items-center gap-2 px-1 mb-2.5">
                   <Sparkles size={13} className="text-[var(--ivory-accent)]" />
@@ -362,30 +345,6 @@ export function ChatWorkspace(): React.ReactElement {
                     </button>
                   ))}
                 </div>
-                {/* Vibe Coding section */}
-                <div className="mt-3 pt-3 border-t border-[var(--ivory-border)]/40">
-                  <div className="flex items-center gap-2 px-1 mb-2">
-                    <Sparkles size={12} className="text-[var(--ivory-accent)]" />
-                    <p className="text-ui-caption font-bold uppercase tracking-[0.06em] text-[var(--ivory-text-3)]">Vibe Coding — Build Without Code</p>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {VIBE_CODING_SUGGESTIONS.map(item => (
-                      <button
-                        key={item.label}
-                        type="button"
-                        onClick={() => {
-                          window.dispatchEvent(new CustomEvent('composer-insert', { detail: { text: item.prompt } }))
-                        }}
-                        data-testid={`vibe-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/10 border border-[var(--ivory-accent)]/10 hover:border-[var(--ivory-accent)]/20 text-[var(--ivory-text)] hover:text-[var(--ivory-accent-hover)] text-xs font-semibold transition-all duration-150 focus:outline-none"
-                      >
-                        <span className="text-[var(--ivory-accent)] shrink-0">{item.icon}</span>
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
               </div>
 
               {/* Recent Chats List */}
@@ -410,7 +369,7 @@ export function ChatWorkspace(): React.ReactElement {
                   )}
                 </div>
                 <div className="space-y-1">
-                  {useChatStore.getState().chats.slice(0, 3).map(chat => (
+                  {useChatStore.getState().chats.slice(0, 2).map(chat => (
                     <button
                       key={chat.id}
                       type="button"
@@ -431,8 +390,8 @@ export function ChatWorkspace(): React.ReactElement {
                     <div className="px-3 py-3 rounded-xl bg-[var(--ivory-elevated)] border border-dashed border-[var(--ivory-border)]/60 text-center">
                       <p className="text-[11px] text-[var(--ivory-text-3)]">No recent chats yet.</p>
                     </div>
-                  )}
-                </div>
+                  )}</div>
+
               </div>
             </div>
           </div>

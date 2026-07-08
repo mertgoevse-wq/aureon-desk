@@ -68,6 +68,7 @@ export function VibeCoding(): React.ReactElement {
   const [step, setStep] = useState(0)
   const [selections, setSelections] = useState<Record<string, string>>({})
   const [builtPrompt, setBuiltPrompt] = useState<string | null>(null)
+  const [allTemplatesOpen, setAllTemplatesOpen] = useState(false)
 
   const handleCardClick = useCallback((card: VibeTemplate) => {
     if (card.openInCode) {
@@ -252,12 +253,26 @@ export function VibeCoding(): React.ReactElement {
               </div>
             </section>
 
-            {/* All Template Cards */}
+            {/* All Template Cards — Collapsible */}
             <section>
-              <h2 className="text-[15px] font-bold text-[var(--ivory-text)] flex items-center gap-2 mb-4">
+              <button
+                type="button"
+                onClick={() => setAllTemplatesOpen(!allTemplatesOpen)}
+                className="w-full flex items-center gap-2 mb-4 text-[15px] font-bold text-[var(--ivory-text)] hover:text-[var(--ivory-text-2)] transition-colors"
+              >
                 <BookOpen size={15} className="text-[var(--ivory-accent)]" />
                 All templates
-              </h2>
+                <span className="text-xs font-normal text-[var(--ivory-text-3)] ml-auto">
+                  {allTemplatesOpen ? 'Hide' : `${ONBOARDING_CARDS.filter(c => !QUICK_ACTIONS.some(q => q.id === c.id) && !PROJECT_TYPES.some(p =>
+                    (p.id === 'website' && c.id === 'build-website') ||
+                    (p.id === 'desktop-app' && c.id === 'build-desktop-app') ||
+                    (p.id === 'mini-game' && c.id === 'build-mini-game') ||
+                    (p.id === 'android-app' && c.id === 'build-android-app')
+                  )).length} templates`}
+                </span>
+                <ChevronRight size={14} className={`text-[var(--ivory-text-3)] transition-transform ${allTemplatesOpen ? 'rotate-90' : ''}`} />
+              </button>
+              {allTemplatesOpen && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {ONBOARDING_CARDS.filter(c => !QUICK_ACTIONS.some(q => q.id === c.id) && !PROJECT_TYPES.some(p =>
                   (p.id === 'website' && c.id === 'build-website') ||
@@ -277,12 +292,12 @@ export function VibeCoding(): React.ReactElement {
                         {card.openInCode && (
                           <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] font-medium">Code mode</span>
                         )}
-                      </div>
-                      <p className="text-[11px] text-[var(--ivory-text-3)] mt-0.5 leading-relaxed">{card.description}</p>
+                      </div>                        <p className="text-[11px] text-[var(--ivory-text-3)] mt-0.5 leading-relaxed">{card.description}</p>
                     </div>
                   </button>
                 ))}
               </div>
+              )}
             </section>
           </div>
         )}
