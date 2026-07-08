@@ -1,6 +1,10 @@
 # Aureon Desk Continuation Notes
 
-Last updated: 2026-07-08
+> **⚠️ HISTORICAL DOCUMENT — Updated 2026-07-08**
+> These continuation notes were written for a session handoff from 2026-07-08.
+> Most of the "Next Work" items have been completed in subsequent sessions.
+> For current handoff instructions, see: `AGENTS.md`.
+> For implementation history, see: `docs/IMPLEMENTATION_LOG.md`.
 
 This file provides a comprehensive handoff of the current codebase and project status so that a new session/agent can immediately understand the architecture and continue development.
 

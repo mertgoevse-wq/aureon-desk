@@ -16,7 +16,7 @@ export function AureonMark({ size = 32, className = '', withRing = true, variant
   if (variant === 'png') {
     return (
       <img
-        src="/brand/aureon-mark.png"
+        src={size <= 64 ? '/brand/aureon-mark-64.png' : size <= 128 ? '/brand/aureon-mark-128.png' : '/brand/aureon-mark-256.png'}
         alt="Aureon Desk"
         width={size}
         height={size}
@@ -65,7 +65,7 @@ export function AureonMark({ size = 32, className = '', withRing = true, variant
 export function AureonLogo({ width = 360, className = '' }: { width?: number; className?: string }): React.ReactElement {
   return (
     <img
-      src="/brand/aureon-logo.png"
+      src="/brand/aureon-logo-512.png"
       alt="Aureon Desk"
       width={width}
       className={className}

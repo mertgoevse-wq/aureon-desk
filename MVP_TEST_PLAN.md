@@ -1,5 +1,10 @@
 # MVP Test Plan — Aureon Desk v0.9.0
 
+> **⚠️ HISTORICAL DOCUMENT — Updated 2026-07-08**
+> This is an original test plan from v0.9.0. The app has evolved significantly since then.
+> Current test count: 331 unit tests + 17 E2E specs.
+> For current state, see: `docs/CURRENT_STATE.md` and `AI_QA_REPORT.md`.
+
 ## Automated Tests (142 passing)
 
 | Suite | Tests | Status |

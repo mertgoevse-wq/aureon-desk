@@ -1,9 +1,9 @@
 # Aureon Desk — Freebuff Project Memory
 
-> **Created:** 2026-07-08
-> **Branch:** main
-> **Commit:** c670501 `docs: update CONTINUATION_NOTES.md for handoff`
-> **Version:** 0.9.0
+> **⚠️ ARCHIVED — 2026-07-08**
+> This is a historical ingestion document from the Freebuff audit session (commit `c670501`).
+> The codebase has evolved significantly since then. For current architecture, see: `ARCHITECTURE.md`.
+> For current state, see: `docs/CURRENT_STATE.md` and `docs/DEEPSEEK_CURRENT_REVIEW.md`.
 
 ---
 

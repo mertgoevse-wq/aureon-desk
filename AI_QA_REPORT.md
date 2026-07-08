@@ -4,6 +4,21 @@
 
 ---
 
+## Cleanup — Duplicate Docs, Assets, Dead Code — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (331 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- Removed 3 old huge PNGs from public/brand/ (~16MB → ~0.15MB)
+- Updated AureonMark.tsx to use optimized size variants
+- Marked 4 historical docs (MVP_TEST_PLAN, ROADMAP, CONTINUATION_NOTES, FREEBUFF_PROJECT_MEMORY)
+
+---
+
 ## Vibe Coding Expansion — 2026-07-08
 
 | Check | Result |

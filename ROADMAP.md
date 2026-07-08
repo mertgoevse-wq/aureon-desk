@@ -1,5 +1,10 @@
 # Roadmap — Aureon Desk
 
+> **⚠️ HISTORICAL DOCUMENT — Updated 2026-07-08**
+> This roadmap was written for v0.9.0. Most v0.9.0 items are now complete.
+> The app is currently at v0.9.33 with 331 tests, full chat, live preview, vibe coding, and brand system.
+> For current state, see: `docs/IMPLEMENTATION_LOG.md` and `docs/CURRENT_STATE.md`.
+
 ## v0.9.0 — Current (Stabilization)
 
 - [x] Windows packaging (NSIS installer + portable)

@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.9.34] - 2026-07-08
+
+### Changed (Cleanup — Duplicate Docs, Assets, Dead Code)
+
+**Asset Consolidation:**
+- Removed 3 old huge PNGs from `public/brand/` (4.8-6.1MB each): `aureon-mark.png`, `aureon-logo.png`, `aureon-github-banner.png`
+- Updated `AureonMark.tsx` to use optimized size variants (64/128/256px for mark, 512px for logo)
+- `public/brand/` reduced from ~16MB to ~0.15MB
+
+**Documentation Marked as Historical:**
+- `MVP_TEST_PLAN.md` — marked HISTORICAL (v0.9.0 test plan, current: 331 tests)
+- `ROADMAP.md` — marked HISTORICAL (v0.9.0 roadmap, most items complete)
+- `CONTINUATION_NOTES.md` — marked HISTORICAL (pointing to AGENTS.md and IMPLEMENTATION_LOG.md)
+- `docs/FREEBUFF_PROJECT_MEMORY.md` — marked ARCHIVED (pointing to ARCHITECTURE.md and CURRENT_STATE.md)
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (331 tests)
+- `npm run build` — ✅ PASS
+
 ## [0.9.33] - 2026-07-08
 
 ### Added (Vibe Coding Guided Builder Expansion)

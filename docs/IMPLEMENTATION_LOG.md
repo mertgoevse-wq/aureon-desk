@@ -1,5 +1,26 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 18:30 +02:00 — Cleanup Pass
+
+Branch: `main`
+Commit at start: `81cd5e4`
+
+### Session Purpose
+Remove duplicate assets, mark stale docs as historical, consolidate public/brand/.
+
+### Files Changed
+- `public/brand/aureon-mark.png`, `aureon-logo.png`, `aureon-github-banner.png` — removed (~16MB)
+- `src/renderer/src/components/shared/AureonMark.tsx` — use optimized size variants
+- `MVP_TEST_PLAN.md`, `ROADMAP.md`, `CONTINUATION_NOTES.md`, `docs/FREEBUFF_PROJECT_MEMORY.md` — marked HISTORICAL/ARCHIVED
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (331 tests) |
+| `npm run build` | ✅ PASS |
+
+---
+
 ## 2026-07-08 18:15 +02:00 — Vibe Coding Guided Builder Expansion
 
 Branch: `main`
