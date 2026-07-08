@@ -1,5 +1,42 @@
 # Changelog
 
+## [0.9.33] - 2026-07-08
+
+### Added (Vibe Coding Guided Builder Expansion)
+
+**Expanded Dashboard:**
+- Rewritten VibeCoding page as full dashboard with hero section ("What do you want to build?"), project type cards (6 types), quick actions grid (6 actions), and all templates gallery
+- 3-tab navigation: Quick Start, Guided Builder, Learn
+
+**New Templates (8→15 cards):**
+- `build-desktop-app` — Electron + React desktop app builder
+- `build-website` — Web page builder with clean typography
+- `build-android-app` — Simple Android app starter
+- `build-mini-game` — Single-file browser game builder
+- `package-windows` — Windows installer packaging guide (deploy category)
+- `write-tests` — Unit/integration test writing guide
+- `cleanup-project` — Dead code removal and project hygiene
+- `start-from-scratch` — Guided beginner project discovery
+
+**Guided Builder:**
+- Added "Android app" option to step 1
+- Generated prompts now include safety instructions: typecheck/tests/build, no hardcoded secrets, document for Git
+
+**Tutorial Cards:**
+- 8 shared `TUTORIAL_CARDS` exported from vibe-templates
+- BeginnerHelp expanded 6→9 blocks: safe local folder, never-paste warning, test-before-push guide
+
+**Entry Points:**
+- ProjectsPage empty state now has "Try Vibe Coding" CTA button
+
+**Tests:**
+- Updated vibe-coding.test.ts: 15 card assertion, new templates verified, tutorial cards tested, safety checks expanded (331 tests total)
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (331 tests, 19 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.32] - 2026-07-08
 
 ### Changed (Premium UI Repair — Brand, Sidebar, Typography, Provider Layout)

@@ -4,6 +4,22 @@
 
 ---
 
+## Vibe Coding Expansion — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (331 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- VibeTemplates: 8→15 cards, guided builder gets android-app, prompted safety instructions
+- VibeCoding dashboard: hero section, 6 project type cards, 6 quick actions, guided builder polish
+- Tutorial cards: 8 shared TUTORIAL_CARDS, BeginnerHelp 6→9 blocks
+- Entry points: ProjectsPage vibe coding CTA
+
+---
+
 ## Premium UI Repair — 2026-07-08
 
 | Check | Result |

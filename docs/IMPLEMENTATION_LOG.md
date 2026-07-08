@@ -1,5 +1,28 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 18:15 +02:00 — Vibe Coding Guided Builder Expansion
+
+Branch: `main`
+Commit at start: `b89e1ef`
+
+### Session Purpose
+Expand vibe coding experience with dashboard, new templates, tutorials, and entry points.
+
+### Files Changed
+- `src/shared/vibe-templates.ts` — 8→15 cards, TUTORIAL_CARDS, android-app option, PROMPT_TEMPLATES
+- `src/renderer/src/pages/VibeCoding.tsx` — dashboard rewrite
+- `src/renderer/src/components/vibe/BeginnerHelp.tsx` — 6→9 blocks
+- `src/renderer/src/pages/ProjectsPage.tsx` — vibe coding CTA
+- `tests/unit/vibe-coding.test.ts` — 31 tests
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (331 tests) |
+| `npm run build` | ✅ PASS |
+
+---
+
 ## 2026-07-08 18:00 +02:00 — Premium UI Repair
 
 Branch: `main`

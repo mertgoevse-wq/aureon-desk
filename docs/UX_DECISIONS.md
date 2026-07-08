@@ -2,6 +2,14 @@
 
 Last updated: 2026-07-08
 
+## Vibe Coding Guided Builder Expansion (2026-07-08)
+
+Decision: Expand Vibe Coding into a full dashboard with project type cards, quick actions, template gallery, guided builder with safety instructions, and beginner tutorials. All actions are safe: insert into composer only, never auto-execute.
+
+Key changes: 15 templates (up from 8), 8 TUTORIAL_CARDS, 9 BeginnerHelp blocks, ProjectsPage CTA.
+
+---
+
 ## Premium UI Repair Session (2026-07-08)
 
 Decision: Implement a comprehensive UI repair targeting the exact issues identified in the DeepSeek source-aware review: brand/header repair, sidebar visual weight reduction, typography normalization, provider layout polish, settings refinement, vibe coding surface, and BeginnerHelp interaction upgrade.

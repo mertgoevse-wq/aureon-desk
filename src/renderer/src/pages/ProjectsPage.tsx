@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   FolderOpen, Plus, Search, Trash2, Archive, RotateCcw,
   ChevronRight, ChevronDown, File, Folder, X,
-  Settings, Shield, AlertTriangle, BookOpen, Wrench, Zap, Eye
+  Settings, Shield, AlertTriangle, BookOpen, Wrench, Zap, Eye, Sparkles
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/shared/Button'
 import { Input } from '../components/shared/Input'
 import { Badge } from '../components/shared/Badge'
@@ -29,6 +30,7 @@ const EMPTY_FORM: ProjectForm = {
 
 export function ProjectsPage(): React.ReactElement {
   const api = useIpc()
+  const navigate = useNavigate()
   const [projects, setProjects] = useState<ProjectRow[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedProject, setSelectedProject] = useState<ProjectRow | null>(null)
@@ -433,9 +435,16 @@ export function ProjectsPage(): React.ReactElement {
               <p className="text-sm text-[var(--ivory-text-3)] max-w-xs mb-4">
                 Projects let you organize chats with local folders, custom instructions, and default AI settings.
               </p>
-              <Button onClick={() => { setShowCreateForm(true); setForm(EMPTY_FORM) }}>
-                <Plus size={14} /> New Project
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button onClick={() => { setShowCreateForm(true); setForm(EMPTY_FORM) }}>
+                  <Plus size={14} /> New Project
+                </Button>
+                <button onClick={() => navigate('/vibe')}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 text-xs font-semibold text-[var(--ivory-text)] transition-all shadow-[var(--shadow-xs)]">
+                  <Sparkles size={13} className="text-[var(--ivory-accent)]" />
+                  New to coding? Try Vibe Coding
+                </button>
+              </div>
             </div>
           )}
         </div>

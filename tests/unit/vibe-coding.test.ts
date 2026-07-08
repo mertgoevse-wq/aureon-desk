@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { ONBOARDING_CARDS, GUIDED_BUILDER_STEPS, buildGuidedPrompt } from '../../src/shared/vibe-templates'
+import { ONBOARDING_CARDS, GUIDED_BUILDER_STEPS, TUTORIAL_CARDS, buildGuidedPrompt, PROMPT_TEMPLATES } from '../../src/shared/vibe-templates'
 
 describe('Vibe Coding Templates', () => {
-  it('should have all 8 onboarding cards', () => {
-    expect(ONBOARDING_CARDS.length).toBe(8)
+  it('should have 15 onboarding cards', () => {
+    expect(ONBOARDING_CARDS.length).toBe(15)
   })
 
   it('each onboarding card should have required fields', () => {
@@ -25,12 +25,38 @@ describe('Vibe Coding Templates', () => {
     expect(categories.has('improve')).toBe(true)
     expect(categories.has('learn')).toBe(true)
     expect(categories.has('setup')).toBe(true)
+    expect(categories.has('deploy')).toBe(true)
   })
 
   it('should have a card that opens in Code mode', () => {
     const codeCard = ONBOARDING_CARDS.find(c => c.openInCode)
     expect(codeCard).toBeDefined()
     expect(codeCard!.id).toBe('create-preview')
+  })
+
+  it('should have package-windows template', () => {
+    const card = ONBOARDING_CARDS.find(c => c.id === 'package-windows')
+    expect(card).toBeDefined()
+    expect(card!.category).toBe('deploy')
+    expect(card!.prompt).toContain('electron-builder')
+  })
+
+  it('should have write-tests template', () => {
+    const card = ONBOARDING_CARDS.find(c => c.id === 'write-tests')
+    expect(card).toBeDefined()
+    expect(card!.category).toBe('improve')
+  })
+
+  it('should have cleanup-project template', () => {
+    const card = ONBOARDING_CARDS.find(c => c.id === 'cleanup-project')
+    expect(card).toBeDefined()
+    expect(card!.category).toBe('improve')
+  })
+
+  it('should have build-android-app template', () => {
+    const card = ONBOARDING_CARDS.find(c => c.id === 'build-android-app')
+    expect(card).toBeDefined()
+    expect(card!.category).toBe('build')
   })
 
   it('prompts should not contain auto-execution commands', () => {
@@ -41,11 +67,30 @@ describe('Vibe Coding Templates', () => {
       }
     }
   })
+
+  it('deploy templates should mention not hardcoding secrets', () => {
+    const card = ONBOARDING_CARDS.find(c => c.id === 'package-windows')
+    expect(card!.prompt).toContain('Do not hardcode')
+  })
+
+  it('PROMPT_TEMPLATES should have entries for all cards', () => {
+    for (const card of ONBOARDING_CARDS) {
+      expect(PROMPT_TEMPLATES[card.id]).toBeDefined()
+      expect(PROMPT_TEMPLATES[card.id].label).toBe(card.label)
+    }
+  })
 })
 
 describe('Guided Builder', () => {
   it('should have 3 steps', () => {
     expect(GUIDED_BUILDER_STEPS.length).toBe(3)
+  })
+
+  it('should include android-app option in step 1', () => {
+    const step1 = GUIDED_BUILDER_STEPS[0]
+    const android = step1.options.find(o => o.id === 'android-app')
+    expect(android).toBeDefined()
+    expect(android!.label).toBe('Android app')
   })
 
   it('each step should have options', () => {
@@ -79,6 +124,8 @@ describe('Guided Builder', () => {
     const prompt = buildGuidedPrompt({ 'what-to-build': 'website' })
     expect(prompt).toContain('beginner-friendly')
     expect(prompt).toContain('step by step')
+    expect(prompt).toContain('Do not hardcode')
+    expect(prompt).toContain('typecheck, tests, and build')
   })
 
   it('should not contain dangerous auto-run instructions', () => {
@@ -100,11 +147,42 @@ describe('Guided Builder', () => {
   })
 })
 
+describe('Tutorial Cards', () => {
+  it('should have 8 tutorial cards', () => {
+    expect(TUTORIAL_CARDS.length).toBe(8)
+  })
+
+  it('each tutorial card should have required fields', () => {
+    for (const card of TUTORIAL_CARDS) {
+      expect(card.id).toBeTruthy()
+      expect(card.question).toBeTruthy()
+      expect(card.answer).toBeTruthy()
+      expect(card.answer.length).toBeGreaterThan(50)
+    }
+  })
+
+  it('should include what-is-safe-folder tutorial', () => {
+    const card = TUTORIAL_CARDS.find(c => c.id === 'what-is-safe-folder')
+    expect(card).toBeDefined()
+    expect(card!.answer).toContain('.env')
+  })
+
+  it('should include never-paste tutorial', () => {
+    const card = TUTORIAL_CARDS.find(c => c.id === 'never-paste')
+    expect(card).toBeDefined()
+    expect(card!.answer).toContain('API keys')
+  })
+
+  it('should include test-before-push tutorial', () => {
+    const card = TUTORIAL_CARDS.find(c => c.id === 'test-before-push')
+    expect(card).toBeDefined()
+    expect(card!.answer).toContain('typecheck')
+  })
+})
+
 describe('Vibe Coding Safety', () => {
   it('suggestion cards should not auto-execute', () => {
-    // Cards only navigate and insert text into composer — they don't auto-run
     for (const card of ONBOARDING_CARDS) {
-      // Prompt templates should describe actions, not execute them
       expect(card.prompt).not.toMatch(/Auto[_-]?[Rr]un/)
       expect(card.prompt).not.toMatch(/auto[_-]?execute/)
     }
@@ -115,8 +193,14 @@ describe('Vibe Coding Safety', () => {
       'what-to-build': 'mini-game',
       'action': 'generate'
     })
-    // Should ask AI to generate, not contain actual commands
     expect(prompt).toContain('help me')
     expect(prompt).toContain('generate')
+  })
+
+  it('tutorial cards should not suggest executing commands directly', () => {
+    for (const card of TUTORIAL_CARDS) {
+      expect(card.answer).not.toContain('rm -rf')
+      expect(card.answer).not.toContain('sudo')
+    }
   })
 })

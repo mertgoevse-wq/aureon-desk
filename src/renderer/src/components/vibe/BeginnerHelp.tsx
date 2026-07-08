@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { HelpCircle, KeyRound, Cpu, FolderOpen, Monitor, Package, Globe, ShieldCheck, ChevronDown } from 'lucide-react'
+import { HelpCircle, KeyRound, Cpu, FolderOpen, Monitor, Package, ShieldCheck, Shield, CheckCircle, ChevronDown } from 'lucide-react'
 
 interface HelpBlock {
   icon: React.ReactElement
@@ -29,6 +29,21 @@ const HELP_BLOCKS: HelpBlock[] = [
     answer: 'LivePreview lets you see your app running in real time inside Aureon Desk. You can build HTML pages, React apps, or run the Coding Demo. It runs on your computer only — not accessible from the internet.'
   },
   {
+    icon: <ShieldCheck size={15} />,
+    question: 'What is a safe local folder?',
+    answer: 'A safe local folder is a project folder on your computer that Aureon can read from. Sensitive files like .env (API keys), .git folders, and node_modules are automatically excluded. Never put passwords or real API keys in project files — use the secure credential vault in Settings instead.'
+  },
+  {
+    icon: <Shield size={15} />,
+    question: 'What should I never paste into chat?',
+    answer: 'Never paste real passwords, API keys, credit card numbers, or private credentials into chat. These are sent to the AI provider. Use the secure credential vault in Settings > Providers for API keys. Aureon automatically redacts detected secrets, but you should still be careful.'
+  },
+  {
+    icon: <CheckCircle size={15} />,
+    question: 'How do I test before pushing to GitHub?',
+    answer: 'Before pushing code: (1) run typecheck to catch errors, (2) run tests to verify nothing is broken, (3) run build to make sure the app compiles, (4) check for secrets with git grep. Aureon can help you with all of these — just ask!'
+  },
+  {
     icon: <Package size={15} />,
     question: 'What does "build" mean?',
     answer: 'Building turns your code into a runnable app. For web apps, it means creating the HTML/CSS/JS files. For desktop apps, it means packaging them into an installer (.exe). Aureon can help generate and preview code instantly.'
@@ -40,10 +55,6 @@ const HELP_BLOCKS: HelpBlock[] = [
   }
 ]
 
-/**
- * Beginner-friendly help blocks explaining key concepts.
- * Used on the Vibe Coding page to help non-programmers understand the app.
- */
 export function BeginnerHelp(): React.ReactElement {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
