@@ -22,6 +22,8 @@ import { Button } from '../components/shared/Button'
 import { Badge } from '../components/shared/Badge'
 import { EmptyState } from '../components/shared/EmptyState'
 import { useIpc } from '../hooks/useIpc'
+import { useNavigate } from 'react-router-dom'
+import { Sparkles } from 'lucide-react'
 
 interface PreviewStatus {
   id: string | null
@@ -36,6 +38,7 @@ interface PreviewStatus {
 
 export function LivePreview(): React.ReactElement {
   const api = useIpc()
+  const navigate = useNavigate()
   
   // Projects and Workspace states
   const [projects, setProjects] = useState<any[]>([])
@@ -432,11 +435,22 @@ export function LivePreview(): React.ReactElement {
                 </div>
               </div>
             ) : (
-              <EmptyState
-                icon={<Monitor size={36} strokeWidth={1.5} className="text-[var(--ivory-accent)]" />}
-                title="Local Server Idle"
-                description="Run the Coding Demo App or build a custom task widget. Once compiled, the interactive live application preview will render here."
-              />
+              <div className="flex flex-col items-center gap-4">
+                <EmptyState
+                  icon={<Monitor size={36} strokeWidth={1.5} className="text-[var(--ivory-accent)]" />}
+                  title="Local Server Idle"
+                  description="Run the Coding Demo App or build a custom task widget. Once compiled, the interactive live application preview will render here."
+                />
+                <button
+                  type="button"
+                  onClick={() => navigate('/vibe')}
+                  data-testid="code-vibe-coding-cta"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 text-[12px] font-semibold text-[var(--ivory-text)] transition-all shadow-[var(--shadow-xs)]"
+                >
+                  <Sparkles size={13} className="text-[var(--ivory-accent)]" />
+                  New to coding? Try Vibe Coding
+                </button>
+              </div>
             )}
 
             {/* Server logs panel */}

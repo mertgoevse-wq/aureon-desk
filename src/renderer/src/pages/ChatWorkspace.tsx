@@ -365,6 +365,16 @@ export function ChatWorkspace(): React.ReactElement {
                     </button>
                   ))}
                 </div>
+                {/* Vibe Coding CTA */}
+                <button
+                  type="button"
+                  onClick={() => navigate('/vibe')}
+                  data-testid="suggestion-vibe-coding"
+                  className="mt-2 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 text-[12px] font-semibold text-[var(--ivory-text)] transition-all shadow-[var(--shadow-xs)]"
+                >
+                  <Sparkles size={13} className="text-[var(--ivory-accent)]" />
+                  New to coding? Try Vibe Coding — build apps without writing code
+                </button>
               </div>
 
               {/* Recent Chats List */}

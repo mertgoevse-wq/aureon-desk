@@ -23,6 +23,7 @@ import { useChatStore } from '../stores/chatStore'
 import { ChatList } from '../components/sidebar/ChatList'
 import { useIpc } from '../hooks/useIpc'
 import { AureonMark } from '../components/shared/AureonMark'
+import { Sparkles } from 'lucide-react'
 import type { ChatListItem } from '@shared/types/chat'
 
 interface WorkflowItem {
@@ -374,6 +375,15 @@ export function Sidebar(): React.ReactElement {
             >
               <Wrench size={13} className="text-[var(--ivory-accent)]" />
               Tools
+            </button>
+            <button
+              onClick={() => navigate('/vibe')}
+              className={`col-span-2 h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
+                ${isActive('/vibe') ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              data-testid="nav-vibe"
+            >
+              <Sparkles size={13} className="text-[var(--ivory-accent)]" />
+              Vibe Coding
             </button>
           </div>
         </div>

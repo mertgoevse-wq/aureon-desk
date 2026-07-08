@@ -17,6 +17,7 @@ import { ProjectsPage } from './pages/ProjectsPage'
 import { LogsPage } from './pages/settings/LogsPage'
 import { AppearancePage } from './pages/settings/AppearancePage'
 import { LivePreview } from './pages/LivePreview'
+import { VibeCoding } from './pages/VibeCoding'
 import { CapabilitiesPage } from './pages/settings/CapabilitiesPage'
 
 const router = createHashRouter([
@@ -30,6 +31,7 @@ const router = createHashRouter([
       { path: 'projects', element: <ProjectsPage /> },
       { path: 'tools', element: <ToolsPage /> },
       { path: 'preview', element: <LivePreview /> },
+      { path: 'vibe', element: <VibeCoding /> },
       {
         path: 'settings',
         element: <SettingsLayout />,
