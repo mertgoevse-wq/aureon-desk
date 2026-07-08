@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.9.37] - 2026-07-08
+
+### Added (Compact Modals & Popovers)
+
+**Overlay System:**
+- Created `Popover.tsx`: reusable `Popover` component with anchored positioning, alignment/side props, ESC/click-outside/focus-loss close
+- Created `SelectPopover`: searchable select list with keyboard navigation (arrow keys, enter, esc), auto-focus, scroll-into-view
+
+**Enhanced Modal:**
+- Complete rewrite with focus trapping (Tab/Shift+Tab cycling between focusable elements)
+- Compact sizing: xs (320px), sm (380px), md (460px), lg (560px) — within 420-560px target
+- Proper ARIA attributes (`role="dialog"`, `aria-modal="true"`)
+- Smooth scale+opacity enter/exit transitions
+- Auto-focus first input/button on open, restore focus on close
+- Body scroll locking with proper cleanup
+- `mounted` state properly resets after exit animation (200ms)
+
+**Converted to Modal:**
+- ProvidersPage "Add Custom Provider" form: full-width inline → compact 380px Modal dialog
+- Removed unused `X` icon import from ProvidersPage
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (331 tests, 19 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.36] - 2026-07-08
 
 ### Changed (Desktop Shell Simplification)

@@ -1,7 +1,7 @@
 import { useEffect, useCallback, useState } from 'react'
 import {
   Eye, EyeOff, Trash2, Check, AlertTriangle, Plus,
-  Wifi, Zap, Server, Monitor, Globe, Star, X, Wrench,
+  Wifi, Zap, Server, Monitor, Globe, Star, Wrench,
   Activity, Clock
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'
@@ -9,6 +9,7 @@ import { Input } from '../../components/shared/Input'
 import { Toggle } from '../../components/shared/Toggle'
 import { Badge } from '../../components/shared/Badge'
 import { Card } from '../../components/shared/Card'
+import { Modal } from '../../components/shared/Modal'
 import { showToast } from '../../components/shared/Toast'
 import { useIpc } from '../../hooks/useIpc'
 import { useProviderStore } from '../../stores/providerStore'
@@ -271,27 +272,26 @@ export function ProvidersPage(): React.ReactElement {
         </div>
       </Card>
 
-      {/* Custom Provider Form */}
-      {showCustomForm && (
-        <div className="mb-5 p-5 rounded-[var(--radius-lg)] border-2 border-[var(--ivory-accent)]/30 bg-[var(--ivory-bg)]">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold">Add Custom OpenAI-Compatible Provider</h3>
-            <button onClick={() => setShowCustomForm(false)} className="text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]"><X size={16} /></button>
-          </div>
-          <div className="space-y-3">
-            <Input label="Display Name" placeholder="My Provider" value={customForm.name}
-              onChange={e => setCustomForm(f => ({ ...f, name: e.target.value }))} />
-            <Input label="Slug (no spaces)" placeholder="my-provider" value={customForm.slug}
-              onChange={e => setCustomForm(f => ({ ...f, slug: e.target.value.replace(/\s+/g, '-').toLowerCase() }))} />
-            <Input label="Base URL" placeholder="http://localhost:8000/v1" value={customForm.baseUrl}
-              onChange={e => setCustomForm(f => ({ ...f, baseUrl: e.target.value }))} />
-            <Input label="API Key (optional)" type="password" placeholder="sk-..." value={customForm.apiKey}
-              onChange={e => setCustomForm(f => ({ ...f, apiKey: e.target.value }))} />
-            {customError && <p className="text-xs text-red-600">{customError}</p>}
-            <Button onClick={handleCreateCustom}>Create Provider</Button>
-          </div>
+      {/* Custom Provider Modal */}
+      <Modal
+        isOpen={showCustomForm}
+        onClose={() => { setShowCustomForm(false); setCustomError(null) }}
+        title="Add Custom Provider"
+        size="sm"
+      >
+        <div className="space-y-3">
+          <Input label="Display Name" placeholder="My Provider" value={customForm.name}
+            onChange={e => setCustomForm(f => ({ ...f, name: e.target.value }))} />
+          <Input label="Slug (no spaces)" placeholder="my-provider" value={customForm.slug}
+            onChange={e => setCustomForm(f => ({ ...f, slug: e.target.value.replace(/\s+/g, '-').toLowerCase() }))} />
+          <Input label="Base URL" placeholder="http://localhost:8000/v1" value={customForm.baseUrl}
+            onChange={e => setCustomForm(f => ({ ...f, baseUrl: e.target.value }))} />
+          <Input label="API Key (optional)" type="password" placeholder="sk-..." value={customForm.apiKey}
+            onChange={e => setCustomForm(f => ({ ...f, apiKey: e.target.value }))} />
+          {customError && <p className="text-xs text-red-600">{customError}</p>}
+          <Button onClick={handleCreateCustom} className="w-full">Create Provider</Button>
         </div>
-      )}
+      </Modal>
 
       <div className="space-y-5">
         {adapters.map((adapter: ProviderAdapterInfo) => {

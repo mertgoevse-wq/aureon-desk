@@ -2,6 +2,26 @@
 
 Last updated: 2026-07-08
 
+## Compact Overlay System (2026-07-08)
+
+Decision: Replace oversized center panels and inline forms with compact modal dialogs and anchored popovers. Create a reusable overlay system that doesn't take over the full center workspace.
+
+Components created:
+- **Popover**: Anchored dropdown with ESC/click-outside/focus-loss close, alignment/side positioning. Used for selectors, dropdowns, quick actions.
+- **SelectPopover**: Searchable select list built on Popover, with keyboard navigation (arrow keys, enter, esc), auto-focus, and scroll-into-view.
+- **Modal** (enhanced): Focus trapping, compact sizing (320-560px), smooth transitions, ARIA attributes, body scroll locking.
+
+First application: ProvidersPage "Add Custom Provider" form — was a full-width inline form; now a compact 380px Modal dialog.
+
+Design principles:
+- Small by default, expand only when content requires
+- max-width 320-560px depending on use
+- ESC closes, click outside closes, focus resides inside
+- Smooth scale+opacity transitions (200ms)
+- No overlay blocking normal input when closed
+
+---
+
 ## Native Window Frame Decision (2026-07-08)
 
 Decision: Remove custom frameless window and switch to native Windows frame with native min/max/close controls.

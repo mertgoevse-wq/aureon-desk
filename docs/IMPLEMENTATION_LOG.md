@@ -1,5 +1,46 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 20:00 +02:00 — Compact Modals & Popovers
+
+Branch: `main`
+Commit at start: `42f76a9`
+
+### Session Purpose
+Replace oversized center panels and selectors with compact modal dialogs and anchored popovers. Create reusable overlay system components.
+
+### Files Changed
+
+**Created:**
+- **New:** `src/renderer/src/components/shared/Popover.tsx` — reusable `Popover` (anchored dropdown with ESC/click-outside/focus-loss close, alignment/side props) and `SelectPopover` (searchable select list with keyboard navigation)
+
+**Enhanced:**
+- **Modified:** `src/renderer/src/components/shared/Modal.tsx` — complete rewrite: added focus trapping (Tab/Shift+Tab cycling), compact sizing (xs:320px, sm:380px, md:460px, lg:560px), proper ARIA attributes, body overflow management, smooth scale+opacity transitions, auto-focus first element, restore focus on close, `mounted` state with exit animation cleanup
+
+**Converted:**
+- **Modified:** `src/renderer/src/pages/settings/ProvidersPage.tsx` — "Add Custom Provider" form converted from full-width inline form to compact Modal dialog (size='sm': 380px max), removed unused `X` icon import
+
+**Docs:**
+- **Modified:** `CHANGELOG.md` — v0.9.37 entry
+- **Modified:** `AI_QA_REPORT.md` — compact popovers results
+- **Modified:** `docs/IMPLEMENTATION_LOG.md` — this entry
+- **Modified:** `docs/UX_DECISIONS.md` — overlay system decision
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (331 tests, 19 files) |
+| `npm run build` | ✅ PASS |
+
+### Key Changes Summary
+- Created reusable Popover + SelectPopover components
+- Enhanced Modal with focus trapping and compact sizing
+- Converted ProvidersPage Add Custom form to Modal
+- Deferred: applying Popover to remaining selectors (ModelSelector, style/project selectors) — they already use positioned dropdown patterns
+
+---
+
 ## 2026-07-08 19:45 +02:00 — Desktop Shell Simplification
 
 Branch: `main`

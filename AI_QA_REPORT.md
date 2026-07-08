@@ -4,6 +4,22 @@
 
 ---
 
+## Compact Modals & Popovers — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (331 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- Created `Popover.tsx` — reusable anchored popover + searchable SelectPopover
+- Enhanced `Modal.tsx` — focus trapping, compact sizing (320-560px), smooth transitions, ARIA
+- Converted ProvidersPage Add Custom form to compact 380px Modal
+- Removed unused `X` icon import
+
+---
+
 ## Desktop Shell Simplification — 2026-07-08
 
 | Check | Result |
