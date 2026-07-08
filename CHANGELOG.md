@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.9.31] - 2026-07-08
+
+### Added (DeepSeek Manual QA Baseline)
+- **docs/DEEPSEEK_CURRENT_REVIEW.md**: Comprehensive source-aware codebase review with architecture summary, UI screens inventory (16 screens), 10 current UI problems ranked by severity, 6 duplicate/dead-code suspects, 5 asset size issues, provider layout analysis, typography audit, sidebar/header analysis, vibe coding improvement opportunities, and prioritized 14-step implementation order.
+
+### Verified
+- `npm run verify:native` — ✅ PASS
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (318 tests)
+- `npm run build` — ✅ PASS
+- Secret scan — ✅ PASS
+
 ## [0.9.30] - 2026-07-08
 
 ### Changed (Repo Cleanup — Duplicates, Dead Code, Stale Artifacts)

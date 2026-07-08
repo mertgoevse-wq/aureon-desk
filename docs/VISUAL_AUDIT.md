@@ -1,9 +1,75 @@
 # Aureon Desk — Visual Audit
 
 > **Audit date:** 2026-07-08
-> **Latest auditor:** Freebuff (DeepSeek V4 Pro) — code-based inspection + build verification
-> **Previous auditor:** Antigravity/Gemini — code-based inspection (earlier session)
-> **Branch:** main · commit `c670501`
+> **Latest auditor:** DeepSeek V4 Pro — source-aware manual QA baseline (commit `c4cea6d`)
+> **Previous auditor:** Freebuff (DeepSeek V4 Pro) — code-based inspection (commit `c670501`)
+> **Earlier auditor:** Antigravity/Gemini — code-based inspection (earlier session)
+> **Branch:** main · commit `c4cea6d`
+
+---
+
+## DeepSeek Source-Aware Manual QA (2026-07-08 — commit `c4cea6d`)
+
+### Current State Summary
+
+**15 UI screens inventoried** — 13 working, 2 partial (Cowork simulated, Tools/MCP registry only).
+
+### Top 10 UI Problems (Severity-Ranked)
+
+#### Critical
+1. **Sidebar visual dominance**: Despite 260px width, the `bg-[var(--ivory-surface)]` (#F3EFE6) is noticeably darker than content area `bg-[var(--ivory-bg)]` (#FAF7F2), creating a strong visual divide that feels "web dashboard" rather than premium desktop.
+2. **Typography inconsistency**: Codebase mixes `text-[10px]`, `text-[11px]`, `text-[12px]`, `text-[13px]`, `text-xs`, `text-sm` arbitrarily. Labels in settings go down to 10px — below readability thresholds.
+3. **Provider page raw `<input>`**: The API key field uses a raw `<input>` element instead of the shared `<Input>` component, creating inconsistency.
+
+#### Moderate
+4. **CoworkPage simulated**: Task lifecycle is entirely simulated with `setTimeout` — no real backend.
+5. **Vibe Coding not prominent**: Single sidebar button + chat CTA banner. Should be first-class.
+6. **Orange accent saturation**: `--ivory-accent: #C75B39` appears on nearly every interactive element (primary buttons, toggles, brand marks).
+7. **Toggle re-export**: 4 callers still import Toggle from SettingsComponents instead of directly from shared.
+
+#### Minor
+8. **Brand assets duplicated**: Same mark/logo in 3 locations (`assets/brand/`, `public/brand/`, `assets/brand/nano-banana/`).
+9. **Inline SVG in AureonMark**: SVG paths hardcoded in component — can't swap brand image without code change.
+10. **ChatWorkspace monolithic**: 500+ lines — home page + active chat logic in one component.
+
+### Duplicate/Dead-Code Suspects
+| Suspect | Detail |
+|---------|--------|
+| StatusPill vs Badge | Both colored pill components with nearly identical purpose |
+| Toggle re-export | SettingsComponents re-exports Toggle, creates dual import paths |
+| Brand assets | Mark/logo duplicated in 3 locations |
+| SettingsPlaceholderPage | Empty shells for extensions and security routes |
+| Cowork vs Capabilities | Both pages have independent browser/computer use toggles |
+| chat-completion.service.ts | 8 adapters, only OpenRouter thoroughly tested live |
+
+### Asset Size Issues
+| File | Size | Concern |
+|------|------|---------|
+| `aureon-logo.png` (Nano Banana) | ~4.8 MB | Too large for renderer use |
+| `aureon-dark-logo-presentation.png` | ~4.8 MB | Unused — dead weight |
+| `aureon-mark-monochrome.png` | TBD | Used by AureonMark PNG variant |
+
+### 14-Step Implementation Order
+
+**Priority 1 — Visual De-Webification:**
+1. Reduce sidebar visual weight
+2. Normalize typography scale (remove `text-[10px]`, minimum 11px)
+3. Replace raw `<input>` in ProvidersPage with shared `<Input>`
+4. Reduce brand asset size (optimize 4.8MB PNGs)
+5. Replace BeginnerHelp `<details>` with custom accordion
+6. Fix StatusPill/Badge duplication
+
+**Priority 2 — Feature Polish:**
+7. Make Vibe Coding a first-class tab
+8. Wire CoworkPage to real task execution
+9. Add dark mode toggle
+10. Split ChatWorkspace into ChatHome + ChatActive
+
+**Priority 3 — Quality:**
+11. Remove SettingsComponents Toggle re-export
+12. Deduplicate brand assets
+13. Run full E2E suite
+14. Optimize large brand images
 
 ---
 

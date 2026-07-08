@@ -4,6 +4,27 @@
 
 ---
 
+## DeepSeek Manual QA Baseline — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (318 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| Secret scan (`git grep "sk-or-v1"`) | ✅ PASS — only docs/test mock references |
+| Source-aware review | ✅ Complete — `docs/DEEPSEEK_CURRENT_REVIEW.md` |
+
+### Review Summary
+- **Architecture**: Electron 43 + React 19 + TypeScript + Tailwind CSS v4 + drizzle-orm + better-sqlite3
+- **UI screens**: 15 screens inventoried with pass/fail status
+- **Top 3 UI problems**: Sidebar too dominant, typography inconsistent (10px labels, mixed scale), provider page raw `<input>` elements
+- **Duplicate suspects**: 6 identified (StatusPill/Badge, Toggle re-export, brand assets ×3, SettingsPlaceholderPage, Cowork/Capabilities overlap, unused adapter code)
+- **Asset issues**: 4.8MB logo PNGs need optimization, brand assets duplicated in 3 locations
+- **Next steps**: 14-step implementation order — visual de-webification → feature polish → quality cleanup
+
+---
+
 ## Repo Cleanup — 2026-07-08
 
 | Check | Result |

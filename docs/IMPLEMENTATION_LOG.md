@@ -1,5 +1,42 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 17:30 +02:00 — DeepSeek Manual QA Baseline
+
+Branch: `main`
+Commit at start: `c4cea6d` ("Clean duplicate files dead code and stale artifacts")
+
+### Session Purpose
+Source-aware manual QA: inspect the complete current source, document all UI issues, record a baseline review, and push to GitHub. No E2E was run.
+
+### Files Created
+- **New:** `docs/DEEPSEEK_CURRENT_REVIEW.md` — comprehensive source-aware codebase review
+
+### Files Updated
+- **Modified:** `CHANGELOG.md` — v0.9.31 entry
+- **Modified:** `AI_QA_REPORT.md` — DeepSeek manual QA baseline entry
+- **Modified:** `docs/VISUAL_AUDIT.md` — updated with DeepSeek source-aware findings
+- **Modified:** `docs/IMPLEMENTATION_LOG.md` — this entry
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `git status` | `main`, clean + `assets/brand/source/` untracked |
+| `git branch -a -vv` | `main` at `c4cea6d`, synced with origin |
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (318 tests) |
+| `npm run build` | ✅ PASS |
+| Secret scan | ✅ PASS |
+
+### Key Findings
+- **3 critical UI problems**: Sidebar visual dominance, typography inconsistency (10px labels), provider page raw `<input>` elements
+- **6 duplicate/dead-code suspects**: StatusPill/Badge, Toggle re-export, brand assets ×3, SettingsPlaceholderPage, Cowork/Capabilities overlap
+- **5 asset size issues**: 4.8MB logo PNGs need optimization
+- **14-step implementation order**: Visual de-webification → Feature polish → Quality cleanup
+
+---
+
 ## 2026-07-08 16:15 +02:00 — Nano Banana Brand Asset Integration
 
 Branch: `main`
