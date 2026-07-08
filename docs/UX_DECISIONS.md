@@ -2,6 +2,26 @@
 
 Last updated: 2026-07-08
 
+## Premium UI Repair Session (2026-07-08)
+
+Decision: Implement a comprehensive UI repair targeting the exact issues identified in the DeepSeek source-aware review: brand/header repair, sidebar visual weight reduction, typography normalization, provider layout polish, settings refinement, vibe coding surface, and BeginnerHelp interaction upgrade.
+
+Key changes:
+- Sidebar width tightened to 240px default with lighter surface color (#F7F3EC) for less visual divide
+- Semantic typography scale introduced (text-ui-caption through text-ui-2xl) to replace arbitrary px values
+- Minimum readable text raised from 10px to 11px everywhere except compact badges/kbd
+- BrandLockup component created to centralize brand display (mark + title + subtitle)
+- Save Key button in ProvidersPage toned down from primary/orange to secondary
+- 8 vibe coding suggestion chips added to chat home for beginner discoverability
+- BeginnerHelp `<details>` replaced with custom accordion for polished interaction
+
+Decision to defer:
+- Provider card full structural reorg (A-E sections) — too large for this session
+- Collapsed sidebar width change (48px is functional; 56-68px adds bulk)
+- Code mode vibe coding suggestion chips — existing CTA button is sufficient for now
+
+---
+
 ## Freebuff Ingestion Session (2026-07-08)
 
 Decision: Conducted a full code-based visual audit without running E2E tests or making code changes. Documented 8 visual issues, 5 duplicate/dead code suspects, and inventoried 5 untracked Nano Banana brand assets.

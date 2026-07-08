@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import {
   Eye, EyeOff, Trash2, Check, AlertTriangle, Plus,
   Wifi, Zap, Server, Monitor, Globe, Star, X, Wrench,
@@ -309,7 +309,7 @@ export function ProvidersPage(): React.ReactElement {
               <div className="flex items-start justify-between mb-4 gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <h3 className="text-[15px] font-semibold text-[var(--ivory-text)]">{adapter.name}</h3>
+                    <h3 className="text-ui-lg font-semibold text-[var(--ivory-text)]">{adapter.name}</h3>
                     {/* Provider status */}
                     {provider ? (
                       <ProviderStatusBadge
@@ -322,11 +322,11 @@ export function ProvidersPage(): React.ReactElement {
                       <Badge variant="default" size="sm">Not configured</Badge>
                     )}
                   </div>
-                  <p className="text-[11px] text-[var(--ivory-text-3)] leading-relaxed">{adapter.description}</p>
+                  <p className="text-ui-caption text-[var(--ivory-text-3)] leading-relaxed">{adapter.description}</p>
                 </div>
                 {provider && (
                   <div className="flex items-center gap-1.5 shrink-0">
-                    <Button variant="ghost" size="sm" onClick={() => handleTestConnection(provider.id)} disabled={isTesting} className="text-[11px]">
+                    <Button variant="ghost" size="sm" onClick={() => handleTestConnection(provider.id)} disabled={isTesting} className="text-ui-caption">
                       <Wifi size={13} className={isTesting ? 'animate-pulse' : ''} />
                       {isTesting ? 'Testing...' : 'Test'}
                     </Button>
@@ -368,11 +368,11 @@ export function ProvidersPage(): React.ReactElement {
               {/* Capabilities */}
               <div className="flex flex-wrap gap-1 mb-4">
                 {adapter.capabilities.map(cap => (
-                  <span key={cap} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--ivory-bg)] text-[var(--ivory-text-2)] border border-[var(--ivory-border)]/60">
+                  <span key={cap} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-ui-caption font-medium bg-[var(--ivory-bg)] text-[var(--ivory-text-2)] border border-[var(--ivory-border)]/60">
                     {CAPABILITY_LABELS[cap]?.icon} {CAPABILITY_LABELS[cap]?.label || cap}
                   </span>
                 ))}
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${adapter.authType === 'none' ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] border-[var(--ivory-success)]/20' : 'bg-[var(--ivory-warning-bg)] text-[var(--ivory-warning)] border-[var(--ivory-warning)]/20'}`}>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-ui-caption font-medium border ${adapter.authType === 'none' ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] border-[var(--ivory-success)]/20' : 'bg-[var(--ivory-warning-bg)] text-[var(--ivory-warning)] border-[var(--ivory-warning)]/20'}`}>
                   {adapter.authType === 'none' ? 'No key needed' : 'API key'}
                 </span>
               </div>
@@ -388,10 +388,10 @@ export function ProvidersPage(): React.ReactElement {
               {/* API Key */}
               {adapter.authType !== 'none' && (
                 <div className="mb-4">
-                  <label className="text-[12px] font-semibold text-[var(--ivory-text)] block mb-2">API Key</label>
+                  <label className="text-xs font-semibold text-[var(--ivory-text)] block mb-2">API Key</label>
                   {hasKey ? (
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/60 rounded-xl px-3 py-2 text-[13px] text-[var(--ivory-success)] font-mono">
+                      <div className="flex-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/60 rounded-xl px-3 py-2 text-sm text-[var(--ivory-success)] font-mono">
                         ●●●●●●●● Key configured
                       </div>
                       <Button variant="ghost" size="sm" onClick={() => provider && setEditingKey(prev => ({ ...prev, [provider.id]: '' }))}>Change</Button>
@@ -408,7 +408,7 @@ export function ProvidersPage(): React.ReactElement {
                             onChange={(e) => provider && setEditingKey(prev => ({ ...prev, [provider.id]: e.target.value }))}
                             placeholder={`Enter your ${adapter.name} API key`}
                             type={showing ? 'text' : 'password'}
-                            className="w-full px-3 py-2 text-[13px] rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] text-[var(--ivory-text)] placeholder:text-[var(--ivory-text-3)] shadow-[var(--shadow-xs)] hover:border-[var(--ivory-border-2)] focus:outline-none focus:border-[var(--ivory-accent)] focus:ring-1 focus:ring-[var(--ivory-accent)] transition-colors"
+                            className="w-full px-3 py-2 text-sm rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] text-[var(--ivory-text)] placeholder:text-[var(--ivory-text-3)] shadow-[var(--shadow-xs)] hover:border-[var(--ivory-border-2)] focus:outline-none focus:border-[var(--ivory-accent)] focus:ring-1 focus:ring-[var(--ivory-accent)] transition-colors"
                           />
                           <button onClick={() => provider && setShowKey(prev => ({ ...prev, [provider.id]: !showing }))}
                             className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] transition-colors"
@@ -416,7 +416,7 @@ export function ProvidersPage(): React.ReactElement {
                             {showing ? <EyeOff size={14} /> : <Eye size={14} />}
                           </button>
                         </div>
-                        <Button size="md" onClick={() => provider && handleSaveKey(provider.id)} disabled={!editing || saving} className="shrink-0">
+                        <Button size="md" variant="secondary" onClick={() => provider && handleSaveKey(provider.id)} disabled={!editing || saving} className="shrink-0">
                           {saving ? 'Saving...' : 'Save Key'}
                         </Button>
                       </div>
@@ -435,14 +435,14 @@ export function ProvidersPage(): React.ReactElement {
               {/* Models */}
               {provider && provider.models && provider.models.length > 0 && (
                 <div className="mt-4 pt-3 border-t border-[var(--ivory-border)]/60">
-                  <p className="text-[11px] font-semibold text-[var(--ivory-text-2)] mb-2">Models</p>
+                  <p className="text-ui-caption font-semibold text-[var(--ivory-text-2)] mb-2">Models</p>
                   <div className="space-y-0.5">
                     {provider.models.map((model) => (
                       <div key={model.id} className="flex items-center justify-between py-2 px-2 rounded-xl hover:bg-[var(--ivory-surface)] text-xs">
                         <div className="flex items-center gap-2 min-w-0">
-                          <span className="text-[12px] font-medium text-[var(--ivory-text)] truncate">{model.display_name}</span>
+                          <span className="text-xs font-medium text-[var(--ivory-text)] truncate">{model.display_name}</span>
                           {model.context_window && (
-                            <span className="text-[10px] text-[var(--ivory-text-3)] shrink-0">{Math.round(model.context_window / 1000)}k ctx</span>
+                            <span className="text-ui-caption text-[var(--ivory-text-3)] shrink-0">{Math.round(model.context_window / 1000)}k ctx</span>
                           )}
                         </div>
                         <div className="flex items-center gap-2 shrink-0">

@@ -1,5 +1,5 @@
-import React from 'react'
-import { HelpCircle, KeyRound, Cpu, FolderOpen, Monitor, Package, Globe, ShieldCheck } from 'lucide-react'
+import React, { useState } from 'react'
+import { HelpCircle, KeyRound, Cpu, FolderOpen, Monitor, Package, Globe, ShieldCheck, ChevronDown } from 'lucide-react'
 
 interface HelpBlock {
   icon: React.ReactElement
@@ -45,25 +45,36 @@ const HELP_BLOCKS: HelpBlock[] = [
  * Used on the Vibe Coding page to help non-programmers understand the app.
  */
 export function BeginnerHelp(): React.ReactElement {
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+
   return (
     <div className="rounded-2xl border border-[var(--ivory-border)]/60 bg-[var(--ivory-surface)]/60 p-4" data-testid="beginner-help">
       <div className="flex items-center gap-2 mb-3">
         <HelpCircle size={15} className="text-[var(--ivory-accent)]" />
-        <h3 className="text-[13px] font-bold text-[var(--ivory-text)]">Beginner's Guide</h3>
+        <h3 className="text-sm font-bold text-[var(--ivory-text)]">Beginner's Guide</h3>
       </div>
       <div className="space-y-2.5">
-        {HELP_BLOCKS.map((block, i) => (
-          <details key={i} className="group rounded-xl border border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)] overflow-hidden" data-testid={`help-${i}`}>
-            <summary className="flex items-center gap-2 px-3 py-2.5 cursor-pointer text-[12px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-colors list-none">
-              <span className="text-[var(--ivory-accent)] shrink-0">{block.icon}</span>
-              <span>{block.question}</span>
-              <span className="ml-auto text-[10px] text-[var(--ivory-text-3)] group-open:rotate-180 transition-transform">▼</span>
-            </summary>
-            <div className="px-3 pb-3 pt-1 text-[11px] text-[var(--ivory-text-2)] leading-relaxed border-t border-[var(--ivory-border)]/30">
-              {block.answer}
+        {HELP_BLOCKS.map((block, i) => {
+          const isOpen = openIndex === i
+          return (
+            <div key={i} className="rounded-xl border border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)] overflow-hidden" data-testid={`help-${i}`}>
+              <button
+                type="button"
+                onClick={() => setOpenIndex(isOpen ? null : i)}
+                className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-colors text-left focus:outline-none"
+              >
+                <span className="text-[var(--ivory-accent)] shrink-0">{block.icon}</span>
+                <span className="flex-1">{block.question}</span>
+                <ChevronDown size={13} className={`text-[var(--ivory-text-3)] shrink-0 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {isOpen && (
+                <div className="px-3 pb-3 pt-1 text-ui-caption text-[var(--ivory-text-2)] leading-relaxed border-t border-[var(--ivory-border)]/30 animate-fade-in">
+                  {block.answer}
+                </div>
+              )}
             </div>
-          </details>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

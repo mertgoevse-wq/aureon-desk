@@ -8,14 +8,14 @@ interface SettingsSectionProps {
 
 export function SettingsSection({ title, description, children }: SettingsSectionProps): React.ReactElement {
   return (
-    <section className="space-y-4 pt-1 pb-4">
+    <section className="space-y-3 pt-1 pb-4">
       <div className="space-y-1">
-        <h3 className="text-sm font-semibold text-[var(--ivory-text)] display-text">{title}</h3>
+        <h3 className="text-ui-lg font-semibold text-[var(--ivory-text)] display-text">{title}</h3>
         {description && (
-          <p className="text-xs text-[var(--ivory-text-3)] leading-relaxed">{description}</p>
+          <p className="text-ui-xs text-[var(--ivory-text-3)] leading-relaxed">{description}</p>
         )}
       </div>
-      <div className="rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-surface)] overflow-hidden divide-y divide-[var(--ivory-border)]">
+      <div className="rounded-2xl border border-[var(--ivory-border)]/60 bg-[var(--ivory-elevated)] overflow-hidden divide-y divide-[var(--ivory-border)]/40">
         {children}
       </div>
     </section>
@@ -31,11 +31,11 @@ interface SettingsRowProps {
 
 export function SettingsRow({ label, description, children, dataTestId }: SettingsRowProps): React.ReactElement {
   return (
-    <div className="p-4 flex items-center justify-between gap-6 hover:bg-[var(--ivory-elevated)]/20 transition-colors" data-testid={dataTestId}>
-      <div className="min-w-0 flex-1 space-y-1">
-        <span className="block text-xs font-semibold text-[var(--ivory-text)]">{label}</span>
+    <div className="px-5 py-3.5 flex items-center justify-between gap-6 hover:bg-[var(--ivory-surface)]/60 transition-colors" data-testid={dataTestId}>
+      <div className="min-w-0 flex-1 space-y-0.5">
+        <span className="block text-ui-sm font-semibold text-[var(--ivory-text)]">{label}</span>
         {description && (
-          <span className="block text-[11px] text-[var(--ivory-text-3)] leading-relaxed">{description}</span>
+          <span className="block text-ui-caption text-[var(--ivory-text-3)] leading-relaxed">{description}</span>
         )}
       </div>
       <div className="shrink-0 flex items-center gap-3">
@@ -91,16 +91,16 @@ interface DangerZoneProps {
 
 export function DangerZone({ label, description, actionLabel, onClick, disabled = false, dataTestId }: DangerZoneProps): React.ReactElement {
   return (
-    <div className="p-4 rounded-2xl border border-rose-200 bg-rose-50/40 flex items-center justify-between gap-6" data-testid={dataTestId}>
-      <div className="min-w-0 flex-1 space-y-1">
-        <span className="block text-xs font-semibold text-rose-800">{label}</span>
-        <span className="block text-[11px] text-rose-700/80 leading-relaxed">{description}</span>
+    <div className="px-5 py-4 rounded-2xl border border-[var(--ivory-error)]/20 bg-[var(--ivory-error-bg)]/40 flex items-center justify-between gap-6" data-testid={dataTestId}>
+      <div className="min-w-0 flex-1 space-y-0.5">
+        <span className="block text-ui-sm font-semibold text-[var(--ivory-text)]">{label}</span>
+        <span className="block text-ui-caption text-[var(--ivory-text-3)] leading-relaxed">{description}</span>
       </div>
       <button
         type="button"
         disabled={disabled}
         onClick={onClick}
-        className="px-3.5 py-1.5 rounded-xl border border-rose-200 bg-white text-xs font-semibold text-rose-700 hover:bg-rose-50 active:bg-rose-100/50 transition-colors shadow-[var(--shadow-xs)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+        className="px-3.5 py-1.5 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-xs font-semibold text-[var(--ivory-error)] hover:bg-[var(--ivory-error-bg)] transition-colors shadow-[var(--shadow-xs)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
       >
         {actionLabel}
       </button>

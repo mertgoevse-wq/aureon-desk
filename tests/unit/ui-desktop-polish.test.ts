@@ -6,17 +6,17 @@ import { useUIStore } from '../../src/renderer/src/stores/uiStore'
 describe('UI Store — Panel Sizes', () => {
   beforeEach(() => {
     useUIStore.setState({
-      sidebarWidth: 260,
+      sidebarWidth: 240,
       inspectorWidth: 340,
       sidebarCollapsed: false,
       inspectorOpen: true,
     })
   })
 
-  it('should clamp sidebar width to minimum 200', () => {
+  it('should clamp sidebar width to minimum 192', () => {
     const store = useUIStore.getState()
     store.setSidebarWidth(100)
-    expect(useUIStore.getState().sidebarWidth).toBe(200)
+    expect(useUIStore.getState().sidebarWidth).toBe(192)
   })
 
   it('should clamp sidebar width to maximum 500', () => {
@@ -65,7 +65,7 @@ describe('UI Store — Panel Sizes', () => {
     useUIStore.getState().resetLayout()
 
     const s = useUIStore.getState()
-    expect(s.sidebarWidth).toBe(260)
+    expect(s.sidebarWidth).toBe(240)
     expect(s.inspectorWidth).toBe(340)
     expect(s.sidebarCollapsed).toBe(false)
     expect(s.inspectorOpen).toBe(true)

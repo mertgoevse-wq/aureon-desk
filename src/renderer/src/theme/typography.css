@@ -1,6 +1,15 @@
 /* Google Fonts Import */
 @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+/* === SEMANTIC UI TYPOGRAPHY CLASSES === */
+.text-ui-caption { font-size: var(--ui-caption); }       /* 11px — badges, kbd, micro-labels */
+.text-ui-xs { font-size: var(--ui-xs); }                  /* 12px — secondary labels, meta */
+.text-ui-sm { font-size: var(--ui-sm); }                  /* 13px — body, settings, chat */
+.text-ui { font-size: var(--ui); }                        /* 14px — primary UI text */
+.text-ui-lg { font-size: var(--ui-lg); }                  /* 15px — section headings */
+.text-ui-xl { font-size: var(--ui-xl); }                  /* 17px — page titles */
+.text-ui-2xl { font-size: var(--ui-2xl); }                /* 20px — major headings */
+
 /* === HEADINGS — UI-first, with serif reserved for .display-text === */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-body);

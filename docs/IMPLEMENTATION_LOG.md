@@ -1,5 +1,36 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 18:00 +02:00 — Premium UI Repair
+
+Branch: `main`
+Commit at start: `e8f6fe5` ("Document DeepSeek manual QA baseline")
+
+### Session Purpose
+Fix visual issues identified in the DeepSeek review: brand/header repair, sidebar less dominant, typography overhaul, provider layout repair, settings polish, vibe coding suggestions, BeginnerHelp accordion.
+
+### Files Changed
+- **Modified:** `src/renderer/src/stores/uiStore.ts` — sidebar width 260→240, min clamp 200→192
+- **Modified:** `src/renderer/src/theme/tokens.css` — lighter sidebar surface #F7F3EC, semantic UI text CSS vars
+- **Modified:** `src/renderer/src/theme/typography.css` — added .text-ui-caption/.text-ui-xs/.text-ui-sm/.text-ui/.text-ui-lg/.text-ui-xl/.text-ui-2xl classes
+- **Modified:** `src/renderer/src/layouts/Sidebar.tsx` — BrandLockup component (40px mark, 18px title), lighter borders, reduced padding, text-[10px]→text-ui-caption
+- **Modified:** `src/renderer/src/layouts/AppShell.tsx` — collapsed brand 22→24px, uses BrandLockupCompact
+- **Modified:** `src/renderer/src/pages/settings/ProvidersPage.tsx` — Save Key secondary variant, text normalization
+- **Modified:** `src/renderer/src/components/settings/SettingsComponents.tsx` — refined SettingsRow/DangerZone spacing and colors
+- **Modified:** `src/renderer/src/pages/ChatWorkspace.tsx` — 8 vibe coding suggestion chips
+- **Modified:** `src/renderer/src/components/vibe/BeginnerHelp.tsx` — custom accordion replaces `<details>`
+- **Modified:** `tests/unit/ui-desktop-polish.test.ts` — updated sidebar width assertions
+- **Created:** `src/renderer/src/components/shared/BrandLockup.tsx` — reusable brand lockup component
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (318 tests) |
+| `npm run build` | ✅ PASS |
+
+---
+
 ## 2026-07-08 17:30 +02:00 — DeepSeek Manual QA Baseline
 
 Branch: `main`

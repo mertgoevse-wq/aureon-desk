@@ -1,5 +1,60 @@
 # Changelog
 
+## [0.9.32] - 2026-07-08
+
+### Changed (Premium UI Repair — Brand, Sidebar, Typography, Provider Layout)
+
+**Brand & Header:**
+- Created `BrandLockup` and `BrandLockupCompact` shared components for consistent brand display
+- Sidebar: AureonMark enlarged 34→40px, title 15→18px, subtitle 11→12px
+- AppShell topbar: collapsed brand mark 22→24px, uses BrandLockupCompact
+- Removed duplicate inline brand code from Sidebar and AppShell
+
+**Sidebar Less Dominant:**
+- Default sidebar width reduced 260→240px, min resize clamp 200→192px
+- Sidebar surface lightened `#F3EFE6`→`#F7F3EC` (closer to main bg for less visual divide)
+- Section borders softened (`/60`→`/40`, `/50`→`/40`)
+- Section padding reduced, button heights tightened (h-9→h-8)
+- Profile footer text normalized to semantic classes
+
+**Typography Overhaul:**
+- Added 7 semantic UI typography utility classes: `.text-ui-caption`, `.text-ui-xs`, `.text-ui-sm`, `.text-ui`, `.text-ui-lg`, `.text-ui-xl`, `.text-ui-2xl`
+- CSS variables: `--ui-caption` through `--ui-2xl` (11px-20px scale)
+- Minimum body label size raised from 10px→11px (`--text-2xs` now 11px)
+- Sidebar section headers: text-[10px]→text-ui-caption (11px)
+- Sidebar workflow hints: text-[10px]→text-ui-caption
+- Removed all `text-[10px]` from sidebar except workflow "Soon" badge (9px, intentional)
+
+**Provider Page Layout Repair:**
+- Save Key button: `variant="primary"`→`variant="secondary"` (toned down orange accent)
+- Capability badges: text-[10px]→text-ui-caption
+- Model rows: text-[10px]→text-ui-caption for context window
+- Provider description & label text: normalized to text-ui-caption/text-ui-lg/text-xs
+- Removed unused `React` import
+
+**Settings Pages Polish:**
+- SettingsSection: elevated card bg replaces surface bg for clearer section hierarchy
+- SettingsRow: consistent px-5 py-3.5 padding, semantic text-ui-sm/text-ui-caption labels
+- DangerZone: soft CSS variable colors instead of hardcoded rose reds
+
+**Vibe Coding Suggestions:**
+- Added 8 vibe coding suggestion chips on chat home page (Build app, Fix error, Improve UI, Add feature, Create Preview, Connect provider, Import GitHub, Explain code)
+- Chips insert prompts into composer; no dangerous auto-execution
+- Organized in "Vibe Coding — Build Without Code" section below general suggestions
+
+**BeginnerHelp Accordion:**
+- Replaced native HTML `<details>` elements with custom accordion using `useState` + `ChevronDown`
+- Smoother open/close animation, semantic text classes
+
+### Created
+- `src/renderer/src/components/shared/BrandLockup.tsx` — reusable brand lockup component
+
+### Verified
+- `npm run verify:native` — ✅ PASS
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (318 tests)
+- `npm run build` — ✅ PASS
+
 ## [0.9.31] - 2026-07-08
 
 ### Added (DeepSeek Manual QA Baseline)

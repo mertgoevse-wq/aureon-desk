@@ -4,6 +4,27 @@
 
 ---
 
+## Premium UI Repair — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (318 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- Brand: Created BrandLockup/BrandLockupCompact components; mark 34→40px, title 15→18px
+- Sidebar: Width 260→240px, surface lightened `#F3EFE6`→`#F7F3EC`, min clamp 200→192px
+- Typography: 7 semantic UI classes added, text-[10px]→text-ui-caption (11px) everywhere except badges
+- Providers: Save Key button toned down to secondary, text-[10px]→text-ui-caption
+- Settings: Refined SettingsRow/DangerZone spacing and colors
+- Chat home: 8 vibe coding suggestion chips added
+- BeginnerHelp: Custom accordion replaces native `<details>`
+- Tests updated for new sidebar width
+
+---
+
 ## DeepSeek Manual QA Baseline — 2026-07-08
 
 | Check | Result |

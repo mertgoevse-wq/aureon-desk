@@ -22,7 +22,7 @@ import { useUIStore } from '../stores/uiStore'
 import { useChatStore } from '../stores/chatStore'
 import { ChatList } from '../components/sidebar/ChatList'
 import { useIpc } from '../hooks/useIpc'
-import { AureonMark } from '../components/shared/AureonMark'
+import { BrandLockup } from '../components/shared/BrandLockup'
 import { Sparkles } from 'lucide-react'
 import type { ChatListItem } from '@shared/types/chat'
 
@@ -215,21 +215,10 @@ export function Sidebar(): React.ReactElement {
         aria-label="Main sidebar"
         data-testid="sidebar"
       >
-        <div
-          className="flex items-center justify-between px-4 py-4 border-b border-[var(--ivory-border)]/60 bg-[var(--ivory-surface)]"
+        <div className="flex items-center justify-between px-4 py-4 border-b border-[var(--ivory-border)]/40 bg-[var(--ivory-surface)]"
           style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
         >
-          <div className="flex items-center gap-3 select-none min-w-0">
-            <div className="shrink-0">
-              <AureonMark size={34} />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-[15px] font-semibold tracking-tight display-text text-[var(--ivory-text)] truncate leading-tight">
-                Aureon Desk
-              </h1>
-              <p className="text-[11px] text-[var(--ivory-text-3)] truncate font-medium">Personal AI workspace</p>
-            </div>
-          </div>
+          <BrandLockup size={40} />
           <button
             onClick={toggleSidebar}
             className="p-1.5 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
@@ -240,11 +229,11 @@ export function Sidebar(): React.ReactElement {
           </button>
         </div>
 
-        <div className="px-3 py-3 space-y-2 border-b border-[var(--ivory-border)]">
+        <div className="px-3 py-2.5 space-y-2 border-b border-[var(--ivory-border)]/40">
           <div className="flex gap-2">
             <button
               onClick={handleNewChat}
-              className="h-9 flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl text-[12px] font-semibold text-[var(--ivory-text)] bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 transition-all shadow-[var(--shadow-xs)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+              className="h-8 flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl text-xs font-semibold text-[var(--ivory-text)] bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 transition-all shadow-[var(--shadow-xs)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
               aria-label="Create new chat"
               data-testid="new-chat-button"
             >
@@ -253,7 +242,7 @@ export function Sidebar(): React.ReactElement {
             </button>
             <button
               onClick={handleNewTask}
-              className="h-9 w-9 inline-flex items-center justify-center rounded-xl text-[var(--ivory-text-2)] bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface-2)] border border-[var(--ivory-border)]/60 transition-all shadow-[var(--shadow-xs)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+              className="h-8 w-8 inline-flex items-center justify-center rounded-xl text-[var(--ivory-text-2)] bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface-2)] border border-[var(--ivory-border)]/60 transition-all shadow-[var(--shadow-xs)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
               aria-label="Create new task"
               title="New Task"
               data-testid="new-task-button"
@@ -263,7 +252,7 @@ export function Sidebar(): React.ReactElement {
           </div>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
-            className="w-full h-8 px-3 inline-flex items-center gap-2 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/60 text-[11px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+            className="w-full h-8 px-3 inline-flex items-center gap-2 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/50 text-[11px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
             data-testid="sidebar-search"
           >
             <Search size={13} />
@@ -303,15 +292,15 @@ export function Sidebar(): React.ReactElement {
           </div>
         </div>
 
-        <div className="px-3 py-1.5 border-b border-[var(--ivory-border)]/50">
+        <div className="px-3 py-1 border-b border-[var(--ivory-border)]/40">
           <button
             type="button"
             onClick={() => setWorkflowOpen(open => !open)}
-            className="w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+            className="w-full flex items-center justify-between px-2 py-1.5 rounded-xl text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
             aria-expanded={workflowOpen}
           >
             <span>Workflow</span>
-            <span className="inline-flex items-center gap-1 normal-case tracking-normal text-[10px] font-semibold">
+            <span className="inline-flex items-center gap-1 normal-case tracking-normal text-[11px] font-semibold">
               {workflowItems.length}
               <ChevronDown size={11} className={`transition-transform ${workflowOpen ? 'rotate-180' : ''}`} />
             </span>
@@ -332,8 +321,8 @@ export function Sidebar(): React.ReactElement {
                   <span className="flex items-center gap-2 min-w-0">
                     <span className="text-[var(--ivory-text-3)] shrink-0">{item.icon}</span>
                     <span className="min-w-0">
-                      <span className="block text-[12px] font-semibold truncate">{item.label}</span>
-                      <span className="block text-[10px] text-[var(--ivory-text-3)] truncate">{item.hint}</span>
+                      <span className="block text-xs font-semibold truncate">{item.label}</span>
+                      <span className="block text-ui-caption text-[var(--ivory-text-3)] truncate">{item.hint}</span>
                     </span>
                   </span>
                   <span className="shrink-0 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-bg)] px-1.5 py-0.5 text-[9px] font-semibold text-[var(--ivory-text-3)]">
@@ -345,9 +334,9 @@ export function Sidebar(): React.ReactElement {
           )}
         </div>
 
-        <div className="px-3 py-1.5 border-b border-[var(--ivory-border)]/50">
-          <div className="flex items-center justify-between px-2 mb-1.5">
-            <p className="text-[10px] uppercase tracking-[0.08em] font-bold text-[var(--ivory-text-3)]">Projects</p>
+        <div className="px-3 py-1 border-b border-[var(--ivory-border)]/40">
+          <div className="flex items-center justify-between px-2 mb-1">
+            <p className="text-ui-caption uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)]">Projects</p>
             <button
               type="button"
               onClick={() => navigate('/projects')}
@@ -389,12 +378,12 @@ export function Sidebar(): React.ReactElement {
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto">
-          <div className="flex items-center justify-between px-5 pt-3 pb-1">
-            <p className="text-[10px] uppercase tracking-[0.08em] font-bold text-[var(--ivory-text-3)]">Recents</p>
+          <div className="flex items-center justify-between px-5 pt-2.5 pb-1">
+            <p className="text-ui-caption uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)]">Recents</p>
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="text-[10px] font-semibold text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 rounded-md"
+              className="text-ui-caption font-semibold text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 rounded-md"
             >
               View
             </button>
@@ -408,8 +397,8 @@ export function Sidebar(): React.ReactElement {
               <UserCircle size={16} />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-semibold text-[var(--ivory-text)] truncate">Local profile</p>
-              <p className="text-[10px] text-[var(--ivory-text-3)] truncate">Settings and providers</p>
+              <p className="text-xs font-semibold text-[var(--ivory-text)] truncate">Local profile</p>
+              <p className="text-ui-caption text-[var(--ivory-text-3)] truncate">Settings and providers</p>
             </div>
             <button
               onClick={() => navigate('/settings')}
