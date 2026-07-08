@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.45] - 2026-07-08
+
+### Added — Human QA Workflow
+- Created `docs/HUMAN_QA_CHECKLIST.md` — 127 manual checks across 16 sections (launch, logo, sidebar, chat, studio, vibe, code, cowork, providers, connectors, MCP, quality, responsive, safety)
+- Created `scripts/manual-qa-guide.mjs` — prints checklist, creates screenshot directory, provides setup instructions
+- Created `docs/HUMAN_QA_REPORT.md` — structured report template with pass/fail tables, bug tracker, result quality section
+
 ## [0.9.44] - 2026-07-08
 
 ### Added — Aureon Studio Core & Connector System
