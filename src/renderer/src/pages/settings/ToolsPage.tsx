@@ -29,15 +29,15 @@ const PERMISSION_ICONS: Record<string, React.ReactElement> = {
 }
 
 const PERMISSION_DESCRIPTIONS: Record<string, string> = {
-  file_read: 'Read files',
-  file_write: 'Write files',
-  shell_command: 'Shell access',
-  network: 'Network access',
-  browser: 'Browser control',
-  git: 'Git operations',
-  database: 'Database access',
-  clipboard: 'Clipboard',
-  secrets: 'Secrets',
+  file_read: 'Read files from disk',
+  file_write: 'Write/modify files on disk',
+  shell_command: 'Execute shell commands',
+  network: 'Make network requests',
+  browser: 'Open and control browser',
+  git: 'Perform git operations (push/pull/commit)',
+  database: 'Read/write database records',
+  clipboard: 'Read/write clipboard',
+  secrets: 'Access stored credentials and secrets',
 }
 
 const DESTRUCTIVE_PERMISSIONS = new Set(['file_write', 'shell_command', 'git', 'database', 'secrets'])
@@ -57,6 +57,15 @@ const STATUS_VARIANTS: Record<string, BadgeVariant> = {
   blocked_disabled: 'warning',
   blocked_unknown: 'error',
   error: 'error',
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  approved: 'Approved',
+  denied: 'Denied',
+  blocked_untrusted: 'Blocked (untrusted)',
+  blocked_disabled: 'Blocked (disabled)',
+  blocked_unknown: 'Blocked (unknown)',
+  error: 'Execution error',
 }
 
 export function ToolsPage(): React.ReactElement {
@@ -225,7 +234,7 @@ export function ToolsPage(): React.ReactElement {
               {callLogs.map(log => (
                 <div key={log.id} className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-[var(--ivory-bg)] transition-colors text-xs">
                   <Badge variant={STATUS_VARIANTS[log.status] || 'default'} size="sm">
-                    {log.status.replace(/_/g, ' ')}
+                    {STATUS_LABELS[log.status] || log.status.replace(/_/g, ' ')}
                   </Badge>
                   <span className="font-medium text-[var(--ivory-text)]">{log.tool_name}</span>
                   <span className="text-[var(--ivory-text-3)] truncate flex-1">{log.input_preview}</span>

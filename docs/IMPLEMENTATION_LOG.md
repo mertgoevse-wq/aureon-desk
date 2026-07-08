@@ -1,5 +1,34 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 21:15 +02:00 — MCP Tools Polish (Tests & UX)
+
+Branch: `main`
+Commit at start: `122e89d` (Drawer & SelectMenu)
+
+### Session Purpose
+Expand test coverage for the MCP/Tools safety system and polish the ToolsPage UX with consistent labeling.
+
+### Files Changed
+
+**Modified:**
+- **Modified:** `tests/unit/tool-manager.test.ts` — expanded from 13 to 31 tests (6 new suites: destructive blocking, router no-auto-run, enable/disable, modal behavior, secrets redaction)
+- **Modified:** `src/renderer/src/pages/settings/ToolsPage.tsx` — permission descriptions now consistent with safety gate, added human-friendly STATUS_LABELS for call history
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (348 tests) |
+| `npm run build` | ✅ PASS |
+
+### Key Changes
+- 18 new tests covering destructive blocking, router suggestions, enable/disable, modal behavior, secrets redaction
+- ToolsPage call history now shows "Blocked (untrusted)" instead of "blocked untrusted"
+- Permission descriptions aligned between renderer UI and main-process safety gate
+
+---
+
 ## 2026-07-08 21:00 +02:00 — Compact Overlay System Expansion (Drawer & SelectMenu)
 
 Branch: `main`

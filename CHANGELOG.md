@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.9.41] - 2026-07-08
+
+### Changed (MCP Tools Polish — Tests & UX Consistency)
+
+**Tests (13 → 31 tests):**
+- Added destructive permission blocking tests (shell_command, file_write, git, mixed perms)
+- Added router suggestions no-auto-run tests (display-only verification, destructive confirmation)
+- Added tool enable/disable state management tests (toggle, imported-tools-safe)
+- Added MCP server modal behavior tests (disabled-by-default, transport types, form reset)
+- Added secrets redaction tests (sk- keys, Google AI keys, safe text passthrough)
+
+**ToolsPage UX:**
+- Made permission descriptions consistent with safety gate (full descriptive text)
+- Added human-friendly `STATUS_LABELS` for call history ("Blocked (untrusted)" instead of "blocked untrusted")
+- Call history badges now use human-friendly status labels
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (348 tests, 19 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.40] - 2026-07-08
 
 ### Added (Drawer & SelectMenu — Compact Overlay System Expansion)

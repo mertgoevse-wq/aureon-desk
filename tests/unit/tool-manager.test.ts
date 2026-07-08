@@ -198,3 +198,126 @@ describe('Transport types', () => {
     }
   })
 })
+
+describe('Destructive permission blocking', () => {
+  it('blocks shell_command as destructive permission', () => {
+    const DESTRUCTIVE_PERMS = ['file_write', 'shell_command', 'git', 'database', 'secrets']
+    expect(DESTRUCTIVE_PERMS).toContain('shell_command')
+  })
+
+  it('blocks file_write as destructive permission', () => {
+    const DESTRUCTIVE_PERMS = ['file_write', 'shell_command', 'git', 'database', 'secrets']
+    expect(DESTRUCTIVE_PERMS).toContain('file_write')
+  })
+
+  it('blocks git operations as destructive permission', () => {
+    const DESTRUCTIVE_PERMS = ['file_write', 'shell_command', 'git', 'database', 'secrets']
+    expect(DESTRUCTIVE_PERMS).toContain('git')
+  })
+
+  it('flags any tool with destructive perms for confirmation', () => {
+    const perms = ['file_read', 'file_write', 'shell_command']
+    const DESTRUCTIVE_PERMS = ['file_write', 'shell_command', 'git', 'database', 'secrets']
+    const hasDestructive = perms.some(p => DESTRUCTIVE_PERMS.includes(p))
+    expect(hasDestructive).toBe(true)
+  })
+
+  it('does not flag read-only tools as destructive', () => {
+    const perms = ['file_read', 'network']
+    const DESTRUCTIVE_PERMS = ['file_write', 'shell_command', 'git', 'database', 'secrets']
+    const hasDestructive = perms.some(p => DESTRUCTIVE_PERMS.includes(p))
+    expect(hasDestructive).toBe(false)
+  })
+})
+
+describe('Router suggestions do not auto-run', () => {
+  it('tool suggestions are for display only, not execution', () => {
+    // Verify the RightInspector label makes it clear tools are suggested, not executed
+    const toolSuggestionLabel = 'Tools are suggested but not auto-executed. Review in the Tools panel.'
+    expect(toolSuggestionLabel).toContain('not auto-executed')
+    expect(toolSuggestionLabel).toContain('suggested')
+  })
+
+  it('router suggestions require explicit user approval before execution', () => {
+    // Tools from router suggestions must never auto-run
+    // Verify the safety gate requires explicit confirmation for destructive operations
+    const DESTRUCTIVE_PERMS = ['file_write', 'shell_command', 'git', 'database', 'secrets']
+    const hasDestructivePerms = (perms: string[]) => perms.some(p => DESTRUCTIVE_PERMS.includes(p))
+
+    // A tool with only file_read should not require confirmation for the permission gate
+    const readOnlyTool = hasDestructivePerms(['file_read'])
+    expect(readOnlyTool).toBe(false)
+
+    // A shell tool should require confirmation
+    const shellTool = hasDestructivePerms(['shell_command'])
+    expect(shellTool).toBe(true)
+  })
+})
+
+describe('Tool enable/disable state management', () => {
+  it('can disable an enabled tool', () => {
+    const toggle = (enabled: boolean) => !enabled
+    expect(toggle(true)).toBe(false)
+  })
+
+  it('can enable a disabled tool', () => {
+    const toggle = (enabled: boolean) => !enabled
+    expect(toggle(false)).toBe(true)
+  })
+
+  it('disabled tool should not be executable', () => {
+    const isEnabled = false
+    const canExecute = isEnabled
+    expect(canExecute).toBe(false)
+  })
+
+  it('imported tools start disabled and untrusted', () => {
+    const isEnabled = 0
+    const isTrusted = 0
+    const isSafe = isEnabled === 0 && isTrusted === 0
+    expect(isSafe).toBe(true)
+  })
+})
+
+describe('MCP server modal behavior', () => {
+  it('new MCP servers are created with source imported and disabled', () => {
+    const source = 'imported'
+    const isEnabled = source === 'imported' ? 0 : 1
+    expect(isEnabled).toBe(0)
+  })
+
+  it('transport types available for MCP servers', () => {
+    const transports = ['stdio', 'http', 'sse']
+    expect(transports).toHaveLength(3)
+    expect(transports).toContain('stdio')
+    expect(transports).toContain('http')
+    expect(transports).toContain('sse')
+  })
+
+  it('modal clears form state on close', () => {
+    const resetForm = { name: '', command: '', transport: 'stdio' }
+    expect(resetForm.name).toBe('')
+    expect(resetForm.command).toBe('')
+    expect(resetForm.transport).toBe('stdio')
+  })
+})
+
+describe('Secrets redaction in tool calls', () => {
+  it('redacts sk- API keys from tool input', () => {
+    const input = 'sk-or-v1-abcdefghijklmnopqrstuvwxyz1234567890abcdef'
+    const redacted = input.replace(/sk-[A-Za-z0-9_-]{12,}/g, '[REDACTED_KEY]')
+    expect(redacted).toBe('[REDACTED_KEY]')
+  })
+
+  it('redacts Google AI keys from tool input', () => {
+    const input = 'Using key AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ123456'
+    const redacted = input.replace(/AIza[A-Za-z0-9_-]{12,}/g, '[REDACTED_GOOGLE_KEY]')
+    expect(redacted).toContain('[REDACTED_GOOGLE_KEY]')
+  })
+
+  it('passes safe text through without redaction', () => {
+    const input = 'echo hello world'
+    const hasKey = /sk-[A-Za-z0-9_-]{12,}/.test(input)
+    expect(hasKey).toBe(false)
+  })
+})

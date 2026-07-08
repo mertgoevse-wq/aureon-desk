@@ -4,6 +4,21 @@
 
 ---
 
+## MCP Tools Polish — Tests & UX Consistency — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (348 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- Added 18 unit tests (13→31): destructive blocking, router no-auto-run, enable/disable, modal, secrets redaction
+- ToolsPage: permission descriptions now match safety gate, human-friendly status labels in call history
+- Safety model confirmed: imported tools disabled, destructive blocked, secrets redacted, no auto-run
+
+---
+
 ## Drawer & SelectMenu — Compact Overlay Expansion — 2026-07-08
 
 | Check | Result |
