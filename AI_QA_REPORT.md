@@ -4,6 +4,22 @@
 
 ---
 
+## Repo Cleanup — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (318 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- Merged duplicate Toggle components (shared + settings) into canonical `shared/Toggle.tsx`
+- Removed stale `ui-audit-*` screenshots from `tests/e2e/artifacts/`
+- Removed stale PNG screenshots from `tests/e2e/artifacts/`
+- Confirmed no dead docs (`MVP_TEST_PLAN.md`, `ROADMAP.md` don't exist)
+
+---
+
 ## Brand Asset Integration (Nano Banana) — 2026-07-08
 
 | Check | Result |

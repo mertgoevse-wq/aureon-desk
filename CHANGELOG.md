@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.9.30] - 2026-07-08
+
+### Changed (Repo Cleanup — Duplicates, Dead Code, Stale Artifacts)
+
+**Toggle Component Merge:**
+- Merged two duplicate `Toggle` components into canonical `src/renderer/src/components/shared/Toggle.tsx`
+- Unified API: supports `label`, `description`, `dataTestId`, `checked`, `onChange`, `disabled`
+- `SettingsComponents.tsx` now re-exports from shared instead of maintaining a separate implementation
+
+**Stale Artifacts Removed:**
+- Removed 3 `ui-audit-*` directories from `tests/e2e/artifacts/` (old visual audit screenshots)
+- Removed stale standalone PNG screenshots from `tests/e2e/artifacts/`
+- Kept `.gitkeep` for the directory
+
+**Docs Cleanup:**
+- Confirmed `MVP_TEST_PLAN.md` and `ROADMAP.md` don't exist (AGENTS.md references were stale)
+- All existing docs reviewed — no further duplicates found
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (318 tests, 19 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.29] - 2026-07-08
 
 ### Added (Nano Banana Brand Asset Integration)
