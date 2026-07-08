@@ -1,15 +1,22 @@
 node_modules/
 out/
 dist/
+release/
 *.db
+*.sqlite
 *.db-journal
 *.db-wal
 *.db-shm
 .env
 .env.*
+logs/
+app-data/
+imported-repos/
 .DS_Store
 Thumbs.db
 *.log
+*.tmp
+*.temp
 
 # Installer/package outputs (dist/ already ignored)
 dist/*.exe
@@ -28,6 +35,8 @@ playwright-report/
 test-results/
 tests/e2e/artifacts/*.png
 tests/e2e/artifacts/**/*.png
+screenshots/
+*.screenshot.png
 !tests/e2e/artifacts/.gitkeep
 
 # Secrets & credentials

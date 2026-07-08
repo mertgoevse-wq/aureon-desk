@@ -1,8 +1,29 @@
 # Changelog
 
+## [0.9.24] - 2026-07-08
+
+### Added (Antigravity Ingestion Baseline)
+- **docs/PROJECT_INDEX.md**: Full repo map — all folders, entrypoints, providers, DB schema, IPC handlers, services, renderer components, stores, theme, tests, scripts, and commands.
+- **docs/CURRENT_STATE.md**: Feature status snapshot — what works, what is placeholder, known gaps, design direction, architecture summary, next prompt guidance.
+- **docs/VISUAL_AUDIT.md**: Code-based UI audit against all target design criteria (14 screens evaluated, pass/fail with UX notes and Prompt 5 implementation order).
+- **AGENTS.md**: Agent handoff instructions — design rules, security rules, branch/commit conventions, pre/post implementation checklist, key file map, prompt queue.
+- **QA_CHECKLIST.md**: Structured QA gate — pre-commit, visual QA, post-prompt checks, screenshot targets.
+- **docs/UX_DECISIONS.md**: Updated with ingestion session context (existed, supplemented).
+
+### Verified
+- `npm run verify:native` — PASS (better-sqlite3 binary present)
+- `npm run typecheck` — PASS (zero TS errors)
+- `npm test` — PASS (283 tests)
+- `npm run build` — PASS (main 233KB, preload 10KB, renderer 1886KB)
+- E2E tests were started and passing (cancelled per user request to proceed faster)
+
+### Security
+- `git grep "sk-or-v1"` — only documentation references and intentional test mock keys; no real secrets found
+
 ## [0.9.23] - 2026-07-08
 
 ### Added
+- **Final Implementation Log**: Added `docs/IMPLEMENTATION_LOG.md` with session date/time, branch state, bugs fixed, UI changes, provider/model contract, tests, and remaining limitations.
 - **Aureon Mode Switch**: Added a top-level `Chat / Cowork / Code` workspace switch with an original Aureon layout interpretation.
 - **Premium Home Composer**: Reworked the empty chat surface with a time-aware greeting, central composer, provider/style/project/tool controls, suggestions, and recent chat context.
 - **Settings Category Layout**: Rebuilt Settings into a category column plus detail panel, with General, Providers & Models, Developer, and placeholder capability pages.
@@ -10,6 +31,7 @@
 - **Assistant Message Metadata**: Assistant messages now persist subtle provider/model metadata and latency for traceability.
 
 ### Changed
+- **Repository Hygiene**: Expanded `.gitignore` for release output, logs, local app data, imported repos, SQLite files, Playwright output, and temporary screenshots.
 - **Decluttered Sidebar**: Reduced duplicate entries, removed visible text from secondary mode shortcuts, collapsed workflow placeholders by default, and simplified New Task into an icon action.
 - **Top Header Cleanup**: Removed the extra `Aureon Desk` label from the bright top header so the mode switch is the main focal point.
 - **OpenRouter Labeling**: OpenRouter-routed Claude/Gemini/etc. models display as `OpenRouter · Model Name` instead of implying direct provider usage.

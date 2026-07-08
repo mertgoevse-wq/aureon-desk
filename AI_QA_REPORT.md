@@ -1,23 +1,24 @@
 # Aureon Desk — AI QA Report
 
-> **Generated:** 2026-07-08
 > **Branch:** main
 
 ---
 
-## Commands Run
+## Ingestion Baseline — 2026-07-08 (Antigravity)
 
-```
-npm run typecheck
-npm test
-npm run build
-npm run test:e2e
-npm run demo:coding
-```
+| Check | Result |
+|-------|--------|
+| `npm run verify:native` | ✅ PASS — better-sqlite3 binary present |
+| `npm run typecheck` | ✅ PASS — zero TypeScript errors |
+| `npm test` (283 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS (main 233KB, preload 10KB, renderer 1886KB) |
+| E2E tests | ⏭ Skipped per user request (4/84 confirmed passing before stop) |
+| Secret scan (`git grep "sk-or-v1"`) | ✅ PASS — only docs/test mock references |
+| Docs created | ✅ PROJECT_INDEX, CURRENT_STATE, VISUAL_AUDIT, AGENTS, QA_CHECKLIST |
 
 ---
 
-## Results Summary
+## Full E2E Baseline (previous session — 2026-07-08 Codex Prompt 4)
 
 | Check | Result |
 |-------|--------|
@@ -35,9 +36,7 @@ npm run demo:coding
 | Coding Demo CLI (`npm run demo:coding`) | ✅ PASS |
 | **Full E2E** | **✅ 84/84 PASS** |
 
-### Latest Workspace + Routing Validation
-
-Run on 2026-07-08 after the Aureon mode/workspace redesign, sidebar decluttering, settings category layout, and canonical provider/model routing contract:
+### Latest Workspace + Routing Validation (2026-07-08)
 
 | Check | Result |
 |-------|--------|
@@ -48,28 +47,13 @@ Run on 2026-07-08 after the Aureon mode/workspace redesign, sidebar decluttering
 | Targeted E2E (`05`, `06`, `12`) | ✅ PASS (18 tests) |
 | Full E2E (`npm run test:e2e`) | ✅ PASS (84 tests) |
 
-Key QA coverage added:
+Key QA coverage:
 - Provider/model routing rejects stale renderer selections before network requests.
 - Anthropic Claude routes through the Anthropic adapter.
 - Gemini routes through the Google adapter.
 - OpenRouter Claude-style models route through OpenRouter and display OpenRouter metadata.
 - Settings category navigation keeps provider pages reachable.
 - Workspace UI has no horizontal overflow at 1366x768.
-
-### Latest Continuation Validation
-
-Run on 2026-07-08 after LivePreview in-process server, provider model sync hooks, and provider API-key paste hardening:
-
-| Check | Result |
-|-------|--------|
-| Native Verification (`npm run verify:native`) | ✅ PASS |
-| Typecheck (`npm run typecheck`) | ✅ PASS |
-| Unit Tests (`npm test`) | ✅ PASS (278 tests) |
-| Build (`npm run build`) | ✅ PASS |
-| Full E2E (`npm run test:e2e`) | ✅ PASS (79 tests) |
-| Targeted Provider Paste E2E | ✅ PASS |
-| OpenRouter Smoke (`npm run test:openrouter`) | ✅ PASS endpoint, non-deterministic free-model response |
-| Secret Scan | ✅ PASS for real keys; only placeholders and intentional fake keys in docs/tests matched |
 
 ---
 
@@ -97,21 +81,7 @@ The Coding Agent Demo proves Aureon Desk can:
 | No external API calls | ✅ |
 | No secrets in source | ✅ |
 
-### CLI Demo Verification (9/9 checks passed)
-
-| Check | Result |
-|-------|--------|
-| HTTP 200 response | ✅ |
-| Title matches | ✅ |
-| Counter element present | ✅ |
-| Increment button present | ✅ |
-| Reset button present | ✅ |
-| Footer text present | ✅ |
-| Increment function present | ✅ |
-| Reset function present | ✅ |
-| No secrets in output | ✅ |
-
-**Demo CLI elapsed:** ~70ms
+**Demo CLI elapsed:** ~70ms  
 **Demo CLI exit code:** 0 (success)
 
 ### Sandbox Safety
@@ -121,79 +91,43 @@ The Coding Agent Demo proves Aureon Desk can:
 - No secrets, no external APIs, no network calls except localhost
 - Path traversal blocked in all file operations
 
-### Files Generated
-- `index.html` — self-contained counter app with CSS styling and vanilla JS
-- No dependencies, no `node_modules`, no npm required
-
 ---
 
-## Test Details
+## Test Coverage Summary
 
 ### Smoke Tests (01-aureon-smoke.spec.ts)
-- ✅ Electron app launches
-- ✅ Main window appears
-- ✅ Title includes "Aureon Desk"
-- ✅ No raw React error page
-- ✅ No "IPC API is not available" error
+- ✅ Electron app launches and main window appears
+- ✅ Window title includes "Aureon Desk"
+- ✅ No raw React error page is visible
+- ✅ No "IPC API is not available" error in page
 - ✅ Sidebar is visible
 - ✅ Main chat panel is visible (after creating a chat)
 - ✅ Message composer is visible (after creating a chat)
 - ✅ Model selector is present (after creating a chat)
 - ✅ No uncaught renderer errors
-- ✅ Router/inspector panel toggle is present
 
 ### Navigation Tests (02-aureon-navigation.spec.ts)
-- ✅ Chats navigation
-- ✅ Prompts navigation
-- ✅ Projects navigation
-- ✅ Tools navigation
-- ✅ Settings navigation
-- ✅ Preview navigation
-- ✅ Back to Chats after visiting other pages
+- ✅ Chats, Prompts, Projects, Tools, Settings, Preview navigation
 - ✅ All transitions without crashes
 
 ### Settings Tests (03-aureon-settings.spec.ts)
-- ✅ Settings page shows provider cards
-- ✅ Security/encryption info present
-- ✅ Provider adapter information listed
-- ✅ Provider Test Center shows Test All, per-provider status labels, and initial not-tested state
-- ✅ Provider API-key inputs accept typing and Ctrl+V paste
-- ✅ Add Custom provider UI accessible
-- ✅ Appearance settings loads
+- ✅ Provider Test Center: Test All, per-provider status
+- ✅ API-key inputs accept typing and Ctrl+V paste
 - ✅ No raw API keys visible in DOM
 
 ### Chat Tests (04-aureon-chat.spec.ts)
-- ✅ New Chat button creates a chat
-- ✅ Message composer accepts input
-- ✅ Send button disabled when empty
-- ✅ Send button enabled with text
+- ✅ New Chat creates chat
+- ✅ Send button disabled when empty, enabled with text
 - ✅ Sending without provider shows warning (no crash)
-- ✅ Router/Inspector updates after message
 
 ### LivePreview Tests (09-aureon-live-preview.spec.ts)
-- ✅ Preview navigation item visible
-- ✅ Navigate to Preview page
-- ✅ Create preview button visible
-- ✅ Template type selector visible
-- ✅ URL input visible
-- ✅ Server status indicator visible
-- ✅ Logs area visible
-- ✅ Open external browser button visible
-- ✅ Stop server button visible
-- ✅ No crash navigating to/from Preview
+- ✅ Navigate to Preview, create sandbox, URL bar, iframe, stop server
 
 ### Coding Demo Tests (10-aureon-coding-demo.spec.ts)
-- ✅ Coding Demo option appears in template selector
-- ✅ Run Coding Demo creates sandbox and starts preview
-- ✅ Demo counter page loads with correct HTML content
-- ✅ Counter increments and resets correctly via Playwright clicks
-- ✅ Stop button stops demo preview server
-- ✅ Demo does not crash or leak secrets
-- ✅ App handles rapid demo start/stop without crash
+- ✅ Run Coding Demo, verify counter page, stop preview
 
 ### Model Selection Tests (11-aureon-model-selection.spec.ts)
-- ✅ New chat auto-selects default model and shows selector
-- ✅ Deselecting model displays the polished setup card
+- ✅ Auto-selects default model, shows setup card when deselected
 
 ---
 
@@ -201,15 +135,18 @@ The Coding Agent Demo proves Aureon Desk can:
 
 | Artifact | Path |
 |----------|------|
-| Screenshots | `tests/e2e/artifacts/` |
-| Traces | `test-results/` |
+| Unit test results | console output (`npm test`) |
+| E2E screenshots | `tests/e2e/artifacts/` |
+| Playwright traces | `test-results/` |
 | HTML Report | `playwright-report/` |
 | Demo Screenshot | `tests/e2e/artifacts/coding-demo-counter-test.png` |
 
 ---
 
-## Next Recommended Fixes
+## Next Recommended Work
 
-1. Add CI step in `.github/workflows/build.yml` to run E2E tests
-2. Integrate the demo generator with the AI chat so users can say "build a counter app" and it auto-generates
-3. Add a demo report card to the LivePreview page showing pass/fail results
+1. **Prompt 5:** Desktop shell polish — custom topbar, window controls, drag region
+2. Add tool/MCP count badge to chat composer toolbar
+3. Suggestion chips on home empty state
+4. Recent chat cards on home empty state
+5. Add CI step for E2E in `.github/workflows/`

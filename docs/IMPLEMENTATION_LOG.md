@@ -1,0 +1,148 @@
+# Aureon Desk Implementation Log
+
+## 2026-07-08 13:56 +02:00 — Antigravity Ingestion Baseline (Pre-Prompt 5)
+
+Branch: `main`  
+Commit at session start: `44323f3 Enforce provider model routing consistency`
+
+### Session Purpose
+Full project ingestion, audit, and documentation before starting Prompt 5 (Desktop Shell Polish).
+Performed by: Antigravity/Gemini (Claude Sonnet 4.6 Thinking)
+
+### Files Inspected
+
+**Root/Config:**
+- `package.json`, `electron.vite.config.ts`, `.gitignore`, `electron-builder.yml`
+- `CHANGELOG.md`, `AI_QA_REPORT.md`, `SECURITY_NOTES.md`, `CONTINUATION_NOTES.md`
+
+**Main Process:**
+- `src/main/index.ts`, `src/main/windows.ts`
+- `src/main/db/schema.ts`, `src/main/db/connection.ts`, `src/main/db/migrate.ts`, `src/main/db/seed.ts`
+- `src/main/ipc/` — all 13 IPC handler files
+- `src/main/services/` — all 22 service files (names confirmed from dir listing)
+- `src/main/security/vault.ts`, `src/main/utils/logger.ts`
+
+**Preload:**
+- `src/preload/index.ts`, `src/preload/index.d.ts`
+
+**Renderer:**
+- `src/renderer/src/App.tsx`
+- `src/renderer/src/layouts/AppShell.tsx`, `Sidebar.tsx`, `RightInspector.tsx` (header), `SettingsLayout.tsx`
+- `src/renderer/src/pages/ChatWorkspace.tsx`, `CoworkPage.tsx`
+- `src/renderer/src/components/chat/ChatPanel.tsx` (header), `MessageInput.tsx` (header)
+- `src/renderer/src/theme/tokens.css`, `typography.css`
+
+**Shared:**
+- `src/shared/constants.ts` (10 providers)
+- `src/shared/types/` — all 9 type files (directory listing)
+
+**Docs (pre-existing):**
+- `docs/IMPLEMENTATION_LOG.md`, `docs/UX_DECISIONS.md`
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `git status` | `main`, clean + `.gitignore` modified + `docs/IMPLEMENTATION_LOG.md` untracked |
+| `git branch -a -vv` | `main` at `44323f3`, `master` behind 8 commits |
+| `git remote -v` | `origin → github.com/mertgoevse-wq/aureon-desk.git` |
+| `git log --oneline -12` | Last 12 commits inspected |
+| `git grep "sk-or-v1"` | Only docs/test mock references — PASS |
+| `git ls-files *.env *.db *.sqlite` | Empty — no secrets tracked — PASS |
+| `node scripts/verify-native.js` | ✅ PASS — binary present |
+| `npm run typecheck` | ✅ PASS — zero TS errors |
+| `npx vitest run` | ✅ PASS — 283 tests |
+| `npm run build` | ✅ PASS — all chunks built |
+| `npx playwright test` | ⏭ Started, cancelled at 4/84 per user request |
+
+### Docs Created / Updated
+
+| File | Action |
+|------|--------|
+| `docs/PROJECT_INDEX.md` | ✅ Created (full repo map) |
+| `docs/CURRENT_STATE.md` | ✅ Created (feature status + architecture) |
+| `docs/VISUAL_AUDIT.md` | ✅ Created (14-screen code-based audit) |
+| `AGENTS.md` | ✅ Created (agent handoff instructions) |
+| `QA_CHECKLIST.md` | ✅ Created (pre-commit + visual QA gate) |
+| `CHANGELOG.md` | ✅ Updated (v0.9.24 entry) |
+| `AI_QA_REPORT.md` | ✅ Updated (ingestion baseline prepended) |
+| `docs/IMPLEMENTATION_LOG.md` | ✅ Updated (this entry) |
+
+### Visual QA Observations (Code-Based)
+
+- **Empty home state**: Functional. Greeting + Sparkles + CTA + 4 feature cards. No suggestion chips or recents on empty state itself (starter prompts appear after chat creation).
+- **Mode switch**: Chat / Cowork / Code pill tabs centered in topbar — working.
+- **Sidebar**: Well-structured, resizable, collapsible. Brand logo, New Chat, task, search, shortcuts, workflow accordion, projects/tools, recents, profile footer.
+- **Chat mode**: Active chat header shows title + profile + model. Starter prompts + streaming + assistant metadata all confirmed in code.
+- **Model labeling**: Truthful — "Provider · Model" format enforced by canonical resolver.
+- **OpenRouter routing**: Correctly labeled, not implying direct Anthropic/Google.
+- **Settings**: 2-column (category + detail). 12 categories. 3 are placeholder pages.
+- **LivePreview**: In-process HTTP, path traversal blocked, URL bar, iframe, logs.
+- **Cowork**: Safe placeholder shell — correct intentional design.
+- **Missing**: Custom window titlebar/shell (Prompt 5 target).
+
+### Security Verification
+
+- No real API keys in tracked files
+- No `.env` or database files tracked
+- No secrets in node_modules, dist, out (all gitignored)
+- `git grep "sk-or-v1"` matched only: CHANGELOG.md, README.md, SECURITY_NOTES.md, scripts/test-openrouter.mjs, and test files — all intentional documentation/mock references
+
+### Known Issues / Gaps
+
+1. **Custom window titlebar** missing — OS native bar is used; Prompt 5 addresses this
+2. **Cowork** is placeholder (intentional)
+3. **Tool execution** (MCP live calls) not wired — registry only
+4. **Suggestion chips on home** — appear in active chat, not on home empty state
+5. **Right Inspector** only shown on `/` route
+
+### Next Recommended Steps
+
+1. Run **Prompt 5** — Desktop Shell Polish (window topbar, navigation, premium feel)
+2. After Prompt 5: home empty state suggestion chips + recents in center
+3. After that: Cowork task entry with real pre-fill
+4. Eventually: tool execution / MCP live calls, attachment upload, CI setup
+
+---
+
+## 2026-07-08 13:47:26 +02:00 - Final change recording and branch sync (Codex)
+
+Branch: `main`
+
+Previous state:
+- Working tree was clean at `44323f3 Enforce provider model routing consistency`.
+- `main` was synced with `origin/main`.
+- `origin/master` was stale behind `origin/main`.
+
+Session changes recorded:
+- Added this implementation log for handoff and audit continuity.
+- Updated ignore rules for generated output, local app data, logs, SQLite databases, Playwright output, and temporary screenshots.
+- Reconfirmed documentation coverage in `CHANGELOG.md`, `AI_QA_REPORT.md`, and `docs/UX_DECISIONS.md`.
+
+Recent bugs fixed:
+- Chat sends now reject stale renderer model selections before any provider request.
+- Assistant responses now persist provider/model metadata so the UI can show the actual adapter used.
+- OpenRouter-routed Claude/Gemini-style models display as OpenRouter-routed instead of implying direct Anthropic or Google calls.
+- Sidebar duplication was reduced after the screenshot-inspired shell made the navigation feel crowded.
+- Settings provider tests were updated to open the new `Providers & Models` category explicitly.
+
+UI changes:
+- Added global `Chat / Cowork / Code` mode switch.
+- Reworked the empty chat surface around a central composer and quick controls.
+- Rebuilt Settings with category navigation and a detail panel.
+- Added safe Cowork placeholders for future workflow features.
+- Removed extra top-header `Aureon Desk` text and simplified the sidebar.
+
+Tests run before this final recording:
+- `npm run typecheck` - PASS
+- `npx vitest run tests/unit/chat-completion.test.ts` - PASS, 40 tests
+- `npm test` - PASS, 283 tests
+- `npm run build` - PASS
+- `npx playwright test tests/e2e/05-aureon-local-providers.spec.ts tests/e2e/06-aureon-remote-providers.spec.ts tests/e2e/12-aureon-workspace-ui.spec.ts` - PASS, 18 tests
+- `npm run test:e2e` - PASS, 84 tests
+
+Remaining limitations:
+- Cowork workflow features are explicit placeholders, not real background automation.
+- Computer/browser-use permissions remain inactive placeholders.
+- The full Electron E2E suite is slow on Windows because each test launches Electron sequentially.
+- OpenRouter smoke testing depends on `OPENROUTER_API_KEY` being present in the local environment.
