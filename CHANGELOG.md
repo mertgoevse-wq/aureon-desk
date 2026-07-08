@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.9.35] - 2026-07-08
+
+### Added (Manual QA & UX Baseline)
+- **docs/DEEPSEEK_CURRENT_STATE.md**: Comprehensive rewrite — architecture summary, 19-screen UI inventory, provider status (10 adapters), MCP/tools status, LivePreview status, vibe coding status (15 templates, 3-tab dashboard), visual/UX problems ranked by severity, duplicate/dead code suspects (updated with resolved items), asset size audit, security audit, test coverage summary (331 tests, 19 files), manual app launch test, prioritized next steps.
+
+### Changed (Cleanup)
+- `VibeCoding.tsx`: Removed unused `TUTORIAL_CARDS` import (the Learn tab uses `BeginnerHelp` component with its own tutorial content)
+
+### Verified
+- `npm run verify:native` — ✅ PASS
+- `npm run typecheck` — ✅ PASS (main + renderer)
+- `npm test` — ✅ PASS (331 tests, 19 files)
+- `npm run build` — ✅ PASS
+- Secret scan — ✅ PASS (only docs/tests)
+- App launch (`npm run dev`) — ✅ PASS (Vite dev server, Electron window created)
+
 ## [0.9.34] - 2026-07-08
 
 ### Changed (Cleanup — Duplicate Docs, Assets, Dead Code)

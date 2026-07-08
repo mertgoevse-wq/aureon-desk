@@ -7,7 +7,7 @@ import {
   FilePlus, FolderOpen, Map, FileCode, Eye, Bug, Package, Github,
   Smartphone, Trash2, Shield, CheckCircle, Star
 } from 'lucide-react'
-import { ONBOARDING_CARDS, GUIDED_BUILDER_STEPS, TUTORIAL_CARDS, buildGuidedPrompt } from '@shared/vibe-templates'
+import { ONBOARDING_CARDS, GUIDED_BUILDER_STEPS, buildGuidedPrompt } from '@shared/vibe-templates'
 import type { VibeTemplate } from '@shared/vibe-templates'
 import { BeginnerHelp } from '../components/vibe/BeginnerHelp'
 import { SafetyNotice } from '../components/vibe/SafetyNotice'

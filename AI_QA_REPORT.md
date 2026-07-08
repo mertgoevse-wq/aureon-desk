@@ -4,6 +4,44 @@
 
 ---
 
+## Manual QA & UX Baseline — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (331 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| Secret scan (`git grep "sk-or-v1"`) | ✅ PASS — only docs/test mock references |
+| App launch (`npm run dev`) | ✅ PASS — Vite dev server, Electron window created |
+| Source-aware review | ✅ Complete — `docs/DEEPSEEK_CURRENT_STATE.md` (comprehensive rewrite) |
+
+### Audit Summary
+- **Branch:** `main` at `56b8cd9`
+- **19 UI screens inventoried** — 17 working, 2 partial (Cowork simulated, Tools/MCP registry)
+- **Changes:** `VibeCoding.tsx` — removed unused `TUTORIAL_CARDS` import
+- **Docs updated:** `CHANGELOG.md`, `AI_QA_REPORT.md`, `docs/DEEPSEEK_CURRENT_STATE.md`, `docs/IMPLEMENTATION_LOG.md`, `docs/VISUAL_AUDIT.md`
+- **Uncommitted change:** Simple cleanup (unused import removal)
+- **origin/master is stale:** 21 commits behind — should sync after commit
+
+### Visual Issues (Source Level)
+- 10px text remaining in VibeCoding.tsx (5 locations: step labels, option descriptions, link text)
+- 9px badge text in VibeCoding.tsx ("Code mode" badge)
+- Sidebar/content color divide improved but still present
+- Cowork mode still simulated (setTimeout placeholder)
+- MCP tool execution not wired (registry only)
+
+### Resolved Since Last Audit
+- ✅ Large logo PNGs (4.8MB) removed — `public/brand/` ~16MB → ~0.15MB
+- ✅ Inline AureonMark SVG extracted to shared component
+- ✅ Native HTML `<details>` replaced with custom accordion in BeginnerHelp
+- ✅ Native checkboxes replaced with Toggle in CoworkPage
+- ✅ Duplicate Toggle components merged
+- ✅ Sidebar width 280→260→240px, surface lightened
+- ✅ Typography overhaul: 7 semantic UI classes, text-[10px]→text-ui-caption
+
+---
+
 ## Cleanup — Duplicate Docs, Assets, Dead Code — 2026-07-08
 
 | Check | Result |

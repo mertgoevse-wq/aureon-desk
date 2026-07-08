@@ -1,10 +1,10 @@
 # Aureon Desk — Visual Audit
 
-> **Audit date:** 2026-07-08
-> **Latest auditor:** DeepSeek V4 Pro — source-aware manual QA baseline (commit `c4cea6d`)
+> **Latest audit:** 2026-07-08 — DeepSeek V4 Pro (Buffy) — manual QA + app launch (commit `56b8cd9`)
+> **Previous auditor:** DeepSeek V4 Pro — source-aware manual QA baseline (commit `c4cea6d`)
 > **Previous auditor:** Freebuff (DeepSeek V4 Pro) — code-based inspection (commit `c670501`)
 > **Earlier auditor:** Antigravity/Gemini — code-based inspection (earlier session)
-> **Branch:** main · commit `c4cea6d`
+> **Branch:** main · commit `56b8cd9`
 
 ---
 
