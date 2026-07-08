@@ -1,15 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import {
-  Wrench, Plus, Trash2, Shield, AlertTriangle, CheckCircle, XCircle,
+  Wrench, Plus, Trash2, Shield, AlertTriangle, CheckCircle,
   Eye, EyeOff, Zap, Terminal, Globe, Server, FileText, Database,
-  Clipboard, Key, RefreshCw, ChevronDown, ChevronRight, ExternalLink,
-  Play, Ban, Clock, History
+  Clipboard, Key, ChevronDown, ChevronRight,
+  Play, Ban, Clock, History, Activity, XCircle
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'
+import { Input } from '../../components/shared/Input'
+import { Toggle } from '../../components/shared/Toggle'
 import { Badge, type BadgeVariant } from '../../components/shared/Badge'
+import { Card } from '../../components/shared/Card'
+import { Modal } from '../../components/shared/Modal'
 import { EmptyState } from '../../components/shared/EmptyState'
+import { showToast } from '../../components/shared/Toast'
 import { useIpc } from '../../hooks/useIpc'
-import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolPermission } from '@shared/types/tool'
+import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolPermission, TransportType } from '@shared/types/tool'
 
 const PERMISSION_ICONS: Record<string, React.ReactElement> = {
   file_read: <FileText size={10} />,
@@ -17,53 +22,57 @@ const PERMISSION_ICONS: Record<string, React.ReactElement> = {
   shell_command: <Terminal size={10} />,
   network: <Globe size={10} />,
   browser: <Globe size={10} />,
-  git: <ExternalLink size={10} />,
+  git: <Globe size={10} />,
   database: <Database size={10} />,
   clipboard: <Clipboard size={10} />,
   secrets: <Key size={10} />,
 }
 
-const PERMISSION_COLORS: Record<string, string> = {
-  file_read: 'default',
-  file_write: 'warning',
-  shell_command: 'warning',
-  network: 'default',
-  browser: 'warning',
-  git: 'warning',
-  database: 'warning',
-  clipboard: 'default',
-  secrets: 'error',
+const PERMISSION_DESCRIPTIONS: Record<string, string> = {
+  file_read: 'Read files',
+  file_write: 'Write files',
+  shell_command: 'Shell access',
+  network: 'Network access',
+  browser: 'Browser control',
+  git: 'Git operations',
+  database: 'Database access',
+  clipboard: 'Clipboard',
+  secrets: 'Secrets',
 }
 
-const TRANSPORT_ICONS: Record<string, React.ReactElement> = {
-  stdio: <Terminal size={10} />,
-  http: <Globe size={10} />,
-  sse: <Server size={10} />,
-  websocket: <Globe size={10} />,
-  local: <Zap size={10} />,
+const DESTRUCTIVE_PERMISSIONS = new Set(['file_write', 'shell_command', 'git', 'database', 'secrets'])
+
+const TRANSPORT_LABELS: Record<string, string> = {
+  stdio: 'Command (stdio)',
+  http: 'HTTP endpoint',
+  sse: 'SSE stream',
+  websocket: 'WebSocket',
+  local: 'Local (built-in)',
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  approved: 'text-green-600',
-  denied: 'text-red-600',
-  blocked_untrusted: 'text-amber-600',
-  blocked_disabled: 'text-amber-600',
-  blocked_unknown: 'text-red-600',
-  error: 'text-red-600',
+const STATUS_VARIANTS: Record<string, BadgeVariant> = {
+  approved: 'success',
+  denied: 'error',
+  blocked_untrusted: 'warning',
+  blocked_disabled: 'warning',
+  blocked_unknown: 'error',
+  error: 'error',
 }
 
 export function ToolsPage(): React.ReactElement {
   const api = useIpc()
   const [tools, setTools] = useState<ToolRow[]>([])
-  const [selectedToolId, setSelectedToolId] = useState<string | null>(null)
   const [expandedToolId, setExpandedToolId] = useState<string | null>(null)
   const [callLogs, setCallLogs] = useState<ToolCallLog[]>([])
   const [showLogs, setShowLogs] = useState(false)
-  const [testInput, setTestInput] = useState('{"pattern":"*.ts"}')
-  const [testResult, setTestResult] = useState<string | null>(null)
-  const [testError, setTestError] = useState<string | null>(null)
-  const [safetyCheck, setSafetyCheck] = useState<SafetyCheckResult | null>(null)
+  const [selectedToolLogs, setSelectedToolLogs] = useState<string | null>(null)
   const [executing, setExecuting] = useState(false)
+  const [safetyChecks, setSafetyChecks] = useState<Record<string, SafetyCheckResult | null>>({})
+
+  // Add MCP Server modal
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [newServer, setNewServer] = useState({ name: '', command: '', transport: 'stdio' as string })
+  const [addError, setAddError] = useState<string | null>(null)
 
   useEffect(() => { loadTools() }, [])
 
@@ -75,6 +84,7 @@ export function ToolsPage(): React.ReactElement {
     try {
       const logs = await api.toolGetCallLogs(toolId)
       setCallLogs(logs as ToolCallLog[])
+      setSelectedToolLogs(toolId ?? null)
       setShowLogs(true)
     } catch (e) { console.error(e) }
   }, [api])
@@ -83,6 +93,7 @@ export function ToolsPage(): React.ReactElement {
     const tool = tools.find(t => t.id === id)
     if (!tool) return
     await api.toolSetEnabled(id, !tool.is_enabled)
+    showToast('info', `${tool.name} ${tool.is_enabled ? 'disabled' : 'enabled'}`)
     loadTools()
   }, [api, tools])
 
@@ -90,50 +101,62 @@ export function ToolsPage(): React.ReactElement {
     const tool = tools.find(t => t.id === id)
     if (!tool) return
     await api.toolSetTrusted(id, !tool.is_trusted)
+    showToast('info', `${tool.name} ${tool.is_trusted ? 'untrusted' : 'trusted'}`)
     loadTools()
   }, [api, tools])
 
   const handleDelete = useCallback(async (id: string) => {
+    const tool = tools.find(t => t.id === id)
+    if (!tool || !confirm(`Remove "${tool.name}" from the tool registry?`)) return
     await api.toolDelete(id)
-    if (selectedToolId === id) setSelectedToolId(null)
+    if (expandedToolId === id) setExpandedToolId(null)
+    showToast('info', `${tool.name} removed`)
     loadTools()
-  }, [api, selectedToolId])
-
-  const handleCheckSafety = useCallback(async (toolId: string) => {
-    let input: Record<string, unknown>
-    try {
-      input = JSON.parse(testInput || '{}')
-    } catch {
-      input = {}
-    }
-    const result = await api.toolCheckSafety(toolId, input)
-    setSafetyCheck(result as SafetyCheckResult)
-    setTestResult(null)
-    setTestError(null)
-  }, [api, testInput])
+  }, [api, tools, expandedToolId])
 
   const handleExecute = useCallback(async (toolId: string) => {
     setExecuting(true)
-    setTestResult(null)
-    setTestError(null)
+    setSafetyChecks(prev => ({ ...prev, [toolId]: null }))
     try {
-      let input: Record<string, unknown>
-      try { input = JSON.parse(testInput || '{}') } catch { input = {} }
-      const result = await api.toolExecute(toolId, input)
+      const result = await api.toolExecute(toolId, { test: true })
       const r = result as any
+      setSafetyChecks(prev => ({ ...prev, [toolId]: r.safetyCheck || null }))
       if (r.success) {
-        setTestResult(r.output)
-        setSafetyCheck(r.safetyCheck)
+        showToast('success', 'Tool executed successfully')
       } else {
-        setTestError(r.error || 'Execution failed')
-        setSafetyCheck(r.safetyCheck)
+        showToast('warning', r.error || 'Execution blocked')
       }
+      loadLogs(toolId)
     } catch (e) {
-      setTestError(String(e))
+      showToast('error', String(e))
     } finally {
       setExecuting(false)
     }
-  }, [api, testInput])
+  }, [api])
+
+  const handleCheckSafety = useCallback(async (toolId: string) => {
+    const result = await api.toolCheckSafety(toolId, {})
+    setSafetyChecks(prev => ({ ...prev, [toolId]: result as SafetyCheckResult }))
+  }, [api])
+
+  const handleAddServer = useCallback(async () => {
+    if (!newServer.name.trim()) { setAddError('Name is required'); return }
+    setAddError(null)
+    try {
+      await api.toolCreate({
+        name: newServer.name.trim(),
+        transport: newServer.transport as TransportType,
+        command: newServer.command || null,
+        source: 'imported',
+        description: `MCP server: ${newServer.name}`,
+        permissions: ['file_read'],
+      })
+      setShowAddModal(false)
+      setNewServer({ name: '', command: '', transport: 'stdio' })
+      showToast('success', 'MCP server added — disabled by default')
+      loadTools()
+    } catch (err) { setAddError(String(err)) }
+  }, [newServer, api])
 
   const getStatusIcon = (tool: ToolRow) => {
     if (!tool.is_enabled) return <Ban size={14} className="text-[var(--ivory-text-3)]" />
@@ -146,254 +169,290 @@ export function ToolsPage(): React.ReactElement {
     catch { return [] }
   }
 
-  const config = (tool: ToolRow): Record<string, unknown> => {
-    try { return tool.config ? JSON.parse(tool.config) : {} }
-    catch { return {} }
+  const hasDestructive = (tool: ToolRow): boolean => {
+    return permissions(tool).some(p => DESTRUCTIVE_PERMISSIONS.has(p))
   }
 
   return (
-    <div className="flex flex-col h-full bg-[var(--ivory-bg)]">
+    <div className="space-y-5 max-w-4xl">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-[var(--ivory-border)]">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold display-text text-[var(--ivory-text)]">Tools & MCP</h2>
-            <p className="text-xs text-[var(--ivory-text-3)] mt-0.5">
-              {tools.length} tool{tools.length !== 1 ? 's' : ''} registered — all calls pass through safety gate
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button onClick={() => loadLogs()} variant="secondary" size="sm">
-              <History size={14} /> View Call Logs
-            </Button>
-          </div>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="text-xl font-semibold text-[var(--ivory-text)] display-text">Tools &amp; MCP</h2>
+          <p className="text-xs text-[var(--ivory-text-3)] mt-1 leading-relaxed">
+            Manage capability tools and MCP servers. All calls go through safety gate — imported tools start disabled.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" size="sm" onClick={() => { setSelectedToolLogs(null); loadLogs() }}>
+            <History size={14} /> Call History
+          </Button>
+          <Button size="sm" onClick={() => setShowAddModal(true)}>
+            <Plus size={14} /> Add MCP Server
+          </Button>
         </div>
       </div>
 
-      {/* Logs Panel */}
+      {/* Safety notice */}
+      <div className="p-3.5 rounded-xl bg-[var(--ivory-warning-bg)] border border-[var(--ivory-warning)]/15 text-xs text-[var(--ivory-warning)] flex items-start gap-2.5">
+        <Shield size={14} className="shrink-0 mt-0.5" />
+        <span className="leading-relaxed">
+          All tool calls go through safety gate: enabled → trusted → permissions → confirmation for destructive ops.
+          File writes, shell commands, and network access require approval.
+        </span>
+      </div>
+
+      {/* Call Logs Panel */}
       {showLogs && (
-        <div className="px-6 py-3 border-b border-[var(--ivory-border)] bg-[var(--ivory-surface)]">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-semibold display-text text-[var(--ivory-text)]">
-              Tool Call Logs ({callLogs.length})
-            </h3>
-            <button onClick={() => setShowLogs(false)} className="text-xs text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]">
+        <Card padding="md">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Activity size={14} className="text-[var(--ivory-accent)]" />
+              <h3 className="text-sm font-semibold text-[var(--ivory-text)]">
+                Call History{selectedToolLogs ? ' — ' + (tools.find(t => t.id === selectedToolLogs)?.name || '') : ''}
+              </h3>
+              <Badge variant="default" size="sm">{callLogs.length}</Badge>
+            </div>
+            <button onClick={() => { setShowLogs(false); setSelectedToolLogs(null); setCallLogs([]) }}
+              className="p-1 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors">
               <XCircle size={14} />
             </button>
           </div>
           {callLogs.length === 0 ? (
-            <p className="text-xs text-[var(--ivory-text-3)]">No tool calls logged yet.</p>
+            <p className="text-xs text-[var(--ivory-text-3)] py-4 text-center">No tool calls logged yet.</p>
           ) : (
-            <div className="max-h-48 overflow-y-auto space-y-1">
+            <div className="max-h-52 overflow-y-auto space-y-1">
               {callLogs.map(log => (
-                <div key={log.id} className="flex items-center gap-2 text-[11px] py-1 border-b border-[var(--ivory-border)] last:border-0">
+                <div key={log.id} className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-[var(--ivory-bg)] transition-colors text-xs">
+                  <Badge variant={STATUS_VARIANTS[log.status] || 'default'} size="sm">
+                    {log.status.replace(/_/g, ' ')}
+                  </Badge>
                   <span className="font-medium text-[var(--ivory-text)]">{log.tool_name}</span>
-                  <span className={`font-medium ${STATUS_COLORS[log.status] || ''}`}>{log.status}</span>
                   <span className="text-[var(--ivory-text-3)] truncate flex-1">{log.input_preview}</span>
-                  <span className="text-[10px] text-[var(--ivory-text-3)]">
+                  {log.error_message && (
+                    <span className="text-[var(--ivory-error)] text-ui-caption truncate max-w-[120px]">{log.error_message}</span>
+                  )}
+                  <span className="text-ui-caption text-[var(--ivory-text-3)] shrink-0">
                     {new Date(log.created_at).toLocaleTimeString()}
                   </span>
                 </div>
               ))}
             </div>
           )}
-        </div>
+        </Card>
       )}
 
-      {/* Safety notice */}
-      <div className="px-6 py-2 text-[10px] text-[var(--ivory-text-3)] border-b border-[var(--ivory-border)] flex items-center gap-1.5">
-        <Shield size={10} />
-        Every tool call goes through safety gate: enabled → trusted → permissions → confirmation for destructive ops.
-        Imported tools are disabled by default.
-      </div>
-
       {/* Tool List */}
-      <div className="flex-1 overflow-y-auto">
-        {tools.length === 0 ? (
+      {tools.length === 0 ? (
+        <Card padding="lg">
           <EmptyState
             icon={<Wrench size={40} strokeWidth={1.5} />}
-            title="No tools registered"
-            description="Built-in mock tools are seeded on app startup. They demonstrate the tool system without touching real files."
+            title="No tools or MCP servers"
+            description="Add an MCP server to extend Aureon's capabilities. Built-in mock tools are seeded on app startup."
+            action={<Button size="sm" onClick={() => setShowAddModal(true)}><Plus size={14} /> Add MCP Server</Button>}
           />
-        ) : (
-          <div className="divide-y divide-[var(--ivory-border)]">
-            {tools.map(tool => (
-              <div key={tool.id}>
-                <div
-                  onClick={() => setExpandedToolId(expandedToolId === tool.id ? null : tool.id)}
-                  className={`px-6 py-3 cursor-pointer hover:bg-[var(--ivory-surface)] transition-colors ${
-                    expandedToolId === tool.id ? 'bg-[var(--ivory-surface)]' : ''
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1.5">
-                      {expandedToolId === tool.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                      {getStatusIcon(tool)}
-                    </div>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {tools.map(tool => (
+            <Card key={tool.id} padding="none">
+              {/* Tool Row Header */}
+              <div
+                onClick={() => setExpandedToolId(expandedToolId === tool.id ? null : tool.id)}
+                className="px-5 py-3.5 cursor-pointer hover:bg-[var(--ivory-bg)]/50 transition-colors rounded-t-[var(--radius-lg)]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {expandedToolId === tool.id ? <ChevronDown size={14} className="text-[var(--ivory-text-3)]" /> : <ChevronRight size={14} className="text-[var(--ivory-text-3)]" />}
+                    {getStatusIcon(tool)}
+                  </div>
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-[var(--ivory-text)]">{tool.name}</span>
-                        <Badge variant={tool.source === 'builtin' ? 'success' : 'default'} size="sm">
-                          {tool.source || 'unknown'}
-                        </Badge>
-                        <Badge variant="default" size="sm">v{tool.version}</Badge>
-                      </div>
-                      <p className="text-[11px] text-[var(--ivory-text-3)] mt-0.5 truncate">
-                        {tool.description || 'No description'}
-                      </p>
-                    </div>
-
-                    {/* Permission badges */}
-                    <div className="flex items-center gap-1 shrink-0">
-                      {permissions(tool).map(perm => (
-                        <Badge
-                          key={perm}
-                          variant={(PERMISSION_COLORS[perm] || 'default') as BadgeVariant}
-                          size="sm"
-                        >
-                          <span className="flex items-center gap-0.5">
-                            {PERMISSION_ICONS[perm]} {perm.replace(/_/g, ' ')}
-                          </span>
-                        </Badge>
-                      ))}
-                      <Badge variant="default" size="sm">
-                        <span className="flex items-center gap-0.5">
-                          {TRANSPORT_ICONS[tool.transport]} {tool.transport}
-                        </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-semibold text-[var(--ivory-text)]">{tool.name}</span>
+                      <Badge variant={tool.source === 'builtin' ? 'success' : 'default'} size="sm">
+                        {tool.source || 'unknown'}
                       </Badge>
+                      <Badge variant="default" size="sm">v{tool.version}</Badge>
+                      {!tool.is_enabled && <Badge variant="default" size="sm">Disabled</Badge>}
+                      {!tool.is_trusted && tool.source !== 'builtin' && <Badge variant="warning" size="sm">Untrusted</Badge>}
+                      {hasDestructive(tool) && <Badge variant="warning" size="sm">Destructive</Badge>}
                     </div>
+                    <p className="text-xs text-[var(--ivory-text-3)] mt-0.5 truncate">
+                      {tool.description || 'No description'}
+                    </p>
+                  </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-1 shrink-0" onClick={e => e.stopPropagation()}>
-                      <Button
-                        variant={tool.is_enabled ? 'secondary' : 'primary'}
+                  {/* Permission pills */}
+                  <div className="hidden sm:flex items-center gap-1 shrink-0">
+                    {permissions(tool).map(perm => (
+                      <Badge
+                        key={perm}
+                        variant={DESTRUCTIVE_PERMISSIONS.has(perm) ? 'warning' : 'default'}
                         size="sm"
-                        onClick={() => handleToggleEnabled(tool.id)}
-                        title={tool.is_enabled ? 'Disable' : 'Enable'}
                       >
-                        {tool.is_enabled ? 'Disable' : 'Enable'}
+                        {PERMISSION_ICONS[perm]} {PERMISSION_DESCRIPTIONS[perm] || perm}
+                      </Badge>
+                    ))}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
+                    <Toggle
+                      checked={tool.is_enabled === 1}
+                      onChange={() => handleToggleEnabled(tool.id)}
+                      dataTestId={`toggle-${tool.id}`}
+                    />
+                    {tool.source !== 'builtin' && (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => handleToggleTrusted(tool.id)}
+                      >
+                        {tool.is_trusted ? 'Untrust' : 'Trust'}
                       </Button>
-                      {tool.source !== 'builtin' && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => handleToggleTrusted(tool.id)}
-                          title={tool.is_trusted ? 'Untrust' : 'Trust'}
-                        >
-                          {tool.is_trusted ? 'Untrust' : 'Trust'}
-                        </Button>
-                      )}
-                      <button
-                        onClick={() => handleDelete(tool.id)}
-                        className="p-1.5 text-[var(--ivory-text-3)] hover:text-red-600"
-                        title="Delete tool"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
+                    )}
+                    <Button variant="danger" size="sm" onClick={() => handleDelete(tool.id)}>
+                      <Trash2 size={13} />
+                    </Button>
                   </div>
                 </div>
+              </div>
 
-                {/* Expanded detail */}
-                {expandedToolId === tool.id && (
-                  <div className="px-6 pb-4 pl-12 space-y-3">
-                    {/* Config & Command */}
-                    <div className="grid grid-cols-2 gap-3">
+              {/* Expanded Detail */}
+              {expandedToolId === tool.id && (
+                <div className="px-5 pb-4 border-t border-[var(--ivory-border)]/60">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3">
+                    {/* Left: Transport & Config */}
+                    <div className="space-y-3">
                       <div>
-                        <h4 className="text-[10px] font-semibold text-[var(--ivory-text-3)] uppercase mb-1">
-                          Transport & Command
-                        </h4>
-                        <div className="p-2 rounded-[var(--radius-sm)] bg-[var(--ivory-surface-2)] text-[11px] text-[var(--ivory-text-2)] font-mono">
-                          transport: {tool.transport}<br />
-                          command: {tool.command || '(none)'}
+                        <p className="text-xs font-semibold text-[var(--ivory-text)] mb-1.5">Transport</p>
+                        <div className="p-2.5 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/60 text-xs font-mono text-[var(--ivory-text-2)]">
+                          <span className="text-[var(--ivory-text-3)]">type:</span> {tool.transport} ({TRANSPORT_LABELS[tool.transport] || tool.transport})
+                          {tool.command && <><br /><span className="text-[var(--ivory-text-3)]">command:</span> {tool.command}</>}
                         </div>
                       </div>
                       <div>
-                        <h4 className="text-[10px] font-semibold text-[var(--ivory-text-3)] uppercase mb-1">
-                          Config
-                        </h4>
-                        <pre className="p-2 rounded-[var(--radius-sm)] bg-[var(--ivory-surface-2)] text-[11px] text-[var(--ivory-text-2)] font-mono whitespace-pre-wrap max-h-32 overflow-y-auto">
-                          {JSON.stringify(config(tool), null, 2)}
-                        </pre>
+                        <p className="text-xs font-semibold text-[var(--ivory-text)] mb-1.5">Permissions</p>
+                        <div className="flex flex-wrap gap-1">
+                          {permissions(tool).length === 0 ? (
+                            <span className="text-xs text-[var(--ivory-text-3)]">None</span>
+                          ) : (
+                            permissions(tool).map(perm => (
+                              <Badge key={perm} variant={DESTRUCTIVE_PERMISSIONS.has(perm) ? 'warning' : 'default'} size="sm">
+                                {PERMISSION_ICONS[perm]} {PERMISSION_DESCRIPTIONS[perm] || perm}
+                              </Badge>
+                            ))
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Test section */}
-                    <div>
-                      <h4 className="text-[10px] font-semibold text-[var(--ivory-text-3)] uppercase mb-1">
-                        Test Input (JSON)
-                      </h4>
-                      <div className="flex gap-2">
-                        <textarea
-                          value={testInput}
-                          onChange={e => setTestInput(e.target.value)}
-                          rows={3}
-                          className="flex-1 px-2 py-1 text-[11px] rounded-[var(--radius-sm)] bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text)] font-mono focus:outline-none focus:border-[var(--ivory-accent)] resize-none"
-                          placeholder='{"pattern":"*.ts"}'
-                        />
-                        <div className="flex flex-col gap-1">
-                          <Button size="sm" onClick={() => handleExecute(tool.id)} disabled={executing}>
-                            <Play size={12} /> {executing ? 'Running...' : 'Execute'}
-                          </Button>
+                    {/* Right: Test & Actions */}
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-xs font-semibold text-[var(--ivory-text)] mb-1.5">Test Tool</p>
+                        <div className="flex flex-wrap gap-2">
                           <Button size="sm" variant="secondary" onClick={() => handleCheckSafety(tool.id)}>
                             <Shield size={12} /> Check Safety
                           </Button>
+                          <Button size="sm" onClick={() => handleExecute(tool.id)} disabled={executing || !tool.is_enabled}>
+                            <Play size={12} /> {executing ? 'Running...' : 'Run Test'}
+                          </Button>
                           <Button size="sm" variant="secondary" onClick={() => loadLogs(tool.id)}>
-                            <History size={12} /> Logs
+                            <History size={12} /> View Logs
                           </Button>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Safety check result */}
-                    {safetyCheck && (
-                      <div className={`p-2 rounded-[var(--radius-sm)] border ${
-                        safetyCheck.allowed ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-                      }`}>
-                        <div className="flex items-center gap-1.5 text-[11px] font-medium mb-1">
-                          {safetyCheck.allowed
-                            ? <CheckCircle size={12} className="text-green-600" />
-                            : <XCircle size={12} className="text-red-600" />
-                          }
-                          <span className={safetyCheck.allowed ? 'text-green-700' : 'text-red-700'}>
-                            {safetyCheck.message}
-                          </span>
+                      {/* Safety check result */}
+                      {safetyChecks[tool.id] && (
+                        <div className={`p-3 rounded-xl border text-xs ${
+                          safetyChecks[tool.id]!.allowed
+                            ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] border-[var(--ivory-success)]/20'
+                            : 'bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border-[var(--ivory-error)]/20'
+                        }`}>
+                          <div className="flex items-center gap-1.5 font-medium mb-1">
+                            {safetyChecks[tool.id]!.allowed
+                              ? <CheckCircle size={12} />
+                              : <XCircle size={12} />
+                            }
+                            {safetyChecks[tool.id]!.message}
+                          </div>
+                          {safetyChecks[tool.id]!.requiresConfirmation && (
+                            <p className="text-ui-caption text-amber-600">⚠️ User confirmation required before execution</p>
+                          )}
+                          {safetyChecks[tool.id]!.dryRunPreview && (
+                            <p className="text-ui-caption text-[var(--ivory-text-2)] mt-1">Preview: {safetyChecks[tool.id]!.dryRunPreview}</p>
+                          )}
                         </div>
-                        {safetyCheck.requiresConfirmation && (
-                          <p className="text-[10px] text-amber-600">⚠️ Requires user confirmation</p>
-                        )}
-                        {safetyCheck.dryRunPreview && (
-                          <p className="text-[10px] text-[var(--ivory-text-2)] mt-1">
-                            Preview: {safetyCheck.dryRunPreview}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Test result */}
-                    {testResult && (
-                      <div className="p-2 rounded-[var(--radius-sm)] bg-green-50 border border-green-200">
-                        <h4 className="text-[10px] font-semibold text-green-700 mb-1">Output</h4>
-                        <pre className="text-[11px] text-green-800 font-mono whitespace-pre-wrap max-h-40 overflow-y-auto">
-                          {testResult}
-                        </pre>
-                      </div>
-                    )}
-
-                    {testError && (
-                      <div className="p-2 rounded-[var(--radius-sm)] bg-red-50 border border-red-200">
-                        <h4 className="text-[10px] font-semibold text-red-700 mb-1">Error</h4>
-                        <pre className="text-[11px] text-red-800 font-mono whitespace-pre-wrap">{testError}</pre>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
+                </div>
+              )}
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Add MCP Server Modal */}
+      <Modal
+        isOpen={showAddModal}
+        onClose={() => { setShowAddModal(false); setAddError(null); setNewServer({ name: '', command: '', transport: 'stdio' }) }}
+        title="Add MCP Server"
+        size="sm"
+      >
+        <div className="space-y-3">
+          <div className="p-3 rounded-xl bg-[var(--ivory-warning-bg)] border border-[var(--ivory-warning)]/15 text-xs text-[var(--ivory-warning)]">
+            <Shield size={12} className="inline mr-1" />
+            New MCP servers are disabled by default. Review their capabilities before enabling.
           </div>
-        )}
-      </div>
+
+          <Input
+            label="Server Name"
+            placeholder="My MCP Server"
+            value={newServer.name}
+            onChange={e => setNewServer(s => ({ ...s, name: e.target.value }))}
+          />
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-[var(--ivory-text)]">Transport Type</label>
+            <div className="grid grid-cols-2 gap-1.5">
+              {['stdio', 'http', 'sse'].map(t => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setNewServer(s => ({ ...s, transport: t }))}
+                  className={`px-3 py-2 rounded-xl text-xs font-medium border transition-all text-left
+                    ${newServer.transport === t
+                      ? 'border-[var(--ivory-accent)]/30 bg-[var(--ivory-accent-light)] text-[var(--ivory-text)]'
+                      : 'border-[var(--ivory-border)] bg-[var(--ivory-bg)] text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'
+                    }`}
+                >
+                  {t === 'stdio' && <Terminal size={12} className="inline mr-1.5 text-[var(--ivory-accent)]" />}
+                  {t === 'http' && <Globe size={12} className="inline mr-1.5 text-[var(--ivory-accent)]" />}
+                  {t === 'sse' && <Server size={12} className="inline mr-1.5 text-[var(--ivory-accent)]" />}
+                  {TRANSPORT_LABELS[t]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <Input
+            label="Command or URL"
+            placeholder={newServer.transport === 'stdio' ? 'node server.js' : 'http://localhost:3000'}
+            value={newServer.command}
+            onChange={e => setNewServer(s => ({ ...s, command: e.target.value }))}
+          />
+
+          {addError && <p className="text-xs text-[var(--ivory-error)]">{addError}</p>}
+
+          <Button onClick={handleAddServer} className="w-full">
+            <Plus size={14} /> Add Server
+          </Button>
+        </div>
+      </Modal>
     </div>
   )
 }

@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.9.39] - 2026-07-08
+
+### Changed (MCP Tools Capability Manager Repair)
+
+**ToolsPage Rewrite:**
+- Complete UI overhaul: Header → Safety notice → Call History → Tool list with expandable Cards → Add MCP Server Modal
+- Each tool row: status icon, name + badges (source, version, disabled, untrusted, destructive), description, permission pills
+- Enable/disable: `variant="primary"` button → Toggle component (consistent with rest of app)
+- Delete button: unlabeled ghost icon → `variant="danger"` (red) button
+- Expanded detail: transport info, permissions list, test actions (Check Safety / Run Test / View Logs), safety check result
+- Replaced raw `<textarea>` with shared `<Input>` component in Add MCP Server Modal
+- Replaced `text-[10px]` with `text-xs`/`text-ui-caption` throughout
+
+**Add MCP Server Modal:**
+- New Modal with: safety warning (disabled by default), server name input, transport type picker (stdio/http/sse), command/URL input
+- New servers created with `source: 'imported'` → disabled by default (safety)
+
+**Call History Polish:**
+- Uses Card wrapper instead of raw div
+- Status shown as colored Badges (approved→green, denied→red, blocked→amber)
+- Tool name, sanitized input preview, error message, timestamp in clean row layout
+
+**Bug Fixes:**
+- Safety check state now per-tool (was shared global, causing cross-tool pollution)
+- Call history state properly resets on close and global view
+- Transport type casting: `as any` → `as TransportType`
+
+**Safety Model (confirmed existing):**
+- ✅ Imported tools disabled by default
+- ✅ Destructive permissions (file_write, shell_command, git, database, secrets) require confirmation
+- ✅ Secrets redacted from logs via unified redactor
+- ✅ No auto-run from router suggestions
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (331 tests)
+- `npm run build` — ✅ PASS
+
 ## [0.9.38] - 2026-07-08
 
 ### Changed (Provider Settings Layout Repair)

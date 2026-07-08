@@ -1,5 +1,41 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 20:40 +02:00 — MCP Tools Capability Manager Repair
+
+Branch: `main`
+Commit at start: `e04a3ac`
+
+### Session Purpose
+Repair and polish the MCP/Tools page into a real safe capability manager with clean UX. Replace raw technical UI with structured Cards, proper shared components, and an Add MCP Server modal.
+
+### Files Changed
+- **Modified:** `src/renderer/src/pages/settings/ToolsPage.tsx` — complete rewrite
+
+### Key Changes
+- **Complete rewrite**: Header → Safety notice → Call History → Tool Cards with expand/collapse → Add MCP Server Modal
+- **Enable/disable**: `variant="primary"` button → Toggle component
+- **Delete**: ghost icon → `variant="danger"` button
+- **Add MCP Server Modal**: safety warning, name input, transport picker (stdio/http/sse), command/URL input, disabled-by-default
+- **Call History**: Card wrapper, status Badges, timestamps, sanitized previews
+- **Bug fixes**: per-tool safety check state (was shared global), call history state reset, proper type casting
+- **Text normalization**: text-[10px] → text-xs/text-ui-caption
+- **Toast notifications**: added for enable/disable, trust/untrust, delete, execute
+
+**Docs:**
+- **Modified:** `CHANGELOG.md` — v0.9.39 entry
+- **Modified:** `AI_QA_REPORT.md` — MCP repair results
+- **Modified:** `docs/IMPLEMENTATION_LOG.md` — this entry
+- **Modified:** `docs/ARCHITECTURE.md` — tool/safety section updated
+- **Modified:** `README.md` — MCP/Tools section updated
+- **Modified:** `SECURITY_NOTES.md` — tool safety notes
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (331 tests)
+- `npm run build` — ✅ PASS
+
+---
+
 ## 2026-07-08 20:20 +02:00 — Provider Settings Layout Repair
 
 Branch: `main`

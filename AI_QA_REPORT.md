@@ -4,6 +4,22 @@
 
 ---
 
+## MCP Tools Repair — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (331 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- ToolsPage complete rewrite: Cards, expandable rows, per-tool safety checks, Toggle for enable/disable, danger Delete
+- Add MCP Server Modal with transport picker, safety warning, disabled-by-default
+- Call History: Card wrapper, status badges, timestamps, sanitized previews
+- Safety model confirmed: imported disabled, destructive blocked, secrets redacted
+
+---
+
 ## Provider Settings Layout Repair — 2026-07-08
 
 | Check | Result |
