@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.9.38] - 2026-07-08
+
+### Changed (Provider Settings Layout Repair)
+
+**Section Structure:**
+- Provider card split into clear sections: Header → Capabilities → Connection → API Key → Models → Actions Footer
+- Each section separated by `border-t` dividers for clean visual hierarchy
+- Section titles: `text-xs font-semibold` (consistent, readable)
+
+**Alignment Fixes:**
+- Test Connection, Toggle+Enabled label, and Delete moved from cramped header row to dedicated Actions footer
+- API key input replaced raw `<input>` with shared `<Input>` component
+- Eye toggle moved from fragile absolute positioned icon to side-by-side button
+- API key row: `flex-wrap` + `min-w-[200px]` prevents button overlap on narrow cards
+- Model rows: `py-2 px-3` padding, consistent toggle alignment
+
+**Color/Tone:**
+- Delete button: unlabeled ghost icon → `variant="danger"` (red) with "Delete" label
+- Test button: `variant="ghost"` → `variant="secondary"` (neutral border)
+- Test result banner moved into Actions footer near Test button
+- Capability badge text: "API key" → "API key required" (clearer)
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (331 tests)
+- `npm run build` — ✅ PASS
+
 ## [0.9.37] - 2026-07-08
 
 ### Added (Compact Modals & Popovers)

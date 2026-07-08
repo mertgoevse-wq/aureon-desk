@@ -4,6 +4,24 @@
 
 ---
 
+## Provider Settings Layout Repair — 2026-07-08
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (331 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- Provider card restructured into 6 clear sections with dividers
+- API key input: raw `<input>` → shared `<Input>` component; eye icon side-by-side
+- Actions footer: Test/Toggle/Delete moved from cramped header to dedicated row
+- Delete button: ghost icon → `variant="danger"` (red) with label
+- Test result moved near Test button in Actions footer
+- API key row: flex-wrap prevents overlap on narrow cards
+
+---
+
 ## Compact Modals & Popovers — 2026-07-08
 
 | Check | Result |

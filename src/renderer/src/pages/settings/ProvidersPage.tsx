@@ -306,11 +306,10 @@ export function ProvidersPage(): React.ReactElement {
           return (
             <Card key={adapter.slug}>
               {/* Header */}
-              <div className="flex items-start justify-between mb-4 gap-3">
+              <div className="flex items-start justify-between mb-5 gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <h3 className="text-ui-lg font-semibold text-[var(--ivory-text)]">{adapter.name}</h3>
-                    {/* Provider status */}
+                    <h3 className="text-[15px] font-semibold text-[var(--ivory-text)]">{adapter.name}</h3>
                     {provider ? (
                       <ProviderStatusBadge
                         hasKey={hasKey}
@@ -322,23 +321,8 @@ export function ProvidersPage(): React.ReactElement {
                       <Badge variant="default" size="sm">Not configured</Badge>
                     )}
                   </div>
-                  <p className="text-ui-caption text-[var(--ivory-text-3)] leading-relaxed">{adapter.description}</p>
+                  <p className="text-xs text-[var(--ivory-text-3)] leading-relaxed">{adapter.description}</p>
                 </div>
-                {provider && (
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <Button variant="ghost" size="sm" onClick={() => handleTestConnection(provider.id)} disabled={isTesting} className="text-ui-caption">
-                      <Wifi size={13} className={isTesting ? 'animate-pulse' : ''} />
-                      {isTesting ? 'Testing...' : 'Test'}
-                    </Button>
-                    <Toggle
-                      checked={provider.is_enabled === 1}
-                      onChange={(enabled) => handleToggleProvider(provider.id, enabled)}
-                    />
-                    <button onClick={() => handleDeleteProvider(provider.id)} className="p-1.5 text-[var(--ivory-text-3)] hover:text-red-600 transition-colors rounded-lg hover:bg-red-50" title="Delete provider" aria-label="Delete provider">
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                )}
               </div>
 
               {/* Local provider help card */}
@@ -373,72 +357,67 @@ export function ProvidersPage(): React.ReactElement {
                   </span>
                 ))}
                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-ui-caption font-medium border ${adapter.authType === 'none' ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] border-[var(--ivory-success)]/20' : 'bg-[var(--ivory-warning-bg)] text-[var(--ivory-warning)] border-[var(--ivory-warning)]/20'}`}>
-                  {adapter.authType === 'none' ? 'No key needed' : 'API key'}
+                  {adapter.authType === 'none' ? 'No key needed' : 'API key required'}
                 </span>
               </div>
 
-              {/* Test result */}
-              {testResult && (
-                <div className={`mb-4 p-2.5 rounded-[var(--radius-md)] text-xs ${testResult.success ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] border border-[var(--ivory-success)]/20' : 'bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border border-[var(--ivory-error)]/20'}`}>
-                  {testResult.success ? <Check size={12} className="inline mr-1" /> : <AlertTriangle size={12} className="inline mr-1" />}
-                  {testResult.message}
-                </div>
-              )}
-
-              {/* API Key */}
-              {adapter.authType !== 'none' && (
-                <div className="mb-4">
-                  <label className="text-xs font-semibold text-[var(--ivory-text)] block mb-2">API Key</label>
-                  {hasKey ? (
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/60 rounded-xl px-3 py-2 text-sm text-[var(--ivory-success)] font-mono">
-                        ●●●●●●●● Key configured
-                      </div>
-                      <Button variant="ghost" size="sm" onClick={() => provider && setEditingKey(prev => ({ ...prev, [provider.id]: '' }))}>Change</Button>
-                      <Button variant="ghost" size="sm" onClick={() => provider && handleDeleteKey(provider.id)} disabled={saving}>
-                        <Trash2 size={14} />
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div className="flex gap-2 items-start">
-                        <div className="flex-1 relative">
-                          <input
-                            value={editing || ''}
-                            onChange={(e) => provider && setEditingKey(prev => ({ ...prev, [provider.id]: e.target.value }))}
-                            placeholder={`Enter your ${adapter.name} API key`}
-                            type={showing ? 'text' : 'password'}
-                            className="w-full px-3 py-2 text-sm rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] text-[var(--ivory-text)] placeholder:text-[var(--ivory-text-3)] shadow-[var(--shadow-xs)] hover:border-[var(--ivory-border-2)] focus:outline-none focus:border-[var(--ivory-accent)] focus:ring-1 focus:ring-[var(--ivory-accent)] transition-colors"
-                          />
-                          <button onClick={() => provider && setShowKey(prev => ({ ...prev, [provider.id]: !showing }))}
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] transition-colors"
-                            aria-label={showing ? 'Hide API key' : 'Show API key'}>
-                            {showing ? <EyeOff size={14} /> : <Eye size={14} />}
-                          </button>
-                        </div>
-                        <Button size="md" variant="secondary" onClick={() => provider && handleSaveKey(provider.id)} disabled={!editing || saving} className="shrink-0">
-                          {saving ? 'Saving...' : 'Save Key'}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Base URL */}
-              <div className="mb-1">
+              {/* === Connection Section === */}
+              <div className="pt-3 border-t border-[var(--ivory-border)]/60">
+                <p className="text-xs font-semibold text-[var(--ivory-text)] mb-3">Connection</p>
                 <Input label="Base URL" value={provider?.base_url || adapter.defaultBaseUrl}
                   onChange={(e) => provider && handleSetBaseUrl(provider.id, e.target.value)}
                   placeholder={adapter.defaultBaseUrl} />
               </div>
 
+
+              {/* === API Key Section === */}
+              {adapter.authType !== 'none' && (
+                <div className="pt-3 border-t border-[var(--ivory-border)]/60">
+                  <p className="text-xs font-semibold text-[var(--ivory-text)] mb-3">API Key</p>
+                  {hasKey ? (
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/60 rounded-xl px-3 py-2 text-xs font-mono text-[var(--ivory-success)]">
+                        ●●●●●●●● Key configured
+                      </div>
+                      <Button variant="secondary" size="sm" onClick={() => provider && setEditingKey(prev => ({ ...prev, [provider.id]: '' }))}>Change</Button>
+                      <Button variant="ghost" size="sm" onClick={() => provider && handleDeleteKey(provider.id)} disabled={saving}>
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2 items-end">
+                      <div className="flex-1 min-w-[200px]">
+                        <div className="flex items-center gap-1.5">
+                          <div className="flex-1">
+                            <Input
+                              type={showing ? 'text' : 'password'}
+                              value={editing || ''}
+                              onChange={(e) => provider && setEditingKey(prev => ({ ...prev, [provider.id]: e.target.value }))}
+                              placeholder={`Enter your ${adapter.name} API key`}
+                            />
+                          </div>
+                          <button onClick={() => provider && setShowKey(prev => ({ ...prev, [provider.id]: !showing }))}
+                            className="shrink-0 p-1.5 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors mt-5"
+                            aria-label={showing ? 'Hide API key' : 'Show API key'}>
+                            {showing ? <EyeOff size={14} /> : <Eye size={14} />}
+                          </button>
+                        </div>
+                      </div>
+                      <Button size="md" variant="secondary" onClick={() => provider && handleSaveKey(provider.id)} disabled={!editing || saving} className="shrink-0">
+                        {saving ? 'Saving...' : 'Save Key'}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Models */}
               {provider && provider.models && provider.models.length > 0 && (
-                <div className="mt-4 pt-3 border-t border-[var(--ivory-border)]/60">
-                  <p className="text-ui-caption font-semibold text-[var(--ivory-text-2)] mb-2">Models</p>
-                  <div className="space-y-0.5">
+                <div className="pt-3 border-t border-[var(--ivory-border)]/60">
+                  <p className="text-xs font-semibold text-[var(--ivory-text)] mb-3">Models</p>
+                  <div className="space-y-1">
                     {provider.models.map((model) => (
-                      <div key={model.id} className="flex items-center justify-between py-2 px-2 rounded-xl hover:bg-[var(--ivory-surface)] text-xs">
+                      <div key={model.id} className="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-[var(--ivory-bg)] transition-colors">
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="text-xs font-medium text-[var(--ivory-text)] truncate">{model.display_name}</span>
                           {model.context_window && (
@@ -454,7 +433,7 @@ export function ProvidersPage(): React.ReactElement {
                             <Star size={12} className="text-amber-500 fill-current" />
                           ) : (
                             <button onClick={() => handleSetDefaultModel(provider.id, model.id)}
-                              className="text-[var(--ivory-text-3)] hover:text-amber-500" title="Set as default">
+                              className="p-1 text-[var(--ivory-text-3)] hover:text-amber-500 rounded transition-colors" title="Set as default">
                               <Star size={12} />
                             </button>
                           )}
@@ -464,6 +443,41 @@ export function ProvidersPage(): React.ReactElement {
                   </div>
                 </div>
               )}
+
+              {/* === Actions Footer === */}
+              <div className="pt-3 border-t border-[var(--ivory-border)]/60">
+                {/* Test result inline */}
+                {testResult && (
+                  <div className={`mb-3 p-2.5 rounded-xl text-xs flex items-start gap-2 ${testResult.success ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] border border-[var(--ivory-success)]/20' : 'bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border border-[var(--ivory-error)]/20'}`}>
+                    {testResult.success ? <Check size={12} className="shrink-0 mt-0.5" /> : <AlertTriangle size={12} className="shrink-0 mt-0.5" />}
+                    <span className="leading-relaxed">{testResult.message}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    {provider && (
+                      <>
+                        <Button variant="secondary" size="sm" onClick={() => handleTestConnection(provider.id)} disabled={isTesting}>
+                          <Wifi size={13} className={isTesting ? 'animate-pulse' : ''} />
+                          {isTesting ? 'Testing...' : 'Test connection'}
+                        </Button>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <Toggle
+                            checked={provider.is_enabled === 1}
+                            onChange={(enabled) => handleToggleProvider(provider.id, enabled)}
+                          />
+                          <span className="text-xs text-[var(--ivory-text-2)] select-none">Enabled</span>
+                        </label>
+                      </>
+                    )}
+                  </div>
+                  {provider && (
+                    <Button variant="danger" size="sm" onClick={() => handleDeleteProvider(provider.id)}>
+                      <Trash2 size={13} /> Delete
+                    </Button>
+                  )}
+                </div>
+              </div>
             </Card>
           )
         })}

@@ -1,6 +1,7 @@
 # Aureon Desk — Visual Audit
 
-> **Latest audit:** 2026-07-08 — Desktop Shell Simplification (commit `d60f26c` → new)
+> **Latest audit:** 2026-07-08 — Provider Layout Repair (commit `9f25099` → new)
+> **Previous audit:** 2026-07-08 — Desktop Shell Simplification
 > **Previous auditor:** DeepSeek V4 Pro (Buffy) — manual QA + app launch (commit `56b8cd9`)
 > **Previous auditor:** DeepSeek V4 Pro — source-aware manual QA baseline (commit `c4cea6d`)
 > **Branch:** main

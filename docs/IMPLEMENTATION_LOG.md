@@ -1,5 +1,40 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-08 20:20 +02:00 — Provider Settings Layout Repair
+
+Branch: `main`
+Commit at start: `9f25099`
+
+### Session Purpose
+Fix Provider Settings page: overlapping buttons, cramped toggles, orange overuse, form density issues. Restructure into clear sections with proper alignment.
+
+### Files Changed
+- **Modified:** `src/renderer/src/pages/settings/ProvidersPage.tsx` — complete layout overhaul
+
+### Key Changes
+- **Section structure**: Provider card split into clear sections — Header, Capabilities, Connection (Base URL), API Key, Models, Actions Footer — each separated by `border-t` dividers
+- **API key input**: Replaced raw `<input>` with shared `<Input>` component; eye toggle moved from absolute positioned to side-by-side icon button
+- **Actions footer**: Test, Toggle+Enabled label, and Delete moved from cramped header row to dedicated footer with proper spacing
+- **Delete button**: Now uses `variant="danger"` (red) instead of unlabeled ghost icon
+- **Test button**: Uses `variant="secondary"` (neutral) instead of ghost
+- **Test result**: Moved from orphaned mid-section position into Actions footer, right next to Test button
+- **Model rows**: Wider padding (py-2 px-3), consistent toggle alignment, hover on ivory-bg
+- **Form density**: Labels now `text-xs font-semibold`, section titles consistent, increased row spacing
+- **API key wrapping**: `flex-wrap` and `min-w-[200px]` on input container for narrow card widths
+
+**Docs:**
+- **Modified:** `CHANGELOG.md` — v0.9.38 entry
+- **Modified:** `AI_QA_REPORT.md` — provider repair results
+- **Modified:** `docs/VISUAL_AUDIT.md` — updated provider layout notes
+- **Modified:** `docs/IMPLEMENTATION_LOG.md` — this entry
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (331 tests)
+- `npm run build` — ✅ PASS
+
+---
+
 ## 2026-07-08 20:00 +02:00 — Compact Modals & Popovers
 
 Branch: `main`
