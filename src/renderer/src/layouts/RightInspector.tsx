@@ -75,7 +75,7 @@ export function RightInspector(): React.ReactElement {
           <div className="flex items-center gap-2">
             <Brain size={14} className="text-[var(--ivory-accent)]" />
             <h2 className="text-sm font-semibold text-[var(--ivory-text)]">
-              Router
+              Inspector
             </h2>
           </div>
           <button
@@ -100,15 +100,12 @@ export function RightInspector(): React.ReactElement {
               </div>
             </div>
           ) : !currentAnalysis ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center px-6">
-              <div className="w-12 h-12 rounded-xl bg-[var(--ivory-surface-2)] flex items-center justify-center mb-4">
-                <Brain size={22} className="text-[var(--ivory-text-3)]" strokeWidth={1.5} />
+            <div className="flex flex-col items-center justify-center py-12 text-center px-5">
+              <div className="w-10 h-10 rounded-xl bg-[var(--ivory-surface-2)] flex items-center justify-center mb-3">
+                <Brain size={18} className="text-[var(--ivory-text-3)]" strokeWidth={1.5} />
               </div>
-              <p className="text-[13px] text-[var(--ivory-text-2)] font-medium mb-2">
-                Prompt Intelligence
-              </p>
               <p className="text-xs text-[var(--ivory-text-3)] max-w-[200px] leading-relaxed">
-                Send a message to see intent analysis, agent routing, skill matching, and risk assessment.
+                Send a message to see intent analysis, agent routing, and risk assessment.
               </p>
               <ProjectContextSection project={activeProject} />
             </div>
@@ -199,7 +196,7 @@ function AnalysisView({ analysis }: { analysis: NonNullable<ReturnType<typeof us
 
   return (
     <div className="space-y-2.5 text-xs">
-      <Section icon={<Target size={12} />} title="Intent" collapsible>
+      <Section icon={<Target size={12} />} title="Intent" collapsible defaultOpen={true}>
         <div className="flex items-center gap-2">
           <span className={`font-semibold text-sm ${intentColors[pa.intent] || ''}`}>
             {intentLabel[pa.intent] || pa.intent}
@@ -358,14 +355,14 @@ interface SectionProps {
 }
 
 function Section({
-  icon, title, children, collapsible = true, defaultOpen = true
+  icon, title, children, collapsible = true, defaultOpen = false
 }: SectionProps): React.ReactElement {
   const [open, setOpen] = React.useState(defaultOpen)
   return (
-    <div className="rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/65 overflow-hidden shadow-[var(--shadow-xs)]">
+    <div className="rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/50 overflow-hidden">
       <button
         onClick={() => collapsible && setOpen(!open)}
-        className={`flex items-center justify-between px-3 py-2.5 text-[10px] font-semibold text-[var(--ivory-text-2)] uppercase tracking-wider w-full text-left transition-colors cursor-pointer
+        className={`flex items-center justify-between px-3 py-2 text-[11px] font-semibold text-[var(--ivory-text-2)] w-full text-left transition-colors cursor-pointer
           ${collapsible ? 'hover:bg-[var(--ivory-surface)]' : ''}`}
       >
         <div className="flex items-center gap-2">
@@ -382,7 +379,7 @@ function Section({
           />
         )}
       </button>
-      {open && <div className="px-3 pb-3 pt-1 border-t border-[var(--ivory-border)]/20 animate-fade-in">{children}</div>}
+      {open && <div className="px-3 pb-2.5 pt-1 border-t border-[var(--ivory-border)]/10 animate-fade-in">{children}</div>}
     </div>
   )
 }
