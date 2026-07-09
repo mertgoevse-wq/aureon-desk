@@ -1,3 +1,91 @@
+## [0.9.64] - 2026-07-09
+
+### Added — Bolt-Like Prompt → Code → LivePreview Pipeline
+
+**Canonical Build Pipeline:**
+
+- New `BuildPipeline` service with 9 steps: classify intent → create plan → generate file operations → show pending changes → apply to sandbox → start preview → stream status → show rendered preview → generate follow-up suggestions
+- Typed file operations: `create_file`, `update_file`, `delete_file`, `rename_file`, `mkdir` — each with file path, language, before/after content, computed diff, status, and risk level
+- `BuildRequest` and `BuildResult` types with mode: `plan-only` | `generate` | `generate-and-preview`
+- `BuildPipelineStatus` streamed to renderer via IPC events for real-time step updates
+
+**Code Activity Panel (LivePreview):**
+
+- Tabbed artifact panel: **Preview** / **Code** / **Files** / **Diff** / **Plan**
+- Code tab: pipeline step timeline with spinner/check/error icons, current file being edited, file path in grey, message details
+- Files tab: file tree with path, language, type, "View diff" action
+- Diff tab: file selector pills + line-by-line diff with green (add) / red (remove) / grey (context) coloring
+- Plan tab: prompt + build plan steps
+- Auto-switches to Preview tab after first successful render
+- "Local Demo" badge when no remote provider is available
+- Cancel/Stop button to abort running build
+- Follow-up suggestions after render: Improve styling, Add navigation, Add local storage, Add animations, Add dark mode, Package as PWA, Explain the code
+
+**Deterministic Local Demo:**
+
+- When no AI provider is available, pipeline generates a working 3-file counter app (index.html, styles.css, app.js) with ivory/hero theme
+- Counter with increment/reset, visible heading, responsive layout
+- Clearly labeled "Local Demo" so users know it's not from a remote provider
+- Works without any API keys for testing and demo purposes
+
+**Security:**
+
+- Path traversal blocked via `resolved.startsWith(path.resolve(sandboxPath))` check
+- Secrets redacted via `redactSecrets()` before writing any file to disk
+- IPC cancellation flag prevents partial writes
+
+**Files Created:**
+
+- `src/shared/types/build-pipeline.ts` — typed pipeline contract
+- `src/main/services/build-pipeline.service.ts` — core engine
+- `src/main/ipc/build-pipeline.ipc.ts` — IPC handlers
+- `tests/unit/build-pipeline.test.ts` — 38 unit tests
+- `docs/BOLT_LIKE_BUILD_PIPELINE.md` — full pipeline documentation
+
+**Files Modified:**
+
+- `src/main/ipc/index.ts` — registered `registerBuildPipelineIPC`
+- `src/preload/index.ts` + `index.d.ts` — exposed `buildRun`, `buildCancel`, `onBuildStep`, `onBuildComplete`
+- `src/shared/preview-helpers.ts` — added `setAutoBuildPipeline()` / `getAndClearBuildPipeline()` helpers
+- `src/renderer/src/pages/Studio.tsx` — wired composer Enter + Start building to new pipeline
+- `src/renderer/src/pages/LivePreview.tsx` — added tabbed artifact panel, pipeline step streaming, file tree, diff view, follow-up suggestions
+
+### Fixed
+
+- **CRITICAL: Cascade parse error in LivePreview.tsx** — missing closing `}` in JSX comment `{/* Diff content */}` caused `Expected "}" but found "&&"` parse error that cascaded to line 762. Fixed by adding the missing `}`.
+- **TypeScript `as any` removed** — replaced `s.previewStatus as any || prev.status` with type-safe validation against a `const` array of valid statuses. Honors the AGENTS.md "Don't type cast as `any` type" rule.
+- **Non-ASCII character in JSX text** — replaced `·` (middle dot) with `-` in FILES tab file type display to prevent parser edge cases on different platforms.
+
+### Tests Added (38 new)
+
+- `tests/unit/build-pipeline.test.ts`:
+  - Build request creates file operations (create_file, update_file)
+  - File diff generated (add/remove/context lines)
+  - Deterministic demo renders (index.html, styles.css, app.js)
+  - Follow-up suggestions generated (7 categories)
+  - Path traversal blocked (relative `../` escape attempts)
+  - Secrets ignored (API keys redacted before write)
+  - Intent classification (build_app, build_component, etc.)
+  - Cancel/abort functionality
+  - Plan generation from prompt keywords
+
+### Verified
+
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (549 tests, 23 files)
+- `npm run build` — ✅ PASS
+- Code review — ✅ PASS
+
+### Remaining Limits
+
+- Deterministic demo always generates a counter app regardless of classified intent (MVP only)
+- All file operations are `create_file` type for the deterministic demo — no `update_file`/`delete_file`/`rename_file`/`mkdir` operations generated yet
+- Real provider-based generation not yet wired (pipeline accepts `providerModelRoute` but always falls back to deterministic demo)
+- No real-time diff streaming for `update_file` operations
+- No screenshot capture for manual QA docs yet (pending headless dev environment)
+
+---
+
 ## [0.9.63] - 2026-07-09
 
 ### Added — Hero Landing Page & Calm Theme

@@ -12,6 +12,7 @@ import { registerLogIPC } from './log.ipc'
 import { registerLivePreviewIPC } from './live-preview.ipc'
 import { registerWindowIPC } from './window.ipc'
 import { registerStudioCoreIPC } from './studio-core.ipc'
+import { registerBuildPipelineIPC } from './build-pipeline.ipc'
 import { logger } from '../utils/logger'
 
 export function registerAllIPC(): void {
@@ -31,6 +32,7 @@ export function registerAllIPC(): void {
   registerLivePreviewIPC()
   registerWindowIPC()
   registerStudioCoreIPC()
+  registerBuildPipelineIPC()
 
   logger.info('All IPC handlers registered')
 }

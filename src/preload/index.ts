@@ -9,6 +9,7 @@ import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolExecuteInput, ToolExe
 import type { ProjectRow, NewProject, ProjectUpdate, FileTreeNode, ProjectContext, FileTreeOptions } from '../shared/types/project'
 import type { AppLogRow, LogFilter, DebugBundle } from '../shared/types/log'
 import type { StudioIntentInput, StudioOrchestrationResult, TaskCategoryInfo, CapabilityDefinition, AutonomyLevelInfo } from '../shared/types/studio-core'
+import type { BuildRequest, BuildResult, BuildPipelineStatus } from '../shared/types/build-pipeline'
 
 // Define the IPC API exposed to the renderer
 const api = {
@@ -309,6 +310,26 @@ const api = {
     ipcRenderer.invoke('studio:capabilities'),
   studioAutonomyLevels: (): Promise<AutonomyLevelInfo[]> =>
     ipcRenderer.invoke('studio:autonomyLevels'),
+
+  // Build Pipeline
+  buildRun: (request: BuildRequest): Promise<BuildResult> =>
+    ipcRenderer.invoke('build:run', request),
+  buildCancel: (): Promise<boolean> =>
+    ipcRenderer.invoke('build:cancel'),
+  onBuildStep: (callback: (status: BuildPipelineStatus) => void): (() => void) => {
+    const listener = (_event: any, status: BuildPipelineStatus) => callback(status)
+    ipcRenderer.on('build:step', listener)
+    return () => {
+      ipcRenderer.removeListener('build:step', listener)
+    }
+  },
+  onBuildComplete: (callback: (result: BuildResult) => void): (() => void) => {
+    const listener = (_event: any, result: BuildResult) => callback(result)
+    ipcRenderer.on('build:complete', listener)
+    return () => {
+      ipcRenderer.removeListener('build:complete', listener)
+    }
+  },
 }
 
 // Expose the API in the main world

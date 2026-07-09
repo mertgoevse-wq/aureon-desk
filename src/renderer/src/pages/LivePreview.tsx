@@ -16,7 +16,13 @@ import {
   EyeOff,
   Plus,
   SlidersHorizontal,
-  ChevronDown
+  ChevronDown,
+  Loader2,
+  FileCode,
+  GitCompare,
+  ListChecks,
+  Lightbulb,
+  X
 } from 'lucide-react'
 import { Button } from '../components/shared/Button'
 import { Badge } from '../components/shared/Badge'
@@ -24,7 +30,8 @@ import { EmptyState } from '../components/shared/EmptyState'
 import { useIpc } from '../hooks/useIpc'
 import { useNavigate } from 'react-router-dom'
 import { Sparkles } from 'lucide-react'
-import { AUTO_PREVIEW_KEYS, clearAutoPreview } from '@shared/preview-helpers'
+import { AUTO_PREVIEW_KEYS, clearAutoPreview, getAndClearBuildPipeline, setAutoBuildPipeline } from '@shared/preview-helpers'
+import type { BuildPipelineStatus, FileOperation, BuildStep, FollowUpSuggestion } from '@shared/types/build-pipeline'
 
 interface PreviewStatus {
   id: string | null
@@ -36,6 +43,8 @@ interface PreviewStatus {
   logs: Array<{ timestamp: string; stream: 'stdout' | 'stderr'; text: string }>
   error: string | null
 }
+
+type ArtifactTab = 'preview' | 'code' | 'files' | 'diff' | 'plan'
 
 export function LivePreview(): React.ReactElement {
   const api = useIpc()
@@ -71,6 +80,17 @@ export function LivePreview(): React.ReactElement {
   // Save the auto-preview style before clearAutoPreview() wipes sessionStorage.
   // The error retry handler needs this to re-run the demo with the correct theme.
   const autoPreviewStyleRef = useRef<string | null>(null)
+
+  // Build pipeline states
+  const [pipelineStatus, setPipelineStatus] = useState<BuildPipelineStatus | null>(null)
+  const [pipelineRunning, setPipelineRunning] = useState(false)
+  const [activeTab, setActiveTab] = useState<ArtifactTab>('preview')
+  const [selectedFile, setSelectedFile] = useState<FileOperation | null>(null)
+  const [followUpSuggestions, setFollowUpSuggestions] = useState<FollowUpSuggestion[]>([])
+  const [pipelineSteps, setPipelineSteps] = useState<BuildStep[]>([])
+  const [pipelineFileOps, setPipelineFileOps] = useState<FileOperation[]>([])
+  const [pipelinePlan, setPipelinePlan] = useState<string[]>([])
+  const [pipelinePrompt, setPipelinePrompt] = useState<string | null>(null)
 
   const activeProject = projects.find(p => p.id === selectedProjectId)
 
@@ -130,8 +150,23 @@ export function LivePreview(): React.ReactElement {
   useEffect(() => {
     const shouldAutoStartPreview = sessionStorage.getItem(AUTO_PREVIEW_KEYS.autoStart)
     const shouldAutoStartSandbox = sessionStorage.getItem(AUTO_PREVIEW_KEYS.sandboxOnly)
-    
-    if (shouldAutoStartPreview === 'true') {
+    const pipelineTrigger = getAndClearBuildPipeline()
+
+    if (pipelineTrigger) {
+      // New bolt-like build pipeline trigger
+      setPipelinePrompt(pipelineTrigger.prompt)
+      setPipelineRunning(true)
+      setActiveTab('code') // Show code activity first
+      clearAutoPreview() // Clear any legacy keys
+      api.buildRun({
+        prompt: pipelineTrigger.prompt,
+        projectType: pipelineTrigger.platform,
+        theme: pipelineTrigger.theme,
+        targetWorkspace: 'code',
+        mode: pipelineTrigger.mode as 'plan-only' | 'generate' | 'generate-and-preview',
+        providerModelRoute: null,
+      }).catch(console.error)
+    } else if (shouldAutoStartPreview === 'true') {
       const style = sessionStorage.getItem(AUTO_PREVIEW_KEYS.style) || 'Calming Ivory'
       autoPreviewStyleRef.current = style
       clearAutoPreview()
@@ -142,6 +177,41 @@ export function LivePreview(): React.ReactElement {
       handleCreateSandbox()
     }
   }, [])
+
+  // Subscribe to build pipeline step events
+  useEffect(() => {
+    const unsubscribeStep = api.onBuildStep((s: BuildPipelineStatus) => {
+      setPipelineStatus(s)
+      setPipelineSteps(s.completedSteps)
+      setPipelineFileOps(s.fileOperations)
+      setFollowUpSuggestions(s.followUpSuggestions)
+      if (s.previewUrl) {
+          // Update preview status from pipeline
+          setStatus(prev => {
+            const ps = s.previewStatus
+            const validStatuses = ['idle', 'starting', 'running', 'error', 'stopped'] as const
+            type ValidStatus = typeof validStatuses[number]
+            const nextStatus: ValidStatus | undefined =
+              ps && (validStatuses as readonly string[]).includes(ps) ? (ps as ValidStatus) : undefined
+            return { ...prev, url: s.previewUrl, status: nextStatus ?? prev.status }
+          })
+        }
+      if (s.isComplete) {
+        setPipelineRunning(false)
+        if (s.previewUrl) setActiveTab('preview') // Switch to preview after render
+      }
+      if (s.error) setError(s.error)
+    })
+
+    const unsubscribeComplete = api.onBuildComplete(() => {
+      setPipelineRunning(false)
+    })
+
+    return () => {
+      unsubscribeStep()
+      unsubscribeComplete()
+    }
+  }, [api])
 
   const handleCopy = useCallback(() => {
     if (status.url) {
@@ -236,6 +306,34 @@ export function LivePreview(): React.ReactElement {
     } catch (e) {
       setError(String(e))
     }
+  }
+
+  const handleCancelPipeline = async () => {
+    try {
+      await api.buildCancel()
+      setPipelineRunning(false)
+    } catch { /* ignore */ }
+  }
+
+  const handleFollowUp = (suggestion: FollowUpSuggestion) => {
+    // Reset state from previous build before starting new one
+    setPipelineSteps([])
+    setPipelineFileOps([])
+    setSelectedFile(null)
+    setFollowUpSuggestions([])
+    setPipelinePlan([])
+    setError(null)
+    setPipelineRunning(true)
+    setActiveTab('code')
+    setPipelinePrompt(suggestion.prompt)
+    api.buildRun({
+      prompt: suggestion.prompt,
+      projectType: 'Web app',
+      theme: 'Calming Ivory',
+      targetWorkspace: 'code',
+      mode: 'generate-and-preview',
+      providerModelRoute: null,
+    }).catch(console.error)
   }
 
   const openExternal = () => {
@@ -502,6 +600,260 @@ export function LivePreview(): React.ReactElement {
             <div className="px-6 py-2 border-b border-[var(--ivory-border)] bg-[var(--ivory-bg)] flex items-center gap-2 text-[10px] text-[var(--ivory-text-3)] truncate shrink-0">
               <span className="font-semibold text-[var(--ivory-text-2)] shrink-0">Sandbox:</span>
               <span className="font-mono truncate select-text">{status.sandboxPath}</span>
+            </div>
+          )}
+
+          {/* === BUILD PIPELINE ACTIVITY PANEL (tabs) === */}
+          {(pipelineRunning || pipelineStatus || pipelineFileOps.length > 0) && (
+            <div className="border-b border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shrink-0" data-testid="build-pipeline-panel">
+              {/* Tab bar */}
+              <div className="flex items-center gap-1 px-4 pt-2.5 pb-0">
+                {[
+                  { id: 'preview' as const, label: 'Preview', icon: <Monitor size={13} /> },
+                  { id: 'code' as const, label: 'Code', icon: <FileCode size={13} /> },
+                  { id: 'files' as const, label: 'Files', icon: <FolderOpen size={13} /> },
+                  { id: 'diff' as const, label: 'Diff', icon: <GitCompare size={13} /> },
+                  { id: 'plan' as const, label: 'Plan', icon: <ListChecks size={13} /> },
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[12px] font-semibold transition-colors cursor-pointer border-b-2 ${
+                      activeTab === tab.id
+                        ? 'text-[var(--ivory-accent)] border-[var(--ivory-accent)] bg-[var(--ivory-bg)]/50'
+                        : 'text-[var(--ivory-text-3)] border-transparent hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)]/50'
+                    }`}
+                    data-testid={`build-tab-${tab.id}`}
+                  >
+                    {tab.icon}
+                    {tab.label}
+                  </button>
+                ))}
+
+                {/* Cancel button */}
+                {pipelineRunning && (
+                  <button
+                    type="button"
+                    onClick={handleCancelPipeline}
+                    className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[12px] font-semibold text-[var(--ivory-error)] hover:bg-[var(--ivory-error-bg)] transition-colors cursor-pointer"
+                    data-testid="build-cancel-btn"
+                  >
+                    <X size={12} /> Cancel
+                  </button>
+                )}
+
+                {/* Deterministic demo badge */}
+                {pipelineStatus && pipelineStatus.isDeterministicDemo && (
+                  <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium text-[var(--ivory-text-3)] bg-[var(--ivory-surface)] border border-[var(--ivory-border)]">
+                    <Zap size={10} className="text-[var(--ivory-accent)]" />
+                    Local Demo
+                  </span>
+                )}
+              </div>
+
+              {/* Tab content */}
+              <div className="max-h-[420px] overflow-y-auto bg-[var(--ivory-bg)] p-4">
+                {/* === CODE TAB — pipeline steps + file activity === */}
+                {activeTab === 'code' && (
+                  <div className="space-y-3" data-testid="build-code-tab">
+                    {/* Pipeline steps */}
+                    <div className="space-y-1.5">
+                      {pipelineSteps.map((step, i) => (
+                        <div key={i} className="flex items-start gap-2.5">
+                          <div className="mt-0.5 shrink-0">
+                            {step.status === 'running' && <Loader2 size={13} className="text-[var(--ivory-accent)] animate-spin" />}
+                            {step.status === 'done' && <CheckCircle size={13} className="text-green-600" />}
+                            {step.status === 'error' && <XCircle size={13} className="text-red-600" />}
+                            {step.status === 'skipped' && <Clock size={13} className="text-[var(--ivory-text-3)]" />}
+                            {step.status === 'pending' && <div className="w-3 h-3 rounded-full border border-[var(--ivory-border)]" />}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className="text-[12px] font-medium text-[var(--ivory-text)]">{step.label}</span>
+                            {step.filePath && (
+                              <span className="text-[11px] text-[var(--ivory-text-3)] font-mono ml-2">{step.filePath}</span>
+                            )}
+                            {step.message && (
+                              <p className="text-[11px] text-[var(--ivory-text-3)] mt-0.5">{step.message}</p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      {pipelineRunning && !pipelineSteps.length && (
+                        <div className="flex items-center gap-2 text-[12px] text-[var(--ivory-text-3)]">
+                          <Loader2 size={13} className="animate-spin" /> Initializing pipeline...
+                        </div>
+                      )}
+                    </div>
+
+                    {/* File currently being worked on */}
+                    {pipelineFileOps.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-[var(--ivory-border)]/50 space-y-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Generated files</span>
+                        {pipelineFileOps.map(op => (
+                          <button
+                            key={op.id}
+                            type="button"
+                            onClick={() => { setSelectedFile(op); setActiveTab('diff') }}
+                            className="flex items-center gap-2 w-full px-3 py-1.5 rounded-lg text-left hover:bg-[var(--ivory-surface)] transition-colors cursor-pointer"
+                          >
+                            <FileText size={12} className="text-[var(--ivory-text-3)] shrink-0" />
+                            <span className="text-[12px] font-mono text-[var(--ivory-text-2)] truncate">{op.path}</span>
+                            <span className="text-[10px] text-[var(--ivory-text-3)] ml-auto shrink-0">
+                              {op.status === 'pending' && 'pending'}
+                              {op.status === 'applied' && <span className="text-green-600">applied</span>}
+                              {op.status === 'failed' && <span className="text-red-600">failed</span>}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* === FILES TAB — file tree === */}
+                {activeTab === 'files' && (
+                  <div className="space-y-1.5" data-testid="build-files-tab">
+                    {pipelineFileOps.length === 0 ? (
+                      <p className="text-[12px] text-[var(--ivory-text-3)] italic text-center py-6">No files generated yet.</p>
+                    ) : (
+                      pipelineFileOps.map(op => (
+                        <div key={op.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg border border-[var(--ivory-border)]/40 bg-[var(--ivory-elevated)]">
+                          <FileText size={14} className="text-[var(--ivory-text-3)] shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <span className="text-[12px] font-mono text-[var(--ivory-text-2)] block truncate">{op.path}</span>
+                            <span className="text-[10px] text-[var(--ivory-text-3)]">{op.language} - {op.type}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => { setSelectedFile(op); setActiveTab('diff') }}
+                            className="text-[10px] font-semibold text-[var(--ivory-accent)] hover:underline cursor-pointer shrink-0"
+                          >
+                            View diff
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+
+                {/* === DIFF TAB — line-by-line diff === */}
+                {activeTab === 'diff' && (
+                  <div className="space-y-3" data-testid="build-diff-tab">
+                    {/* File selector */}
+                    {pipelineFileOps.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {pipelineFileOps.map(op => (
+                          <button
+                            key={op.id}
+                            type="button"
+                            onClick={() => setSelectedFile(op)}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-colors cursor-pointer ${
+                              (selectedFile ? selectedFile.id : null) === op.id
+                                ? 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] border border-[var(--ivory-accent)]/30'
+                                : 'bg-[var(--ivory-surface)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] border border-transparent'
+                            }`}
+                          >
+                            {op.path}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {/* Diff content */}
+                    {selectedFile && selectedFile.diff ? (
+                      <div className="rounded-xl border border-[var(--ivory-border)] overflow-hidden font-mono text-[11px] bg-[var(--ivory-elevated)]">
+                        <div className="px-3 py-2 border-b border-[var(--ivory-border)] bg-[var(--ivory-surface)] text-[11px] font-semibold text-[var(--ivory-text-2)] flex items-center gap-2">
+                          <FileCode size={12} className="text-[var(--ivory-text-3)]" />
+                          {selectedFile.path}
+                        </div>
+                        <div className="overflow-x-auto max-h-[320px] overflow-y-auto">
+                          {selectedFile.diff.map((line, i) => (
+                            <div
+                              key={i}
+                              className={`flex items-start gap-2 px-3 py-0.5 leading-relaxed ${
+                                line.type === 'add'
+                                  ? 'bg-green-50/60 text-green-800'
+                                  : line.type === 'remove'
+                                    ? 'bg-red-50/60 text-red-800'
+                                    : 'text-[var(--ivory-text-2)]'
+                              }`}
+                            >
+                              <span className="shrink-0 w-4 text-center select-none opacity-50">
+                                {line.type === 'add' ? '+' : line.type === 'remove' ? '-' : ' '}
+                              </span>
+                              <span className="break-all whitespace-pre-wrap">{line.content || ' '}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-[12px] text-[var(--ivory-text-3)] italic text-center py-6">Select a file to view its diff.</p>
+                    )}
+                  </div>
+                )}
+
+                {/* === PLAN TAB — build plan === */}
+                {activeTab === 'plan' && (
+                  <div className="space-y-3" data-testid="build-plan-tab">
+                    {pipelinePrompt && (
+                      <div className="rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] p-3">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)] block mb-1.5">Prompt</span>
+                        <p className="text-[12px] text-[var(--ivory-text)] leading-relaxed">{pipelinePrompt}</p>
+                      </div>
+                    )}
+                    {pipelinePlan.length > 0 ? (
+                      <div className="rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] p-3">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)] block mb-2">Build Plan</span>
+                        <ul className="list-disc pl-4 text-[12px] text-[var(--ivory-text-2)] space-y-1">
+                          {pipelinePlan.map((item, i) => (
+                            <li key={i}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : pipelineSteps.length > 0 ? (
+                      <div className="rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] p-3">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)] block mb-2">Steps</span>
+                        <ul className="list-disc pl-4 text-[12px] text-[var(--ivory-text-2)] space-y-1">
+                          {pipelineSteps.filter(s => s.label).map((step, i) => (
+                            <li key={i}>{step.label}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <p className="text-[12px] text-[var(--ivory-text-3)] italic text-center py-6">No plan generated yet.</p>
+                    )}
+                  </div>
+                )}
+
+                {/* === PREVIEW TAB — handled by the iframe below === */}
+                {activeTab === 'preview' && (
+                  <p className="text-[12px] text-[var(--ivory-text-3)] italic text-center py-6">
+                    Preview renders in the iframe below.
+                  </p>
+                )}
+              </div>
+
+              {/* Follow-up suggestions */}
+              {followUpSuggestions.length > 0 && !pipelineRunning && (
+                <div className="px-4 py-3 border-t border-[var(--ivory-border)] bg-[var(--ivory-surface)]/30" data-testid="followup-suggestions">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)] flex items-center gap-1.5 mb-2">
+                    <Lightbulb size={11} className="text-[var(--ivory-accent)]" />
+                    Follow-up suggestions
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {followUpSuggestions.map(s => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => handleFollowUp(s)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[12px] font-medium text-[var(--ivory-text-2)] hover:text-[var(--ivory-accent)] hover:border-[var(--ivory-accent)]/25 transition-all cursor-pointer"
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

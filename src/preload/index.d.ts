@@ -130,6 +130,10 @@ export interface IpcApi {
   studioTaskCategories: () => Promise<import('../shared/types/studio-core').TaskCategoryInfo[]>
   studioCapabilities: () => Promise<import('../shared/types/studio-core').CapabilityDefinition[]>
   studioAutonomyLevels: () => Promise<import('../shared/types/studio-core').AutonomyLevelInfo[]>
+  buildRun: (request: import('../shared/types/build-pipeline').BuildRequest) => Promise<import('../shared/types/build-pipeline').BuildResult>
+  buildCancel: () => Promise<boolean>
+  onBuildStep: (callback: (status: import('../shared/types/build-pipeline').BuildPipelineStatus) => void) => () => void
+  onBuildComplete: (callback: (result: import('../shared/types/build-pipeline').BuildResult) => void) => () => void
 }
 
 declare global {

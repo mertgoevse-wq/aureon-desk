@@ -147,3 +147,4 @@ onPreviewStatusChange()  ←  'preview:status-change' (push)
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-07-09 | Contract created; extracted sessionStorage helper | Buffy |
+| 2026-07-09 | Added bolt-like build pipeline (BuildRequest, BuildPipeline, FileOperation) as new canonical flow; `setAutoBuildPipeline()` helper for prompt→code→diff→preview | Buffy |

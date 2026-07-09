@@ -4,6 +4,46 @@
 
 ---
 
+## Bolt-Like Prompt → Code → LivePreview Pipeline — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (549 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| Code review | ✅ PASS |
+
+### Changes
+
+| Area | Change |
+|------|--------|
+| Pipeline | New BuildPipeline service: 9 steps (classify → plan → generate → apply → preview_start → preview_ready → render → followup → complete) |
+| File operations | Typed: create_file, update_file, delete_file, rename_file, mkdir with file path, language, before/after content, computed diff, status, risk |
+| Code activity panel | Tabbed artifact panel: Preview / Code / Files / Diff / Plan with pipeline step timeline, file tree, line-by-line diff, cancel button |
+| Deterministic demo | 3-file counter app (index.html, styles.css, app.js) with ivory/hero theme, works without any provider |
+| Follow-up suggestions | 7 contextual suggestions: Improve styling, Add navigation, Add local storage, Add animations, Add dark mode, Package as PWA, Explain the code |
+| Security | Path traversal blocked via startsWith check, secrets redacted via redactSecrets, IPC cancellation flag |
+| Studio trigger | Composer Enter + Start building → setAutoBuildPipeline() → navigates to /code → pipeline auto-starts |
+| Tests | +38 unit tests: file operations, diff, deterministic demo, follow-up suggestions, path traversal, secrets redaction |
+| Docs | Created BOLT_LIKE_BUILD_PIPELINE.md (full architecture, security, testing, usage) |
+
+### Critical Bug Fixed
+
+- **Cascade parse error in LivePreview.tsx:** Missing closing `}` in JSX comment `{/* Diff content */}` caused `Expected "}" but found "&&"` parse error that cascaded to line 762. JSX comments must be wrapped in `{/* ... */}` — without the closing `}`, the parser consumed the next line as part of an unclosed expression. Fixed by adding the missing `}`.
+
+### Other Fixes
+
+- Removed `as any` cast in status update — replaced with type-safe validation against const array
+- Replaced `·` middle dot with `-` in FILES tab text
+
+### Remaining Limits
+
+- Deterministic demo always generates counter app regardless of classified intent (MVP)
+- All demo operations are `create_file` type — no update_file/delete_file/rename_file/mkdir yet
+- Real provider-based generation not wired (pipeline accepts providerModelRoute but always falls back to demo)
+
+---
+
 ## Hero Landing Page & Calm Theme — 2026-07-09
 
 | Check | Result |

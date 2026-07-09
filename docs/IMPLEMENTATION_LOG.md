@@ -1,5 +1,75 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-09 23:30 +02:00 — Bolt-Like Prompt → Code → LivePreview Pipeline
+
+Branch: `main`
+Commit at start: `6060eb5` (Hero landing page and calm Aureon theme)
+
+### Session Purpose
+
+Implement a bolt.diy-style build pipeline: user prompt → plan → file generation → diff view → auto-open LivePreview → render app → allow iteration. Must work without a remote provider using a deterministic local demo generator. Build on top of the existing LivePreview sandbox and preview-helpers contract.
+
+### Files Created
+
+- **Created:** `src/shared/types/build-pipeline.ts` — BuildRequest, FileOperation, DiffLine, BuildStep, BuildResult, FollowUpSuggestion, BuildPipelineStatus, BuildIntentClassification types + `generateFollowUpSuggestions()` helper
+- **Created:** `src/main/services/build-pipeline.service.ts` — core engine: `classifyIntent()`, `computeDiff()`, `generateDeterministicApp()`, `createFileOperations()`, `applyFileOperations()` (path traversal blocked, secrets redacted), `runBuild()` (streams steps via IPC), `cancelBuild()`
+- **Created:** `src/main/ipc/build-pipeline.ipc.ts` — IPC handlers for `build:run`, `build:cancel`; pushes `build:step` and `build:complete` events
+- **Created:** `tests/unit/build-pipeline.test.ts` — 38 unit tests
+- **Created:** `docs/BOLT_LIKE_BUILD_PIPELINE.md` — full pipeline documentation
+
+### Files Modified
+
+- **Modified:** `src/main/ipc/index.ts` — added `registerBuildPipelineIPC` import and call
+- **Modified:** `src/preload/index.ts` — added `buildRun`, `buildCancel`, `onBuildStep`, `onBuildComplete` to renderer API
+- **Modified:** `src/preload/index.d.ts` — added type declarations for build pipeline API
+- **Modified:** `src/shared/preview-helpers.ts` — added `AUTO_PREVIEW_KEYS.pipelineTrigger`, `setAutoBuildPipeline()`, `getAndClearBuildPipeline()` helpers
+- **Modified:** `src/renderer/src/pages/Studio.tsx` — wired composer Enter + Start building to new pipeline via `setAutoBuildPipeline`
+- **Modified:** `src/renderer/src/pages/LivePreview.tsx` — added tabbed artifact panel (Preview/Code/Files/Diff/Plan), pipeline step streaming, file tree, diff view, follow-up suggestions, cancel button, deterministic demo badge
+- **Modified:** `docs/STUDIO_LIVEPREVIEW_CONTRACT.md` — added bolt-like pipeline as the new canonical Studio → LivePreview flow
+- **Modified:** `CHANGELOG.md` — v0.9.64 entry
+- **Modified:** `AI_QA_REPORT.md` — bolt-like pipeline section
+
+### Critical Bug Fixed
+
+**Cascade parse error in LivePreview.tsx:** A missing closing `}` in the JSX comment `{/* Diff content */}` caused `Expected "}" but found "&&"` parse error at line 762. The error cascaded because JSX comments must be wrapped in `{/* ... */}` — without the closing `}`, the parser interpreted `{selectedFile && selectedFile.diff ? (` as part of an unclosed JSX expression. Fixed by adding the missing `}`.
+
+### Other Fixes
+
+- **Removed `as any` cast:** Replaced `s.previewStatus as any || prev.status` with type-safe validation against a `const` array of valid statuses. Honors AGENTS.md "Don't type cast as `any` type" rule.
+- **Replaced `·` middle dot** with `-` in FILES tab text to prevent parser edge cases on different platforms.
+
+### Pipeline Flow (9 Steps)
+
+1. `classify` — analyze prompt intent (build_app, build_component, etc.)
+2. `plan` — create build plan steps
+3. `generate` — create file operations (create_file/update_file/etc.)
+4. `apply` — write files to sandbox (with path traversal block + secret redaction)
+5. `preview_start` — start HTTP server
+6. `preview_ready` — server running
+7. `complete` — pipeline finished
+8. `followup` — generate contextual suggestions
+9. `error` / `cancelled` — failure states
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `git status` | ✅ clean at 6060eb5 |
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS (after fixing missing `}` in JSX comment) |
+| `npm test` | ✅ PASS (549 tests, 23 files) |
+| `npm run build` | ✅ PASS |
+| Code review | ✅ PASS |
+
+### Remaining Limits
+
+- Deterministic demo always generates a counter app regardless of classified intent
+- All demo file operations are `create_file` type — no `update_file`/`delete_file`/`rename_file`/`mkdir` yet
+- Real provider-based generation not wired (pipeline accepts `providerModelRoute` but always falls back to deterministic demo)
+- No screenshot capture for manual QA docs (pending headless dev environment)
+
+---
+
 ## 2026-07-09 23:00 +02:00 — Hero Landing Page & Calm Theme
 
 Branch: `main`

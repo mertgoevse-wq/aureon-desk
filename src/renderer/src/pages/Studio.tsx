@@ -10,7 +10,7 @@ import { useIpc } from '../hooks/useIpc'
 import { TASK_CATEGORIES, AUTONOMY_LEVELS } from '@shared/types/studio-core'
 import type { TaskCategoryInfo, StudioOrchestrationResult, AutonomyLevel } from '@shared/types/studio-core'
 import { SafetyNotice } from '../components/vibe/SafetyNotice'
-import { setAutoBuildPreview, setAutoBuildSandboxOnly } from '@shared/preview-helpers'
+import { setAutoBuildPreview, setAutoBuildSandboxOnly, setAutoBuildPipeline } from '@shared/preview-helpers'
 import { Drawer } from '../components/shared/Drawer'
 import { AureonMark } from '../components/shared/AureonMark'
 
@@ -115,13 +115,14 @@ export function Studio(): React.ReactElement {
     // Custom build/compiler integration
     if (selectedCard === 'build_app') {
       if (outputOption === 'Generate + Preview') {
-        setAutoBuildPreview({ style: projectStyle, prompt: promptText, platform: targetPlatform })
+        setAutoBuildPipeline({ style: projectStyle, prompt: promptText, platform: targetPlatform, mode: 'generate-and-preview' })
         targetPath = '/preview'
       } else if (outputOption === 'Generate sandbox') {
-        setAutoBuildSandboxOnly({ style: projectStyle, prompt: promptText, platform: targetPlatform })
+        setAutoBuildPipeline({ style: projectStyle, prompt: promptText, platform: targetPlatform, mode: 'generate' })
         targetPath = '/preview'
       } else {
-        targetPath = '/chat'
+        setAutoBuildPipeline({ style: projectStyle, prompt: promptText, platform: targetPlatform, mode: 'plan-only' })
+        targetPath = '/preview'
       }
     } else if (selectedCard === 'code_program') {
       if (outputOption === 'Generate sandbox') {
@@ -243,28 +244,25 @@ export function Studio(): React.ReactElement {
   }
 
   const handleStartBuilding = () => {
-    // "Start building" opens the Build App wizard (drawer)
-    // Pass the user's typed prompt as an override so it isn't lost
-    const buildCard = TASK_CATEGORIES.find(c => c.id === 'build_app')
-    if (buildCard) {
-      handleCardClick(buildCard, primaryPrompt || undefined)
+    // "Start building" — if user typed a prompt, start the pipeline directly
+    // Otherwise open the Build App wizard (drawer)
+    if (primaryPrompt.trim()) {
+      setAutoBuildPipeline({ style: projectStyle, prompt: primaryPrompt, platform: targetPlatform, mode: 'generate-and-preview' })
+      navigate('/preview')
+    } else {
+      const buildCard = TASK_CATEGORIES.find(c => c.id === 'build_app')
+      if (buildCard) {
+        handleCardClick(buildCard)
+      }
     }
   }
 
   const handleComposerSubmit = () => {
-    // Enter in the hero composer starts the build flow directly
-    setAutoBuildPreview({ style: projectStyle, prompt: primaryPrompt || 'Build a simple web utility', platform: targetPlatform })
+    // Enter in the hero composer starts the bolt-like build pipeline
+    const prompt = primaryPrompt || 'Build a simple web utility'
+    setAutoBuildPipeline({ style: projectStyle, prompt, platform: targetPlatform, mode: 'generate-and-preview' })
 
     navigate('/preview')
-
-    setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('composer-insert', {
-        detail: {
-          text: `Build a ${targetPlatform} project with the goal: "${primaryPrompt || 'Build a simple web utility'}". Use style "${projectStyle}". Output option is "Generate + Preview".`,
-          mode: 'replace'
-        }
-      }))
-    }, 150)
   }
 
   const handleOpenChat = () => {
