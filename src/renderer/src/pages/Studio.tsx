@@ -16,7 +16,7 @@ import { AureonMark } from '../components/shared/AureonMark'
 import { DropZone } from '../components/shared/DropZone'
 import { AttachmentChip } from '../components/shared/AttachmentChip'
 import { useAttachmentStore } from '../stores/attachmentStore'
-import type { FileProcessResult } from '@shared/attachments'
+import type { FileProcessResult, ZipExtractResult } from '@shared/attachments'
 
 const TASK_ICONS: Record<string, React.ReactElement> = {
   LayoutDashboard: <LayoutDashboard size={22} />,
@@ -385,7 +385,7 @@ export function Studio(): React.ReactElement {
                     if (!a) return
                     api.attachmentProcessFile(a.path).then((result: FileProcessResult) => {
                       if (result.zipInspect) {
-                        api.attachmentExtractZip(a.path).then((extractResult) => {
+                        api.attachmentExtractZip(a.path).then((extractResult: ZipExtractResult) => {
                           if (extractResult.success) {
                             extractResult.extractedPaths.forEach((p: string) => {
                               api.attachmentProcessFile(p).then((r: FileProcessResult) => {

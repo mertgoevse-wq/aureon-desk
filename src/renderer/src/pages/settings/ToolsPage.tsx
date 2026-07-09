@@ -3,7 +3,9 @@ import {
   Wrench, Plus, Trash2, Shield, AlertTriangle, CheckCircle,
   Zap, Terminal, Globe, Server, FileText, Database,
   Clipboard, Key,
-  Play, Ban, Clock, History, Activity, XCircle, Info
+  Play, Ban, Clock, History, Activity, XCircle, Info,
+  FolderOpen, Mail, Link, Unplug, RefreshCw, Download,
+  ChevronRight, ArrowRight, Copy,
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'
 import { Input } from '../../components/shared/Input'
@@ -14,7 +16,7 @@ import { Modal } from '../../components/shared/Modal'
 import { EmptyState } from '../../components/shared/EmptyState'
 import { showToast } from '../../components/shared/Toast'
 import { useIpc } from '../../hooks/useIpc'
-import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolPermission, TransportType } from '@shared/types/tool'
+import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolPermission, TransportType, McpDiscoveryResult, McpDiscoveredTool, McpPreset } from '@shared/types/tool'
 
 const PERMISSION_ICONS: Record<string, React.ReactElement> = {
   file_read: <FileText size={10} />,
@@ -38,6 +40,14 @@ const PERMISSION_DESCRIPTIONS: Record<string, string> = {
   database: 'Read/write database records',
   clipboard: 'Read/write clipboard',
   secrets: 'Access stored credentials and secrets',
+}
+
+const PRESET_ICONS: Record<string, React.ReactElement> = {
+  FolderOpen: <FolderOpen size={18} />,
+  Github: <Globe size={18} />,
+  Globe: <Globe size={18} />,
+  Mail: <Mail size={18} />,
+  Wrench: <Wrench size={18} />,
 }
 
 const DESTRUCTIVE_PERMISSIONS = new Set(['file_write', 'shell_command', 'git', 'database', 'secrets'])
@@ -68,6 +78,13 @@ const STATUS_LABELS: Record<string, string> = {
   error: 'Execution error',
 }
 
+const CONNECTION_STATUS_ICONS: Record<string, React.ReactElement> = {
+  connected: <CheckCircle size={10} className="text-green-600" />,
+  connecting: <RefreshCw size={10} className="text-amber-500 animate-spin" />,
+  error: <XCircle size={10} className="text-red-500" />,
+  disconnected: <Unplug size={10} className="text-[var(--ivory-text-3)]" />,
+}
+
 export function ToolsPage(): React.ReactElement {
   const api = useIpc()
   const [tools, setTools] = useState<ToolRow[]>([])
@@ -81,23 +98,45 @@ export function ToolsPage(): React.ReactElement {
 
   // Add MCP Server modal
   const [showAddModal, setShowAddModal] = useState(false)
-  const [newServer, setNewServer] = useState({ name: '', command: '', transport: 'stdio' as string })
+  const [newServer, setNewServer] = useState({
+    name: '', command: '', transport: 'stdio' as string, args: '', envVars: '',
+    trustLevel: 'local' as string, selectedPreset: ''
+  })
   const [addError, setAddError] = useState<string | null>(null)
 
-  useEffect(() => { loadTools() }, [])
+  // MCP Discovery & Execution
+  const [discoveryData, setDiscoveryData] = useState<Record<string, McpDiscoveryResult | null>>({})
+  const [connecting, setConnecting] = useState<Record<string, boolean>>({})
+  const [discovering, setDiscovering] = useState<Record<string, boolean>>({})
+  const [mcpResults, setMcpResults] = useState<Record<string, { toolName: string; output: string; error: string | null; isError: boolean } | null>>({})
+  const [showConfirmModal, setShowConfirmModal] = useState<{ serverId: string; toolName: string; args: Record<string, unknown>; safetyMessage: string } | null>(null)
+  const [presets, setPresets] = useState<McpPreset[]>([])
+  const [networkWarnings, setNetworkWarnings] = useState<Record<string, string | null>>({})
+
+  useEffect(() => { loadTools(); loadPresets() }, [])
+
+  const loadPresets = useCallback(async () => {
+    try { const p = await api.mcpGetPresets(); setPresets(p) } catch { /* ok */ }
+  }, [api])
 
   const loadTools = useCallback(async () => {
     try {
       const list = await api.toolList()
       setTools(list)
-      // Auto-select first tool only on initial load, not on refreshes
       setSelectedToolId(prev => {
         if (list.length === 0) return null
-        // Keep current selection if it still exists in the list
         if (prev && list.some((t: ToolRow) => t.id === prev)) return prev
-        // Otherwise select first
         return list[0].id
       })
+      // Load network warnings for imported servers
+      for (const t of list) {
+        if (t.source === 'imported' || t.source === 'mcp') {
+          try {
+            const w = await api.toolGetNetworkRiskWarning(t.id)
+            setNetworkWarnings(prev => ({ ...prev, [t.id]: w }))
+          } catch { /* ok */ }
+        }
+      }
     } catch (e) { console.error(e) }
   }, [api])
 
@@ -107,13 +146,86 @@ export function ToolsPage(): React.ReactElement {
       setCallLogs(logs as ToolCallLog[])
       setSelectedToolLogs(toolId ?? null)
       setShowLogs(true)
-      // Update last run time from most recent log
       if (logs.length > 0 && toolId) {
         const latest = logs[logs.length - 1] as ToolCallLog
         setLastRunTimes(prev => ({ ...prev, [toolId]: latest.created_at }))
       }
     } catch (e) { console.error(e) }
   }, [api])
+
+  // ---- MCP Lifecycle Handlers ----
+
+  const handleConnect = useCallback(async (serverId: string) => {
+    setConnecting(prev => ({ ...prev, [serverId]: true }))
+    try {
+      const result = await api.mcpConnect(serverId)
+      if (result.success) {
+        showToast('success', 'MCP server connected')
+        loadTools()
+      } else {
+        showToast('error', result.error || 'Connection failed')
+      }
+    } catch (e) { showToast('error', String(e)) }
+    finally { setConnecting(prev => ({ ...prev, [serverId]: false })) }
+  }, [api])
+
+  const handleDisconnect = useCallback(async (serverId: string) => {
+    await api.mcpDisconnect(serverId)
+    showToast('info', 'MCP server disconnected')
+    setDiscoveryData(prev => ({ ...prev, [serverId]: null }))
+    loadTools()
+  }, [api])
+
+  const handleDiscover = useCallback(async (serverId: string) => {
+    setDiscovering(prev => ({ ...prev, [serverId]: true }))
+    try {
+      const result = await api.mcpDiscover(serverId)
+      setDiscoveryData(prev => ({ ...prev, [serverId]: result }))
+      if (result) {
+        showToast('success', `Discovered ${result.tools.length} tools, ${result.resources.length} resources, ${result.prompts.length} prompts`)
+      } else {
+        showToast('warning', 'Discovery failed or server not connected')
+      }
+    } catch (e) { showToast('error', String(e)) }
+    finally { setDiscovering(prev => ({ ...prev, [serverId]: false })) }
+  }, [api])
+
+  const handleMcpExecute = useCallback(async (serverId: string, toolName: string, args: Record<string, unknown> = {}) => {
+    setMcpResults(prev => ({ ...prev, [serverId]: null }))
+    // Check if confirmation needed
+    const safety = await api.toolCheckSafety(serverId, args)
+    if (safety.requiresConfirmation) {
+      setShowConfirmModal({ serverId, toolName, args, safetyMessage: safety.message })
+      return
+    }
+
+    try {
+      const result = await api.mcpExecute(serverId, toolName, args)
+      setMcpResults(prev => ({ ...prev, [serverId]: { toolName, output: result.output, error: result.error, isError: !result.success } }))
+      if (result.success) {
+        showToast('success', `Tool "${toolName}" executed`)
+      } else {
+        showToast('warning', result.error || 'Execution failed')
+      }
+      loadLogs(serverId)
+    } catch (e) { showToast('error', String(e)) }
+  }, [api])
+
+  const handleConfirmedExecute = useCallback(async () => {
+    if (!showConfirmModal) return
+    const { serverId, toolName, args } = showConfirmModal
+    setShowConfirmModal(null)
+    try {
+      const result = await api.mcpExecute(serverId, toolName, args)
+      setMcpResults(prev => ({ ...prev, [serverId]: { toolName, output: result.output, error: result.error, isError: !result.success } }))
+      if (result.success) {
+        showToast('success', `Tool "${toolName}" executed (confirmed)`)
+      } else {
+        showToast('warning', result.error || 'Execution failed')
+      }
+      loadLogs(serverId)
+    } catch (e) { showToast('error', String(e)) }
+  }, [showConfirmModal, api])
 
   const handleToggleEnabled = useCallback(async (id: string) => {
     const tool = tools.find(t => t.id === id)
@@ -133,7 +245,7 @@ export function ToolsPage(): React.ReactElement {
 
   const handleDelete = useCallback(async (id: string) => {
     const tool = tools.find(t => t.id === id)
-    if (!tool || !confirm(`Remove \"${tool.name}\" from the tool registry?`)) return
+    if (!tool || !confirm(`Remove "${tool.name}" from the tool registry?`)) return
     await api.toolDelete(id)
     if (selectedToolId === id) setSelectedToolId(null)
     showToast('info', `${tool.name} removed`)
@@ -165,31 +277,65 @@ export function ToolsPage(): React.ReactElement {
     setSafetyChecks(prev => ({ ...prev, [toolId]: result as SafetyCheckResult }))
   }, [api])
 
+  const handlePresetSelect = useCallback((preset: McpPreset) => {
+    setNewServer({
+      name: preset.name,
+      command: preset.command,
+      transport: preset.transport,
+      args: (preset.args || []).join(' '),
+      envVars: '',
+      trustLevel: preset.riskLevel === 'safe_read' ? 'local' : preset.riskLevel === 'write_local' ? 'trusted' : 'local',
+      selectedPreset: preset.id,
+    })
+    setShowAddModal(true)
+  }, [])
+
   const handleAddServer = useCallback(async () => {
     if (!newServer.name.trim()) { setAddError('Name is required'); return }
     setAddError(null)
     try {
+      const preset = presets.find(p => p.id === newServer.selectedPreset)
+      const parsedArgs = newServer.args ? newServer.args.split(/\s+/).filter(Boolean) : []
+      const parsedEnvVars = newServer.envVars ? Object.fromEntries(
+        newServer.envVars.split('\n').filter(Boolean).map(line => {
+          const [k, ...v] = line.split('=')
+          return [k.trim(), v.join('=').trim()]
+        })
+      ) : {}
+
       const created = await api.toolCreate({
         name: newServer.name.trim(),
         transport: newServer.transport as TransportType,
         command: newServer.command || null,
         source: 'imported',
-        description: `MCP server: ${newServer.name}`,
-        permissions: ['file_read'],
+        description: preset ? preset.description : `MCP server: ${newServer.name}`,
+        permissions: preset?.permissions || ['file_read'],
+        config: { args: parsedArgs, presetId: newServer.selectedPreset || undefined },
       })
+
+      // If env vars were provided, update the tool with them
+      if (Object.keys(parsedEnvVars).length > 0) {
+        await api.toolUpdate((created as ToolRow).id, {
+          env_vars: JSON.stringify(parsedEnvVars),
+        } as any)
+      }
+
       setShowAddModal(false)
-      setNewServer({ name: '', command: '', transport: 'stdio' })
+      setNewServer({ name: '', command: '', transport: 'stdio', args: '', envVars: '', trustLevel: 'local', selectedPreset: '' })
       showToast('success', 'MCP server added — disabled by default')
       loadTools()
-      // Auto-select the new tool
       if (created) setSelectedToolId((created as ToolRow).id)
     } catch (err) { setAddError(String(err)) }
-  }, [newServer, api])
+  }, [newServer, api, presets])
 
   const getStatusIcon = (tool: ToolRow) => {
+    const connStatus = (tool as any).connection_status || 'disconnected'
+    if (tool.transport !== 'local' && connStatus === 'connected') {
+      return CONNECTION_STATUS_ICONS.connected
+    }
     if (!tool.is_enabled) return <Ban size={13} className="text-[var(--ivory-text-3)]" />
     if (!tool.is_trusted && tool.source !== 'builtin') return <AlertTriangle size={13} className="text-amber-500" />
-    return <CheckCircle size={13} className="text-green-600" />
+    return CONNECTION_STATUS_ICONS[connStatus] || <CheckCircle size={13} className="text-green-600" />
   }
 
   const permissions = (tool: ToolRow): ToolPermission[] => {
@@ -202,6 +348,7 @@ export function ToolsPage(): React.ReactElement {
   }
 
   const selectedTool = tools.find(t => t.id === selectedToolId) || null
+  const selectedDiscovery = selectedToolId ? discoveryData[selectedToolId] : null
 
   return (
     <div className="h-full flex flex-col">
@@ -210,7 +357,7 @@ export function ToolsPage(): React.ReactElement {
         <div>
           <h2 className="text-lg font-semibold text-[var(--ivory-text)] display-text">Tools &amp; MCP</h2>
           <p className="text-xs text-[var(--ivory-text-3)] mt-0.5 leading-relaxed">
-            Manage capability tools and MCP servers. All calls go through safety gate — imported tools start disabled.
+            Connect MCP servers, discover tools, and execute with safety gates. Presets include filesystem, GitHub, search, and Gmail.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -228,7 +375,7 @@ export function ToolsPage(): React.ReactElement {
         <Shield size={14} className="shrink-0 mt-0.5" />
         <span className="leading-relaxed">
           All tool calls go through safety gate: enabled → trusted → permissions → confirmation for destructive ops.
-          File writes, shell commands, and network access require approval.
+          Remote MCP servers are untrusted by default. File writes, shell commands, and network access require approval.
         </span>
       </div>
 
@@ -274,14 +421,46 @@ export function ToolsPage(): React.ReactElement {
         </div>
       )}
 
+      {/* MCP Presets — Quick Setup */}
+      {tools.length === 0 && presets.length > 0 && (
+        <div className="mx-4 mt-3 mb-1">
+          <p className="text-xs font-semibold text-[var(--ivory-text-2)] uppercase tracking-wider mb-2">Quick Setup — MCP Presets</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+            {presets.filter(p => p.id !== 'custom').map(preset => (
+              <button
+                key={preset.id}
+                onClick={() => handlePresetSelect(preset)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-accent)]/30 transition-colors text-center group"
+              >
+                <div className="w-8 h-8 rounded-lg bg-[var(--ivory-surface-2)] flex items-center justify-center text-[var(--ivory-accent)] group-hover:bg-[var(--ivory-accent-light)]/20 transition-colors">
+                  {PRESET_ICONS[preset.icon] || <Wrench size={16} />}
+                </div>
+                <span className="text-[11px] font-semibold text-[var(--ivory-text)]">{preset.name}</span>
+                <span className="text-[10px] text-[var(--ivory-text-3)] leading-tight">{preset.description.slice(0, 60)}</span>
+                {preset.setupInstructions && (
+                  <span className="text-[9px] text-amber-600 mt-0.5">⚠ Setup required</span>
+                )}
+              </button>
+            ))}
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex flex-col items-center justify-center gap-1 p-3 rounded-xl border border-dashed border-[var(--ivory-border)] bg-transparent hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-accent)]/30 transition-colors text-center"
+            >
+              <Plus size={18} className="text-[var(--ivory-text-3)]" />
+              <span className="text-[11px] font-medium text-[var(--ivory-text-2)]">Custom</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Master-Detail Layout */}
-      {tools.length === 0 ? (
+      {tools.length === 0 && presets.length === 0 ? (
         <div className="flex-1 flex items-center justify-center m-4">
           <Card padding="lg" className="max-w-md">
             <EmptyState
               icon={<Wrench size={40} strokeWidth={1.5} />}
               title="No MCP servers connected"
-              description="Add an MCP server to extend Aureon's capabilities. Built-in mock tools are seeded on app startup."
+              description="Add an MCP server to extend Aureon's capabilities. Choose a preset for quick setup or configure a custom server."
               action={<Button size="sm" onClick={() => setShowAddModal(true)}><Plus size={14} /> Add MCP Server</Button>}
             />
           </Card>
@@ -292,7 +471,7 @@ export function ToolsPage(): React.ReactElement {
           <div className="w-[260px] shrink-0 flex flex-col rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] overflow-hidden shadow-[var(--shadow-xs)]">
             <div className="px-4 py-3 border-b border-[var(--ivory-border)]/60">
               <p className="text-xs font-semibold text-[var(--ivory-text-2)] uppercase tracking-wider">
-                Tools & Capabilities
+                Tools &amp; Servers
               </p>
               <p className="text-[11px] text-[var(--ivory-text-3)] mt-0.5">{tools.length} registered</p>
             </div>
@@ -300,6 +479,7 @@ export function ToolsPage(): React.ReactElement {
               {tools.map(tool => {
                 const isSelected = tool.id === selectedToolId
                 const perms = permissions(tool)
+                const connStatus = (tool as any).connection_status || 'disconnected'
                 return (
                   <button
                     key={tool.id}
@@ -315,10 +495,13 @@ export function ToolsPage(): React.ReactElement {
                         <span className="text-xs font-semibold text-[var(--ivory-text)] truncate block">
                           {tool.name}
                         </span>
-                        <div className="flex items-center gap-1.5 mt-0.5">
+                        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                           <Badge variant={tool.source === 'builtin' ? 'success' : 'default'} size="sm">
                             {tool.source || 'unknown'}
                           </Badge>
+                          {tool.transport !== 'local' && connStatus === 'connected' && (
+                            <Badge variant="success" size="sm">Connected</Badge>
+                          )}
                           {!tool.is_enabled && <Badge variant="default" size="sm">Off</Badge>}
                           {!tool.is_trusted && tool.source !== 'builtin' && (
                             <Badge variant="warning" size="sm">Untrusted</Badge>
@@ -329,6 +512,12 @@ export function ToolsPage(): React.ReactElement {
                         </div>
                       </div>
                     </div>
+                    {/* Network warning */}
+                    {networkWarnings[tool.id] && (
+                      <div className="mt-1.5 ml-5 text-[10px] text-amber-600 bg-amber-50 rounded-lg px-2 py-1 leading-relaxed">
+                        ⚠ {networkWarnings[tool.id]}
+                      </div>
+                    )}
                     {/* Permission icons row */}
                     {perms.length > 0 && (
                       <div className="flex flex-wrap gap-0.5 mt-1.5 ml-5">
@@ -364,7 +553,7 @@ export function ToolsPage(): React.ReactElement {
                       </div>
                       <div className="min-w-0">
                         <h3 className="text-[15px] font-semibold text-[var(--ivory-text)]">{selectedTool.name}</h3>
-                        <div className="flex items-center gap-1.5 mt-0.5">
+                        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                           <Badge variant={selectedTool.source === 'builtin' ? 'success' : 'default'} size="sm">
                             {selectedTool.source || 'unknown'}
                           </Badge>
@@ -374,6 +563,9 @@ export function ToolsPage(): React.ReactElement {
                             <Badge variant="warning" size="sm">Untrusted</Badge>
                           )}
                           {hasDestructive(selectedTool) && <Badge variant="warning" size="sm">Destructive</Badge>}
+                          {selectedTool.connection_status === 'connected' && (
+                            <Badge variant="success" size="sm">Connected</Badge>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -389,6 +581,41 @@ export function ToolsPage(): React.ReactElement {
                     <p className="text-xs text-[var(--ivory-text-3)] leading-relaxed">{selectedTool.description}</p>
                   )}
                 </div>
+
+                {/* MCP Connection Controls (for non-local servers) */}
+                {selectedTool.transport !== 'local' && (
+                  <Section title="Connection">
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleConnect(selectedTool.id)}
+                        disabled={connecting[selectedTool.id] || selectedTool.connection_status === 'connected'}
+                      >
+                        <Link size={12} /> {connecting[selectedTool.id] ? 'Connecting...' : 'Connect'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => handleDisconnect(selectedTool.id)}
+                        disabled={selectedTool.connection_status !== 'connected'}
+                      >
+                        <Unplug size={12} /> Disconnect
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => handleDiscover(selectedTool.id)}
+                        disabled={selectedTool.connection_status !== 'connected' || discovering[selectedTool.id]}
+                      >
+                        <Download size={12} /> {discovering[selectedTool.id] ? 'Discovering...' : 'Discover'}
+                      </Button>
+                    </div>
+                    {/* Connection status */}
+                    {selectedTool.connection_status === 'error' && (
+                      <p className="text-xs text-[var(--ivory-error)] mt-1.5">Connection error — check server configuration and try again.</p>
+                    )}
+                  </Section>
+                )}
 
                 {/* Transport */}
                 <Section title="Transport">
@@ -414,7 +641,7 @@ export function ToolsPage(): React.ReactElement {
                 </Section>
 
                 {/* Status & Risk */}
-                <Section title="Status & Risk">
+                <Section title="Status &amp; Risk">
                   <div className="space-y-2 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="text-[var(--ivory-text-3)] w-20">Enabled:</span>
@@ -448,46 +675,137 @@ export function ToolsPage(): React.ReactElement {
                         </span>
                       </div>
                     )}
-                  </div>
-                </Section>
-
-                {/* Test Tool */}
-                <Section title="Test Tool">
-                  <div className="flex flex-wrap gap-2">
-                    <Button size="sm" variant="secondary" onClick={() => handleCheckSafety(selectedTool.id)}>
-                      <Shield size={12} /> Check Safety
-                    </Button>
-                    <Button size="sm" onClick={() => handleExecute(selectedTool.id)} disabled={executing || !selectedTool.is_enabled}>
-                      <Play size={12} /> {executing ? 'Running...' : 'Run Test'}
-                    </Button>
-                    <Button size="sm" variant="secondary" onClick={() => loadLogs(selectedTool.id)}>
-                      <History size={12} /> View Logs
-                    </Button>
-                  </div>
-
-                  {/* Safety check result */}
-                  {safetyChecks[selectedTool.id] && (
-                    <div className={`mt-3 p-3 rounded-xl border text-xs ${
-                      safetyChecks[selectedTool.id]!.allowed
-                        ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] border-[var(--ivory-success)]/20'
-                        : 'bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border-[var(--ivory-error)]/20'
-                    }`}>
-                      <div className="flex items-center gap-1.5 font-medium mb-1">
-                        {safetyChecks[selectedTool.id]!.allowed
-                          ? <CheckCircle size={12} />
-                          : <XCircle size={12} />
-                        }
-                        {safetyChecks[selectedTool.id]!.message}
+                    {selectedTool.last_discovered_at && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-[var(--ivory-text-3)] w-20">Discovered:</span>
+                        <span className="text-[var(--ivory-text-2)] font-mono">
+                          {new Date(selectedTool.last_discovered_at).toLocaleString()}
+                        </span>
                       </div>
-                      {safetyChecks[selectedTool.id]!.requiresConfirmation && (
-                        <p className="text-ui-caption text-amber-600">⚠️ User confirmation required before execution</p>
-                      )}
-                      {safetyChecks[selectedTool.id]!.dryRunPreview && (
-                        <p className="text-ui-caption text-[var(--ivory-text-2)] mt-1">Preview: {safetyChecks[selectedTool.id]!.dryRunPreview}</p>
-                      )}
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </Section>
+
+                {/* Discovery Results */}
+                {selectedDiscovery && (
+                  <>
+                    {selectedDiscovery.tools.length > 0 && (
+                      <Section title={`Discovered Tools (${selectedDiscovery.tools.length})`}>
+                        <div className="space-y-1.5 max-h-52 overflow-y-auto">
+                          {selectedDiscovery.tools.map((tool: McpDiscoveredTool) => (
+                            <div key={tool.name} className="flex items-center justify-between p-2.5 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/50 hover:border-[var(--ivory-accent)]/20 transition-colors">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-xs font-semibold text-[var(--ivory-text)]">{tool.name}</span>
+                                  <Badge variant={tool.riskLevel === 'destructive' ? 'warning' : tool.riskLevel === 'read_only' ? 'success' : 'default'} size="sm">
+                                    {tool.riskLevel}
+                                  </Badge>
+                                </div>
+                                <p className="text-[11px] text-[var(--ivory-text-3)] truncate mt-0.5">{tool.description}</p>
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0 ml-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleMcpExecute(selectedTool.id, tool.name, {})}
+                                  disabled={(selectedTool as any).connection_status !== 'connected'}
+                                  title={`Run ${tool.name}`}
+                                >
+                                  <Play size={11} />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </Section>
+                    )}
+                    {selectedDiscovery.resources.length > 0 && (
+                      <Section title={`Resources (${selectedDiscovery.resources.length})`}>
+                        <div className="space-y-1 max-h-32 overflow-y-auto">
+                          {selectedDiscovery.resources.map(r => (
+                            <div key={r.uri} className="text-[11px] text-[var(--ivory-text-2)] p-1.5 rounded-lg hover:bg-[var(--ivory-bg)]">
+                              <span className="font-mono text-[var(--ivory-text-3)]">{r.uri}</span>
+                              <span className="ml-2">{r.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </Section>
+                    )}
+                    {selectedDiscovery.prompts.length > 0 && (
+                      <Section title={`Prompts (${selectedDiscovery.prompts.length})`}>
+                        <div className="space-y-1">
+                          {selectedDiscovery.prompts.map(p => (
+                            <div key={p.name} className="text-xs p-1.5">
+                              <span className="font-semibold text-[var(--ivory-text)]">{p.name}</span>
+                              <span className="text-[var(--ivory-text-3)] ml-2">{p.description}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </Section>
+                    )}
+                  </>
+                )}
+
+                {/* MCP Execution Results */}
+                {mcpResults[selectedTool.id] && (
+                  <Section title={`Result: ${mcpResults[selectedTool.id]!.toolName}`}>
+                    <div className={`p-3 rounded-xl border text-xs font-mono whitespace-pre-wrap max-h-48 overflow-y-auto ${
+                      mcpResults[selectedTool.id]!.isError
+                        ? 'bg-red-50 border-red-200 text-red-700'
+                        : 'bg-[var(--ivory-bg)] border-[var(--ivory-border)]/60 text-[var(--ivory-text-2)]'
+                    }`}>
+                      {mcpResults[selectedTool.id]!.output || mcpResults[selectedTool.id]!.error || '(no output)'}
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(mcpResults[selectedTool.id]!.output || '')
+                        showToast('info', 'Copied result to clipboard')
+                      }}
+                      className="text-[10px] text-[var(--ivory-accent)] hover:underline mt-1 inline-flex items-center gap-1"
+                    >
+                      <Copy size={10} /> Copy to chat
+                    </button>
+                  </Section>
+                )}
+
+                {/* Test Tool (mock/builtin only) */}
+                {selectedTool.transport === 'local' && (
+                  <Section title="Test Tool">
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" variant="secondary" onClick={() => handleCheckSafety(selectedTool.id)}>
+                        <Shield size={12} /> Check Safety
+                      </Button>
+                      <Button size="sm" onClick={() => handleExecute(selectedTool.id)} disabled={executing || !selectedTool.is_enabled}>
+                        <Play size={12} /> {executing ? 'Running...' : 'Run Test'}
+                      </Button>
+                      <Button size="sm" variant="secondary" onClick={() => loadLogs(selectedTool.id)}>
+                        <History size={12} /> View Logs
+                      </Button>
+                    </div>
+
+                    {/* Safety check result */}
+                    {safetyChecks[selectedTool.id] && (
+                      <div className={`mt-3 p-3 rounded-xl border text-xs ${
+                        safetyChecks[selectedTool.id]!.allowed
+                          ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] border-[var(--ivory-success)]/20'
+                          : 'bg-[var(--ivory-error-bg)] text-[var(--ivory-error)] border-[var(--ivory-error)]/20'
+                      }`}>
+                        <div className="flex items-center gap-1.5 font-medium mb-1">
+                          {safetyChecks[selectedTool.id]!.allowed
+                            ? <CheckCircle size={12} />
+                            : <XCircle size={12} />
+                          }
+                          {safetyChecks[selectedTool.id]!.message}
+                        </div>
+                        {safetyChecks[selectedTool.id]!.requiresConfirmation && (
+                          <p className="text-ui-caption text-amber-600">User confirmation required before execution</p>
+                        )}
+                        {safetyChecks[selectedTool.id]!.dryRunPreview && (
+                          <p className="text-ui-caption text-[var(--ivory-text-2)] mt-1">Preview: {safetyChecks[selectedTool.id]!.dryRunPreview}</p>
+                        )}
+                      </div>
+                    )}
+                  </Section>
+                )}
 
                 {/* Actions Footer */}
                 <div className="pt-3 border-t border-[var(--ivory-border)]/60 flex items-center gap-2">
@@ -512,7 +830,7 @@ export function ToolsPage(): React.ReactElement {
                     <Info size={22} className="text-[var(--ivory-text-3)]" strokeWidth={1.5} />
                   </div>
                   <p className="text-xs text-[var(--ivory-text-3)] leading-relaxed">
-                    Select a tool from the list to view its details, permissions, and test controls.
+                    Select a tool or MCP server from the list to view details, connect, discover tools, and execute.
                   </p>
                 </div>
               </div>
@@ -524,15 +842,51 @@ export function ToolsPage(): React.ReactElement {
       {/* Add MCP Server Modal */}
       <Modal
         isOpen={showAddModal}
-        onClose={() => { setShowAddModal(false); setAddError(null); setNewServer({ name: '', command: '', transport: 'stdio' }) }}
-        title="Add MCP Server"
+        onClose={() => {
+          setShowAddModal(false)
+          setAddError(null)
+          setNewServer({ name: '', command: '', transport: 'stdio', args: '', envVars: '', trustLevel: 'local', selectedPreset: '' })
+        }}
+        title={newServer.selectedPreset ? `Add ${newServer.name} Server` : 'Add MCP Server'}
         size="sm"
       >
         <div className="space-y-3">
           <div className="p-3 rounded-xl bg-[var(--ivory-warning-bg)] border border-[var(--ivory-warning)]/15 text-xs text-[var(--ivory-warning)]">
             <Shield size={12} className="inline mr-1" />
-            New MCP servers are disabled by default. Review their capabilities before enabling.
+            MCP servers are disabled by default. Connect, discover tools, and review capabilities before enabling.
           </div>
+
+          {/* Preset picker */}
+          {presets.length > 0 && !newServer.selectedPreset && (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-[var(--ivory-text)]">Choose a Preset</label>
+              <div className="grid grid-cols-2 gap-1.5">
+                {presets.map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => handlePresetSelect(p)}
+                    className="px-3 py-2 rounded-xl text-xs font-medium border transition text-left bg-[var(--ivory-bg)] border-[var(--ivory-border)] hover:border-[var(--ivory-accent)]/30 hover:bg-[var(--ivory-surface)]"
+                  >
+                    {PRESET_ICONS[p.icon] && <span className="inline mr-1.5 text-[var(--ivory-accent)]">{PRESET_ICONS[p.icon]}</span>}
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {newServer.selectedPreset && (
+            <div className="p-3 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/60 text-xs">
+              <p className="font-semibold text-[var(--ivory-text)]">{newServer.name}</p>
+              <p className="text-[var(--ivory-text-3)] mt-0.5">{presets.find(p => p.id === newServer.selectedPreset)?.description}</p>
+              {presets.find(p => p.id === newServer.selectedPreset)?.setupInstructions && (
+                <p className="text-amber-600 mt-1 text-[10px]">
+                  {presets.find(p => p.id === newServer.selectedPreset)?.setupInstructions}
+                </p>
+              )}
+            </div>
+          )}
 
           <Input
             label="Server Name"
@@ -565,17 +919,73 @@ export function ToolsPage(): React.ReactElement {
           </div>
 
           <Input
-            label="Command or URL"
-            placeholder={newServer.transport === 'stdio' ? 'node server.js' : 'http://localhost:3000'}
+            label={newServer.transport === 'stdio' ? 'Command' : 'URL'}
+            placeholder={newServer.transport === 'stdio' ? 'npx -y @anthropic/mcp-server-filesystem .' : 'http://localhost:3000/sse'}
             value={newServer.command}
             onChange={e => setNewServer(s => ({ ...s, command: e.target.value }))}
           />
+
+          {newServer.transport === 'stdio' && (
+            <Input
+              label="Arguments (optional, space-separated)"
+              placeholder="-y @anthropic/mcp-server-filesystem ."
+              value={newServer.args}
+              onChange={e => setNewServer(s => ({ ...s, args: e.target.value }))}
+            />
+          )}
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-[var(--ivory-text)]">Environment Variables (one per line, KEY=VALUE)</label>
+            <textarea
+              value={newServer.envVars}
+              onChange={e => setNewServer(s => ({ ...s, envVars: e.target.value }))}
+              placeholder="GITHUB_TOKEN=ghp_xxx&#10;NODE_ENV=production"
+              rows={3}
+              className="w-full resize-none bg-[var(--ivory-bg)] border border-[var(--ivory-border)] rounded-xl px-3 py-2 text-[13px] text-[var(--ivory-text)] placeholder:text-[var(--ivory-text-3)] outline-none focus:border-[var(--ivory-accent)] font-mono"
+            />
+            <p className="text-[10px] text-[var(--ivory-text-3)]">
+              Env vars are stored encrypted and redacted in logs.
+            </p>
+          </div>
 
           {addError && <p className="text-xs text-[var(--ivory-error)]">{addError}</p>}
 
           <Button onClick={handleAddServer} className="w-full">
             <Plus size={14} /> Add Server
           </Button>
+        </div>
+      </Modal>
+
+      {/* Confirmation Modal for Destructive Operations */}
+      <Modal
+        isOpen={!!showConfirmModal}
+        onClose={() => setShowConfirmModal(null)}
+        title="Confirm Tool Execution"
+        size="sm"
+      >
+        <div className="space-y-3">
+          <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-start gap-2">
+            <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+            <span>{showConfirmModal?.safetyMessage}</span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/60">
+            <p className="text-xs font-semibold text-[var(--ivory-text)]">Tool: {showConfirmModal?.toolName}</p>
+            {showConfirmModal?.args && Object.keys(showConfirmModal.args).length > 0 && (
+              <pre className="text-[11px] text-[var(--ivory-text-3)] mt-1 font-mono">
+                {JSON.stringify(showConfirmModal.args, null, 2)}
+              </pre>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={() => setShowConfirmModal(null)} className="flex-1">
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmedExecute} className="flex-1">
+              <CheckCircle size={14} /> Confirm & Execute
+            </Button>
+          </div>
         </div>
       </Modal>
     </div>

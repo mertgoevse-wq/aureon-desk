@@ -4,7 +4,13 @@ import { tools, toolPermissions, toolCallLogs } from '../db/schema'
 import { eq } from 'drizzle-orm'
 import { logger } from '../utils/logger'
 import { checkToolSafety, logToolCall } from './tool-safety-gate'
-import type { ToolRow, NewTool, ToolPermission, ToolCallLog } from '../../shared/types/tool'
+import { mcpClientService } from './mcp-client.service'
+import { redactSecrets } from './log-redacter'
+import type {
+  ToolRow, NewTool, ToolPermission, ToolCallLog,
+  McpDiscoveryResult, McpDiscoveredTool, McpDiscoveredResource, McpDiscoveredPrompt,
+  ConnectionStatus, TrustLevel, McpPreset,
+} from '../../shared/types/tool'
 
 /**
  * Tool Service — CRUD for tools, 3 built-in mock tools, and permission management.
@@ -41,6 +47,75 @@ const BUILTIN_MOCK_TOOLS: NewTool[] = [
   },
 ]
 
+// MCP Server Presets
+export const MCP_PRESETS: McpPreset[] = [
+  {
+    id: 'filesystem',
+    name: 'Local Filesystem',
+    description: 'Read, write, and manage files on your local machine via MCP.',
+    icon: 'FolderOpen',
+    transport: 'stdio',
+    command: 'npx',
+    args: ['-y', '@anthropic/mcp-server-filesystem', '.'],
+    requiredBinary: 'npx',
+    setupInstructions: 'Install Node.js (v18+) and run: npm install -g npx',
+    permissions: ['file_read', 'file_write'],
+    riskLevel: 'write_local',
+  },
+  {
+    id: 'github',
+    name: 'GitHub',
+    description: 'Access GitHub repos, PRs, issues, and manage code via MCP.',
+    icon: 'Github',
+    transport: 'stdio',
+    command: 'npx',
+    args: ['-y', '@anthropic/mcp-server-github'],
+    requiredBinary: 'npx',
+    setupInstructions: 'Install Node.js (v18+) and set GITHUB_TOKEN env var: export GITHUB_TOKEN=<your_token>',
+    permissions: ['file_read', 'git', 'network'],
+    riskLevel: 'account_action',
+  },
+  {
+    id: 'browser_search',
+    name: 'Browser Search',
+    description: 'Search the web and fetch page content via MCP (Puppeteer-based).',
+    icon: 'Globe',
+    transport: 'stdio',
+    command: 'npx',
+    args: ['-y', '@anthropic/mcp-server-brave-search'],
+    requiredBinary: 'npx',
+    setupInstructions: 'Install Node.js (v18+) and set BRAVE_API_KEY env var',
+    permissions: ['network', 'browser'],
+    riskLevel: 'write_remote',
+  },
+  {
+    id: 'gmail',
+    name: 'Gmail',
+    description: 'Read, draft, and manage emails via MCP (OAuth-based).',
+    icon: 'Mail',
+    transport: 'stdio',
+    command: 'npx',
+    args: ['-y', '@anthropic/mcp-server-gmail'],
+    requiredBinary: 'npx',
+    setupInstructions: 'Requires Gmail OAuth setup. See https://developers.google.com/gmail',
+    permissions: ['network', 'clipboard'],
+    riskLevel: 'account_action',
+  },
+  {
+    id: 'custom',
+    name: 'Custom MCP Server',
+    description: 'Connect to any custom MCP-compatible server via stdio command.',
+    icon: 'Wrench',
+    transport: 'stdio',
+    command: '',
+    args: [],
+    requiredBinary: '',
+    setupInstructions: 'Enter the command and arguments to start your custom MCP server.',
+    permissions: ['file_read'],
+    riskLevel: 'safe_read',
+  },
+]
+
 export const toolService = {
   // ---- CRUD ----
 
@@ -72,6 +147,9 @@ export const toolService = {
       permissions: input.permissions ? JSON.stringify(input.permissions) : null,
       is_enabled: input.source === 'imported' ? 0 : 1,
       is_trusted: input.is_trusted ? 1 : 0,
+      trust_level: input.trust_level || 'untrusted',
+      env_vars: input.env_vars ? JSON.stringify(input.env_vars) : null,
+      connection_status: 'disconnected',
       created_at: now,
       updated_at: now,
     } as never).run()
@@ -92,6 +170,8 @@ export const toolService = {
     if (input.config !== undefined) data.config = JSON.stringify(input.config)
     if (input.permissions !== undefined) data.permissions = JSON.stringify(input.permissions)
     if (input.is_trusted !== undefined) data.is_trusted = input.is_trusted ? 1 : 0
+    if (input.trust_level !== undefined) data.trust_level = input.trust_level
+    if (input.env_vars !== undefined) data.env_vars = JSON.stringify(input.env_vars)
 
     db.update(tools).set(data as never).where(eq(tools.id, id)).run()
     return this.getTool(id)
@@ -194,6 +274,166 @@ export const toolService = {
       })
       return { success: false, output: '', error: String(err), safetyCheck, logId }
     }
+  },
+
+  // ---- MCP Lifecycle ----
+
+  /** Connect to an MCP server and discover its capabilities */
+  async connectMcpServer(serverId: string): Promise<{ success: boolean; error?: string }> {
+    const tool = this.getTool(serverId)
+    if (!tool) return { success: false, error: 'Tool not found' }
+
+    try {
+      const config = JSON.parse(tool.config || '{}')
+      const envVarsRaw = tool.env_vars ? JSON.parse(tool.env_vars) : {}
+
+      if (tool.transport === 'stdio') {
+        const command = tool.command || config.command || ''
+        const args = config.args || []
+        await mcpClientService.connectStdio(serverId, command, args, envVarsRaw)
+      } else if (tool.transport === 'sse' || tool.transport === 'http') {
+        const url = tool.command || config.url || ''
+        if (!url) return { success: false, error: 'No URL configured for SSE server' }
+        await mcpClientService.connectSse(serverId, url)
+      } else {
+        return { success: false, error: `Unsupported transport: ${tool.transport}` }
+      }
+
+      this.updateConnectionStatus(serverId, 'connected')
+      logger.info(`MCP server connected: ${tool.name}`)
+      return { success: true }
+    } catch (err) {
+      this.updateConnectionStatus(serverId, 'error')
+      return { success: false, error: String(err) }
+    }
+  },
+
+  /** Disconnect from an MCP server */
+  async disconnectMcpServer(serverId: string): Promise<boolean> {
+    try {
+      await mcpClientService.disconnect(serverId)
+      this.updateConnectionStatus(serverId, 'disconnected')
+      return true
+    } catch (err) {
+      logger.error(`Failed to disconnect MCP server ${serverId}:`, err)
+      return false
+    }
+  },
+
+  /** Test connection to an MCP server */
+  async testMcpConnection(serverId: string): Promise<{ serverName: string; serverVersion: string; capabilities: string[] } | null> {
+    try {
+      const result = await mcpClientService.testConnection(serverId)
+      return {
+        serverName: result.serverName,
+        serverVersion: result.serverVersion,
+        capabilities: result.capabilities,
+      }
+    } catch (err) {
+      logger.error(`MCP connection test failed for ${serverId}:`, err)
+      return null
+    }
+  },
+
+  /** Discover all capabilities from a connected MCP server */
+  async discoverMcpCapabilities(serverId: string): Promise<McpDiscoveryResult | null> {
+    try {
+      const result = await mcpClientService.discoverAll(serverId)
+      const db = getDb()
+      db.update(tools).set({
+        discovery_data: JSON.stringify(result),
+        last_discovered_at: result.discoveredAt,
+      } as never).where(eq(tools.id, serverId)).run()
+      return result
+    } catch (err) {
+      logger.error(`MCP discovery failed for ${serverId}:`, err)
+      return null
+    }
+  },
+
+  /** Execute a tool on an MCP server with safety gate */
+  async executeMcpTool(
+    serverId: string,
+    toolName: string,
+    args: Record<string, unknown>
+  ): Promise<{
+    success: boolean
+    output: string
+    error: string | null
+    requiresConfirmation: boolean
+    safetyMessage: string
+    logId: string
+  }> {
+    const tool = this.getTool(serverId)
+    if (!tool) {
+      return { success: false, output: '', error: 'Server not found', requiresConfirmation: false, safetyMessage: '', logId: '' }
+    }
+
+    // Safety gate check
+    const safetyCheck = checkToolSafety(serverId, args)
+    if (!safetyCheck.allowed && safetyCheck.reason !== 'tool_destructive') {
+      const logId = logToolCall({
+        toolId: serverId, toolName: `${tool.name}:${toolName}`,
+        status: 'blocked_untrusted', input: args, error: safetyCheck.message
+      })
+      return { success: false, output: '', error: safetyCheck.message, requiresConfirmation: false, safetyMessage: safetyCheck.message, logId }
+    }
+
+    if (safetyCheck.requiresConfirmation) {
+      const logId = logToolCall({
+        toolId: serverId, toolName: `${tool.name}:${toolName}`,
+        status: 'denied', input: args, error: 'Awaiting confirmation'
+      })
+      return { success: false, output: '', error: 'Confirmation required', requiresConfirmation: true, safetyMessage: safetyCheck.message, logId }
+    }
+
+    // Execute
+    try {
+      const result = await mcpClientService.executeTool(serverId, toolName, args)
+      const outputText = result.content?.map(c => c.text || '').join('\n') || JSON.stringify(result)
+      const isError = result.isError === true
+
+      const logId = logToolCall({
+        toolId: serverId, toolName: `${tool.name}:${toolName}`,
+        status: isError ? 'error' : 'approved',
+        input: args,
+        output: redactSecrets(outputText.slice(0, 500)),
+        error: isError ? outputText : undefined,
+      })
+
+      return {
+        success: !isError,
+        output: outputText,
+        error: isError ? outputText : null,
+        requiresConfirmation: false,
+        safetyMessage: safetyCheck.message,
+        logId,
+      }
+    } catch (err) {
+      const logId = logToolCall({
+        toolId: serverId, toolName: `${tool.name}:${toolName}`,
+        status: 'error', input: args, error: String(err)
+      })
+      return { success: false, output: '', error: String(err), requiresConfirmation: false, safetyMessage: '', logId }
+    }
+  },
+
+  /** Get parsed discovery data for a server */
+  getDiscoveryData(serverId: string): McpDiscoveryResult | null {
+    const tool = this.getTool(serverId)
+    if (!tool || !tool.discovery_data) return null
+    try { return JSON.parse(tool.discovery_data) } catch { return null }
+  },
+
+  /** Update connection status in the database */
+  updateConnectionStatus(serverId: string, status: ConnectionStatus): void {
+    const db = getDb()
+    db.update(tools).set({ connection_status: status } as never).where(eq(tools.id, serverId)).run()
+  },
+
+  /** Get MCP presets */
+  getPresets(): McpPreset[] {
+    return MCP_PRESETS
   },
 
   // ---- Logs ----

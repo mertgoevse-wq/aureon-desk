@@ -131,6 +131,11 @@ export const tools = sqliteTable('tools', {
   permissions: text('permissions'),
   is_enabled: integer('is_enabled').notNull().default(1),
   is_trusted: integer('is_trusted').notNull().default(0),
+  trust_level: text('trust_level').notNull().default('untrusted'),
+  env_vars: text('env_vars'),
+  connection_status: text('connection_status').notNull().default('disconnected'),
+  discovery_data: text('discovery_data'),
+  last_discovered_at: text('last_discovered_at'),
   created_at: text('created_at').notNull(),
   updated_at: text('updated_at').notNull()
 })

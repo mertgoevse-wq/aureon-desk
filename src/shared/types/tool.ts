@@ -2,6 +2,63 @@
 
 export type TransportType = 'stdio' | 'http' | 'sse' | 'websocket' | 'local'
 export type ToolPermission = 'file_read' | 'file_write' | 'shell_command' | 'network' | 'browser' | 'git' | 'database' | 'clipboard' | 'secrets'
+export type TrustLevel = 'local' | 'trusted' | 'untrusted'
+export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
+
+// MCP Server Configuration
+export interface McpServerConfig {
+  command?: string
+  args?: string[]
+  url?: string
+  envVars?: Record<string, string>
+  trustLevel: TrustLevel
+  autoConnect?: boolean
+}
+
+// MCP Discovery Results
+export interface McpDiscoveredTool {
+  name: string
+  description: string
+  inputSchema: Record<string, unknown>
+  riskLevel: 'safe_read' | 'read_only' | 'write_local' | 'write_remote' | 'destructive'
+}
+
+export interface McpDiscoveredResource {
+  uri: string
+  name: string
+  description: string
+  mimeType?: string
+}
+
+export interface McpDiscoveredPrompt {
+  name: string
+  description: string
+  arguments?: Array<{ name: string; description: string; required: boolean }>
+}
+
+export interface McpDiscoveryResult {
+  tools: McpDiscoveredTool[]
+  resources: McpDiscoveredResource[]
+  prompts: McpDiscoveredPrompt[]
+  discoveredAt: string
+  serverName: string
+  serverVersion: string
+}
+
+// MCP Presets
+export interface McpPreset {
+  id: string
+  name: string
+  description: string
+  icon: string
+  transport: TransportType
+  command: string
+  args?: string[]
+  requiredBinary?: string
+  setupInstructions?: string
+  permissions: ToolPermission[]
+  riskLevel: string
+}
 
 export interface ToolRow {
   id: string
@@ -16,6 +73,11 @@ export interface ToolRow {
   permissions: string | null      // JSON array of ToolPermission
   is_enabled: number
   is_trusted: number             // 1 = user explicitly trusts this tool
+  trust_level: string            // 'local' | 'trusted' | 'untrusted'
+  env_vars: string | null        // JSON of { KEY: 'value' } — encrypted/redacted
+  connection_status: string      // 'disconnected' | 'connecting' | 'connected' | 'error'
+  discovery_data: string | null  // JSON of McpDiscoveryResult
+  last_discovered_at: string | null
   created_at: string
   updated_at: string
 }
@@ -50,6 +112,8 @@ export interface NewTool {
   permissions?: ToolPermission[]
   source?: 'builtin' | 'imported' | 'mcp'
   is_trusted?: boolean
+  trust_level?: TrustLevel
+  env_vars?: Record<string, string>
 }
 
 // Safety check result

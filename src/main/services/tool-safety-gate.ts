@@ -16,6 +16,33 @@ const DESTRUCTIVE_PERMISSIONS: ToolPermission[] = [
   'file_write', 'shell_command', 'git', 'database', 'secrets'
 ]
 
+// Check if tool has network-related permissions - warn for untrusted remote servers
+function hasNetworkPermissions(permissions: ToolPermission[]): boolean {
+  return permissions.some(p => ['network', 'browser'].includes(p))
+}
+
+/** Redact env vars from display - show only keys, not values */
+export function redactEnvVars(envVars: Record<string, string>): string {
+  return JSON.stringify(Object.keys(envVars).map(k => `${k}=***`))
+}
+
+/** Check if a remote server is untrusted - requires extra warning */
+export function isUntrustedRemote(tool: ToolRow): boolean {
+  if (tool.source !== 'imported' && tool.source !== 'mcp') return false
+  if (tool.transport === 'local') return false
+  return !tool.is_trusted
+}
+
+/** Get network risk warning for untrusted remote MCP servers */
+export function getNetworkRiskWarning(tool: ToolRow): string | null {
+  if (!isUntrustedRemote(tool)) return null
+  const perms: ToolPermission[] = tool.permissions ? JSON.parse(tool.permissions) : []
+  if (hasNetworkPermissions(perms)) {
+    return `Remote MCP server "${tool.name}" is untrusted and may send data over the network. Trust it in settings to proceed.`
+  }
+  return `Remote MCP server "${tool.name}" is untrusted. Review and trust it in settings before connecting.`
+}
+
 const PERMISSION_DESCRIPTIONS: Record<ToolPermission, string> = {
   file_read: 'Read files from disk',
   file_write: 'Write/modify files on disk',
