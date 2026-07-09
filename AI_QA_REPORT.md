@@ -4,6 +4,54 @@
 
 ---
 
+## Post-Run Consolidation — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| Critical issue review | ✅ PASS — 0 open Critical Issues, 12/12 gates pass |
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (597 tests, 26 files) |
+| `npm run build` | ✅ PASS |
+| `npm run dev` (quick launch) | ✅ PASS — Vite dev server + Electron window |
+| Secret scan | ✅ PASS — only docs/tests mock references |
+| Circular dependencies | ✅ PASS — 0 across 137 files (madge) |
+
+### Last Run Summary
+
+| Feature | Status |
+|---------|--------|
+| Bolt-like Build Pipeline | ✅ Working (deterministic demo) |
+| Hero Landing Page & Calm Theme | ✅ Working |
+| Self-Audit System | ✅ Working |
+| Connector/MCP Presets | ✅ Working |
+| Social Connectors Hub | ✅ Safe placeholders |
+| LivePreview Push Sync | ✅ Working |
+| Keyboard Accessibility | ✅ Working |
+| Deep Repo Cleanup | ✅ 0 circular deps, 8 files removed |
+
+### Remaining Placeholders (All Known/Intentional)
+
+| Area | Status |
+|------|--------|
+| Cowork task execution | Placeholder (setTimeout) |
+| MCP live execution | Registry only |
+| Google Drive/Calendar OAuth | Setup contracts |
+| WhatsApp Business API | Setup contract |
+| Social OAuth/API flows | Setup contracts |
+| File attachment UI | Deferred |
+| Token count display | Not yet implemented |
+
+### Beta QA Readiness
+
+✅ **READY FOR BETA QA** — All 12 critical gates pass. Manual click-through by human tester is the only remaining gate.
+
+### Docs Created
+
+- `docs/POST_RUN_CONSOLIDATION.md` — comprehensive consolidation audit
+
+---
+
 ## Deep Repo Cleanup — 2026-07-09
 
 | Check | Result |
@@ -1175,8 +1223,7 @@ The Coding Agent Demo proves Aureon Desk can:
 
 ## Next Recommended Work
 
-1. **Prompt 5:** Desktop shell polish — custom topbar, window controls, drag region
-2. Add tool/MCP count badge to chat composer toolbar
-3. Suggestion chips on home empty state
-4. Recent chat cards on home empty state
-5. Add CI step for E2E in `.github/workflows/`
+1. **Device Inputs**: Safe camera, microphone, and screen capture detection with permission gates
+2. **AI Provider Generation**: Wire real provider-based code generation in the build pipeline (currently deterministic demo only)
+3. **First-Run Onboarding**: Welcome flow for new users setting up their first provider
+4. **Polish**: Token count display, prompt library composer integration, provider adapter coverage testing
