@@ -5,7 +5,7 @@ import type { ProviderAdapterInfo } from '../shared/types/provider'
 import type { AppSettings } from '../shared/types/settings'
 import type { AnalyzePromptInput, AnalyzePromptOutput } from '../shared/types/routing'
 import type { ImportedRepo, ImportedItem, ImportWarning, ImportResult, ImportRepoInput, ImportItemFilter } from '../shared/types/github'
-import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolExecuteInput, ToolExecuteResult, McpDiscoveryResult, McpPreset } from '../shared/types/tool'
+import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolExecuteInput, ToolExecuteResult, McpConnectResult, McpDiscoveryResult, McpPreset, McpToolExecuteResult } from '../shared/types/tool'
 import type { ProjectRow, NewProject, ProjectUpdate, FileTreeNode, ProjectContext, FileTreeOptions } from '../shared/types/project'
 import type { AppLogRow, LogFilter, DebugBundle } from '../shared/types/log'
 import type { StudioIntentInput, StudioOrchestrationResult, TaskCategoryInfo, CapabilityDefinition, AutonomyLevelInfo } from '../shared/types/studio-core'
@@ -250,23 +250,16 @@ const api = {
     ipcRenderer.invoke('tool:getNetworkRiskWarning', toolId),
 
   // MCP Lifecycle
-  mcpConnect: (serverId: string): Promise<{ success: boolean; error?: string }> =>
-    ipcRenderer.invoke('mcp:connect', serverId),
+  mcpConnect: (serverId: string, confirmed = false): Promise<McpConnectResult> =>
+    ipcRenderer.invoke('mcp:connect', serverId, confirmed),
   mcpDisconnect: (serverId: string): Promise<boolean> =>
     ipcRenderer.invoke('mcp:disconnect', serverId),
   mcpTestConnection: (serverId: string): Promise<{ name: string; version: string; capabilities: string[] } | null> =>
     ipcRenderer.invoke('mcp:testConnection', serverId),
   mcpDiscover: (serverId: string): Promise<McpDiscoveryResult | null> =>
     ipcRenderer.invoke('mcp:discover', serverId),
-  mcpExecute: (serverId: string, toolName: string, args: Record<string, unknown>): Promise<{
-    success: boolean
-    output: string
-    error: string | null
-    requiresConfirmation: boolean
-    safetyMessage: string
-    logId: string
-  }> =>
-    ipcRenderer.invoke('mcp:execute', serverId, toolName, args),
+  mcpExecute: (serverId: string, toolName: string, args: Record<string, unknown>, confirmed = false): Promise<McpToolExecuteResult> =>
+    ipcRenderer.invoke('mcp:execute', serverId, toolName, args, confirmed),
   mcpGetDiscoveryData: (serverId: string): Promise<McpDiscoveryResult | null> =>
     ipcRenderer.invoke('mcp:getDiscoveryData', serverId),
   mcpGetPresets: (): Promise<McpPreset[]> =>

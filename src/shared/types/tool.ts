@@ -45,6 +45,22 @@ export interface McpDiscoveryResult {
   serverVersion: string
 }
 
+export interface McpConnectResult {
+  success: boolean
+  error?: string
+  requiresConfirmation?: boolean
+  safetyMessage?: string
+}
+
+export interface McpToolExecuteResult {
+  success: boolean
+  output: string
+  error: string | null
+  requiresConfirmation: boolean
+  safetyMessage: string
+  logId: string
+}
+
 // MCP Presets
 export interface McpPreset {
   id: string

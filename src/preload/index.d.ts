@@ -104,18 +104,11 @@ export interface IpcApi {
   toolGetNetworkRiskWarning: (toolId: string) => Promise<string | null>
 
   // MCP Lifecycle
-  mcpConnect: (serverId: string) => Promise<{ success: boolean; error?: string }>
+  mcpConnect: (serverId: string, confirmed?: boolean) => Promise<import('../shared/types/tool').McpConnectResult>
   mcpDisconnect: (serverId: string) => Promise<boolean>
   mcpTestConnection: (serverId: string) => Promise<{ name: string; version: string; capabilities: string[] } | null>
   mcpDiscover: (serverId: string) => Promise<import('../shared/types/tool').McpDiscoveryResult | null>
-  mcpExecute: (serverId: string, toolName: string, args: Record<string, unknown>) => Promise<{
-    success: boolean
-    output: string
-    error: string | null
-    requiresConfirmation: boolean
-    safetyMessage: string
-    logId: string
-  }>
+  mcpExecute: (serverId: string, toolName: string, args: Record<string, unknown>, confirmed?: boolean) => Promise<import('../shared/types/tool').McpToolExecuteResult>
   mcpGetDiscoveryData: (serverId: string) => Promise<import('../shared/types/tool').McpDiscoveryResult | null>
   mcpGetPresets: () => Promise<import('../shared/types/tool').McpPreset[]>
   mcpRedactEnvVars: (envVars: Record<string, string>) => Promise<string>

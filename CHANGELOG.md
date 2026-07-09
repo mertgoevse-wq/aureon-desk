@@ -1,3 +1,26 @@
+## [0.9.73] - 2026-07-09
+
+### Fixed — MCP Connection and Confirmation Safety
+
+- MCP server connections now pass the same enabled/trusted/destructive-permission gate as tool execution before a stdio process or network transport is opened.
+- Untrusted and disabled MCP servers are blocked before connection; destructive but trusted servers now present a separate connection confirmation.
+- Confirmed MCP tool calls now carry an explicit confirmation flag through renderer, preload, IPC, and main process, so approval no longer loops back to another “Confirmation required” response.
+- Restricted SSE/HTTP MCP endpoints to HTTP(S) URLs and redacted MCP stderr before it reaches application logs.
+- Added six regression tests covering connection blocking, confirmation forwarding, URL validation, and stderr redaction.
+
+### Verified
+
+- `npm run verify:native` — PASS
+- `npm run typecheck` — PASS
+- `npm test` — PASS (768 tests, 30 files)
+- `npm run build` — PASS
+
+### Remaining Limits
+
+- A third-party MCP server was not connected during this change; the real-server flow still needs a user-configured server and a visible desktop check.
+
+---
+
 ## [0.9.72] - 2026-07-09
 
 ### Added — Full 5 File Operation Types in Build Pipeline

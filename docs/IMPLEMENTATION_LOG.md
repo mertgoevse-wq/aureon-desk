@@ -1,5 +1,38 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-09 — MCP Safety Regression Pass
+
+Branch: `main`
+Commit at start: `3b6e162` (real MCP execution MVP)
+
+### Session Purpose
+
+Review the newly added MCP execution path before adding more product surface, then close the discovered trust-boundary and confirmation-flow defects.
+
+### Fixed
+
+- MCP connections now call `checkToolSafety` before spawning a stdio command or opening an SSE/HTTP transport.
+- Disabled and untrusted servers are blocked before a transport starts; trusted destructive servers require a visible confirmation to connect.
+- Confirmed MCP tool calls now pass a typed `confirmed` flag across the renderer, preload bridge, IPC handler, and main service.
+- MCP endpoint URLs are limited to HTTP(S), and MCP stderr is redacted and length-limited before logging.
+
+### Tests and Verification
+
+| Command | Result |
+|---------|--------|
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS — 768 tests / 30 files |
+| `npm run build` | ✅ PASS |
+| `npx vitest run tests/unit/mcp-safety-contract.test.ts` | ✅ PASS — 6 tests |
+
+### Remaining Validation
+
+- A user-configured, third-party MCP server still needs a real Electron-window connection/discovery/execution test.
+- Desktop launch through the available visual automation channel was unavailable in this session, so this pass does not claim visual-click verification.
+
+---
+
 ## 2026-07-09 — NVIDIA NIM Support & Smart Model Routing
 
 Branch: `main`

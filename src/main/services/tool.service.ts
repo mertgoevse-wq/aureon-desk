@@ -9,7 +9,7 @@ import { redactSecrets } from './log-redacter'
 import type {
   ToolRow, NewTool, ToolPermission, ToolCallLog,
   McpDiscoveryResult, McpDiscoveredTool, McpDiscoveredResource, McpDiscoveredPrompt,
-  ConnectionStatus, TrustLevel, McpPreset,
+  ConnectionStatus, TrustLevel, McpPreset, McpConnectResult, McpToolExecuteResult,
 } from '../../shared/types/tool'
 
 /**
@@ -279,9 +279,39 @@ export const toolService = {
   // ---- MCP Lifecycle ----
 
   /** Connect to an MCP server and discover its capabilities */
-  async connectMcpServer(serverId: string): Promise<{ success: boolean; error?: string }> {
+  async connectMcpServer(serverId: string, confirmed = false): Promise<McpConnectResult> {
     const tool = this.getTool(serverId)
     if (!tool) return { success: false, error: 'Tool not found' }
+
+    const safetyCheck = checkToolSafety(serverId, { action: 'connect' })
+    if (!safetyCheck.allowed) {
+      const logId = logToolCall({
+        toolId: serverId,
+        toolName: `${tool.name}:connect`,
+        status: safetyCheck.reason === 'tool_disabled' ? 'blocked_disabled' : 'blocked_untrusted',
+        input: { action: 'connect' },
+        error: safetyCheck.message,
+      })
+      logger.warn(`Blocked MCP connection for ${tool.name} [${logId}]: ${safetyCheck.message}`)
+      return { success: false, error: safetyCheck.message, safetyMessage: safetyCheck.message }
+    }
+
+    if (safetyCheck.requiresConfirmation && !confirmed) {
+      const logId = logToolCall({
+        toolId: serverId,
+        toolName: `${tool.name}:connect`,
+        status: 'denied',
+        input: { action: 'connect' },
+        error: 'Awaiting user confirmation',
+      })
+      logger.info(`MCP connection awaiting confirmation for ${tool.name} [${logId}]`)
+      return {
+        success: false,
+        error: 'Confirmation required',
+        requiresConfirmation: true,
+        safetyMessage: safetyCheck.message,
+      }
+    }
 
     try {
       const config = JSON.parse(tool.config || '{}')
@@ -301,10 +331,10 @@ export const toolService = {
 
       this.updateConnectionStatus(serverId, 'connected')
       logger.info(`MCP server connected: ${tool.name}`)
-      return { success: true }
+      return { success: true, safetyMessage: safetyCheck.message }
     } catch (err) {
       this.updateConnectionStatus(serverId, 'error')
-      return { success: false, error: String(err) }
+      return { success: false, error: redactSecrets(String(err)) }
     }
   },
 
@@ -355,15 +385,9 @@ export const toolService = {
   async executeMcpTool(
     serverId: string,
     toolName: string,
-    args: Record<string, unknown>
-  ): Promise<{
-    success: boolean
-    output: string
-    error: string | null
-    requiresConfirmation: boolean
-    safetyMessage: string
-    logId: string
-  }> {
+    args: Record<string, unknown>,
+    confirmed = false
+  ): Promise<McpToolExecuteResult> {
     const tool = this.getTool(serverId)
     if (!tool) {
       return { success: false, output: '', error: 'Server not found', requiresConfirmation: false, safetyMessage: '', logId: '' }
@@ -371,7 +395,7 @@ export const toolService = {
 
     // Safety gate check
     const safetyCheck = checkToolSafety(serverId, args)
-    if (!safetyCheck.allowed && safetyCheck.reason !== 'tool_destructive') {
+    if (!safetyCheck.allowed) {
       const logId = logToolCall({
         toolId: serverId, toolName: `${tool.name}:${toolName}`,
         status: 'blocked_untrusted', input: args, error: safetyCheck.message
@@ -379,7 +403,7 @@ export const toolService = {
       return { success: false, output: '', error: safetyCheck.message, requiresConfirmation: false, safetyMessage: safetyCheck.message, logId }
     }
 
-    if (safetyCheck.requiresConfirmation) {
+    if (safetyCheck.requiresConfirmation && !confirmed) {
       const logId = logToolCall({
         toolId: serverId, toolName: `${tool.name}:${toolName}`,
         status: 'denied', input: args, error: 'Awaiting confirmation'
@@ -414,7 +438,7 @@ export const toolService = {
         toolId: serverId, toolName: `${tool.name}:${toolName}`,
         status: 'error', input: args, error: String(err)
       })
-      return { success: false, output: '', error: String(err), requiresConfirmation: false, safetyMessage: '', logId }
+      return { success: false, output: '', error: redactSecrets(String(err)), requiresConfirmation: false, safetyMessage: '', logId }
     }
   },
 

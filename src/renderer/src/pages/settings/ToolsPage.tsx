@@ -109,7 +109,11 @@ export function ToolsPage(): React.ReactElement {
   const [connecting, setConnecting] = useState<Record<string, boolean>>({})
   const [discovering, setDiscovering] = useState<Record<string, boolean>>({})
   const [mcpResults, setMcpResults] = useState<Record<string, { toolName: string; output: string; error: string | null; isError: boolean } | null>>({})
-  const [showConfirmModal, setShowConfirmModal] = useState<{ serverId: string; toolName: string; args: Record<string, unknown>; safetyMessage: string } | null>(null)
+  const [showConfirmModal, setShowConfirmModal] = useState<
+    | { action: 'connect'; serverId: string; safetyMessage: string }
+    | { action: 'execute'; serverId: string; toolName: string; args: Record<string, unknown>; safetyMessage: string }
+    | null
+  >(null)
   const [presets, setPresets] = useState<McpPreset[]>([])
   const [networkWarnings, setNetworkWarnings] = useState<Record<string, string | null>>({})
 
@@ -162,6 +166,8 @@ export function ToolsPage(): React.ReactElement {
       if (result.success) {
         showToast('success', 'MCP server connected')
         loadTools()
+      } else if (result.requiresConfirmation) {
+        setShowConfirmModal({ action: 'connect', serverId, safetyMessage: result.safetyMessage || result.error || 'Confirmation required' })
       } else {
         showToast('error', result.error || 'Connection failed')
       }
@@ -195,7 +201,7 @@ export function ToolsPage(): React.ReactElement {
     // Check if confirmation needed
     const safety = await api.toolCheckSafety(serverId, args)
     if (safety.requiresConfirmation) {
-      setShowConfirmModal({ serverId, toolName, args, safetyMessage: safety.message })
+      setShowConfirmModal({ action: 'execute', serverId, toolName, args, safetyMessage: safety.message })
       return
     }
 
@@ -211,19 +217,30 @@ export function ToolsPage(): React.ReactElement {
     } catch (e) { showToast('error', String(e)) }
   }, [api])
 
-  const handleConfirmedExecute = useCallback(async () => {
+  const handleConfirmedMcpAction = useCallback(async () => {
     if (!showConfirmModal) return
-    const { serverId, toolName, args } = showConfirmModal
+    const confirmation = showConfirmModal
     setShowConfirmModal(null)
     try {
-      const result = await api.mcpExecute(serverId, toolName, args)
-      setMcpResults(prev => ({ ...prev, [serverId]: { toolName, output: result.output, error: result.error, isError: !result.success } }))
+      if (confirmation.action === 'connect') {
+        const result = await api.mcpConnect(confirmation.serverId, true)
+        if (result.success) {
+          showToast('success', 'MCP server connected (confirmed)')
+          loadTools()
+        } else {
+          showToast('warning', result.error || 'Connection failed')
+        }
+        return
+      }
+
+      const result = await api.mcpExecute(confirmation.serverId, confirmation.toolName, confirmation.args, true)
+      setMcpResults(prev => ({ ...prev, [confirmation.serverId]: { toolName: confirmation.toolName, output: result.output, error: result.error, isError: !result.success } }))
       if (result.success) {
-        showToast('success', `Tool "${toolName}" executed (confirmed)`)
+        showToast('success', `Tool "${confirmation.toolName}" executed (confirmed)`)
       } else {
         showToast('warning', result.error || 'Execution failed')
       }
-      loadLogs(serverId)
+      loadLogs(confirmation.serverId)
     } catch (e) { showToast('error', String(e)) }
   }, [showConfirmModal, api])
 
@@ -960,7 +977,7 @@ export function ToolsPage(): React.ReactElement {
       <Modal
         isOpen={!!showConfirmModal}
         onClose={() => setShowConfirmModal(null)}
-        title="Confirm Tool Execution"
+        title={showConfirmModal?.action === 'connect' ? 'Confirm MCP Server Connection' : 'Confirm Tool Execution'}
         size="sm"
       >
         <div className="space-y-3">
@@ -970,8 +987,10 @@ export function ToolsPage(): React.ReactElement {
           </div>
 
           <div className="p-3 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/60">
-            <p className="text-xs font-semibold text-[var(--ivory-text)]">Tool: {showConfirmModal?.toolName}</p>
-            {showConfirmModal?.args && Object.keys(showConfirmModal.args).length > 0 && (
+            <p className="text-xs font-semibold text-[var(--ivory-text)]">
+              {showConfirmModal?.action === 'connect' ? 'Action: Connect MCP server' : `Tool: ${showConfirmModal?.toolName}`}
+            </p>
+            {showConfirmModal?.action === 'execute' && Object.keys(showConfirmModal.args).length > 0 && (
               <pre className="text-[11px] text-[var(--ivory-text-3)] mt-1 font-mono">
                 {JSON.stringify(showConfirmModal.args, null, 2)}
               </pre>
@@ -982,8 +1001,8 @@ export function ToolsPage(): React.ReactElement {
             <Button variant="secondary" onClick={() => setShowConfirmModal(null)} className="flex-1">
               Cancel
             </Button>
-            <Button onClick={handleConfirmedExecute} className="flex-1">
-              <CheckCircle size={14} /> Confirm & Execute
+            <Button onClick={handleConfirmedMcpAction} className="flex-1">
+              <CheckCircle size={14} /> {showConfirmModal?.action === 'connect' ? 'Confirm & Connect' : 'Confirm & Execute'}
             </Button>
           </div>
         </div>

@@ -23,12 +23,12 @@ export function registerToolIPC(): void {
   })
 
   // MCP Lifecycle
-  ipcMain.handle('mcp:connect', async (_e, serverId: string) => toolService.connectMcpServer(serverId))
+  ipcMain.handle('mcp:connect', async (_e, serverId: string, confirmed = false) => toolService.connectMcpServer(serverId, confirmed))
   ipcMain.handle('mcp:disconnect', async (_e, serverId: string) => toolService.disconnectMcpServer(serverId))
   ipcMain.handle('mcp:testConnection', async (_e, serverId: string) => toolService.testMcpConnection(serverId))
   ipcMain.handle('mcp:discover', async (_e, serverId: string) => toolService.discoverMcpCapabilities(serverId))
-  ipcMain.handle('mcp:execute', async (_e, serverId: string, toolName: string, args: Record<string, unknown>) =>
-    toolService.executeMcpTool(serverId, toolName, args)
+  ipcMain.handle('mcp:execute', async (_e, serverId: string, toolName: string, args: Record<string, unknown>, confirmed = false) =>
+    toolService.executeMcpTool(serverId, toolName, args, confirmed)
   )
   ipcMain.handle('mcp:getDiscoveryData', (_e, serverId: string) => toolService.getDiscoveryData(serverId))
   ipcMain.handle('mcp:getPresets', () => toolService.getPresets())

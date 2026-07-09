@@ -1,6 +1,6 @@
 # Aureon Desk — Issues Register
 
-> **Last updated:** 2026-07-09 — Core Contract Enforcement
+> **Last updated:** 2026-07-09 — MCP safety regression pass
 > **Branch:** `main`
 
 ---
@@ -27,7 +27,7 @@
 | 10 | Code generation creates files/preview/output | ✅ PASS |
 | 11 | Provider settings accept typing/paste/save/test | ✅ PASS (E2E verified) |
 | 12 | Model/provider label matches actual route | ✅ PASS (canonical resolver) |
-| 13 | MCP/tools NOT auto-run, labeled mock/real | ✅ PASS (safety gate) |
+| 13 | MCP/tools NOT auto-run, labeled mock/real | ✅ PASS — connection and execution now enforce enabled/trusted/confirmation gates |
 | 14 | Dropdowns/popovers render correctly, no overlap | ✅ PASS (Modal/Drawer focus traps) |
 | 15 | Window controls correct position | ✅ PASS (native Windows frame) |
 | 16 | Hero landing/home screen present and working | ✅ PASS |
@@ -60,7 +60,7 @@
 | ID | Area | Issue | Evidence | Root Cause | Status | Fixed In Commit |
 |----|------|-------|----------|------------|--------|-----------------|
 | M-01 | Cowork | Task execution is simulated with `setTimeout` | `CoworkPage.tsx` — explicit placeholder labeling | Intentional beta design — real agent execution deferred | ✅ KNOWN | — |
-| M-02 | MCP Tools | Tool execution not wired to live calls | `ToolsPage.tsx` — registry only, no live MCP | Intentional — safety gate in place, execution infra deferred | ✅ KNOWN | — |
+| M-02 | MCP Tools | No real third-party MCP server is configured for end-to-end validation | MCP lifecycle and execution now exist; no user server was connected in this pass | Requires a user-configured server and visible desktop test | OPEN | — |
 | M-03 | Connectors | Google Drive and Calendar are placeholders | `connectors.ts` — "Placeholder — full implementation planned" | Intentional — OAuth flow not yet implemented | ✅ KNOWN | — |
 | M-04 | Settings | Extensions and Security pages are placeholders | `SettingsPlaceholderPage.tsx` — shell pages | Intentional — features deferred for later releases | ✅ KNOWN | — |
 | M-05 | Prompt Library | "Save current composer text as a prompt" is placeholder | `PromptLibrary.tsx:147` — "composer integration comes later" | Not yet wired to chat composer | OPEN | — |
@@ -90,7 +90,7 @@
 | Studio → LivePreview pipeline | If sessionStorage keys change, auto-start breaks | `live-preview.test.ts` contract tests + manual: Build App wizard → Code mode → preview renders |
 | Provider routing | If model resolver changes, mislabeled providers | `chat-completion.test.ts` routing tests + manual: check model label in chat header |
 | Log redaction | If new log call sites added without redaction | `log-redacter.ts` 9-tier patterns + secret scan |
-| MCP safety gate | If new tools bypass safety check | `tool-safety-gate.ts` + `tool-manager.test.ts` |
+| MCP safety gate | If new transports or confirmation paths bypass safety checks | `mcp-safety-contract.test.ts` + real-server manual test |
 | Hero gradient | If tokens.css changes break radial gradient | Manual: check hero pages (Chat, Studio, Vibe Coding) |
 
 ---

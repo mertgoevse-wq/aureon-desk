@@ -4,6 +4,23 @@
 
 ---
 
+## MCP Safety Regression Pass — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| Native `better-sqlite3` verification | ✅ PASS |
+| Main + renderer typecheck | ✅ PASS |
+| Full unit suite | ✅ PASS — 768 tests / 30 files |
+| Production build | ✅ PASS |
+| MCP connection gate contract | ✅ PASS — untrusted/disabled blocked before transport starts |
+| MCP confirmation forwarding | ✅ PASS — confirmed tool calls reach the execution path once |
+| MCP endpoint validation | ✅ PASS — HTTP(S) only |
+| MCP stderr redaction | ✅ PASS — secret-shaped values redacted before logging |
+
+**Not performed:** a live connection to an external MCP server or desktop-window click-through. Those require a configured server and an available visible desktop automation channel.
+
+---
+
 ## Live Human QA — 2026-07-09
 
 | Check | Result |

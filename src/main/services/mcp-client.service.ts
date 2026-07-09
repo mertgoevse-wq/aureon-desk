@@ -3,6 +3,7 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js'
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import { logger } from '../utils/logger'
+import { redactSecrets } from './log-redacter'
 import type {
   McpDiscoveredTool,
   McpDiscoveredResource,
@@ -31,6 +32,25 @@ function classifyRisk(name: string, description: string): McpDiscoveredTool['ris
     return 'read_only'
   }
   return 'safe_read'
+}
+
+export function validateMcpServerUrl(rawUrl: string): URL {
+  let url: URL
+  try {
+    url = new URL(rawUrl)
+  } catch {
+    throw new Error('MCP server URL must be a valid HTTP or HTTPS URL')
+  }
+
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new Error('MCP server URL must use HTTP or HTTPS')
+  }
+
+  return url
+}
+
+export function sanitizeMcpStderr(value: string): string {
+  return redactSecrets(value).slice(0, 2_000)
 }
 
 export interface McpClientSession {
@@ -72,7 +92,7 @@ export const mcpClientService = {
     // Handle stderr for logging
     if (transport.stderr) {
       transport.stderr.on('data', (data: Buffer) => {
-        logger.info(`[MCP stderr:${serverId}] ${data.toString().trim()}`)
+        logger.info(`[MCP stderr:${serverId}] ${sanitizeMcpStderr(data.toString().trim())}`)
       })
     }
 
@@ -129,7 +149,7 @@ export const mcpClientService = {
       await this.disconnect(serverId)
     }
 
-    const transport = new SSEClientTransport(new URL(url))
+    const transport = new SSEClientTransport(validateMcpServerUrl(url))
 
     const client = new Client(
       { name: 'aureon-desk', version: '1.0.0' },

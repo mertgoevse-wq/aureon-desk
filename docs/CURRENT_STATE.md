@@ -1,9 +1,9 @@
 # Aureon Desk — Current State
 
-> **Last updated:** 2026-07-08 13:56  
-> **Branch:** main  
-> **Latest commit:** `44323f3 Enforce provider model routing consistency`  
-> **Working tree:** `.gitignore` modified, `docs/IMPLEMENTATION_LOG.md` untracked (both intentional)
+> **Last updated:** 2026-07-09
+> **Branch:** main
+> **Latest verified baseline:** `3b6e162 feat: real MCP execution MVP with safety gates, presets, and discovery`
+> **MCP safety hardening:** documented in CHANGELOG 0.9.73
 
 ---
 
@@ -34,7 +34,7 @@
 - **System Prompts**: create/edit/delete system prompt profiles
 - **Appearance**: theme/font settings (placeholder toggles)
 - **Projects**: create/manage projects with instructions and file path
-- **Tools & MCP**: tool registry management
+- **Tools & MCP**: registry, explicit trust/enable state, real stdio/SSE connection lifecycle, discovery, redacted logs, and per-action confirmation for destructive permissions
 - **GitHub Imports**: repo clone, parse, safety scan, approve items
 - **Logs**: structured app log viewer with export/debug bundle
 - **Developer**: developer settings (placeholder)
@@ -78,6 +78,7 @@
 | Cowork workflow queue | Placeholder (no real task execution) |
 | Browser/Computer Use | Off — placeholder labels only |
 | Capabilities settings | Placeholder page |
+| External MCP integration | Connection/discovery/execution infrastructure exists, but a configured third-party server still needs visible end-to-end validation |
 | Privacy & Security settings | Placeholder page |
 | Extensions | Placeholder page |
 | Dark mode / theme toggle | UI exists, not wired |
