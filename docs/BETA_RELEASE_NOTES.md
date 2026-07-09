@@ -1,7 +1,7 @@
 # Aureon Desk — Private Beta Release Notes
 
-**Version:** 0.9.62  
-**Commit:** `63beec9`  
+**Version:** 0.9.73  
+**Commit:** `0295c4f`  
 **Date:** 2026-07-09  
 **Status:** Private Beta — Not for public distribution
 
@@ -38,14 +38,17 @@
 | Custom OpenAI-compatible providers | ✅ |
 | System prompt profiles | ✅ |
 | Prompt library with tags/favorites | ✅ |
-| Studio — Build App wizard | ✅ |
+| Studio — Build App wizard with model routing | ✅ |
 | Studio — Code/Connect/Automate cards | ✅ |
+| Studio → Code Mode pipeline (9-step flow) | ✅ |
 | Vibe Coding — project types + templates | ✅ |
 | Vibe Coding — guided builder | ✅ |
 | LivePreview — HTML sandbox previews | ✅ |
 | LivePreview — Coding Demo (counter app) | ✅ |
-| LivePreview — Vite+React previews | ✅ |
-| Code Mode — project explorer + iframe | ✅ |
+| LivePreview — deterministic demo (no API key needed) | ✅ |
+| LivePreview — AI code generation (with provider) | ✅ |
+| LivePreview — streaming code preview | ✅ |
+| Code Mode — Code/Files/Diff/Plan tabs | ✅ |
 | MCP Tools manager (master-detail) | ✅ |
 | Provider Test Center | ✅ |
 | GitHub Star List imports | ✅ |

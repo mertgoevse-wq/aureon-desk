@@ -490,6 +490,14 @@
 
 # Changelog
 
+## [0.9.73] - 2026-07-09 — Private Beta Release
+
+### Beta Build Artifacts
+- **Installer:** `AureonDesk-Setup-0.9.0-x64.exe` (124 MB)
+- **Portable:** `AureonDesk-Portable-0.9.0-x64.exe` (124 MB)
+- **No-Install ZIP:** `Aureon-Desk-Beta-No-Install.zip` (175 MB)
+- **Beta Folder:** `C:\Users\mertg\Desktop\Aureon-Desk-Beta`
+
 ## [0.9.73] - 2026-07-09
 
 ### Core Contract Enforcement — Studio to LivePreview
