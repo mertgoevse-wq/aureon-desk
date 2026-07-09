@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Settings as SettingsIcon, ShieldCheck } from 'lucide-react'
 import { SettingsSection, SettingsRow, Toggle } from '../../components/settings/SettingsComponents'
+import { Select } from '../../components/shared/Select'
 
 export function GeneralSettingsPage(): React.ReactElement {
   const [startOnBoot, setStartOnBoot] = useState(false)
@@ -39,16 +40,16 @@ export function GeneralSettingsPage(): React.ReactElement {
           description="Choose which view is shown when Aureon Desk starts."
           dataTestId="row-default-mode"
         >
-          <select
+          <Select
             value={defaultMode}
-            onChange={(e) => setDefaultMode(e.target.value)}
-            className="px-2.5 py-1.5 text-xs rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)] font-semibold cursor-pointer outline-none focus:border-[var(--ivory-accent)]"
+            onChange={setDefaultMode}
+            options={[
+              { value: 'chat', label: 'Chat Mode' },
+              { value: 'cowork', label: 'Cowork Mode' },
+              { value: 'code', label: 'Code Mode' }
+            ]}
             data-testid="select-default-mode"
-          >
-            <option value="chat">Chat Mode</option>
-            <option value="cowork">Cowork Mode</option>
-            <option value="code">Code Mode</option>
-          </select>
+          />
         </SettingsRow>
       </SettingsSection>
 
@@ -67,16 +68,16 @@ export function GeneralSettingsPage(): React.ReactElement {
           description="Select between sleek dark options and Aureon's premium custom ivory workspace theme."
           dataTestId="row-theme"
         >
-          <select
+          <Select
             value={themeMode}
-            onChange={(e) => setThemeMode(e.target.value)}
-            className="px-2.5 py-1.5 text-xs rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)] font-semibold cursor-pointer outline-none focus:border-[var(--ivory-accent)]"
+            onChange={setThemeMode}
+            options={[
+              { value: 'ivory', label: 'Calm Ivory Theme' },
+              { value: 'light', label: 'Standard Light' },
+              { value: 'dark', label: 'Sleek Dark Mode' }
+            ]}
             data-testid="select-theme"
-          >
-            <option value="ivory">Calm Ivory Theme</option>
-            <option value="light">Standard Light</option>
-            <option value="dark">Sleek Dark Mode</option>
-          </select>
+          />
         </SettingsRow>
       </SettingsSection>
 

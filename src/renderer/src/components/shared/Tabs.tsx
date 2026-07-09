@@ -17,6 +17,7 @@ export function Tabs({ tabs, activeTab, onChange }: TabsProps): React.ReactEleme
     <div className="flex rounded-[var(--radius-md)] bg-[var(--ivory-surface)] p-0.5" role="tablist">
       {tabs.map(tab => (
         <button
+          type="button"
           key={tab.id}
           role="tab"
           aria-selected={activeTab === tab.id}

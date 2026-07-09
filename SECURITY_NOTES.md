@@ -270,6 +270,18 @@ Tasks transition through `Draft` ➔ `Ready` ➔ `Running` ➔ `Waiting for appr
 4. **No 2FA/MFA**: No multi-factor auth for provider keys. Relies on OS-level DPAPI.
 5. **Local DB encryption**: SQLite database file is not encrypted at rest. Relies on file system permissions.
 
+## Beta Clean Release
+
+Before distributing builds, run through the full checklist at [`docs/BETA_CLEAN_RELEASE_CHECKLIST.md`](./BETA_CLEAN_RELEASE_CHECKLIST.md).
+
+Key points:
+- Zero real API keys in source (verified by `git grep`)
+- `.gitignore` excludes all local data, logs, databases, credentials, and test artifacts
+- `electron-builder.yml` strips source, tests, docs, and dev config from packaged builds
+- First-run state has no chats, no provider keys, and no connected accounts
+- Log redaction covers all 9 key/token/secret patterns before any DB or file write
+- PowerShell cleanup commands provided for wiping local app data before distribution
+
 ## Recommendations for Production
 
 1. Code-sign the Windows installer with an EV certificate

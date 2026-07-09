@@ -9,7 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<string, string> = {
   primary: 'bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-hover)] active:scale-[0.98] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)]',
-  secondary: 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] border border-[var(--ivory-border)] hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-border-2)] shadow-[var(--shadow-xs)]',
+  secondary: 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] border border-[var(--ivory-border)]/60 hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-bronze)]/30 hover:text-[var(--ivory-graphite)] shadow-[var(--shadow-xs)]',
   ghost: 'bg-transparent text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)] hover:text-[var(--ivory-text)]',
   danger: 'bg-[var(--ivory-error)] text-white hover:opacity-90 active:scale-[0.98] shadow-[var(--shadow-sm)]'
 }
@@ -33,6 +33,7 @@ export function Button({
 
   return (
     <button
+      type="button"
       className={`inline-flex items-center justify-center rounded-[var(--radius-lg)] 
         font-medium transition-all duration-[var(--transition-fast)]
         whitespace-nowrap

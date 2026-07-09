@@ -48,6 +48,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           )}
           <div className="flex gap-3">
             <button
+              type="button"
               onClick={this.handleReset}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-md)] bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-hover)] text-sm font-medium transition-colors"
             >
@@ -55,6 +56,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               Try Again
             </button>
             <button
+              type="button"
               onClick={() => window.location.reload()}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-md)] bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface-2)] border border-[var(--ivory-border)] text-sm font-medium transition-colors"
             >

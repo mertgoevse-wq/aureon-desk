@@ -162,7 +162,7 @@ export function PromptLibrary(): React.ReactElement {
             Imported {importResult.imported} prompt{importResult.imported !== 1 ? 's' : ''}.
             {importResult.errors.length > 0 && ` ${importResult.errors.length} error(s).`}
           </span>
-          <button onClick={() => setImportResult(null)}><X size={14} /></button>
+          <button type="button" onClick={() => setImportResult(null)} aria-label="Dismiss import result"><X size={14} /></button>
         </div>
       )}
 
@@ -213,6 +213,7 @@ export function PromptLibrary(): React.ReactElement {
           />
           {searchQuery && (
             <button
+              type="button"
               onClick={() => setSearchQuery('')}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]"
             >
@@ -227,6 +228,7 @@ export function PromptLibrary(): React.ReactElement {
 
           {/* Favorites toggle */}
           <button
+            type="button"
             onClick={toggleFavoritesOnly}
             className={`px-2 py-0.5 text-[11px] rounded-[var(--radius-sm)] transition-colors flex items-center gap-1
               ${favoritesOnly
@@ -239,6 +241,7 @@ export function PromptLibrary(): React.ReactElement {
 
           {allTags.map(tag => (
             <button
+              type="button"
               key={tag}
               onClick={() => toggleTag(tag)}
               className={`px-2 py-0.5 text-[11px] rounded-[var(--radius-sm)] transition-colors
@@ -251,6 +254,7 @@ export function PromptLibrary(): React.ReactElement {
           ))}
           {allCategories.map(cat => (
             <button
+              type="button"
               key={cat}
               onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
               className={`px-2 py-0.5 text-[11px] rounded-[var(--radius-sm)] transition-colors
@@ -263,6 +267,7 @@ export function PromptLibrary(): React.ReactElement {
           ))}
           {hasFilters && (
             <button
+              type="button"
               onClick={clearFilters}
               className="px-2 py-0.5 text-[11px] text-[var(--ivory-error)] hover:underline"
             >

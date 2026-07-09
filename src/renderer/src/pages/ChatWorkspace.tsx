@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown,
   Sparkles, SlidersHorizontal, Clock3, AlertTriangle,
-  BookOpen, Zap
+  BookOpen, Zap, Monitor, KeyRound, Package, Bug
 } from 'lucide-react'
 import type { SystemPromptRow } from '@shared/types/prompt'
 import type { ChatListItem } from '@shared/types/chat'
@@ -24,24 +24,39 @@ interface ModelOption {
 
 const STARTER_PROMPTS = [
   {
-    label: 'Plan a feature',
-    icon: <BookOpen size={14} />,
-    prompt: 'Help me plan the next feature for this project. Start by asking for any missing context, then propose a clear implementation plan.'
+    label: 'Build counter app',
+    icon: <Monitor size={14} />,
+    prompt: 'Build a small counter app with increment, decrement, and reset buttons. Use a single HTML file with clean ivory styling and smooth animations. I want to preview it live.'
   },
   {
-    label: 'Review code',
-    icon: <Wrench size={14} />,
-    prompt: 'Review the current code I provide for correctness, security, maintainability, and missing tests. Lead with concrete findings.'
+    label: 'Fix layout bug',
+    icon: <Bug size={14} />,
+    prompt: 'I have a layout issue in my app. Help me diagnose what might be causing it. Ask me questions about what I see, then propose a step-by-step fix.'
   },
   {
-    label: 'Debug an error',
+    label: 'Improve my UI',
+    icon: <Sparkles size={14} />,
+    prompt: 'Help me improve the visual design of my app. Make it look more professional with better spacing, typography, and subtle animations. Keep the calm ivory theme.'
+  },
+  {
+    label: 'Connect OpenRouter',
+    icon: <KeyRound size={14} />,
+    prompt: 'Help me set up OpenRouter as my AI provider. Guide me through getting an API key and configuring it in Aureon Desk settings.'
+  },
+  {
+    label: 'Create a preview',
+    icon: <Monitor size={14} />,
+    prompt: 'Build a small self-contained app for me to preview live. Keep it simple — a single HTML page with clean UI, warm ivory colors, and rounded corners.'
+  },
+  {
+    label: 'Explain this error',
     icon: <AlertTriangle size={14} />,
-    prompt: "I'm encountering an error. Help me debug it by explaining the root cause and proposing a step-by-step fix."
+    prompt: 'I am encountering an error. Can you explain what it means in simple terms and show me how to fix it step by step?\n\n```\n[paste your error here]\n```'
   },
   {
-    label: 'Build a preview',
-    icon: <FolderOpen size={14} />,
-    prompt: 'Build a small local preview for this idea. Keep it self-contained, polished, and easy to test.'
+    label: 'Package Windows',
+    icon: <Package size={14} />,
+    prompt: 'I want to package my desktop app for Windows. Help me set up electron-builder, create an installer, and test the build. Do not hardcode any secrets or API keys.'
   }
 ]
 
@@ -243,6 +258,7 @@ export function ChatWorkspace(): React.ReactElement {
                         <div className="fixed inset-0 z-10" onClick={() => setHomePromptsOpen(false)} />
                         <div className="absolute left-0 mt-1.5 w-64 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] p-1.5 shadow-[var(--shadow-lg)] z-20 max-h-72 overflow-y-auto text-left">
                           <button
+                            type="button"
                             onClick={() => { setHomePromptId(null); setHomePromptsOpen(false) }}
                             className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2 cursor-pointer
                               ${!homePromptId ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
@@ -251,6 +267,7 @@ export function ChatWorkspace(): React.ReactElement {
                           </button>
                           {systemPrompts.map(p => (
                             <button
+                              type="button"
                               key={p.id}
                               onClick={() => { setHomePromptId(p.id); setHomePromptsOpen(false) }}
                               className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2 cursor-pointer
@@ -281,6 +298,7 @@ export function ChatWorkspace(): React.ReactElement {
                         <div className="fixed inset-0 z-10" onClick={() => setHomeProjectsOpen(false)} />
                         <div className="absolute left-0 mt-1.5 w-64 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] p-1.5 shadow-[var(--shadow-lg)] z-20 max-h-72 overflow-y-auto text-left">
                           <button
+                            type="button"
                             onClick={() => { setHomeProjectId(null); setHomeProjectsOpen(false) }}
                             className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2 cursor-pointer
                               ${!homeProjectId ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
@@ -289,6 +307,7 @@ export function ChatWorkspace(): React.ReactElement {
                           </button>
                           {projects.map(p => (
                             <button
+                              type="button"
                               key={p.id}
                               onClick={() => { setHomeProjectId(p.id); setHomeProjectsOpen(false) }}
                               className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2 cursor-pointer
@@ -335,29 +354,37 @@ export function ChatWorkspace(): React.ReactElement {
             {/* Suggestions & Recent Chats Row — Centered & Quiet */}
             <div className="w-full max-w-xl text-left space-y-6">
               {/* Suggestion pills */}
-              <div className="flex flex-wrap items-center justify-center gap-2">
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
                 {STARTER_PROMPTS.slice(0, 2).map((item, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => handleHomeSend(item.prompt)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/70 hover:border-[var(--ivory-accent)]/30 rounded-full text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-all cursor-pointer shadow-[var(--shadow-xs)] select-none"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/50 hover:border-[var(--ivory-accent)]/25 rounded-full text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-all cursor-pointer shadow-none select-none"
                   >
                     {item.icon}
                     <span>{item.label}</span>
                   </button>
                 ))}
+                <button
+                  type="button"
+                  onClick={() => navigate('/vibe')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 rounded-full text-[11px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] transition-all cursor-pointer select-none"
+                >
+                  <span>More…</span>
+                </button>
               </div>
 
               {/* Recent chats list */}
-              <div className="rounded-[22px] border border-[var(--ivory-border)]/65 bg-[var(--ivory-surface)]/70 p-4 shadow-[var(--shadow-xs)]">
-                <div className="flex items-center justify-between px-1 mb-2.5">
-                  <div className="flex items-center gap-2">
-                    <Clock3 size={12} className="text-[var(--ivory-accent)]" />
-                    <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--ivory-text-3)] font-body">Recent chats</p>
+              <div className="mt-3">
+                <div className="flex items-center justify-between px-1 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <Clock3 size={11} className="text-[var(--ivory-text-3)]" />
+                    <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--ivory-text-3)] font-body">Recent</p>
                   </div>
                   {useChatStore.getState().chats.length > 0 && (
                     <button
+                      type="button"
                       onClick={() => {
                         if (useUIStore.getState().sidebarCollapsed) {
                           useUIStore.getState().toggleSidebar()
@@ -418,6 +445,7 @@ export function ChatWorkspace(): React.ReactElement {
           {/* System Prompt Profile Selector */}
           <div className="relative">
             <button
+              type="button"
               onClick={() => { setPromptsOpen(!promptsOpen); api.systemPromptList(false).then(setSystemPrompts) }}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full
                 bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)]
@@ -435,6 +463,7 @@ export function ChatWorkspace(): React.ReactElement {
                 <div className="fixed inset-0 z-10" onClick={() => setPromptsOpen(false)} />
                 <div className="absolute top-full right-0 mt-2 w-72 z-20 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-[18px] shadow-[var(--shadow-xl)] max-h-72 overflow-y-auto p-1 space-y-0.5">
                   <button
+                    type="button"
                     onClick={() => { handlePromptChange(null); setPromptsOpen(false) }}
                     className={`w-[calc(100%-8px)] mx-1 text-left px-3 py-2 text-xs rounded-xl transition-colors cursor-pointer
                       ${!selectedPromptId ? 'bg-[var(--ivory-surface)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-3)] hover:bg-[var(--ivory-surface)]'}`}
@@ -445,6 +474,7 @@ export function ChatWorkspace(): React.ReactElement {
                     const isSelected = prompt.id === selectedPromptId
                     return (
                       <button
+                        type="button"
                         key={prompt.id}
                         onClick={() => { handlePromptChange(prompt.id); setPromptsOpen(false) }}
                         className={`w-[calc(100%-8px)] mx-1 text-left px-3 py-2 text-xs rounded-xl transition-colors cursor-pointer

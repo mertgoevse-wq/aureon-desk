@@ -2,6 +2,74 @@
 
 Last updated: 2026-07-09
 
+## Final UI Beauty & Declutter Pass (2026-07-09)
+
+Decision: Reduce the visual weight of the brand terracotta accent across non-primary elements. All secondary card icons (task cards in Studio, project type/quick action/templates/guided builder icons in VibeCoding) now use neutral ivory-surface backgrounds with graphite text instead of accent-light terracotta. Only hero icons and primary CTAs ("Start building" button, hero section marks) retain the brand terracotta. The hero radial gradient was softened further (opacity 0.50 → 0.28).
+
+This reduces ~15 orange-tinted icon containers across the two busiest pages, making the accent feel intentional and premium rather than overused. The Chat home was further decluttered with fewer suggestion pills (3→2), a muted "More…" button without icon, and a quieter Recent Chats section.
+
+Key changes:
+- tokens.css: Hero radial gradient softened to 0.28 opacity
+- Studio.tsx: 4 main task card icons → neutral ivory-surface
+- VibeCoding.tsx: project type icons, quick action icons, All templates icons, guided builder icons → neutral ivory-surface
+- ChatWorkspace.tsx: 2 starter pills, muted "More…" button, borderless Recent section
+
+## Hero Visual Polish Pass (2026-07-09)
+
+Decision: Apply a final visual polish pass focusing on reducing visual noise, improving typography, and making the Right Inspector quieter. Introduce a secondary bronze accent (#8B5E3C) to reduce orange overload while keeping the primary terracotta for CTAs only.
+
+Key changes:
+- Design tokens: Added bronze/copper/graphite color tokens for a richer, more nuanced palette
+- Right Inspector: Smaller section headers (10px uppercase), muted icons, subtle card containers
+- Sidebar: New Chat button uses bronze tones instead of orange
+- Button secondary: Bronze border hover instead of orange accent
+- Studio Drawer Wizard: All sections got more breathing room (py-2.5, larger text)
+- Vibe Coding: Project type card action buttons made subtler
+- LivePreview: File explorer and safety cards toned down
+
+## Studio & Vibe Coding Build Flow Polish (2026-07-09)
+
+Decision: Make the primary user flows more discoverable and beginner-friendly. Replace generic chat suggestions with targeted, actionable prompts. Add explicit Chat and Preview action buttons on Vibe Coding cards so users immediately understand what they can do.
+
+Chat Home:
+- 7 targeted starter prompts replace the 4 generic ones — each maps to a real workflow (Build counter app, Fix layout bug, Improve my UI, Connect OpenRouter, Create a preview, Explain this error, Package Windows)
+- Show 3 suggestion pills with a "More ideas" button linking to `/vibe`
+
+Studio:
+- Heading "Start building" is more direct and actionable
+- Composer placeholder includes concrete examples
+
+Vibe Coding:
+- Project type cards now have Chat and Preview action buttons below each card, making the action options explicit rather than hidden behind hover states
+- Preview button sets sessionStorage for Code mode autostart
+
+## Hero Theme Refinement & Visual De-Cluttering (2026-07-09)
+
+Decision: Refine the hero theme to be even cleaner — larger heading, shorter subtitle, simplified composer, compact cards, and collapsed inspector by default. The previous implementation was directionally correct but still felt too busy with duplicate safety notices, prominent autonomy selectors, and card-specific metadata cluttering the overview.
+
+Studio Overview:
+- Hero heading changed to "What do you want to create?" — more open and inviting
+- Primary composer simplified to a single textarea + Build button (platform/style selectors removed)
+- 4 main cards made borderless with icon-only active states, arrow hints, no risk badges or mode labels
+- Autonomy selector collapsed from 4-column grid to compact inline icon row with tooltip labels
+- Removed duplicate inline safety notice (SafetyNotice component still renders above cards)
+- Removed dead code: useEffect for inspector collapse, unused useUIStore/Info imports
+
+Sidebar:
+- Workspace shortcut icons now borderless — active state is background + accent color only
+- Bottom profile made quieter with smaller icons, muted colors, reduced padding
+- Section dividers thinned, brand header compacted
+
+Inspector:
+- Default changed from open to collapsed (uiStore `inspectorOpen: false`)
+- Studio no longer needs mount-time useEffect to close it
+
+Chat Home:
+- Suggestion pills and recents section reduced in visual weight (fewer shadows, subtler borders)
+
+Design Tokens:
+- Hero radial gradient changed from circle to ellipse shape with smoother fade
+
 ## Calm Ivory Hero Theme & Simplified Overview (2026-07-09)
 
 Decision: Simplify the workspace layout, reduce card counts, center the chat input, and implement collapsible sections for file trees and logs to achieve a professional desktop look.

@@ -156,6 +156,7 @@ export function ChatPanel(): React.ReactElement {
 
         <div className="space-y-2">
           <button
+            type="button"
             onClick={() => handleQuickSetup('openrouter')}
             className="w-full flex items-center justify-between px-4 py-2.5 text-xs rounded-xl bg-[var(--ivory-surface)] hover:bg-[var(--ivory-surface-hover)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-colors cursor-pointer"
             data-testid="setup-openrouter-btn"
@@ -164,6 +165,7 @@ export function ChatPanel(): React.ReactElement {
             <span className="text-[10px] text-[var(--ivory-text-3)]">Cloud (free)</span>
           </button>
           <button
+            type="button"
             onClick={() => handleQuickSetup('ollama')}
             className="w-full flex items-center justify-between px-4 py-2.5 text-xs rounded-xl bg-[var(--ivory-surface)] hover:bg-[var(--ivory-surface-hover)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-colors cursor-pointer"
             data-testid="setup-ollama-btn"
@@ -172,6 +174,7 @@ export function ChatPanel(): React.ReactElement {
             <span className="text-[10px] text-[var(--ivory-text-3)]">Local</span>
           </button>
           <button
+            type="button"
             onClick={() => handleQuickSetup('lmstudio')}
             className="w-full flex items-center justify-between px-4 py-2.5 text-xs rounded-xl bg-[var(--ivory-surface)] hover:bg-[var(--ivory-surface-hover)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-colors cursor-pointer"
             data-testid="setup-lmstudio-btn"
@@ -180,6 +183,7 @@ export function ChatPanel(): React.ReactElement {
             <span className="text-[10px] text-[var(--ivory-text-3)]">Local</span>
           </button>
           <button
+            type="button"
             onClick={() => navigate('/settings/providers')}
             className="w-full flex items-center justify-between px-4 py-2.5 text-xs rounded-xl bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent-light)]/80 text-[var(--ivory-accent)] font-semibold transition-colors cursor-pointer"
             data-testid="setup-settings-btn"
@@ -338,6 +342,7 @@ export function ChatPanel(): React.ReactElement {
               <p className="text-xs text-[var(--ivory-error)]/80 mb-3 leading-relaxed">{streamError}</p>
               <div className="flex gap-2">
                 <button
+                  type="button"
                   onClick={handleRetry}
                   className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-[var(--radius-md)] bg-white hover:bg-[var(--ivory-surface)] text-[var(--ivory-error)] border border-[var(--ivory-error)]/20 transition-colors"
                 >
@@ -345,6 +350,7 @@ export function ChatPanel(): React.ReactElement {
                   Retry
                 </button>
                 <button
+                  type="button"
                   onClick={() => navigate('/settings/providers')}
                   className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-[var(--radius-md)] bg-white hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] border border-[var(--ivory-border)] transition-colors"
                 >

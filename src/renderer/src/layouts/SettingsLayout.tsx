@@ -91,11 +91,11 @@ export function SettingsLayout(): React.ReactElement {
               )
             })}
           </div>
-          <div className="p-3 border-t border-[var(--ivory-border)]">
+          <div className="p-3 border-t border-[var(--ivory-border)]/40">
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="w-full h-9 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] text-[12px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+              className="w-full h-10 rounded-2xl border border-[var(--ivory-bronze)]/15 bg-[var(--ivory-bronze-light)]/50 text-[12px] font-semibold text-[var(--ivory-bronze)] hover:text-[var(--ivory-bronze-hover)] hover:bg-[var(--ivory-bronze-light)] hover:border-[var(--ivory-bronze)]/25 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer"
             >
               Back to Chat
             </button>

@@ -250,6 +250,7 @@ export function ProjectsPage(): React.ReactElement {
             ) : (
               projects.map(project => (
                 <button
+                  type="button"
                   key={project.id}
                   onClick={() => handleSelectProject(project)}
                   className={`w-full text-left px-4 py-3 border-b border-[var(--ivory-border)] transition-colors hover:bg-[var(--ivory-surface-2)] ${
@@ -440,7 +441,7 @@ export function ProjectsPage(): React.ReactElement {
                 <Button onClick={() => { setShowCreateForm(true); setForm(EMPTY_FORM) }}>
                   <Plus size={14} /> New Project
                 </Button>
-                <button onClick={() => navigate('/vibe')}
+                <button type="button" onClick={() => navigate('/vibe')}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 text-xs font-semibold text-[var(--ivory-text)] transition-all shadow-[var(--shadow-xs)]">
                   <Sparkles size={13} className="text-[var(--ivory-accent)]" />
                   New to coding? Try Vibe Coding
@@ -636,6 +637,7 @@ function FileTreeNodeComponent({
     return (
       <div>
         <button
+          type="button"
           onClick={() => onToggleDir(node.path)}
           className="flex items-center gap-1 w-full text-left py-0.5 px-1 rounded hover:bg-[var(--ivory-surface-2)] text-xs text-[var(--ivory-text-2)]"
           style={{ paddingLeft: `${8 + depth * 16}px` }}
@@ -661,6 +663,7 @@ function FileTreeNodeComponent({
 
   return (
     <button
+      type="button"
       onClick={() => onToggleFile(node.path)}
       className="flex items-center gap-1 w-full text-left py-0.5 px-1 rounded hover:bg-[var(--ivory-surface-2)] text-xs"
       style={{ paddingLeft: `${8 + depth * 16}px` }}

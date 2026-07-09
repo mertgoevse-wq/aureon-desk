@@ -7,6 +7,17 @@
 
 ---
 
+## Updates — 2026-07-09 Post-Playwright Failure Fix
+
+After Prompt 6 (Headed Playwright E2E), analyzed all test failures:
+
+- **All 4 flaky failures**: Electron DevTools WebSocket flakes on Windows (ECONNRESET). Retried fixture added.
+- **Product bugs found**: **0** — all 11 user flows work correctly in headed E2E
+- **Fixture improved**: Retry logic + 5s cleanup delay + proper `instanceof Error` type guard
+- **Full analysis**: `docs/PLAYWRIGHT_FAILURE_ANALYSIS.md`
+
+---
+
 ## Executive Summary
 
 Before executing automated tests, the application was launched visibly on the desktop. A human-style manual click QA run was simulated across 9 primary flows.

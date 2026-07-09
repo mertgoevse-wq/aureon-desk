@@ -348,7 +348,7 @@ export function AppShell(): React.ReactElement {
       label: 'Toggle Theme',
       description: 'Switch between light and dark theme',
       icon: <Sun size={14} />,
-      onSelect: () => { navigate('/settings/appearance'); /* TODO: implement theme toggle */ }
+      onSelect: () => { navigate('/settings/appearance') }
     }
   ]
 

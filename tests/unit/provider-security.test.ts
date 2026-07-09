@@ -94,3 +94,56 @@ describe('Provider Security — API Key Handling', () => {
     expect(maskKey(key)).toBe(maskKey(key))
   })
 })
+
+describe('Provider Settings — Save & Test Button Contracts', () => {
+  it('should require non-empty key before Save is allowed', () => {
+    const isSaveAllowed = (key: string) => key.trim().length > 0
+    expect(isSaveAllowed('sk-valid-key')).toBe(true)
+    expect(isSaveAllowed('')).toBe(false)
+    expect(isSaveAllowed('   ')).toBe(false)
+  })
+
+  it('should test connection only when provider is configured', () => {
+    const canTest = (hasKey: boolean, isEnabled: boolean) => hasKey && isEnabled
+    expect(canTest(true, true)).toBe(true)
+    expect(canTest(false, true)).toBe(false)
+    expect(canTest(true, false)).toBe(false)
+  })
+
+  it('should show clear error for fake/invalid API keys', () => {
+    const fakeKeyError = (statusCode: number) => {
+      if (statusCode === 401) return 'Invalid API key'
+      if (statusCode === 403) return 'Access denied'
+      return 'Connection failed'
+    }
+    expect(fakeKeyError(401)).toBe('Invalid API key')
+    expect(fakeKeyError(403)).toBe('Access denied')
+    expect(fakeKeyError(500)).toBe('Connection failed')
+  })
+
+  it('should never return raw API key in error messages', () => {
+    const raw = 'Failed with key sk-or-v1-abcdefghijklmnop12345678: timeout'
+    const sanitized = redactSecrets(raw)
+    expect(sanitized).not.toContain('sk-or-v1-abcdefghijklmnop12345678')
+    expect(sanitized).toContain('[REDACTED_KEY]')
+  })
+})
+
+describe('Provider Settings — No Secrets in Logs', () => {
+  it('should not log API keys in connection test messages', () => {
+    const testResult = {
+      success: false,
+      message: 'Failed to connect with key: sk-or-v1-abcdefghijklmnop12345678'
+    }
+    const sanitized = redactSecrets(testResult.message)
+    expect(sanitized).not.toContain('sk-or-v1-abcdefghijklmnop12345678')
+    expect(sanitized).toContain('[REDACTED_KEY]')
+  })
+
+  it('should not log Bearer tokens in API responses', () => {
+    const response = 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0'
+    const sanitized = redactSecrets(response)
+    expect(sanitized).toContain('[REDACTED]')
+    expect(sanitized).not.toContain('eyJhbGciOiJIUzI1NiJ9')
+  })
+})

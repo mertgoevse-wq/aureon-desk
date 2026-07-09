@@ -22,7 +22,7 @@ const DEFAULT_INSPECTOR_WIDTH = 340
 
 export const useUIStore = create<UIState>((set, get) => ({
   sidebarCollapsed: false,
-  inspectorOpen: true,
+  inspectorOpen: false,
   sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
   inspectorWidth: DEFAULT_INSPECTOR_WIDTH,
   activeSettingsPage: null,

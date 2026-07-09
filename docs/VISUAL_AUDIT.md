@@ -1,10 +1,68 @@
 # Aureon Desk — Visual Audit
 
-> **Latest audit:** 2026-07-09 — Human-Style Visible Manual Click QA (commit `e087fc1` → new)
-> **Previous audit:** 2026-07-08 — Provider Layout Repair (commit `9f25099`)
-> **Previous auditor:** Antigravity (Google DeepMind) — manual visible QA & baseline repair
-> **Previous auditor:** DeepSeek V4 Pro (Buffy) — manual QA + app launch (commit `56b8cd9`)
+> **Latest audit:** 2026-07-09 — Final UI Beauty & Declutter Pass
+> **Previous audit:** 2026-07-09 — Settings, Providers & MCP Polish
 > **Branch:** main
+
+---
+
+## Settings, Providers & MCP Polish Audit (2026-07-09)
+
+### Settings Layout — REFINED
+- Back to Chat button now uses bronze tones for premium feel.
+
+### General Settings — REFINED
+- Raw `<select>` elements replaced with shared `Select` component.
+
+### Providers & Connectors — NO CHANGES NEEDED
+- Already well-polished: API key typing/paste works, Save/Test buttons functional, status badges clear.
+- Connector cards use neutral Lucide icons, no fake vendor logos.
+- MCP modal closes with X/ESC, tools labeled mock/real, destructive actions require approval.
+
+### Tests — EXPANDED
+- +10 tests: provider button contracts, no-secrets-in-logs, connector card contracts.
+
+---
+
+## Hero Visual Polish Audit (2026-07-09)
+
+### Design Tokens — REFINED
+- Added `--color-bronze`, `--color-graphite` tokens. Softer hero gradient.
+
+### Right Inspector — QUIETER
+- Reduced section headers, muted icons, subtle containers.
+
+### Sidebar — BRONZE ACCENT
+- New Chat button uses bronze tones instead of orange.
+
+### Studio Drawer Wizard — MORE BREATHING ROOM
+- All wizard sections: increased padding, larger text (9px to 10px), lighter borders.
+
+### Vibe Coding & LivePreview — SUBTLER
+- Cleaner card buttons, muted file explorer and safety cards.
+
+---
+
+## Hero Theme Refinement Audit (2026-07-09)
+
+### Studio Hero & Cards — REFINED ✅
+- **Before:** Hero had autonomy badge inline. Composer had platform/style selectors. Cards showed risk icons, mode badges, hover hints.
+- **After:** Cleaner hero with larger heading. Simplified composer (textarea + single Build button). Cards now compact with arrow hints, no metadata clutter. Autonomy selector is a compact icon row.
+
+### Inspector Default — RESOLVED ✅
+- **Before:** Inspector opened by default, requiring a useEffect in Studio to close it on mount.
+- **After:** `inspectorOpen: false` in uiStore. No mount-time workaround needed.
+
+### Sidebar & Chat Home Subtler — REFINED ✅
+- Sidebar: Borderless active states on workspace icons, quieter profile footer, thinner dividers.
+- Chat home: Smaller suggestion pills, quieter recents section, reduced shadows throughout.
+
+### Duplicate Safety Notice — REMOVED ✅
+- **Before:** Two safety notices on Studio page (SafetyNotice component + inline "Safety First" section).
+- **After:** Only one SafetyNotice component remains above the cards.
+
+### Dead Code — CLEANED ✅
+- Removed unused useUIStore import, useEffect import, Info icon import from Studio.tsx
 
 ---
 

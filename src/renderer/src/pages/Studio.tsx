@@ -1,16 +1,16 @@
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Code2, FileText, Image, Video, Music,
   FileSearch, MonitorPlay, Plug, Workflow, ChevronRight,
-  Sparkles, ShieldCheck, AlertTriangle, Info, ArrowRight,
+  Sparkles, ShieldCheck, AlertTriangle, ArrowRight,
   Eye, Lightbulb, Zap, FolderCheck, ChevronDown
 } from 'lucide-react'
 import { useIpc } from '../hooks/useIpc'
-import { useUIStore } from '../stores/uiStore'
 import { TASK_CATEGORIES, AUTONOMY_LEVELS } from '@shared/types/studio-core'
 import type { TaskCategoryInfo, StudioOrchestrationResult, AutonomyLevel } from '@shared/types/studio-core'
 import { SafetyNotice } from '../components/vibe/SafetyNotice'
+import { setAutoBuildPreview, setAutoBuildSandboxOnly } from '@shared/preview-helpers'
 import { Drawer } from '../components/shared/Drawer'
 
 const TASK_ICONS: Record<string, React.ReactElement> = {
@@ -42,7 +42,6 @@ const MODE_LABELS: Record<string, string> = {
 export function Studio(): React.ReactElement {
   const navigate = useNavigate()
   const api = useIpc()
-  const { inspectorOpen, toggleInspector } = useUIStore()
 
   const [selectedCard, setSelectedCard] = useState<string | null>(null)
   const [orchestration, setOrchestration] = useState<StudioOrchestrationResult | null>(null)
@@ -52,14 +51,6 @@ export function Studio(): React.ReactElement {
 
   const [primaryPrompt, setPrimaryPrompt] = useState('')
   const [showMoreTypes, setShowMoreTypes] = useState(false)
-
-  // Collapse right inspector on mount for clean workspace look
-  useEffect(() => {
-    if (inspectorOpen) {
-      toggleInspector()
-    }
-  }, [])
-
 
   // State hooks for configuration wizard
   const [promptText, setPromptText] = useState('')
@@ -133,25 +124,17 @@ export function Studio(): React.ReactElement {
     // Custom build/compiler integration
     if (selectedCard === 'build_app') {
       if (outputOption === 'Generate + Preview') {
-        sessionStorage.setItem('auto-build-app-preview', 'true')
-        sessionStorage.setItem('build-app-style', projectStyle)
-        sessionStorage.setItem('build-app-prompt', promptText)
-        sessionStorage.setItem('build-app-platform', targetPlatform)
+        setAutoBuildPreview({ style: projectStyle, prompt: promptText, platform: targetPlatform })
         targetPath = '/preview'
       } else if (outputOption === 'Generate sandbox') {
-        sessionStorage.setItem('auto-build-app-sandbox-only', 'true')
-        sessionStorage.setItem('build-app-style', projectStyle)
-        sessionStorage.setItem('build-app-prompt', promptText)
-        sessionStorage.setItem('build-app-platform', targetPlatform)
+        setAutoBuildSandboxOnly({ style: projectStyle, prompt: promptText, platform: targetPlatform })
         targetPath = '/preview'
       } else {
         targetPath = '/'
       }
     } else if (selectedCard === 'code_program') {
       if (outputOption === 'Generate sandbox') {
-        sessionStorage.setItem('auto-build-app-sandbox-only', 'true')
-        sessionStorage.setItem('build-app-style', 'Minimalist')
-        sessionStorage.setItem('build-app-prompt', `Write a program in ${targetLanguage}: ${promptText}`)
+        setAutoBuildSandboxOnly({ style: 'Minimalist', prompt: `Write a program in ${targetLanguage}: ${promptText}`, platform: 'Web app' })
         targetPath = '/preview'
       } else {
         targetPath = '/'
@@ -241,49 +224,36 @@ export function Studio(): React.ReactElement {
         onClick={() => handleCardClick(card)}
         disabled={isOrchestrating}
         data-testid={`studio-card-${card.id}`}
-        className={`group relative flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30 cursor-pointer
+        className={`group relative flex items-center gap-3 p-3 rounded-xl border text-left transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30 cursor-pointer
           ${isSelected
-            ? 'border-[var(--ivory-accent)]/25 bg-[var(--ivory-accent-light)] shadow-[var(--shadow-md)]'
-            : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-elevated)] hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-md)]'
+            ? 'border-[var(--ivory-accent)]/25 bg-[var(--ivory-accent-light)] shadow-[var(--shadow-sm)]'
+            : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)] hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-sm)]'
           }
           ${isOrchestrating ? 'opacity-70 pointer-events-none' : ''}`}
       >
         {/* Icon */}
-        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105
-          ${isSelected ? 'bg-[var(--ivory-accent)]/15 text-[var(--ivory-accent)]' : 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)]'}
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105
+          ${isSelected ? 'bg-[var(--ivory-accent)]/15 text-[var(--ivory-accent)]' : 'bg-[var(--ivory-surface)] text-[var(--ivory-text-2)]'}
         `}>
-          {TASK_ICONS[card.icon] || <Sparkles size={22} />}
+          {TASK_ICONS[card.icon] || <Sparkles size={20} />}
         </div>
 
         {/* Content */}
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[13px] font-semibold text-[var(--ivory-text)]">{getCardLabel(card)}</span>
-            {RISK_ICONS[card.riskLevel]}
-            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--ivory-surface-2)] text-[var(--ivory-text-3)] font-medium font-body">
-              {MODE_LABELS[card.recommendedMode]} mode
-            </span>
-          </div>
-          <p className="text-[11px] text-[var(--ivory-text-3)] mt-1 leading-relaxed font-body">
+          <span className="text-[13px] font-semibold text-[var(--ivory-text)]">{getCardLabel(card)}</span>
+          <p className="text-[11px] text-[var(--ivory-text-3)] mt-0.5 leading-relaxed font-body line-clamp-1">
             {card.description}
           </p>
-
-          {/* Hover hint */}
-          {!isSelected && (
-            <span className="inline-flex items-center gap-1 text-[10px] text-[var(--ivory-accent)] font-semibold mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-              Configure <ChevronRight size={10} />
-            </span>
-          )}
         </div>
+
+        {/* Arrow hint */}
+        <ChevronRight size={14} className={`shrink-0 transition-colors ${isSelected ? 'text-[var(--ivory-accent)]' : 'text-[var(--ivory-border)] group-hover:text-[var(--ivory-text-3)]'}`} />
       </button>
     )
   }
 
   const handlePrimaryActionClick = () => {
-    sessionStorage.setItem('auto-build-app-preview', 'true')
-    sessionStorage.setItem('build-app-style', projectStyle)
-    sessionStorage.setItem('build-app-prompt', primaryPrompt || 'Build a simple web utility')
-    sessionStorage.setItem('build-app-platform', targetPlatform)
+    setAutoBuildPreview({ style: projectStyle, prompt: primaryPrompt || 'Build a simple web utility', platform: targetPlatform })
     
     navigate('/preview')
 
@@ -303,64 +273,34 @@ export function Studio(): React.ReactElement {
 
         {/* === HERO === */}
         <div className="mb-10 text-center flex flex-col items-center">
-          <div className="inline-flex items-center justify-center mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-[var(--ivory-accent-light)] flex items-center justify-center shadow-[var(--shadow-xs)]">
-              <Sparkles size={22} className="text-[var(--ivory-accent)]" />
+          <div className="inline-flex items-center justify-center mb-5">
+            <div className="w-14 h-14 rounded-2xl bg-[var(--ivory-accent-light)] flex items-center justify-center shadow-[var(--shadow-sm)]">
+              <Sparkles size={24} className="text-[var(--ivory-accent)]" />
             </div>
           </div>
-          <h1 className="text-4xl font-semibold tracking-tight text-[var(--ivory-text)] font-display mb-3">
-            Create with Aureon
+          <h1 className="text-[2.25rem] font-semibold tracking-[-0.02em] text-[var(--ivory-text)] font-display mb-3 leading-tight">
+            Start building
           </h1>
-          <p className="text-sm text-[var(--ivory-text-3)] font-body max-w-lg leading-relaxed mb-6">
-            A premium desktop space optimized for app building, pair programming, and secure local automation.
+          <p className="text-[13px] text-[var(--ivory-text-3)] font-body max-w-md leading-relaxed">
+            Choose what you want to create — Aureon handles the setup, code, and preview.
           </p>
-
-          {/* Autonomy indicator */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/50 text-[10px] font-semibold text-[var(--ivory-text-2)] shadow-[var(--shadow-xs)]">
-            <ShieldCheck size={12} className="text-[var(--ivory-accent)]" />
-            {AUTONOMY_LEVELS[autonomyLevel].label}: {AUTONOMY_LEVELS[autonomyLevel].description}
-          </div>
         </div>
 
-        {/* === CENTRAL PRIMARY COMPOSER ACTION === */}
-        <div className="mb-10 max-w-2xl mx-auto rounded-[24px] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] p-4 shadow-[var(--shadow-md)]">
+        {/* === PRIMARY COMPOSER === */}
+        <div className="mb-10 max-w-xl mx-auto rounded-2xl border border-[var(--ivory-border)]/70 bg-[var(--ivory-elevated)] p-4 shadow-[var(--shadow-sm)]">
           <textarea
             value={primaryPrompt}
             onChange={e => setPrimaryPrompt(e.target.value)}
-            placeholder="What would you like to build today? (e.g. Build a task manager with countdown timer)"
-            className="w-full h-16 p-2 bg-transparent text-xs text-[var(--ivory-text)] placeholder-[var(--ivory-text-3)]/60 border-none focus:outline-none resize-none font-body"
+            placeholder="Describe what you want to build... (e.g., a task timer, a mini-game, a dashboard)"
+            className="w-full h-12 p-1 bg-transparent text-[13px] text-[var(--ivory-text)] placeholder-[var(--ivory-text-3)]/50 border-none focus:outline-none resize-none font-body"
           />
-          <div className="flex items-center justify-between border-t border-[var(--ivory-border)]/50 pt-3 mt-2 px-1">
-            <div className="flex items-center gap-2">
-              <select
-                value={targetPlatform}
-                onChange={e => setTargetPlatform(e.target.value)}
-                title="Target platform"
-                aria-label="Target platform"
-                className="px-2.5 py-1 text-[10px] rounded-lg bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)] font-semibold cursor-pointer outline-none"
-              >
-                <option value="Web app">Web App</option>
-                <option value="Desktop widget">Desktop Widget</option>
-                <option value="Mobile prototype">Mobile Prototype</option>
-              </select>
-              <select
-                value={projectStyle}
-                onChange={e => setProjectStyle(e.target.value)}
-                title="Theme style"
-                aria-label="Theme style"
-                className="px-2.5 py-1 text-[10px] rounded-lg bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)] font-semibold cursor-pointer outline-none"
-              >
-                <option value="Calming Ivory">Calming Ivory</option>
-                <option value="Soft Teal">Soft Teal</option>
-                <option value="Deep Slate">Deep Slate</option>
-              </select>
-            </div>
+          <div className="flex items-center justify-end border-t border-[var(--ivory-border)]/40 pt-3 mt-1.5">
             <button
               type="button"
               onClick={handlePrimaryActionClick}
-              className="inline-flex h-8 items-center justify-center px-4 rounded-xl bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-xs font-bold text-white transition-colors cursor-pointer shadow-[var(--shadow-xs)]"
+              className="inline-flex h-9 items-center justify-center gap-2 px-5 rounded-xl bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-[12px] font-bold text-white transition-colors cursor-pointer shadow-[var(--shadow-xs)]"
             >
-              Build App <ArrowRight size={12} className="ml-1" />
+              Start building <ArrowRight size={13} />
             </button>
           </div>
         </div>
@@ -391,22 +331,22 @@ export function Studio(): React.ReactElement {
         </div>
 
         {/* === AUTONOMY SELECTOR === */}
-        <div className="mt-10">
-          <h2 className="text-[12px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)] mb-3 flex items-center gap-1.5">
-            <ShieldCheck size={14} className="text-[var(--ivory-accent)]" />
-            Autonomy Level
-          </h2>
-          <div className="grid grid-cols-4 gap-2">
+        <div className="mt-10 flex items-center justify-center gap-3">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--ivory-text-3)]">
+            <ShieldCheck size={12} className="inline mr-1 text-[var(--ivory-accent)]" />
+            Autonomy
+          </span>
+          <div className="inline-flex items-center gap-0.5 p-0.5 rounded-xl bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/50">
             {AUTONOMY_LEVELS.filter(l => l.level > 0).map(level => {
               const isCurrent = autonomyLevel === level.level
               const IconComponent = (() => {
                 switch (level.icon) {
-                  case 'Eye': return <Eye size={13} />
-                  case 'Lightbulb': return <Lightbulb size={13} />
-                  case 'ShieldCheck': return <ShieldCheck size={13} />
-                  case 'FolderCheck': return <FolderCheck size={13} />
-                  case 'Zap': return <Zap size={13} />
-                  default: return <ShieldCheck size={13} />
+                  case 'Eye': return <Eye size={12} />
+                  case 'Lightbulb': return <Lightbulb size={12} />
+                  case 'ShieldCheck': return <ShieldCheck size={12} />
+                  case 'FolderCheck': return <FolderCheck size={12} />
+                  case 'Zap': return <Zap size={12} />
+                  default: return <ShieldCheck size={12} />
                 }
               })()
               return (
@@ -414,36 +354,18 @@ export function Studio(): React.ReactElement {
                   key={level.level}
                   type="button"
                   onClick={() => setAutonomyLevel(level.level)}
-                  className={`flex flex-col items-center gap-1 p-3 rounded-xl border text-center transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30 cursor-pointer
+                  title={level.description}
+                  className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30 cursor-pointer
                     ${isCurrent
-                      ? 'border-[var(--ivory-accent)]/30 bg-[var(--ivory-accent-light)] shadow-[var(--shadow-sm)]'
-                      : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-elevated)] hover:border-[var(--ivory-accent)]/20'
+                      ? 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]'
+                      : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-bg)]'
                     }`}
                   data-testid={`autonomy-level-${level.level}`}
                 >
-                  <span className={isCurrent ? 'text-[var(--ivory-accent)]' : 'text-[var(--ivory-text-3)]'}>
-                    {IconComponent}
-                  </span>
-                  <span className="text-[10px] font-bold text-[var(--ivory-text)]">{level.level}</span>
-                  <span className="text-[9px] text-[var(--ivory-text-3)] leading-tight font-body">{level.label}</span>
+                  {IconComponent}
                 </button>
               )
             })}
-          </div>
-        </div>
-
-        {/* === SAFETY NOTICE === */}
-        <div className="mt-8 p-3.5 rounded-2xl border border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)]/60 shadow-[var(--shadow-xs)]">
-          <div className="flex items-start gap-2.5">
-            <ShieldCheck size={15} className="shrink-0 mt-0.5 text-[var(--ivory-accent)]" />
-            <div>
-              <h3 className="text-[11px] font-bold text-[var(--ivory-text)]">Safety First</h3>
-              <p className="text-[10px] text-[var(--ivory-text-3)] mt-0.5 leading-relaxed font-body">
-                Every destructive or account action requires explicit confirmation.
-                No shell commands, file writes, Gmail actions, or account changes execute without your approval.
-                Your files are never sent to remote providers unless you explicitly attach them.
-              </p>
-            </div>
           </div>
         </div>
       </div>
@@ -467,7 +389,7 @@ export function Studio(): React.ReactElement {
 
             {/* Custom Wizard Selector sections */}
             {selectedCard === 'build_app' && (
-              <div className="space-y-4 pt-1">
+              <div className="space-y-4 pt-2">
                 <div className="space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Target Platform</span>
                   <div className="grid grid-cols-2 gap-2">
@@ -478,10 +400,10 @@ export function Studio(): React.ReactElement {
                           key={target}
                           type="button"
                           onClick={() => setTargetPlatform(target)}
-                          className={`py-2 px-3 text-[11px] font-semibold border rounded-xl transition-all cursor-pointer ${
+                          className={`py-2.5 px-3 text-[11px] font-semibold border rounded-xl transition-all cursor-pointer ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {target}
@@ -501,10 +423,10 @@ export function Studio(): React.ReactElement {
                           key={style}
                           type="button"
                           onClick={() => setProjectStyle(style)}
-                          className={`py-2 px-2 text-[10px] font-semibold border rounded-xl transition-all cursor-pointer ${
+                          className={`py-2.5 px-2 text-[10px] font-semibold border rounded-xl transition-all cursor-pointer ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {style}
@@ -516,7 +438,7 @@ export function Studio(): React.ReactElement {
 
                 <div className="space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Output Format</span>
-                  <div className="grid grid-cols-3 gap-1.5">
+                  <div className="grid grid-cols-3 gap-2">
                     {['Generate + Preview', 'Generate sandbox', 'Plan only'].map(opt => {
                       const isActive = outputOption === opt
                       return (
@@ -524,10 +446,10 @@ export function Studio(): React.ReactElement {
                           key={opt}
                           type="button"
                           onClick={() => setOutputOption(opt)}
-                          className={`py-2 px-1 text-[9px] font-bold border rounded-xl transition-all cursor-pointer text-center ${
+                          className={`py-2.5 px-1 text-[10px] font-bold border rounded-xl transition-all cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {opt}
@@ -554,7 +476,7 @@ export function Studio(): React.ReactElement {
                           className={`py-1.5 px-1 text-[10px] font-semibold border rounded-xl transition-all cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {lang}
@@ -577,7 +499,7 @@ export function Studio(): React.ReactElement {
                           className={`py-2 px-2 text-[10px] font-semibold border rounded-xl transition-all cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {opt}
@@ -603,7 +525,7 @@ export function Studio(): React.ReactElement {
                         className={`py-2 px-3 text-[11px] font-semibold border rounded-xl transition-all cursor-pointer ${
                           isActive
                             ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                            : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                            : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                         }`}
                       >
                         {tone}
@@ -629,7 +551,7 @@ export function Studio(): React.ReactElement {
                           className={`py-2 px-3 text-[11px] font-semibold border rounded-xl transition-all cursor-pointer text-left ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {prov}
@@ -649,10 +571,10 @@ export function Studio(): React.ReactElement {
                           key={ratio}
                           type="button"
                           onClick={() => setImageRatio(ratio)}
-                          className={`py-2 px-1 text-[9px] font-bold border rounded-xl transition-all cursor-pointer text-center ${
+                          className={`py-2.5 px-1 text-[10px] font-bold border rounded-xl transition-all cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {ratio}
@@ -692,7 +614,7 @@ export function Studio(): React.ReactElement {
                           className={`py-2 px-3 text-[11px] font-semibold border rounded-xl transition-all cursor-pointer text-left ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {prov}
@@ -715,7 +637,7 @@ export function Studio(): React.ReactElement {
                           className={`py-2 px-2 text-[10px] font-semibold border rounded-xl transition-all cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {dur}
@@ -755,7 +677,7 @@ export function Studio(): React.ReactElement {
                           className={`py-2 px-3 text-[11px] font-semibold border rounded-xl transition-all cursor-pointer text-left ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {prov}
@@ -778,7 +700,7 @@ export function Studio(): React.ReactElement {
                           className={`py-2 px-2 text-[10px] font-semibold border rounded-xl transition-all cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {style}
@@ -817,7 +739,7 @@ export function Studio(): React.ReactElement {
                         className={`py-2 px-1 text-[8.5px] font-bold border rounded-xl transition-all cursor-pointer text-center ${
                           isActive
                             ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                            : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                            : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                         }`}
                       >
                         {type.split(' ')[0]}
@@ -839,10 +761,10 @@ export function Studio(): React.ReactElement {
                         key={target}
                         type="button"
                         onClick={() => setScreenTarget(target)}
-                        className={`py-2 px-1 text-[9px] font-semibold border rounded-xl transition-all cursor-pointer text-center ${
+                        className={`py-2.5 px-1 text-[10px] font-semibold border rounded-xl transition-all cursor-pointer text-center ${
                           isActive
                             ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                            : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                            : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                         }`}
                       >
                         {target}
@@ -867,7 +789,7 @@ export function Studio(): React.ReactElement {
                         className={`py-2 px-3 text-[11px] font-semibold border rounded-xl transition-all cursor-pointer ${
                           isActive
                             ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                            : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                            : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                         }`}
                       >
                         {target}
@@ -892,7 +814,7 @@ export function Studio(): React.ReactElement {
                         className={`py-2 px-2 text-[10px] font-semibold border rounded-xl transition-all cursor-pointer ${
                           isActive
                             ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                            : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                            : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                         }`}
                       >
                         {trigger}

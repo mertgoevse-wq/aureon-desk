@@ -28,11 +28,30 @@ export const test = base.extend<ElectronFixture>({
       )
     }
 
-    const app = await electron.launch({
-      args: [MAIN_ENTRY],
-      // Increase timeout for slow CI
-      timeout: 45_000
-    })
+    // Retry Electron launch on Windows — DevTools WebSocket connection can flake
+    // due to SQLite WAL checkpoint timing from previous test cleanup
+    // Up to 3 total attempts (initial + 2 retries)
+    let app: ElectronApplication | undefined
+    let lastError: Error | undefined
+    const maxRetries = 2
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        app = await electron.launch({
+          args: [MAIN_ENTRY],
+          timeout: 60_000
+        })
+        break
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error(String(err))
+        if (attempt < maxRetries) {
+          // Wait longer for OS to release file handles before retry
+          await new Promise(resolve => setTimeout(resolve, 5000))
+        }
+      }
+    }
+    if (!app) {
+      throw lastError || new Error('Failed to launch Electron after retries')
+    }
 
     await use(app)
 
@@ -43,8 +62,8 @@ export const test = base.extend<ElectronFixture>({
       // Process may already be gone
     }
 
-    // Let the OS fully release file handles (SQLite, etc.) before next launch
-    await new Promise(resolve => setTimeout(resolve, 3000))
+    // Let the OS fully release file handles (SQLite WAL, etc.) before next launch
+    await new Promise(resolve => setTimeout(resolve, 5000))
   },
 
   mainWindow: async ({ electronApp }, use) => {

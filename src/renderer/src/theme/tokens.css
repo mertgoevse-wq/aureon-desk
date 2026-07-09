@@ -18,10 +18,14 @@
   --color-text: #221A0F;        /* Deep brown-charcoal */
   --color-text-secondary: #5D5241;
   --color-text-muted: #8E8371;
-  --color-accent: #C75B39;
+  --color-accent: #C75B39;          /* Primary orange-terracotta — CTAs only */
   --color-accent-hover: #B04D2E;
   --color-accent-light: #FDF0EB;
-  --color-accent-2: #8B5E3C;
+  --color-accent-2: #8B5E3C;        /* Secondary bronze-copper */
+  --color-bronze: #8B5E3C;
+  --color-bronze-light: #F6F0E8;
+  --color-bronze-hover: #7A5233;
+  --color-graphite: #3D3629;        /* Softer body text than pure black-brown */
   --color-active-bg: #EAE2D1;
   --color-success: #5C8A5E;
   --color-success-bg: #ECF4EC;
@@ -29,6 +33,11 @@
   --color-warning-bg: #FDF6E8;
   --color-danger: #B8453C;
   --color-danger-bg: #FBEDEC;
+
+  --ivory-bronze: var(--color-bronze);
+  --ivory-bronze-light: var(--color-bronze-light);
+  --ivory-bronze-hover: var(--color-bronze-hover);
+  --ivory-graphite: var(--color-graphite);
 
   /* Backward-compat aliases (deprecate over time) */
   --ivory-bg: var(--color-bg);
@@ -295,6 +304,6 @@ body {
 
 /* === BRAND HERO RADIAL BACKGROUND === */
 .bg-hero-radial {
-  background: radial-gradient(circle at top, rgba(253, 240, 235, 0.4) 0%, var(--color-bg) 70%);
+  background: radial-gradient(ellipse 90% 55% at 50% 0%, rgba(253, 240, 235, 0.28) 0%, rgba(253, 240, 235, 0.04) 35%, var(--color-bg) 70%);
 }
 

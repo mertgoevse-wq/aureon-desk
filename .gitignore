@@ -37,6 +37,8 @@ tests/e2e/artifacts/*.png
 tests/e2e/artifacts/**/*.png
 screenshots/
 *.screenshot.png
+videos/
+traces/
 !tests/e2e/artifacts/.gitkeep
 
 # Secrets & credentials

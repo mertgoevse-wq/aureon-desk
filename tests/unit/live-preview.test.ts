@@ -67,6 +67,7 @@ vi.mock('net', () => ({
 
 import { livePreviewService } from '../../src/main/services/live-preview.service'
 import { redactSecrets } from '../../src/main/services/log-redacter'
+import { AUTO_PREVIEW_KEYS } from '../../src/shared/preview-helpers'
 
 describe('LivePreview Service — Sandbox Creation', () => {
   beforeEach(() => {
@@ -329,7 +330,8 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
     livePreviewService.startPreview('/sandbox/html-app')
 
     expect(mockHttpCreateServer).toHaveBeenCalled()
-    expect(mockHttpServer.listen).toHaveBeenCalledWith(3100, '127.0.0.1', expect.any(Function))
+    // Port is dynamic (findAvailablePort may scan beyond 3100), so match any number
+    expect(mockHttpServer.listen).toHaveBeenCalledWith(expect.any(Number), '127.0.0.1', expect.any(Function))
 
     const handler = (mockHttpCreateServer as any).mock.calls[0][0]
     expect(handler).toBeDefined()
@@ -481,6 +483,60 @@ describe('LivePreview Service — onStatusChange push mechanism', () => {
   it('should reset statusChangeCallback on reset()', () => {
     const onChange = vi.fn()
     livePreviewService.onStatusChange(onChange)
+    livePreviewService.reset()
+    expect(livePreviewService._statusChangeCallback).toBeNull()
+  })
+})
+
+describe('Studio → LivePreview Regression Contract', () => {
+  it('AUTO_PREVIEW_KEYS should not change (sessionStorage contract)', () => {
+    expect(AUTO_PREVIEW_KEYS.autoStart).toBe('auto-build-app-preview')
+    expect(AUTO_PREVIEW_KEYS.sandboxOnly).toBe('auto-build-app-sandbox-only')
+    expect(AUTO_PREVIEW_KEYS.style).toBe('build-app-style')
+    expect(AUTO_PREVIEW_KEYS.prompt).toBe('build-app-prompt')
+    expect(AUTO_PREVIEW_KEYS.platform).toBe('build-app-platform')
+  })
+
+  it('startGeneratedPreview should create demo sandbox and not error', () => {
+    mockFs.writeFileSync = vi.fn()
+    mockFs.existsSync = vi.fn((p: string) => {
+      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.aureon-demo'))) return false
+      return true
+    })
+    const status = livePreviewService.startGeneratedPreview({
+      source: 'studio-build-app',
+      style: 'Calming Ivory',
+      port: 3200
+    })
+    expect(status.status).not.toBe('error')
+    expect(mockFs.writeFileSync).toHaveBeenCalled()
+  })
+
+  it('createDemo should return valid CodingDemoResult', () => {
+    mockFs.writeFileSync = vi.fn()
+    mockFs.existsSync = vi.fn((p: string) => {
+      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.aureon-demo'))) return false
+      return true
+    })
+    const result = livePreviewService.createDemo(3300, 'Calming Ivory')
+    expect(result.success).toBe(true)
+    expect(result.sandboxId).toBeTruthy()
+    expect(result.previewStatus.status).not.toBe('error')
+  })
+
+  it('stopPreview should close the in-process HTTP server', () => {
+    mockFs.existsSync = vi.fn((p: string) => {
+      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.aureon-demo'))) return false
+      return true
+    })
+    livePreviewService.startPreview('/sandbox/html-app')
+    livePreviewService.stopPreview()
+    expect(mockHttpServer.close).toHaveBeenCalled()
+  })
+
+  it('reset should clear session and status callback', () => {
+    const cb = vi.fn()
+    livePreviewService.onStatusChange(cb)
     livePreviewService.reset()
     expect(livePreviewService._statusChangeCallback).toBeNull()
   })

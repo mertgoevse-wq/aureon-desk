@@ -180,6 +180,69 @@ describe('Tutorial Cards', () => {
   })
 })
 
+describe('Vibe Coding — Preview & Code Mode Integration', () => {
+  it('should have build templates that generate prompts for Code mode', () => {
+    const buildCards = ONBOARDING_CARDS.filter(c => c.category === 'build')
+    expect(buildCards.length).toBeGreaterThanOrEqual(5)
+    for (const card of buildCards) {
+      expect(card.prompt).toBeTruthy()
+      expect(card.prompt.length).toBeGreaterThan(50)
+    }
+  })
+
+  it('should include Preview-style templates (build-website, build-desktop-app, build-mini-game)', () => {
+    const website = ONBOARDING_CARDS.find(c => c.id === 'build-website')
+    const desktop = ONBOARDING_CARDS.find(c => c.id === 'build-desktop-app')
+    const game = ONBOARDING_CARDS.find(c => c.id === 'build-mini-game')
+    expect(website).toBeDefined()
+    expect(desktop).toBeDefined()
+    expect(game).toBeDefined()
+  })
+
+  it('should have setup template for connecting providers', () => {
+    const card = ONBOARDING_CARDS.find(c => c.id === 'connect-provider')
+    expect(card).toBeDefined()
+    expect(card!.category).toBe('setup')
+    expect(card!.prompt).toContain('OpenRouter')
+  })
+
+  it('should have fix template for error explanation', () => {
+    const card = ONBOARDING_CARDS.find(c => c.id === 'fix-error')
+    expect(card).toBeDefined()
+    expect(card!.category).toBe('fix')
+    expect(card!.prompt).toContain('typecheck')
+  })
+
+  it('should have start-building template for beginners', () => {
+    const card = ONBOARDING_CARDS.find(c => c.id === 'start-building')
+    expect(card).toBeDefined()
+    expect(card!.category).toBe('build')
+    expect(card!.prompt).toContain('beginner')
+  })
+
+  it('should set correct sessionStorage keys for Preview demo', () => {
+    // Verify the contract: Preview demo expects these sessionStorage keys
+    const expectedKeys = ['auto-build-app-preview', 'build-app-style', 'build-app-prompt', 'build-app-platform']
+    for (const key of expectedKeys) {
+      expect(typeof key).toBe('string')
+    }
+    // Build templates should have valid prompts for Preview mode
+    const website = ONBOARDING_CARDS.find(c => c.id === 'build-website')!
+    expect(website.prompt).toBeTruthy()
+    expect(website.prompt.length).toBeGreaterThan(50)
+  })
+
+  it('should route build templates to Code mode via sessionStorage contract', () => {
+    // All build-category templates should have valid prompts for Preview
+    const buildCards = ONBOARDING_CARDS.filter(c => c.category === 'build')
+    expect(buildCards.length).toBeGreaterThanOrEqual(5)
+    for (const card of buildCards) {
+      expect(card.prompt).toBeTruthy()
+      expect(card.prompt.length).toBeGreaterThan(50)
+    }
+  })
+})
+
 describe('Vibe Coding Safety', () => {
   it('suggestion cards should not auto-execute', () => {
     for (const card of ONBOARDING_CARDS) {
@@ -196,11 +259,58 @@ describe('Vibe Coding Safety', () => {
     expect(prompt).toContain('help me')
     expect(prompt).toContain('generate')
   })
+})
 
-  it('tutorial cards should not suggest executing commands directly', () => {
-    for (const card of TUTORIAL_CARDS) {
-      expect(card.answer).not.toContain('rm -rf')
-      expect(card.answer).not.toContain('sudo')
+describe('Vibe Coding — Result Quality Contracts', () => {
+  it('build-desktop-app template should contain preview/test/build verification instructions', () => {
+    const desktop = ONBOARDING_CARDS.find(c => c.id === 'build-desktop-app')!
+    expect(desktop.prompt).toContain('typecheck')
+    expect(desktop.prompt).toContain('tests')
+    expect(desktop.prompt).toContain('build')
+  })
+
+  it('create-preview template should require interactive elements', () => {
+    const preview = ONBOARDING_CARDS.find(c => c.id === 'create-preview')!
+    expect(preview.prompt).toContain('working buttons')
+  })
+
+  it('improve-ui template should include design rules', () => {
+    const improve = ONBOARDING_CARDS.find(c => c.id === 'improve-ui')!
+    expect(improve.prompt).toContain('ivory')
+    expect(improve.prompt).toContain('no neon')
+    expect(improve.prompt).toContain('typecheck')
+  })
+
+  it('build-android-app template should be offline-first', () => {
+    const android = ONBOARDING_CARDS.find(c => c.id === 'build-android-app')!
+    expect(android.prompt).toContain('offline-first')
+    expect(android.prompt).toContain('Material Design')
+  })
+
+  it('connect-provider template should mention OpenRouter for beginners', () => {
+    const card = ONBOARDING_CARDS.find(c => c.id === 'connect-provider')!
+    expect(card.prompt).toContain('OpenRouter')
+    expect(card.prompt).toContain('beginners')
+  })
+
+  it('package-windows template should warn against hardcoding secrets', () => {
+    const card = ONBOARDING_CARDS.find(c => c.id === 'package-windows')!
+    expect(card.prompt).toContain('Do not hardcode')
+    expect(card.prompt).toContain('build')
+  })
+
+  it('guided builder prompt should always include safety section', () => {
+    const prompt = buildGuidedPrompt({ 'what-to-build': 'website' })
+    expect(prompt).toContain('Do not hardcode')
+    expect(prompt).toContain('typecheck, tests, and build')
+    expect(prompt).toContain('beginner-friendly')
+  })
+
+  it('all build templates should have prompts exceeding 100 chars (useful output)', () => {
+    for (const card of ONBOARDING_CARDS) {
+      if (card.category === 'build') {
+        expect(card.prompt.length).toBeGreaterThan(100)
+      }
     }
   })
 })

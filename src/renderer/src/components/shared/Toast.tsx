@@ -66,7 +66,7 @@ export function ToastContainer(): React.ReactElement | null {
       <div className={`flex items-center gap-2 px-4 py-3 rounded-[var(--radius-lg)] border shadow-[var(--shadow-lg)] ${colorMap[toast.type]} min-w-[280px] max-w-[420px]`}>
         {iconMap[toast.type]}
         <span className="text-sm flex-1">{toast.message}</span>
-        <button onClick={dismiss} className="p-0.5 rounded-[var(--radius-sm)] opacity-60 hover:opacity-100 transition-opacity" aria-label="Dismiss">
+        <button type="button" onClick={dismiss} className="p-0.5 rounded-[var(--radius-sm)] opacity-60 hover:opacity-100 transition-opacity" aria-label="Dismiss">
           <X size={14} />
         </button>
       </div>

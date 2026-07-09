@@ -222,3 +222,37 @@ describe('Phone Companion Placeholder', () => {
     expect(phone.riskNotes).toContain('no cloud relay')
   })
 })
+
+describe('Connector Cards — Expand & Detail Contracts', () => {
+  it('should have setup guidance for all non-connected connectors', () => {
+    const notConnected = getAllConnectors().filter(c => c.status === 'not_connected' || c.status === 'needs_setup')
+    expect(notConnected.length).toBeGreaterThanOrEqual(4) // openai, google, gmail, drive, calendar, github, etc.
+    for (const c of notConnected) {
+      expect(c.setupStatus).toBeTruthy()
+    }
+  })
+
+  it('should have docs URL for all non-planned connectors', () => {
+    const nonPlanned = getAllConnectors().filter(c => c.status !== 'planned')
+    expect(nonPlanned.length).toBeGreaterThanOrEqual(10)
+    for (const c of nonPlanned) {
+      expect(c.docsUrl).toBeTruthy()
+    }
+  })
+
+  it('should not have fake vendor logos — uses iconKey only', () => {
+    for (const c of getAllConnectors()) {
+      expect(c.iconKey).toBeTruthy()
+      expect(typeof c.iconKey).toBe('string')
+      // No vendor logo path should exist
+      expect(c.iconKey).not.toContain('.png')
+      expect(c.iconKey).not.toContain('.svg')
+      expect(c.iconKey).not.toContain('brand')
+    }
+  })
+
+  it('should have unique displayNames across all connectors', () => {
+    const names = getAllConnectors().map(c => c.displayName)
+    expect(new Set(names).size).toBe(names.length)
+  })
+})

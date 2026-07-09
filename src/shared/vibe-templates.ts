@@ -45,7 +45,7 @@ export const ONBOARDING_CARDS: VibeTemplate[] = [
     icon: 'Monitor',
     description: 'Create an Electron desktop application with React and Tailwind CSS.',
     category: 'build',
-    prompt: 'I want to build a desktop app. Help me set up an Electron + React project. Start by asking what the app should do, then plan the features and generate the starter code. Keep it simple and explain each step.'
+    prompt: 'I want to build a desktop app. Help me set up an Electron + React project. Start by asking what the app should do, then plan the features and generate the starter code. Keep it simple and explain each step.\n\nDesign rules: Use calm ivory tones, no neon colors, clean sans-serif typography. After generating code, run typecheck, tests, and build to verify everything works.'
   },
   {
     id: 'build-website',
@@ -61,7 +61,7 @@ export const ONBOARDING_CARDS: VibeTemplate[] = [
     icon: 'Smartphone',
     description: 'Create a simple Android app — Aureon helps plan and generate the code.',
     category: 'build',
-    prompt: 'I want to build a simple Android app. Help me plan the features and generate the starter code. I\'m a beginner, so explain each file and what it does. Recommend the simplest setup possible.'
+    prompt: 'I want to build a simple Android app. Help me plan the features and generate the starter code. I\'m a beginner, so explain each file and what it does. Recommend the simplest setup possible.\n\nKeep it offline-first — no server required. Use clean Material Design with warm neutral colors (no neon). After generating, explain how to test it.'
   },
   {
     id: 'build-mini-game',
@@ -85,7 +85,7 @@ export const ONBOARDING_CARDS: VibeTemplate[] = [
     icon: 'Palette',
     description: 'Make your app look more professional with better colors, spacing, and layout.',
     category: 'improve',
-    prompt: 'Help me improve the visual design of my app. Make it look more professional with better colors, spacing, typography, and layout. Keep it calm and clean. After changes, run the build to verify nothing is broken.'
+    prompt: 'Help me improve the visual design of my app. Make it look more professional with better colors, spacing, typography, and layout.\n\nDesign rules:\n- Use calm ivory/warm neutral color palette (no neon, no dark mode unless requested)\n- Clean sans-serif typography with proper hierarchy\n- Rounded corners, subtle shadows, comfortable whitespace\n- Premium desktop feel — not a flashy website\n\nAfter changes, run typecheck, tests, and build to verify nothing is broken.'
   },
   {
     id: 'add-feature',
@@ -109,7 +109,7 @@ export const ONBOARDING_CARDS: VibeTemplate[] = [
     icon: 'Eye',
     description: 'Build a small app and see it running live in the preview panel.',
     category: 'build',
-    prompt: 'Build a small self-contained app for me to preview live. Keep it simple — a single HTML page with clean UI. Use warm ivory colors and rounded corners.',
+    prompt: 'Build a small self-contained app for me to preview live. Keep it simple — a single HTML page with clean UI. Use warm ivory colors and rounded corners. Include working buttons, not just a static page. The app should do something useful (counter, timer, form, list, etc.). After generating, verify it renders correctly in Live Preview.',
     openInCode: true
   },
   {

@@ -24,6 +24,7 @@ import { EmptyState } from '../components/shared/EmptyState'
 import { useIpc } from '../hooks/useIpc'
 import { useNavigate } from 'react-router-dom'
 import { Sparkles } from 'lucide-react'
+import { AUTO_PREVIEW_KEYS, clearAutoPreview } from '@shared/preview-helpers'
 
 interface PreviewStatus {
   id: string | null
@@ -124,15 +125,15 @@ export function LivePreview(): React.ReactElement {
   }, [status.logs])
 
   useEffect(() => {
-    const shouldAutoStartPreview = sessionStorage.getItem('auto-build-app-preview')
-    const shouldAutoStartSandbox = sessionStorage.getItem('auto-build-app-sandbox-only')
+    const shouldAutoStartPreview = sessionStorage.getItem(AUTO_PREVIEW_KEYS.autoStart)
+    const shouldAutoStartSandbox = sessionStorage.getItem(AUTO_PREVIEW_KEYS.sandboxOnly)
     
     if (shouldAutoStartPreview === 'true') {
-      sessionStorage.removeItem('auto-build-app-preview')
-      const style = sessionStorage.getItem('build-app-style') || 'Calming Ivory'
+      const style = sessionStorage.getItem(AUTO_PREVIEW_KEYS.style) || 'Calming Ivory'
+      clearAutoPreview()
       handleRunDemo(style)
     } else if (shouldAutoStartSandbox === 'true') {
-      sessionStorage.removeItem('auto-build-app-sandbox-only')
+      clearAutoPreview()
       handleCreateSandbox()
     }
   }, [])
@@ -342,21 +343,21 @@ export function LivePreview(): React.ReactElement {
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)] block mb-2">Project files</span>
-                  <div className="space-y-1 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-surface)] p-2">
+                  <div className="space-y-0.5 rounded-xl border border-[var(--ivory-border)]/50 bg-[var(--ivory-surface)]/40 p-2">
                     {mockFiles.map(file => (
                       <div
                         key={file.name}
-                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold
+                        className={`flex items-center justify-between px-3 py-1.5 rounded-lg text-xs
                           ${file.status === 'blocked'
-                            ? 'opacity-50 bg-[var(--ivory-bg)] border border-dashed border-[var(--ivory-border)]'
-                            : 'hover:bg-[var(--ivory-elevated)] border border-transparent'}`}
+                            ? 'opacity-40 bg-transparent border border-dashed border-[var(--ivory-border)]/40'
+                            : 'hover:bg-[var(--ivory-elevated)]/60 border border-transparent'}`}
                       >
                         <div className="flex items-center gap-2 truncate">
-                          <FileText size={13} className={file.status === 'blocked' ? 'text-[var(--ivory-text-3)]' : 'text-[var(--ivory-accent)]'} />
-                          <span className={file.status === 'blocked' ? 'text-[var(--ivory-text-3)] font-mono' : 'text-[var(--ivory-text)]'}>{file.name}</span>
+                          <FileText size={12} className={file.status === 'blocked' ? 'text-[var(--ivory-text-3)]' : 'text-[var(--ivory-text-3)]'} />
+                          <span className={file.status === 'blocked' ? 'text-[var(--ivory-text-3)]/60 text-[11px] font-mono' : 'text-[var(--ivory-text-2)] text-[11px]'}>{file.name}</span>
                         </div>
                         {file.status === 'blocked' && (
-                          <span className="text-[9px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100 uppercase tracking-wide">Ignored</span>
+                          <span className="text-[9px] font-medium text-[var(--ivory-text-3)]/50 uppercase tracking-wide">Ignored</span>
                         )}
                       </div>
                     ))}
@@ -364,10 +365,10 @@ export function LivePreview(): React.ReactElement {
                 </div>
 
                 {/* Warning card for secret context */}
-                <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/60 shadow-[var(--shadow-sm)] flex gap-2.5 items-start">
-                  <AlertTriangle size={15} className="text-amber-600 shrink-0 mt-0.5" />
-                  <div className="text-[11px] leading-relaxed text-amber-800 font-body">
-                    <span className="font-bold">Safety Policy:</span> Sensitive config files (e.g. <code className="font-mono bg-amber-100 px-1 py-0.5 rounded">.env</code>) and credentials are automatically omitted from context to prevent accidental uploads. File writes require user confirmation.
+                <div className="p-3 rounded-xl bg-amber-50/40 border border-amber-200/30 shadow-none flex gap-2 items-start">
+                  <AlertTriangle size={13} className="text-amber-600/70 shrink-0 mt-0.5" />
+                  <div className="text-[10px] leading-relaxed text-amber-800/80 font-body">
+                    <span className="font-semibold">Safety Policy:</span> Sensitive config files (e.g. <code className="font-mono bg-amber-100/50 px-1 py-0.5 rounded text-[10px]">.env</code>) and credentials are automatically omitted from context to prevent accidental uploads. File writes require user confirmation.
                   </div>
                 </div>
               </div>

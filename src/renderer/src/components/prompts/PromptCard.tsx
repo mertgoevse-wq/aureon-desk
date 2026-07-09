@@ -27,6 +27,7 @@ export function PromptCard({
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2 min-w-0">
           <button
+            type="button"
             onClick={() => onToggleFavorite(prompt.id)}
             className={`shrink-0 transition-colors ${isFavorite ? 'text-amber-500' : 'text-[var(--ivory-text-3)] hover:text-amber-400'}`}
             title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
@@ -47,6 +48,7 @@ export function PromptCard({
         </div>
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2 shrink-0">
           <button
+            type="button"
             onClick={() => onCopy(prompt.content)}
             className="p-1.5 rounded-[var(--radius-sm)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors"
             title="Copy content"
@@ -54,6 +56,7 @@ export function PromptCard({
             <Copy size={14} />
           </button>
           <button
+            type="button"
             onClick={() => onEdit(prompt)}
             className="p-1.5 rounded-[var(--radius-sm)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors"
             title="Edit"
@@ -61,6 +64,7 @@ export function PromptCard({
             <Edit2 size={14} />
           </button>
           <button
+            type="button"
             onClick={() => onDelete(prompt.id)}
             className="p-1.5 rounded-[var(--radius-sm)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-error)] hover:bg-[var(--ivory-error-bg)] transition-colors"
             title="Delete"

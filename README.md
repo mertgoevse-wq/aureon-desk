@@ -151,6 +151,16 @@ Output files in `dist/`:
 - Keys are **never** stored in plaintext on disk
 - All log output is redacted to remove API keys and tokens
 - Remote provider warning displayed before sending project file context
+- Full security documentation: [`SECURITY_NOTES.md`](./SECURITY_NOTES.md)
+
+### Beta Release
+
+Before distributing builds to testers, see [`docs/BETA_CLEAN_RELEASE_CHECKLIST.md`](./docs/BETA_CLEAN_RELEASE_CHECKLIST.md) for:
+- Secret scan instructions (zero real keys in source)
+- PowerShell cleanup commands to wipe local app data
+- First-run state verification (no chats, no keys, no accounts)
+- Log redaction audit (9-tier pattern coverage)
+- Pre-distribution checklist
 
 ### Provider Test Center
 

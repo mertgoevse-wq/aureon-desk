@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { ONBOARDING_CARDS, GUIDED_BUILDER_STEPS, buildGuidedPrompt } from '@shared/vibe-templates'
 import type { VibeTemplate } from '@shared/vibe-templates'
+import { setAutoBuildPreview } from '@shared/preview-helpers'
 import { BeginnerHelp } from '../components/vibe/BeginnerHelp'
 import { SafetyNotice } from '../components/vibe/SafetyNotice'
 
@@ -86,6 +87,16 @@ export function VibeCoding(): React.ReactElement {
         }))
       }, 150)
     }
+  }, [navigate])
+
+  const handlePreviewDemo = useCallback((card: VibeTemplate) => {
+    setAutoBuildPreview({ style: 'Calming Ivory', prompt: card.prompt, platform: 'Web app' })
+    navigate('/preview')
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('composer-insert', {
+        detail: { text: card.prompt, mode: 'replace' }
+      }))
+    }, 150)
   }, [navigate])
 
   const handleProjectTypeClick = useCallback((typeId: string) => {
@@ -172,7 +183,7 @@ export function VibeCoding(): React.ReactElement {
 
           {/* View tabs */}
           <div className="inline-flex items-center gap-1 mt-5 p-1 rounded-2xl bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/50">
-            <button onClick={() => { setView('onboarding'); handleReset() }}
+            <button type="button" onClick={() => { setView('onboarding'); handleReset() }}
               className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition-all ${
                 view === 'onboarding'
                   ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] shadow-[var(--shadow-sm)]'
@@ -181,7 +192,7 @@ export function VibeCoding(): React.ReactElement {
               <Sparkles size={13} className="inline mr-1.5 text-[var(--ivory-accent)]" />
               Quick Start
             </button>
-            <button onClick={() => { setView('guided'); handleReset() }}
+            <button type="button" onClick={() => { setView('guided'); handleReset() }}
               className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition-all ${
                 view === 'guided'
                   ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] shadow-[var(--shadow-sm)]'
@@ -190,7 +201,7 @@ export function VibeCoding(): React.ReactElement {
               <Map size={13} className="inline mr-1.5 text-[var(--ivory-accent)]" />
               Guided Builder
             </button>
-            <button onClick={() => setView('learn')}
+            <button type="button" onClick={() => setView('learn')}
               className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition-all ${
                 view === 'learn'
                   ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] shadow-[var(--shadow-sm)]'
@@ -215,20 +226,45 @@ export function VibeCoding(): React.ReactElement {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {PROJECT_TYPES.map(type => (
-                  <button key={type.id} type="button" onClick={() => handleProjectTypeClick(type.id)}
+                  <div key={type.id}
                     data-testid={`vibe-project-${type.id}`}
-                    className="group flex items-start gap-3 p-4 rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/25 hover:shadow-[var(--shadow-md)] transition-all duration-150 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--ivory-accent-light)] flex items-center justify-center shrink-0 text-[var(--ivory-accent)] group-hover:scale-105 transition-transform">
-                      {SMALL_ICONS[type.icon] || <Lightbulb size={14} />}
+                    className="flex flex-col rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/25 hover:shadow-[var(--shadow-md)] transition-all duration-150 text-left focus-within:ring-2 focus-within:ring-[var(--ivory-accent)]/30 overflow-hidden">
+                    <button type="button" onClick={() => handleProjectTypeClick(type.id)}
+                      className="group flex items-start gap-3 p-4 text-left w-full cursor-pointer">
+                      <div className="w-10 h-10 rounded-xl bg-[var(--ivory-surface)] flex items-center justify-center shrink-0 text-[var(--ivory-text-2)] group-hover:scale-105 transition-transform">
+                        {SMALL_ICONS[type.icon] || <Lightbulb size={14} />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <span className="block text-[13px] font-semibold text-[var(--ivory-text)]">{type.label}</span>
+                        <span className="block text-[11px] text-[var(--ivory-text-3)] mt-0.5 leading-relaxed">{type.desc}</span>
+                      </div>
+                      <ChevronRight size={14} className="shrink-0 text-[var(--ivory-border)] group-hover:text-[var(--ivory-text-3)] mt-1 transition-colors" />
+                    </button>
+                    <div className="flex items-center gap-1 px-4 pb-3 border-t border-[var(--ivory-border)]/20 pt-2.5">
+                      <button type="button" onClick={(e) => { e.stopPropagation(); handleProjectTypeClick(type.id) }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors cursor-pointer">
+                        <Send size={10} /> Chat
+                      </button>
+                      <button type="button" onClick={(e) => {
+                        e.stopPropagation()
+                        const card = ONBOARDING_CARDS.find(c =>
+                          (type.id === 'website' && c.id === 'build-website') ||
+                          (type.id === 'desktop-app' && c.id === 'build-desktop-app') ||
+                          (type.id === 'dashboard' && c.id === 'create-preview') ||
+                          (type.id === 'ai-tool' && c.id === 'create-preview')
+                        )
+                        if (card) {
+                          handlePreviewDemo(card)
+                        } else {
+                          setAutoBuildPreview({ style: 'Calming Ivory', prompt: `I want to build a ${type.id}. Help me plan and create it step by step.`, platform: 'Web app' })
+                          navigate('/preview')
+                        }
+                      }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-light)]/50 transition-colors cursor-pointer">
+                        <Play size={10} /> Preview
+                      </button>
                     </div>
-                    <div className="min-w-0">
-                      <span className="block text-[13px] font-semibold text-[var(--ivory-text)]">{type.label}</span>
-                      <span className="block text-[11px] text-[var(--ivory-text-3)] mt-0.5 leading-relaxed">{type.desc}</span>
-                      <span className="inline-flex items-center gap-1 text-[10px] text-[var(--ivory-accent)] font-semibold mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                        Start building <ChevronRight size={10} />
-                      </span>
-                    </div>
-                  </button>
+                  </div>
                 ))}
               </div>
             </section>
@@ -244,7 +280,7 @@ export function VibeCoding(): React.ReactElement {
                   <button key={action.id} type="button" onClick={() => handleQuickAction(action.id)}
                     data-testid={`vibe-action-${action.id}`}
                     className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-sm)] transition-all duration-150 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30">
-                    <div className="w-9 h-9 rounded-xl bg-[var(--ivory-accent-light)] flex items-center justify-center text-[var(--ivory-accent)]">
+                    <div className="w-9 h-9 rounded-xl bg-[var(--ivory-surface)] flex items-center justify-center text-[var(--ivory-text-2)]">
                       {LUCIDE_ICONS[action.icon] || <Lightbulb size={16} />}
                     </div>
                     <span className="text-[11px] font-semibold text-[var(--ivory-text)] leading-tight">{action.label}</span>
@@ -283,7 +319,7 @@ export function VibeCoding(): React.ReactElement {
                   <button key={card.id} type="button" onClick={() => handleCardClick(card)}
                     data-testid={`vibe-card-${card.id}`}
                     className="group flex items-start gap-3 p-4 rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-md)] transition-all duration-150 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--ivory-accent-light)] flex items-center justify-center shrink-0 text-[var(--ivory-accent)] group-hover:scale-105 transition-transform">
+                    <div className="w-10 h-10 rounded-xl bg-[var(--ivory-surface)] flex items-center justify-center shrink-0 text-[var(--ivory-text-2)] group-hover:scale-105 transition-transform">
                       {LUCIDE_ICONS[card.icon] || <Lightbulb size={18} />}
                     </div>
                     <div className="min-w-0">
@@ -346,7 +382,7 @@ export function VibeCoding(): React.ReactElement {
                               ? 'border-[var(--ivory-accent)]/30 bg-[var(--ivory-accent-light)] shadow-[var(--shadow-sm)]'
                               : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:border-[var(--ivory-accent)]/20 hover:bg-[var(--ivory-surface)]'
                           }`}>
-                          <span className="text-[var(--ivory-accent)] shrink-0">
+                          <span className="text-[var(--ivory-text-2)] shrink-0">
                             {LUCIDE_ICONS[option.icon || ''] || <Lightbulb size={16} />}
                           </span>
                           <div className="min-w-0">
@@ -360,7 +396,7 @@ export function VibeCoding(): React.ReactElement {
                   </div>
 
                   {step > 0 && (
-                    <button onClick={() => setStep(step - 1)}
+                    <button type="button" onClick={() => setStep(step - 1)}
                       className="mt-4 inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] transition-colors">
                       <ChevronLeft size={12} /> Back
                     </button>
@@ -383,15 +419,15 @@ export function VibeCoding(): React.ReactElement {
                 <SafetyNotice type="remote_context" />
 
                 <div className="flex flex-wrap gap-2.5">
-                  <button onClick={handleUsePrompt} data-testid="guided-use-chat"
+                  <button type="button" onClick={handleUsePrompt} data-testid="guided-use-chat"
                     className="inline-flex items-center gap-1.5 h-11 px-5 rounded-xl bg-[var(--ivory-accent)] text-white text-[13px] font-semibold hover:bg-[var(--ivory-accent-hover)] transition-colors shadow-[var(--shadow-sm)]">
                     <Send size={14} /> Send to Chat
                   </button>
-                  <button onClick={handleEnterCodeMode} data-testid="guided-use-code"
+                  <button type="button" onClick={handleEnterCodeMode} data-testid="guided-use-code"
                     className="inline-flex items-center gap-1.5 h-11 px-5 rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] text-[var(--ivory-text)] text-[13px] font-semibold hover:bg-[var(--ivory-surface)] transition-colors shadow-[var(--shadow-xs)]">
                     <Monitor size={14} /> Open in Code Mode
                   </button>
-                  <button onClick={handleReset}
+                  <button type="button" onClick={handleReset}
                     className="inline-flex items-center gap-1.5 h-11 px-5 rounded-xl text-[13px] font-semibold text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] transition-colors">
                     Start Over
                   </button>

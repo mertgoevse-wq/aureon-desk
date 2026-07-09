@@ -274,6 +274,7 @@ export function CoworkPage(): React.ReactElement {
                   <span className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)] block mb-2">Active Tasks</span>
                   {tasks.map(t => (
                     <button
+                      type="button"
                       key={t.id}
                       onClick={() => setActiveTaskId(t.id)}
                       className={`w-full text-left p-2.5 rounded-xl border transition-all text-xs font-semibold

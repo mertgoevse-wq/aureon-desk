@@ -54,7 +54,9 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps): React.Re
             <h2 className="text-sm font-semibold display-text text-[var(--ivory-text)]">Keyboard Shortcuts</h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
+            aria-label="Close shortcuts help"
             className="p-1 rounded-[var(--radius-sm)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors"
           >
             <X size={14} />

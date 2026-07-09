@@ -71,10 +71,10 @@ export function RightInspector(): React.ReactElement {
         data-testid="router-panel"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--ivory-border)]">
-          <div className="flex items-center gap-2">
-            <Brain size={14} className="text-[var(--ivory-accent)]" />
-            <h2 className="text-sm font-semibold text-[var(--ivory-text)]">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--ivory-border)]/40">
+          <div className="flex items-center gap-1.5">
+            <Brain size={12} className="text-[var(--ivory-text-3)]" />
+            <h2 className="text-[11px] font-semibold text-[var(--ivory-text-2)] uppercase tracking-[0.04em]">
               Inspector
             </h2>
           </div>
@@ -101,8 +101,8 @@ export function RightInspector(): React.ReactElement {
             </div>
           ) : !currentAnalysis ? (
             <div className="flex flex-col items-center justify-center py-12 text-center px-5">
-              <div className="w-10 h-10 rounded-xl bg-[var(--ivory-surface-2)] flex items-center justify-center mb-3">
-                <Brain size={18} className="text-[var(--ivory-text-3)]" strokeWidth={1.5} />
+              <div className="w-8 h-8 rounded-lg bg-[var(--ivory-surface-2)]/50 flex items-center justify-center mb-2.5">
+                <Brain size={14} className="text-[var(--ivory-text-3)]" strokeWidth={1.5} />
               </div>
               <p className="text-xs text-[var(--ivory-text-3)] max-w-[200px] leading-relaxed">
                 Send a message to see intent analysis, agent routing, and risk assessment.
@@ -110,7 +110,7 @@ export function RightInspector(): React.ReactElement {
               <ProjectContextSection project={activeProject} />
             </div>
           ) : (
-            <div className="px-3 space-y-3">
+            <div className="px-3 space-y-2">
               <AnalysisView analysis={currentAnalysis} />
               <ProjectContextSection project={activeProject} />
             </div>
@@ -359,27 +359,27 @@ function Section({
 }: SectionProps): React.ReactElement {
   const [open, setOpen] = React.useState(defaultOpen)
   return (
-    <div className="rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/50 overflow-hidden">
+    <div className="rounded-lg bg-[var(--ivory-elevated)]/40 border border-[var(--ivory-border)]/20 overflow-hidden">
       <button
         onClick={() => collapsible && setOpen(!open)}
-        className={`flex items-center justify-between px-3 py-2 text-[11px] font-semibold text-[var(--ivory-text-2)] w-full text-left transition-colors cursor-pointer
-          ${collapsible ? 'hover:bg-[var(--ivory-surface)]' : ''}`}
+        className={`flex items-center justify-between px-2.5 py-1.5 text-[10px] font-medium text-[var(--ivory-text-3)] w-full text-left transition-colors cursor-pointer
+          ${collapsible ? 'hover:text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]/50' : ''}`}
       >
-        <div className="flex items-center gap-2">
-          <span className="text-[var(--ivory-accent)] shrink-0">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[var(--ivory-text-3)] shrink-0">
             {icon}
           </span>
-          <span>{title}</span>
+          <span className="uppercase tracking-[0.05em] text-[10px]">{title}</span>
         </div>
         {collapsible && (
           <ChevronRight
-            size={12}
+            size={10}
             className={`text-[var(--ivory-text-3)] transition-transform duration-[var(--transition-fast)]
               ${open ? 'rotate-90' : ''}`}
           />
         )}
       </button>
-      {open && <div className="px-3 pb-2.5 pt-1 border-t border-[var(--ivory-border)]/10 animate-fade-in">{children}</div>}
+      {open && <div className="px-2.5 pb-2 pt-0.5 border-t border-[var(--ivory-border)]/15 animate-fade-in">{children}</div>}
     </div>
   )
 }

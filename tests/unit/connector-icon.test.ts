@@ -115,12 +115,12 @@ describe('Brand Documentation', () => {
   const projectRoot = path.resolve(__dirname, '..', '..')
 
   it('should have BRAND_ASSET_AUDIT.md', () => {
-    const exists = fs.existsSync(path.join(projectRoot, 'docs', 'BRAND_ASSET_AUDIT.md'))
+    const exists = fs.existsSync(path.join(projectRoot, 'docs', 'brand', 'BRAND_ASSET_AUDIT.md'))
     expect(exists).toBe(true)
   })
 
   it('should have BRAND_AND_VENDOR_LOGO_POLICY.md', () => {
-    const exists = fs.existsSync(path.join(projectRoot, 'docs', 'BRAND_AND_VENDOR_LOGO_POLICY.md'))
+    const exists = fs.existsSync(path.join(projectRoot, 'docs', 'brand', 'BRAND_AND_VENDOR_LOGO_POLICY.md'))
     expect(exists).toBe(true)
   })
 

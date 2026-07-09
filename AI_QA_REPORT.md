@@ -4,6 +4,298 @@
 
 ---
 
+## Beta Security Cleanup — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (491 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| Secret scan (`git grep sk-or-v1`) | ✅ PASS — only docs/tests |
+| Secret scan (`git grep AIza`) | ✅ PASS — only docs/tests |
+| Secret scan (untracked files) | ✅ PASS — archive/qa docs only |
+| `.gitignore` audit | ✅ 20+ patterns, added `videos/` and `traces/` |
+| First-run state | ✅ No chats, no keys, no accounts, `api_key_enc: null` |
+| Log redaction | ✅ 9-tier patterns, all write paths covered |
+
+### Created
+
+- `docs/BETA_CLEAN_RELEASE_CHECKLIST.md` — PowerShell cleanup, secret scan, pre-distribution checklist
+
+### Updated
+
+- `.gitignore`, `SECURITY_NOTES.md`, `CHANGELOG.md`, `AI_QA_REPORT.md`
+
+---
+
+## Final UI Beauty & Declutter Pass — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (491 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+
+- **Hero gradient calmed**: Radial gradient opacity 0.50→0.28, mid-point 0.10→0.04 across all hero pages
+- **Orange accent reduction**: ~15 icon containers across Studio and VibeCoding changed from accent-light terracotta to neutral ivory-surface. Only hero icons and primary CTAs retain brand terracotta.
+- **Chat decluttered**: Starter pills 3→2, "More…" button muted, Recent section borderless
+
+---
+
+## Studio → LivePreview Regression Harden — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (495 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+
+- **Created** `docs/STUDIO_LIVEPREVIEW_CONTRACT.md` — canonical 9-step flow with IPC/error contracts
+- **Created** `src/shared/preview-helpers.ts` — eliminated 5 duplicate sessionStorage blocks
+- **Updated** Studio.tsx, VibeCoding.tsx, LivePreview.tsx to use shared helpers
+- **Added** 5 regression contract tests in `live-preview.test.ts` (+9 total from 486)
+
+### Pipeline Hardening
+
+| Concern | Before | After |
+|---------|--------|-------|
+| SessionStorage writers | 5 inline blocks (duplicated) | 2 shared helpers |
+| SessionStorage keys | Hardcoded strings | `AUTO_PREVIEW_KEYS` constants |
+| Flow documentation | None | Full contract doc |
+| Regression coverage | 29 tests | 34 tests (+5 contract) |
+
+---
+
+## Result Quality QA — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (487 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Quality Improvements
+
+- **4 vibe templates enhanced**: build-desktop-app (design rules + verify), improve-ui (ivory palette constraints), create-preview (interactive requirements), build-android-app (offline-first + Material Design)
+- **8 new quality tests**: build verification, interactivity, design rules, offline-first, provider guidance, no-secrets, guided builder safety, prompt length
+- **Created** `docs/RESULT_QUALITY_QA.md` — 12-item checklist, 5 scenario results
+- **Fixed** port assertion flake in `live-preview.test.ts`
+
+### Result Quality Scorecard
+
+| Flow | Output Quality | Status |
+|------|---------------|--------|
+| Build App wizard | Creates preview with style-aware counter | ✅ |
+| Vibe Coding templates | Complete prompts with design rules + safety | ✅ |
+| Generate Text | Tone-aware prompt routing to chat | ✅ |
+| Image/Video/Music generators | Mock Offline Creator default, labeled | ✅ |
+| Provider missing | Setup CTA badge, no crash | ✅ |
+| MCP tools | Mock labeled, destructive blocked, no auto-run | ✅ |
+| LivePreview demo | Counter app renders, interactable | ✅ |
+| Guided builder | Structured prompts with beginner instructions | ✅ |
+
+---
+
+## Post-Playwright Failure Fix Pass — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (479 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Failure Analysis Results
+
+- **6 failures analyzed** across smoke and studio-vibe-flow specs
+- **Root cause:** All Electron DevTools WebSocket flakes on Windows (ECONNRESET / Target page closed)
+- **Real product bugs found: 0**
+- **Fix applied:** Retry logic in Electron fixture with proper `err instanceof Error` type guard + increased cleanup delay (3s→5s)
+- Created `docs/PLAYWRIGHT_FAILURE_ANALYSIS.md` — comprehensive analysis with per-failure root cause, fix plan, and product flow verification matrix
+
+---
+
+## Headed Playwright E2E Coverage — 2026-07-09
+
+| Check | Result |
+| ------- | -------- |
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (479 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| Headed E2E (18-aureon-studio-vibe-flow) | ✅ 12/12 PASS |
+| Smoke + new spec E2E | ✅ 18/22 pass (1 pre-existing flake, 3 flaky on Electron launch) |
+
+### New E2E Tests (12 added)
+
+Created `tests/e2e/18-aureon-studio-vibe-flow.spec.ts` covering:
+
+| # | Test | Result |
+|---|------|--------|
+| 1 | Studio card click opens Build App wizard drawer | ✅ |
+| 2 | Build App wizard accepts typing and has Start button | ✅ |
+| 3 | Build App wizard start routes to Code mode | ✅ |
+| 4 | LivePreview coding demo creates counter app | ✅ |
+| 5 | Provider fake API key input works, Save/Test buttons present | ✅ |
+| 6 | Provider paste into API key field works | ✅ |
+| 7 | MCP Add Server modal opens and closes with ESC | ✅ |
+| 8 | MCP mock tools are labeled and visible | ✅ |
+| 9 | Vibe Coding cards render and are clickable | ✅ |
+| 10 | Vibe Coding template card inserts prompt into composer | ✅ |
+| 11 | No horizontal overflow at 1366x768 | ✅ |
+| 12 | No raw React error or blank screen across all routes | ✅ |
+
+### Known Pre-Existing Flakes
+
+- "Sidebar is visible" — intermittent Electron launch race condition on Windows (not caused by this pass)
+- "Window title", "No raw React error", "No IPC API" — same root cause (ECONNRESET on DevTools connection)
+
+---
+
+## Pre-Playwright Readiness Audit — 2026-07-09
+
+| Check | Result |
+| ------- | -------- |
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (479 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Verdict: ✅ READY FOR PROMPT 6 (Headed Playwright E2E)
+
+- 23 routes audited — 21 fully functional, 2 placeholder
+- 8 flow areas verified via code audit: App Launch, Studio, LivePreview, Chat, Settings/Providers, MCP Tools, Vibe Coding, Visual
+- Security gate: no hardcoded keys, secrets redacted, destructive tools gated, path traversal blocked
+- Known placeholders: CoworkPage (simulated), Extensions & Security settings (placeholder pages), file attachment (disabled)
+- No blockers found
+- Created `docs/PRE_PLAYWRIGHT_READINESS.md` with comprehensive pass/fail tables
+
+---
+
+## Keyboard Accessibility & Focus Pass — 2026-07-09
+
+| Check | Result |
+| ------- | -------- |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (469 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+
+- **Button type attributes**: Added `type="button"` to ~80+ buttons across 16 files. Made it default in shared Button component
+- **ARIA labels**: Added 2 missing labels (ShortcutsHelp close, PromptLibrary dismiss). 37+ total across app
+- **Focus management**: Verified Modal/Drawer focus traps, ESC close, click-outside close, focus restore
+- **Keyboard shortcuts**: Verified 9 global shortcuts, Enter/Shift+Enter composer behavior, smart context awareness
+- **Docs**: Created comprehensive `docs/ACCESSIBILITY_AUDIT.md` with WCAG 2.1 AA scorecard
+- **Tests**: +7 a11y contract tests in ui-desktop-polish.test.ts
+
+### Accessibility Scorecard
+
+| Category | Status |
+|----------|--------|
+| Button type attributes | ✅ All buttons have explicit type |
+| Icon button labels | ✅ All icon-only buttons have aria-label |
+| Focus trap (Modal/Drawer) | ✅ Tab/Shift+Tab cycling |
+| Focus restoration | ✅ Returns to previous element |
+| ESC to close | ✅ All modals, drawers, popovers |
+| Focus visible | ✅ Consistent ring-2 on all interactive elements |
+| Keyboard shortcuts | ✅ 9 global + composer shortcuts |
+| Enter/Shift+Enter | ✅ Send vs newline correct |
+| Screen reader landmarks | ✅ nav, dialog, tablist, listbox roles |
+
+---
+
+## Settings, Providers & MCP Final Polish — 2026-07-09
+
+| Check | Result |
+| ------- | -------- |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (469 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+
+- **Settings**: Back to Chat button uses bronze tones. GeneralSettings raw selects replaced with shared Select component
+- **Tests**: +10 new tests — provider Save/Test button contracts (fake key errors, can-test gating), no-secrets-in-logs verification, connector expand/detail contracts (no fake logos, unique names, setup guidance)
+- **Security**: Verified API key redaction in connection test messages and Bearer token sanitization
+
+---
+
+## Hero Visual Polish Pass — 2026-07-09
+
+| Check | Result |
+| ------- | -------- |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (459 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+
+- **Design Tokens**: Added bronze/copper/graphite tokens, softer hero gradient
+- **Right Inspector**: Quieter sections — smaller headers, muted icons, subtle containers
+- **Sidebar**: New Chat button uses bronze tones instead of orange
+- **Button**: Secondary variant uses bronze hover border
+- **Studio**: Drawer wizard buttons given more padding and larger text across all sections
+- **Vibe Coding**: Subtler card action buttons with lighter borders
+- **LivePreview**: Quieter file explorer, muted safety card
+- **Docs**: Created HERO_VISUAL_AUDIT.md — 9-screen comprehensive audit
+
+---
+
+## Studio & Vibe Coding Build Flow Polish — 2026-07-09
+
+| Check | Result |
+| ------- | -------- |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (445 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+
+- Chat home: 7 targeted starter prompts, 3 pills visible, "More ideas" link to Vibe Coding
+- Studio: "Start building" heading, example-rich placeholder, "Start building" CTA
+- Vibe Coding: Chat + Preview buttons on project type cards, Preview auto-starts Code mode
+
+---
+
+## Source Consolidation & Cleanup — 2026-07-09
+
+| Check | Result |
+| ------- | -------- |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (445 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+
+- **Docs reorganized**: 13 files moved to subdirectories (archive/, qa/, brand/) with READMEs
+- **Source audit**: Created `docs/SOURCE_STRUCTURE_AUDIT.md` — full file map, duplicate audit, placeholder inventory
+- **Code cleanup**: Removed stale TODO, updated test paths for new doc locations
+- **Duplicate audit**: Confirmed zero true duplicate components
+
+---
+
+## Hero Theme Refinement — 2026-07-09
+
+| Check | Result |
+| ------- | -------- |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (445 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+
+- **Studio redesign**: Cleaner hero ("What do you want to create?"), simplified composer (single Build button), compact 4 main cards (Build, Code, Create, Connect) with arrow hints, compact autonomy selector with icon-only buttons
+- **Sidebar**: Subtler active states (borderless icons), quieter bottom profile, thinner dividers, reduced brand header
+- **Inspector**: Defaults to collapsed, removed Studio mount useEffect
+- **Chat home**: Smaller suggestion pills, quieter recents section, reduced shadows
+- **Tokens**: Softer hero radial gradient (ellipse shape)
+
+---
+
 ## LivePreview Auto-Popup Push Sync — 2026-07-09
 
 | Check | Result |
