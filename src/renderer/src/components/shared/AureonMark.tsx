@@ -58,19 +58,3 @@ export function AureonMark({ size = 32, className = '', withRing = true, variant
   )
 }
 
-/**
- * Aureon full logo — mark + "Aureon Desk" wordmark as an image.
- * Best for README, documentation, and splash screens.
- */
-export function AureonLogo({ width = 360, className = '' }: { width?: number; className?: string }): React.ReactElement {
-  return (
-    <img
-      src="/brand/aureon-logo-512.png"
-      alt="Aureon Desk"
-      width={width}
-      className={className}
-      style={{ objectFit: 'contain' }}
-      draggable={false}
-    />
-  )
-}

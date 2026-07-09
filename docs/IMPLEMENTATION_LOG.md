@@ -1,5 +1,86 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-09 — Deep Repo Cleanup with Free Tooling
+
+Branch: `main`
+
+### Session Purpose
+
+Use free/open-source tools (knip, depcheck, madge, ts-prune) to inspect the local project for unused files, dead exports, unused dependencies, circular imports, and broken structure. Fix only safe findings.
+
+### Critical Issue Review
+
+- Read `docs/ISSUES_REGISTER.md`, `AI_QA_REPORT.md`, `CHANGELOG.md`, `docs/IMPLEMENTATION_LOG.md` — no open Critical Issues.
+- Pre-flight checks: `verify:native` ✅, `typecheck` ✅, `597 tests` ✅, `build` ✅
+
+### Tools Installed
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| `knip` | latest | Dead code & unused export detection |
+| `depcheck` | latest | Unused dependency detection |
+| `madge` | latest | Circular dependency detection |
+| `ts-prune` | already installed | Unused export detection |
+
+### Files Created
+
+- `knip.json` — Knip configuration for Electron + Vite + Vitest + Playwright project
+- `docs/CODE_CLEANUP_AUDIT.md` — comprehensive cleanup audit report
+
+### Files Modified
+
+- `package.json` — added `audit:deadcode`, `audit:deps`, `audit:cycles` scripts
+- `src/shared/constants.ts` — removed dead `APP_NAME` export
+- `src/shared/self-audit.ts` — removed dead `SEVERITY_ORDER` export
+- `src/renderer/src/components/settings/SettingsComponents.tsx` — removed dead `DangerZone` component
+- `src/renderer/src/components/shared/AureonMark.tsx` — removed dead `AureonLogo` component
+- `src/renderer/src/components/shared/BrandLockup.tsx` — removed dead `BrandLockupCompact` component
+- `src/renderer/src/components/connectors/ConnectorIcon.tsx` — removed dead `ConnectorIconSmall` component
+
+### Files Deleted
+
+- `scratch/` directory (~398K, 12+ .tsx diagnostic files, already in `.gitignore`)
+- `src/renderer/src/components/shared/Popover.tsx` (~170 lines, 0 imports)
+- `src/renderer/src/components/shared/SelectMenu.tsx` (~143 lines, 0 imports)
+- `src/main/ipc/device-inputs.ipc.ts` (untracked, not wired)
+- `src/main/services/device-inputs.service.ts` (untracked, not wired)
+- `src/shared/device-inputs.ts` (untracked, not wired)
+
+### Key Findings
+
+| Category | Result |
+|----------|--------|
+| Circular dependencies | **0** across 137 source files ✅ |
+| Unused files removed | **8** files (5 dead + 3 untracked) |
+| Dead exports removed | **6** from existing files |
+| Unused deps (false positive) | **3** (knip, depcheck, madge — CLI tools) |
+| Files kept (safe) | **2** (settingsStore.ts, barrel exports used by tests) |
+
+### Kept / Not Removed
+
+- `src/renderer/src/stores/settingsStore.ts` — flagged as unused by knip but Zustand stores can be subscribed to indirectly
+- `CONNECTOR_LABELS`, `CONNECTOR_ICONS`, `CONNECTOR_INITIALS` barrel exports — used by `tests/unit/connector-icon.test.ts`
+- Service-level exports flagged by knip — many used dynamically via IPC channel names
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `git status` | ✅ main, up to date |
+| `npm run verify:native` (pre-change) | ✅ PASS |
+| `npm run typecheck` (pre-change) | ✅ PASS |
+| `npm test` (pre-change, 597 tests) | ✅ PASS |
+| `npm run build` (pre-change) | ✅ PASS |
+| `npx knip --config knip.json` | ✅ 6 unused files, 21 unused exports |
+| `npx depcheck` | ✅ 3 unused CLI devDeps (false positive) |
+| `npx madge --circular --extensions ts,tsx src/` | ✅ 0 circular deps |
+| `npm run typecheck` (post-change) | ✅ PASS |
+| `npm test` (post-change, 597 tests) | ✅ PASS |
+| `npm run build` (post-change) | ✅ PASS |
+| Code review | ✅ PASS |
+
+---
+
 ## 2026-07-09 — Safe Self-Audit & Optimization System
 
 Branch: `main`

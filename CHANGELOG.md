@@ -1,3 +1,27 @@
+## [0.9.67] - 2026-07-09
+
+### Changed — Deep Repo Cleanup with Free Tooling
+
+- Installed `knip`, `depcheck`, `madge` as devDependencies for dead code/unused dep/circular dependency detection
+- Created `knip.json` — configured for Electron + Vite + Vitest + Playwright project
+- Created `docs/CODE_CLEANUP_AUDIT.md` — comprehensive cleanup audit report
+- Added npm scripts: `audit:deadcode`, `audit:deps`, `audit:cycles`
+
+### Removed — Dead Code
+
+- Deleted `scratch/` directory (~398K, 12+ diagnostic files, already gitignored)
+- Deleted `Popover.tsx` and `SelectMenu.tsx` — 0 imports found (170+143 lines dead code)
+- Deleted 3 untracked `device-inputs.*` files from interrupted previous task
+- Removed 6 dead exports: `DangerZone`, `AureonLogo`, `BrandLockupCompact`, `ConnectorIconSmall`, `APP_NAME`, `SEVERITY_ORDER`
+
+### Verified
+
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (597 tests)
+- `npm run build` — ✅ PASS
+- `madge` — ✅ 0 circular dependencies across 137 files
+- Code review — ✅ PASS
+
 ## [0.9.66] - 2026-07-09
 
 ### Added — Safe Self-Audit & Optimization System

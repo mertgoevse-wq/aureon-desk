@@ -154,31 +154,4 @@ export function ConnectorIcon({
   )
 }
 
-/**
- * ConnectorIconSmall — inline icon for use in lists, badges, or small contexts.
- * Always renders as a neutral icon — no images.
- */
-export function ConnectorIconSmall({
-  type,
-  size = 18,
-  className = '',
-}: Omit<ConnectorIconProps, 'label'>): React.ReactElement {
-  const iconSize = Math.max(10, size * 0.75)
-  return (
-    <span
-      className={`inline-flex items-center justify-center rounded-lg bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] shrink-0 ${className}`}
-      style={{ width: size, height: size }}
-      data-testid={`connector-icon-small-${type}`}
-    >
-      {CONNECTOR_ICONS[type]
-        ? CONNECTOR_ICONS[type](iconSize)
-        : (
-          <span className="text-[8px] font-bold text-[var(--ivory-accent)]">
-            {CONNECTOR_INITIALS[type]}
-          </span>
-        )}
-    </span>
-  )
-}
-
 export { CONNECTOR_LABELS, CONNECTOR_ICONS, CONNECTOR_INITIALS }

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/main/index.ts",
+    "src/preload/index.ts",
+    "src/renderer/src/main.tsx",
+    "scripts/**/*.{js,mjs,ts}",
+    "drizzle.config.ts",
+    "electron.vite.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts"
+  ],
+  "project": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "scripts/**/*.{js,mjs,ts}"
+  ],
+  "ignore": [
+    "scratch/**"
+  ],
+  "ignoreDependencies": [],
+  "rules": {
+    "files": "warn",
+    "dependencies": "warn",
+    "unlisted": "warn",
+    "exports": "warn",
+    "types": "off",
+    "nsTypes": "off",
+    "nsExports": "off",
+    "duplicates": "warn",
+    "enumMembers": "off"
+  },
+  "includeEntryExports": true,
+  "vitest": {
+    "entry": [
+      "tests/unit/**/*.test.ts"
+    ],
+    "config": "vitest.config.ts"
+  },
+  "playwright": {
+    "entry": [
+      "tests/e2e/**/*.spec.ts"
+    ],
+    "config": "playwright.config.ts"
+  }
+}

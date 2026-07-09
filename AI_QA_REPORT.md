@@ -4,6 +4,69 @@
 
 ---
 
+## Deep Repo Cleanup — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| Critical issue review | ✅ PASS — no open Critical Issues in `docs/ISSUES_REGISTER.md` |
+| `npm run verify:native` (pre-change) | ✅ PASS |
+| `npm run typecheck` (pre-change) | ✅ PASS |
+| `npm test` (pre-change, 597 tests) | ✅ PASS |
+| `npm run build` (pre-change) | ✅ PASS |
+| `npm run typecheck` (post-change) | ✅ PASS |
+| `npm test` (post-change, 597 tests) | ✅ PASS |
+| `npm run build` (post-change) | ✅ PASS |
+| Code review | ✅ PASS — npm scripts + knip config issues fixed |
+
+### Tools Added
+
+| Tool | Purpose |
+|------|---------|
+| `knip` | Dead code & unused export detection |
+| `depcheck` | Unused dependency detection |
+| `madge` | Circular dependency detection (0 found) |
+
+### Files Removed
+
+| File | Reason |
+|------|--------|
+| `scratch/` (12+ files, ~398K) | Diagnostic files, already gitignored |
+| `src/renderer/src/components/shared/Popover.tsx` | 0 imports — dead component |
+| `src/renderer/src/components/shared/SelectMenu.tsx` | 0 imports — dead component |
+| `src/main/ipc/device-inputs.ipc.ts` | Untracked, not wired in |
+| `src/main/services/device-inputs.service.ts` | Untracked, not wired in |
+| `src/shared/device-inputs.ts` | Untracked, not wired in |
+
+### Dead Exports Removed
+
+| File | Export |
+|------|--------|
+| `SettingsComponents.tsx` | `DangerZone` |
+| `AureonMark.tsx` | `AureonLogo` |
+| `BrandLockup.tsx` | `BrandLockupCompact` |
+| `ConnectorIcon.tsx` | `ConnectorIconSmall` |
+| `constants.ts` | `APP_NAME` |
+| `self-audit.ts` | `SEVERITY_ORDER` |
+
+### npm Scripts Added
+
+- `audit:deadcode` — `npx knip --config knip.json`
+- `audit:deps` — `npx depcheck`
+- `audit:cycles` — `npx madge --circular --extensions ts,tsx src/`
+
+### Configuration
+
+- Created `knip.json` — configured for Electron + Vite + Vitest + Playwright
+- Created `docs/CODE_CLEANUP_AUDIT.md` — full audit report
+
+### False Positives Kept
+
+- `knip`, `depcheck`, `madge` — CLI tools, not code imports
+- `settingsStore.ts` — Zustand store, possibly used indirectly
+- `CONNECTOR_LABELS/ICONS/INITIALS` — used in tests
+
+---
+
 ## Safe Self-Audit & Optimization System — 2026-07-09
 
 | Check | Result |

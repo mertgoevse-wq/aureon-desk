@@ -80,30 +80,3 @@ export function StatusPill({ variant = 'neutral', children }: StatusPillProps): 
   )
 }
 
-interface DangerZoneProps {
-  label: string
-  description: string
-  actionLabel: string
-  onClick: () => void
-  disabled?: boolean
-  dataTestId?: string
-}
-
-export function DangerZone({ label, description, actionLabel, onClick, disabled = false, dataTestId }: DangerZoneProps): React.ReactElement {
-  return (
-    <div className="px-5 py-4 rounded-2xl border border-[var(--ivory-error)]/20 bg-[var(--ivory-error-bg)]/40 flex items-center justify-between gap-6" data-testid={dataTestId}>
-      <div className="min-w-0 flex-1 space-y-0.5">
-        <span className="block text-ui-sm font-semibold text-[var(--ivory-text)]">{label}</span>
-        <span className="block text-ui-caption text-[var(--ivory-text-3)] leading-relaxed">{description}</span>
-      </div>
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={onClick}
-        className="px-3.5 py-1.5 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-xs font-semibold text-[var(--ivory-error)] hover:bg-[var(--ivory-error-bg)] transition-colors shadow-[var(--shadow-xs)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-      >
-        {actionLabel}
-      </button>
-    </div>
-  )
-}

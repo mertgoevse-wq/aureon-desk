@@ -2,8 +2,6 @@
 
 import type { ProviderAdapterInfo } from './types/provider'
 
-export const APP_NAME = 'Aureon Desk'
-
 export const PROVIDER_ADAPTERS: ProviderAdapterInfo[] = [
   {
     slug: 'anthropic',

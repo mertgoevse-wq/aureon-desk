@@ -68,13 +68,6 @@ export const SEVERITY_LABELS: Record<FindingSeverity, string> = {
   info: 'Info',
 }
 
-export const SEVERITY_ORDER: Record<FindingSeverity, number> = {
-  critical: 0,
-  major: 1,
-  minor: 2,
-  info: 3,
-}
-
 // ---- Audit Finding ----
 
 export interface AuditFinding {

@@ -28,19 +28,3 @@ export function BrandLockup({ size = 40, className = '' }: BrandLockupProps): Re
   )
 }
 
-/**
- * Compact brand lockup for collapsed sidebar or topbar.
- * Shows mark only plus optional short name.
- */
-export function BrandLockupCompact({ size = 24, showName = false, className = '' }: { size?: number; showName?: boolean; className?: string }): React.ReactElement {
-  return (
-    <div className={`flex items-center gap-2 select-none min-w-0 ${className}`}>
-      <AureonMark size={size} />
-      {showName && (
-        <span className="text-sm font-semibold tracking-tight display-text text-[var(--ivory-text)] truncate">
-          Aureon
-        </span>
-      )}
-    </div>
-  )
-}
