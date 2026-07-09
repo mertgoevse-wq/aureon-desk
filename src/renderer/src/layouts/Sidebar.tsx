@@ -237,7 +237,7 @@ export function Sidebar(): React.ReactElement {
             <button
               type="button"
               onClick={() => navigate('/studio')}
-              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/studio') ? 'border-[var(--ivory-accent)]/20 bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)]' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer ${isActive('/studio') ? 'border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)] font-bold' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               aria-label="Studio"
               title="Studio"
               data-testid="nav-studio"
@@ -247,7 +247,7 @@ export function Sidebar(): React.ReactElement {
             <button
               type="button"
               onClick={() => navigate('/')}
-              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/') ? 'border-[var(--ivory-accent)]/20 bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)]' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer ${isActive('/') ? 'border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)] font-bold' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               aria-label="Chat"
               title="Chat"
               data-testid="nav-chats"
@@ -257,7 +257,7 @@ export function Sidebar(): React.ReactElement {
             <button
               type="button"
               onClick={() => navigate('/prompts')}
-              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/prompts') ? 'border-[var(--ivory-accent)]/20 bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)]' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer ${isActive('/prompts') ? 'border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)] font-bold' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               aria-label="Prompts"
               title="Prompts"
               data-testid="nav-prompts"
@@ -267,7 +267,7 @@ export function Sidebar(): React.ReactElement {
             <button
               type="button"
               onClick={() => navigate('/preview')}
-              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/preview') ? 'border-[var(--ivory-accent)]/20 bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)]' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              className={`h-8 inline-flex items-center justify-center rounded-xl border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer ${isActive('/preview') ? 'border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)] font-bold' : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               aria-label="Code"
               title="Code"
               data-testid="nav-preview"
@@ -279,21 +279,21 @@ export function Sidebar(): React.ReactElement {
 
         <div className="px-3 py-1 border-b border-[var(--ivory-border)]/40">
           <div className="flex items-center justify-between px-2 mb-1">
-            <p className="text-ui-caption uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)]">Projects</p>
+            <p className="text-ui-caption uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)] font-body">Projects</p>
             <button
               type="button"
               onClick={() => navigate('/projects')}
-              className="p-1 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+              className="p-1 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer"
               aria-label="Open projects"
             >
               <Plus size={12} />
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-1">
+          <div className="grid grid-cols-2 gap-1 font-body">
             <button
               onClick={() => navigate('/projects')}
-              className={`h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
-                ${isActive('/projects') ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              className={`h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer
+                ${isActive('/projects') ? 'bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] border border-transparent'}`}
               data-testid="nav-projects"
             >
               <FolderOpen size={13} className="text-[var(--ivory-accent)]" />
@@ -301,8 +301,8 @@ export function Sidebar(): React.ReactElement {
             </button>
             <button
               onClick={() => navigate('/tools')}
-              className={`h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
-                ${isActive('/tools') ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              className={`h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer
+                ${isActive('/tools') ? 'bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] border border-transparent'}`}
               data-testid="nav-tools"
             >
               <Wrench size={13} className="text-[var(--ivory-accent)]" />
@@ -313,11 +313,11 @@ export function Sidebar(): React.ReactElement {
 
         <div className="flex-1 min-h-0 overflow-y-auto">
           <div className="flex items-center justify-between px-5 pt-2.5 pb-1">
-            <p className="text-ui-caption uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)]">Recents</p>
+            <p className="text-ui-caption uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)] font-body">Recents</p>
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="text-ui-caption font-semibold text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 rounded-md"
+              className="text-ui-caption font-semibold text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 rounded-md cursor-pointer"
             >
               View
             </button>
@@ -325,24 +325,19 @@ export function Sidebar(): React.ReactElement {
           <ChatList onSelectChat={handleSelectChat} />
         </div>
 
-        <div className="border-t border-[var(--ivory-border)]/60 p-2.5 bg-[var(--ivory-surface)]">
-          <div className="flex items-center gap-2 p-2 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/60">
-            <div className="w-7 h-7 rounded-full bg-[var(--ivory-surface-2)] flex items-center justify-center text-[var(--ivory-text-3)] shrink-0">
-              <UserCircle size={16} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-[var(--ivory-text)] truncate">Local profile</p>
-              <p className="text-ui-caption text-[var(--ivory-text-3)] truncate">Settings and providers</p>
-            </div>
-            <button
-              onClick={() => navigate('/settings')}
-              className="p-1.5 rounded-xl text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
-              aria-label="Open settings"
-              data-testid="nav-settings"
-            >
-              <Settings size={14} />
-            </button>
+        <div className="border-t border-[var(--ivory-border)]/30 p-3 bg-[var(--ivory-surface)] flex items-center justify-between gap-2 shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <UserCircle size={15} className="text-[var(--ivory-text-3)] shrink-0" />
+            <span className="text-[11px] font-semibold text-[var(--ivory-text-2)] truncate font-body">Local profile</span>
           </div>
+          <button
+            onClick={() => navigate('/settings')}
+            className="p-1.5 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+            aria-label="Open settings"
+            data-testid="nav-settings"
+          >
+            <Settings size={13} />
+          </button>
         </div>
       </div>
 

@@ -8,6 +8,26 @@
 
 ---
 
+## Hero Theme & Overview Redesign Audit (2026-07-09)
+
+### Studio Grid Simplification — RESOLVED ✅
+- **Before:** Studio page rendered 10 task cards by default, making the overview screen feel heavy and cluttered.
+- **After:** Simplified main grid to exactly 4 task cards (Build, Code, Create, Connect). Added "More creation types" toggleable drawer to cleanly wrap the other 6 media and analysis actions.
+
+### Centered Composer & Suggestions Count — RESOLVED ✅
+- **Before:** Chat empty state displayed 4 large suggestion cards and lacked an indicator for configured adapters.
+- **After:** Centered the composer input. Removed large cards in favor of exactly 2 compact horizontal pills. Added a compact "Setup Provider" alert badge.
+
+### Collapsible Files & Logs Panels — RESOLVED ✅
+- **Before:** Project files list and server logs console panel were statically rendered, leaving less screen space for the LivePreview iframe frame.
+- **After:** Implemented clean collapse buttons for both the Project Explorer file tree and the Server Logs Console. Added "Create demo preview" CTA to the server idle empty state.
+
+### Muted Sidebar Active States & Profile — RESOLVED ✅
+- **Before:** Active sidebar buttons had solid colored backgrounds, and the user footer was heavy with borders and solid backdrops.
+- **After:** Swapped active indicator styles to simple light borders and backgrounds with accent icon color. Simplified user profile block to a borderless, muted row.
+
+---
+
 ## Human Click QA Audit (2026-07-09)
 
 ### Studio Orchestration Drawer — RESOLVED ✅

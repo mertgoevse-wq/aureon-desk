@@ -36,5 +36,9 @@ export function registerLivePreviewIPC(): void {
     livePreviewService.createDemo(port, style)
   )
 
+  ipcMain.handle('preview:startGenerated', (_e, input: any) =>
+    livePreviewService.startGeneratedPreview(input)
+  )
+
   logger.info('LivePreview IPC handlers registered')
 }

@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.9.49] - 2026-07-09
+
+### Added — Aureon Hero Theme & Overview Redesign
+
+**Overview Grids & Central Composer:**
+- Redesigned `Studio.tsx` to include display Serif headings (`Create with Aureon`), radial gradient background, and a prominent central prompt input composer.
+- Simplified main task grid to exactly 4 main categories (Build, Code, Create, Connect) and collapsed secondary types under a toggleable "More creation types" drawer.
+- Center-aligned the home chat workspace composer card and restricted suggestions count to exactly two compact horizontal suggestion pills.
+- Added a compact "Setup Provider" alert badge warning if no LLM models are configured.
+
+**Collapsible Panels & Sidebars:**
+- Implemented collapsible toggle headers for Project Explorer files list inside Code Mode (`LivePreview.tsx`).
+- Created a toggleable panel for Server Logs console window, allowing collapsible states to reduce visual load.
+- Added a direct "Create demo preview" CTA button to the idle server state of the LivePreview frame.
+- Streamlined Sidebar indicators to look subtle and clean, and muted user profile footer elements.
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (441 tests, 22 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.48] - 2026-07-09
 
 ### Added — Studio Wizard & Preview Autostart Repair

@@ -56,7 +56,7 @@ vi.mock('child_process', () => ({
 
 // Mock net for findAvailablePort
 vi.mock('net', () => ({
-  Server: vi.fn().mockImplementation(function () {
+  Server: vi.fn().mockImplementation(function (this: any) {
     const self = this as Record<string, unknown>
     self.listen = vi.fn().mockReturnValue(self)
     self.close = vi.fn()
@@ -116,7 +116,7 @@ describe('LivePreview Service — Sandbox Creation', () => {
     const writeCalls = mockFs.writeFileSync.mock.calls
     const indexWrite = writeCalls.find((call: any) => call[0].endsWith('index.html'))
     expect(indexWrite).toBeDefined()
-    const content = indexWrite[1]
+    const content = indexWrite![1]
     expect(content).toContain('background: #F0F7F6;')
   })
 })
@@ -331,7 +331,7 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
     expect(mockHttpCreateServer).toHaveBeenCalled()
     expect(mockHttpServer.listen).toHaveBeenCalledWith(3100, '127.0.0.1', expect.any(Function))
 
-    const handler = mockHttpCreateServer.mock.calls[0][0]
+    const handler = (mockHttpCreateServer as any).mock.calls[0][0]
     expect(handler).toBeDefined()
 
     const req = { url: '/', headers: {} }
@@ -341,9 +341,9 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
     }
 
     mockFs.readFileSync = vi.fn(() => '<html></html>')
-    mockFs.statSync = vi.fn(() => ({ isFile: () => true }))
+    ;(mockFs.statSync as any) = vi.fn(() => ({ isFile: () => true }))
 
-    handler(req as any, res as any)
+    ;(handler as any)(req as any, res as any)
 
     expect(mockFs.readFileSync).toHaveBeenCalled()
     expect(res.writeHead).toHaveBeenCalledWith(200, expect.any(Object))
@@ -352,7 +352,7 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
 
   it('should prevent path traversal outside sandbox', () => {
     livePreviewService.startPreview('/sandbox/html-app')
-    const handler = mockHttpCreateServer.mock.calls[0][0]
+    const handler = (mockHttpCreateServer as any).mock.calls[0][0]
 
     const req = { url: '/../../etc/passwd', headers: {} }
     const res = {
@@ -360,7 +360,7 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
       end: vi.fn()
     }
 
-    handler(req as any, res as any)
+    ;(handler as any)(req as any, res as any)
 
     expect(res.writeHead).toHaveBeenCalledWith(403, expect.any(Object))
     expect(res.end).toHaveBeenCalledWith('Forbidden')
@@ -370,5 +370,43 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
     livePreviewService.startPreview('/sandbox/html-app')
     livePreviewService.stopPreview()
     expect(mockHttpServer.close).toHaveBeenCalled()
+  })
+
+  describe('startGeneratedPreview unified flow', () => {
+    it('should create sandbox session and write entry html file', () => {
+      mockFs.writeFileSync = vi.fn()
+      const status = livePreviewService.startGeneratedPreview({
+        source: 'studio-build-app',
+        style: 'Soft Teal',
+        port: 3200
+      })
+      expect(status.status).not.toBe('error')
+      expect(mockFs.writeFileSync).toHaveBeenCalled()
+    })
+
+    it('should block directory traversal inside files object', () => {
+      const status = livePreviewService.startGeneratedPreview({
+        source: 'manual',
+        files: {
+          '../escaped.html': '<html></html>'
+        }
+      })
+      expect(status.status).toBe('error')
+      expect(status.error).toContain('Path escapes sandbox directory')
+    })
+
+    it('should redact secrets from written file content', () => {
+      mockFs.writeFileSync = vi.fn()
+      livePreviewService.startGeneratedPreview({
+        source: 'manual',
+        files: {
+          'index.html': 'API_KEY: sk-or-v1-abcdefghijklmnopqrstuvwxyz123456'
+        }
+      })
+      const writeCalls = mockFs.writeFileSync.mock.calls
+      const indexWrite = writeCalls.find((call: any) => call[0].endsWith('index.html'))
+      expect(indexWrite).toBeDefined()
+      expect(indexWrite![1]).not.toContain('sk-or-v1-abcdef')
+    })
   })
 })

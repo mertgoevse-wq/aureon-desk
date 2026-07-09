@@ -80,6 +80,15 @@ export interface IpcApi {
   previewListSandboxes: () => Promise<Array<{ id: string; path: string; createdAt: string }>>
   previewCleanup: (maxAgeHours?: number) => Promise<number>
   previewCreateDemo: (port?: number, style?: string) => Promise<any>
+  previewStartGenerated: (input: {
+    source: 'studio-build-app' | 'code-demo' | 'manual'
+    files?: Record<string, string>
+    entryFile?: string
+    style?: string
+    port?: number
+    autoOpenCodeMode?: boolean
+    autoFocusPreview?: boolean
+  }) => Promise<any>
   toolList: () => Promise<import('../shared/types/tool').ToolRow[]>
   toolGet: (id: string) => Promise<import('../shared/types/tool').ToolRow | undefined>
   toolCreate: (input: any) => Promise<import('../shared/types/tool').ToolRow>

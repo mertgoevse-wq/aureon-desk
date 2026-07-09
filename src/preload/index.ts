@@ -196,6 +196,16 @@ const api = {
     ipcRenderer.invoke('preview:cleanup', maxAgeHours),
   previewCreateDemo: (port?: number, style?: string): Promise<any> =>
     ipcRenderer.invoke('preview:createDemo', port, style),
+  previewStartGenerated: (input: {
+    source: 'studio-build-app' | 'code-demo' | 'manual'
+    files?: Record<string, string>
+    entryFile?: string
+    style?: string
+    port?: number
+    autoOpenCodeMode?: boolean
+    autoFocusPreview?: boolean
+  }): Promise<any> =>
+    ipcRenderer.invoke('preview:startGenerated', input),
 
   // Tools / MCP
   toolList: (): Promise<ToolRow[]> =>

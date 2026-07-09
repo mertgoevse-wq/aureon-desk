@@ -36,6 +36,16 @@ export interface CreateSandboxInput {
   style?: string
 }
 
+export interface StartGeneratedPreviewInput {
+  source: 'studio-build-app' | 'code-demo' | 'manual'
+  files?: Record<string, string>
+  entryFile?: string
+  style?: string
+  port?: number
+  autoOpenCodeMode?: boolean
+  autoFocusPreview?: boolean
+}
+
 export interface PreviewStatus {
   id: string | null
   status: 'idle' | 'starting' | 'running' | 'error' | 'stopped'
@@ -357,39 +367,113 @@ export const livePreviewService = {
   },
 
   /**
+   * Safe Generated Preview Flow: sets up the sandbox path, writes files (redacting secrets,
+   * blocking path traversal), and launches the HTTP preview server.
+   */
+  startGeneratedPreview(input: StartGeneratedPreviewInput): PreviewStatus {
+    const templateType = input.source === 'code-demo' ? 'demo' : 'html'
+    const sessionId = uuid()
+    const sandboxRoot = this.getSandboxRoot()
+    const sandboxPath = path.join(sandboxRoot, sessionId)
+
+    try {
+      if (fs.existsSync(sandboxPath)) fs.rmSync(sandboxPath, { recursive: true, force: true })
+      fs.mkdirSync(sandboxPath, { recursive: true })
+
+      const entry = input.entryFile || 'index.html'
+
+      if (input.files && Object.keys(input.files).length > 0) {
+        for (const [relPath, content] of Object.entries(input.files)) {
+          // Block path traversal
+          const resolved = path.resolve(sandboxPath, relPath)
+          if (!resolved.startsWith(path.resolve(sandboxPath))) {
+            throw new Error('Path escapes sandbox directory')
+          }
+          const dir = path.dirname(resolved)
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+
+          // Redact secrets
+          const redactedContent = redactSecrets(content)
+          fs.writeFileSync(resolved, redactedContent, 'utf-8')
+        }
+      } else {
+        // Write standard demo counter
+        let htmlContent = DEMO_COUNTER_HTML
+        const selectedStyle = input.style || 'Calming Ivory'
+        if (selectedStyle === 'Soft Teal') {
+          htmlContent = htmlContent
+            .replace('background: #FAF8F5;', 'background: #F0F7F6;')
+            .replace('color: #2C2416;', 'color: #1A2F2C;')
+            .replace('color: #C75B39;', 'color: #2A8A7C;')
+            .replace('background: #C75B39;', 'background: #2A8A7C;')
+            .replace('background: #B04D2E;', 'background: #1F6B60;')
+        } else if (selectedStyle === 'Deep Slate') {
+          htmlContent = htmlContent
+            .replace('background: #FAF8F5;', 'background: #1E293B;')
+            .replace('color: #2C2416;', 'color: #F1F5F9;')
+            .replace('color: #C75B39;', 'color: #38BDF8;')
+            .replace('background: #C75B39;', 'background: #38BDF8;')
+            .replace('background: #B04D2E;', 'background: #0284C7;')
+            .replace('background: white;', 'background: #334155;')
+            .replace('color: #5C4A3A;', 'color: #E2E8F0;')
+            .replace('background: #EDE4D8;', 'background: #475569;')
+            .replace('background: #D9CDBE;', 'background: #64748B;')
+            .replace('border-top: 1px solid #EDE4D8;', 'border-top: 1px solid #475569;')
+        }
+        fs.writeFileSync(path.join(sandboxPath, entry), htmlContent, 'utf-8')
+        // Marker file so startPreview detects the demo template type
+        fs.writeFileSync(path.join(sandboxPath, '.aureon-demo'), 'demo', 'utf-8')
+      }
+
+      logger.info(`startGeneratedPreview: sandbox created at ${sandboxPath} (source: ${input.source})`)
+
+      // Start static preview server
+      return this.startPreview(sandboxPath, input.port)
+    } catch (err: any) {
+      logger.error(`startGeneratedPreview failed: ${err.message}`)
+      const logs = [{ timestamp: new Date().toISOString(), stream: 'stderr' as const, text: err.message }]
+      this._session = {
+        id: sessionId,
+        sandboxPath,
+        sandboxUrl: '',
+        status: 'error',
+        port: input.port || 0,
+        process: null,
+        logs,
+        templateType,
+        createdAt: new Date().toISOString(),
+        error: err.message
+      }
+      return this._status()
+    }
+  },
+
+  /**
    * Self-Test Coding Agent Demo: generates the Aureon Counter Demo sandbox,
    * starts the preview server, and returns the full result.
    */
   createDemo(port?: number, style?: string): CodingDemoResult {
-    const filesWritten: string[] = []
-
     try {
-      // 1. Create sandbox with demo template
-      const sandbox = this.createSandbox({ templateType: 'demo', port, style })
-      if (!sandbox.success) {
-        return { success: false, sandboxId: '', sandboxPath: '', url: null, filesWritten, previewStatus: this.getStatus(), error: sandbox.error }
-      }
-      const sandboxPath = sandbox.sandboxPath
+      const status = this.startGeneratedPreview({
+        source: 'code-demo',
+        style,
+        port
+      })
+      const sandboxPath = status.sandboxPath!
       const sandboxId = path.basename(sandboxPath)
-      filesWritten.push(path.join(sandboxPath, 'index.html'))
-
-      logger.info(`Coding Demo sandbox created: ${sandboxId} → ${sandboxPath}`)
-
-      // 2. Start preview
-      const status = this.startPreview(sandboxPath, port)
       return {
         success: status.status !== 'error',
         sandboxId,
         sandboxPath,
         url: status.url,
-        filesWritten,
+        filesWritten: [path.join(sandboxPath, 'index.html')],
         previewStatus: status,
         error: status.error || undefined,
       }
     } catch (err) {
       const msg = String(err)
       logger.error(`Coding Demo failed: ${msg}`)
-      return { success: false, sandboxId: '', sandboxPath: '', url: null, filesWritten, previewStatus: this.getStatus(), error: msg }
+      return { success: false, sandboxId: '', sandboxPath: '', url: null, filesWritten: [], previewStatus: this.getStatus(), error: msg }
     }
   },
 

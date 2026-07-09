@@ -1,5 +1,38 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-09 13:00 +02:00 — Calm Ivory Hero Theme & Simplified Overview
+
+Branch: `main`
+Commit at start: `0.9.48` (Studio Wizard & Preview Autostart Repair)
+
+### Session Purpose
+Implement layout changes for the calm ivory theme, design a centered chat workspace input composer with restricted suggestion count, collapse secondary creations inside a toggleable drawer, and configure collapsible sections for files and logs to maximize the preview layout.
+
+### Files Changed
+
+**Modified:**
+- **Modified:** [tokens.css](file:///C:/Users/mertg/Desktop/code/src/renderer/src/theme/tokens.css) — Added radial top gradient accent background utility.
+- **Modified:** [Studio.tsx](file:///C:/Users/mertg/Desktop/code/src/renderer/src/pages/Studio.tsx) — Center composer input grid, serif fonts display heading, 2x2 primary grid, toggleable drawer, and Right Inspector mount close callback.
+- **Modified:** [ChatWorkspace.tsx](file:///C:/Users/mertg/Desktop/code/src/renderer/src/pages/ChatWorkspace.tsx) — Centered layout, limit suggestions to 2 pills, quiet feed layout, and Setup Provider alert badge.
+- **Modified:** [LivePreview.tsx](file:///C:/Users/mertg/Desktop/code/src/renderer/src/pages/LivePreview.tsx) — Collapsible explorer files list section, collapsible server logs console panel, and "Create demo preview" CTA in idle state.
+- **Modified:** [Sidebar.tsx](file:///C:/Users/mertg/Desktop/code/src/renderer/src/layouts/Sidebar.tsx) — Muted route active states and profile footer styling.
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (441 tests) |
+| `npm run build` | ✅ PASS |
+
+### Key Changes
+- Shifted typography styles to serif display headings (`Crimson Text`) and sans-serif UI controls (`Inter`).
+- Centered main message input composer with exactly two suggestion pills underneath.
+- Added toggle buttons to collapse file explorer tree and logs console, freeing up live preview iframe workspace space.
+- Subtle active borders/backgrounds for sidebar routing buttons and borderless user profile container.
+
+---
+
 ## 2026-07-09 11:30 +02:00 — Studio Wizard & Preview Autostart Repair
 
 Branch: `main`

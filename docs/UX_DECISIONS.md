@@ -1,6 +1,25 @@
 # Aureon Desk UX Decisions
 
-Last updated: 2026-07-08
+Last updated: 2026-07-09
+
+## Calm Ivory Hero Theme & Simplified Overview (2026-07-09)
+
+Decision: Simplify the workspace layout, reduce card counts, center the chat input, and implement collapsible sections for file trees and logs to achieve a professional desktop look.
+
+Studio Overview:
+- Shifted typography styles to serif headings (`font-display: Crimson Text`) and sans-serif UI controls (`font-body: Inter`).
+- Added a soft radial top gradient background (`bg-hero-radial`) and a prominent central prompt input composer.
+- Collapsed secondary creation and analysis actions (media, file search) under a drawer menu toggleable via "More creation types".
+- Automatically collapse the right inspector panel on page load.
+
+Chat Workspace:
+- Centered the main message input card on the empty workspace view.
+- Limited starter prompts count to exactly two horizontal pills to avoid cluttered empty spaces.
+- Added a compact "Setup Provider" warning badge next to the active tools badge when no LLM models are configured.
+
+Code mode:
+- Made Project Explorer files list and Server Logs console panels collapsible to allow the live preview window to occupy maximum space.
+- Added an idle state "Create demo preview" CTA button to quickly run the styled compiler template.
 
 ## Product Structure Polish — Reduced Clutter (2026-07-08)
 

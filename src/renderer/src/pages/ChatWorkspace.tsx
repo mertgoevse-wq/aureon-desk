@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown,
   Sparkles, SlidersHorizontal, Clock3, AlertTriangle,
-  BookOpen
+  BookOpen, Zap
 } from 'lucide-react'
 import type { SystemPromptRow } from '@shared/types/prompt'
 import type { ChatListItem } from '@shared/types/chat'
@@ -209,16 +209,16 @@ export function ChatWorkspace(): React.ReactElement {
     const selectedHomeProject = projects.find(p => p.id === homeProjectId)
 
     return (
-      <div className="h-full overflow-y-auto bg-[var(--ivory-bg)]" data-testid="chat-home-page">
+      <div className="h-full overflow-y-auto bg-[var(--ivory-bg)] bg-hero-radial" data-testid="chat-home-page">
         <div className="min-h-full flex items-center justify-center px-6 py-10">
-          <div className="w-full max-w-4xl text-center">
+          <div className="w-full max-w-3xl text-center flex flex-col items-center">
             {/* Greeting */}
-            <h1 className="text-[34px] font-semibold text-[var(--ivory-text)] tracking-tight display-text mb-7 select-none text-center">
+            <h1 className="text-4xl font-semibold text-[var(--ivory-text)] tracking-tight font-display mb-7 select-none">
               {getTimeAwareGreeting()}, Mert
             </h1>
 
             {/* Large Centered Composer Card */}
-            <div className="rounded-[28px] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-lg)] ring-1 ring-white/60 overflow-hidden max-w-3xl mx-auto mb-6">
+            <div className="w-full rounded-[28px] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-lg)] ring-1 ring-white/60 overflow-hidden mb-6">
               <div className="px-4 pt-4 text-left">
                 <div className="flex flex-wrap items-center gap-2 mb-3">
                   {/* Model Selector */}
@@ -232,7 +232,7 @@ export function ChatWorkspace(): React.ReactElement {
                     <button
                       type="button"
                       onClick={() => { setHomePromptsOpen(!homePromptsOpen); api.systemPromptList(false).then(setSystemPrompts) }}
-                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none"
+                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none cursor-pointer"
                     >
                       <SlidersHorizontal size={12} className="text-[var(--ivory-accent)]" />
                       <span>{selectedHomePrompt ? selectedHomePrompt.name : 'System style'}</span>
@@ -244,7 +244,7 @@ export function ChatWorkspace(): React.ReactElement {
                         <div className="absolute left-0 mt-1.5 w-64 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] p-1.5 shadow-[var(--shadow-lg)] z-20 max-h-72 overflow-y-auto text-left">
                           <button
                             onClick={() => { setHomePromptId(null); setHomePromptsOpen(false) }}
-                            className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2
+                            className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2 cursor-pointer
                               ${!homePromptId ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
                           >
                             No system profile
@@ -253,7 +253,7 @@ export function ChatWorkspace(): React.ReactElement {
                             <button
                               key={p.id}
                               onClick={() => { setHomePromptId(p.id); setHomePromptsOpen(false) }}
-                              className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2
+                              className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2 cursor-pointer
                                 ${homePromptId === p.id ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
                             >
                               <span>{p.name}</span>
@@ -270,7 +270,7 @@ export function ChatWorkspace(): React.ReactElement {
                     <button
                       type="button"
                       onClick={() => { setHomeProjectsOpen(!homeProjectsOpen); api.projectList(false).then(setProjects) }}
-                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none"
+                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none cursor-pointer"
                     >
                       <FolderOpen size={12} className="text-[var(--ivory-accent)]" />
                       <span>{selectedHomeProject ? selectedHomeProject.name : 'Choose project'}</span>
@@ -282,7 +282,7 @@ export function ChatWorkspace(): React.ReactElement {
                         <div className="absolute left-0 mt-1.5 w-64 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] p-1.5 shadow-[var(--shadow-lg)] z-20 max-h-72 overflow-y-auto text-left">
                           <button
                             onClick={() => { setHomeProjectId(null); setHomeProjectsOpen(false) }}
-                            className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2
+                            className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2 cursor-pointer
                               ${!homeProjectId ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
                           >
                             No project context
@@ -291,7 +291,7 @@ export function ChatWorkspace(): React.ReactElement {
                             <button
                               key={p.id}
                               onClick={() => { setHomeProjectId(p.id); setHomeProjectsOpen(false) }}
-                              className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2
+                              className={`w-full text-left px-3 py-2 text-xs rounded-xl transition-colors flex items-center gap-2 cursor-pointer
                                 ${homeProjectId === p.id ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
                             >
                               <span>{p.name}</span>
@@ -307,11 +307,23 @@ export function ChatWorkspace(): React.ReactElement {
                   <button
                     type="button"
                     onClick={() => navigate('/tools')}
-                    className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+                    className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none cursor-pointer"
                   >
                     <Wrench size={11} className="text-[var(--ivory-accent)]" />
                     <span>{toolsCount} tools active</span>
                   </button>
+
+                  {/* Setup Provider Callout Badge */}
+                  {enabledModels.length === 0 && (
+                    <button
+                      type="button"
+                      onClick={() => navigate('/settings/providers')}
+                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-red-50 border border-red-200 text-[11px] font-semibold text-red-700 hover:bg-red-100/55 hover:border-red-300 transition-colors focus:outline-none cursor-pointer"
+                    >
+                      <Zap size={11} className="text-red-500 animate-pulse" />
+                      <span>Setup Provider</span>
+                    </button>
+                  )}
                 </div>
               </div>
               <MessageInput
@@ -320,14 +332,29 @@ export function ChatWorkspace(): React.ReactElement {
               />
             </div>
 
-            {/* Suggestions & Recent Chats Row */}
-            <div className="mt-5 grid grid-cols-1 md:grid-cols-[1fr_260px] gap-4 max-w-3xl mx-auto">
-              {/* Recent Chats List */}
-              <div className="rounded-[22px] border border-[var(--ivory-border)]/65 bg-[var(--ivory-surface)]/70 p-4 shadow-[var(--shadow-xs)] text-left">
+            {/* Suggestions & Recent Chats Row — Centered & Quiet */}
+            <div className="w-full max-w-xl text-left space-y-6">
+              {/* Suggestion pills */}
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {STARTER_PROMPTS.slice(0, 2).map((item, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => handleHomeSend(item.prompt)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/70 hover:border-[var(--ivory-accent)]/30 rounded-full text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-all cursor-pointer shadow-[var(--shadow-xs)] select-none"
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Recent chats list */}
+              <div className="rounded-[22px] border border-[var(--ivory-border)]/65 bg-[var(--ivory-surface)]/70 p-4 shadow-[var(--shadow-xs)]">
                 <div className="flex items-center justify-between px-1 mb-2.5">
                   <div className="flex items-center gap-2">
-                    <Clock3 size={13} className="text-[var(--ivory-accent)]" />
-                    <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--ivory-text-3)]">Recent chats</p>
+                    <Clock3 size={12} className="text-[var(--ivory-accent)]" />
+                    <p className="text-[10px] font-bold uppercase tracking-[0.06em] text-[var(--ivory-text-3)] font-body">Recent chats</p>
                   </div>
                   {useChatStore.getState().chats.length > 0 && (
                     <button
@@ -337,13 +364,13 @@ export function ChatWorkspace(): React.ReactElement {
                         }
                         window.dispatchEvent(new CustomEvent('open-command-palette'))
                       }}
-                      className="text-[10px] font-semibold text-[var(--ivory-accent)] hover:underline"
+                      className="text-[10px] font-semibold text-[var(--ivory-accent)] hover:underline cursor-pointer"
                     >
                       View all
                     </button>
                   )}
                 </div>
-                <div className="space-y-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {useChatStore.getState().chats.slice(0, 2).map(chat => (
                     <button
                       key={chat.id}
@@ -353,20 +380,20 @@ export function ChatWorkspace(): React.ReactElement {
                         const fullChat = await api.chatGet(chat.id)
                         setActiveChat(fullChat || null)
                       }}
-                      className="w-full text-left px-3 py-2 rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:bg-[var(--ivory-elevated-hover)] transition-colors focus:outline-none"
+                      className="flex flex-col p-3 rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/20 transition-all text-left focus:outline-none cursor-pointer"
                     >
                       <span className="block text-[12px] font-semibold text-[var(--ivory-text)] truncate">{chat.title}</span>
-                      <span className="block text-[10px] text-[var(--ivory-text-3)] truncate">
+                      <span className="block text-[10px] text-[var(--ivory-text-3)] truncate font-body mt-0.5">
                         {chat.last_message_preview || `${chat.message_count} messages`}
                       </span>
                     </button>
                   ))}
                   {useChatStore.getState().chats.length === 0 && (
-                    <div className="px-3 py-3 rounded-xl bg-[var(--ivory-elevated)] border border-dashed border-[var(--ivory-border)]/60 text-center">
-                      <p className="text-[11px] text-[var(--ivory-text-3)]">No recent chats yet.</p>
+                    <div className="col-span-1 sm:col-span-2 py-3 rounded-xl bg-[var(--ivory-elevated)] border border-dashed border-[var(--ivory-border)]/60 text-center">
+                      <p className="text-[10px] text-[var(--ivory-text-3)] font-body">No recent chats yet.</p>
                     </div>
-                  )}</div>
-
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -374,6 +401,7 @@ export function ChatWorkspace(): React.ReactElement {
       </div>
     )
   }
+
 
   return (
     <div className="flex flex-col h-full">

@@ -1,12 +1,13 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Code2, FileText, Image, Video, Music,
   FileSearch, MonitorPlay, Plug, Workflow, ChevronRight,
   Sparkles, ShieldCheck, AlertTriangle, Info, ArrowRight,
-  Eye, Lightbulb, Zap, FolderCheck
+  Eye, Lightbulb, Zap, FolderCheck, ChevronDown
 } from 'lucide-react'
 import { useIpc } from '../hooks/useIpc'
+import { useUIStore } from '../stores/uiStore'
 import { TASK_CATEGORIES, AUTONOMY_LEVELS } from '@shared/types/studio-core'
 import type { TaskCategoryInfo, StudioOrchestrationResult, AutonomyLevel } from '@shared/types/studio-core'
 import { SafetyNotice } from '../components/vibe/SafetyNotice'
@@ -41,11 +42,24 @@ const MODE_LABELS: Record<string, string> = {
 export function Studio(): React.ReactElement {
   const navigate = useNavigate()
   const api = useIpc()
+  const { inspectorOpen, toggleInspector } = useUIStore()
+
   const [selectedCard, setSelectedCard] = useState<string | null>(null)
   const [orchestration, setOrchestration] = useState<StudioOrchestrationResult | null>(null)
   const [autonomyLevel, setAutonomyLevel] = useState<AutonomyLevel>(2)
   const [showConfirm, setShowConfirm] = useState(false)
   const activeCard = TASK_CATEGORIES.find(c => c.id === selectedCard)
+
+  const [primaryPrompt, setPrimaryPrompt] = useState('')
+  const [showMoreTypes, setShowMoreTypes] = useState(false)
+
+  // Collapse right inspector on mount for clean workspace look
+  useEffect(() => {
+    if (inspectorOpen) {
+      toggleInspector()
+    }
+  }, [])
+
 
   // State hooks for configuration wizard
   const [promptText, setPromptText] = useState('')
@@ -205,104 +219,194 @@ export function Studio(): React.ReactElement {
     navigate
   ])
 
+  const mainCardIds = ['build_app', 'code_program', 'automate_workflow', 'connect_apps']
+  const mainCards = TASK_CATEGORIES.filter(c => mainCardIds.includes(c.id))
+  const secondaryCards = TASK_CATEGORIES.filter(c => !mainCardIds.includes(c.id))
+
+  const getCardLabel = (card: TaskCategoryInfo) => {
+    if (card.id === 'automate_workflow') return 'Create'
+    if (card.id === 'connect_apps') return 'Connect'
+    if (card.id === 'build_app') return 'Build'
+    if (card.id === 'code_program') return 'Code'
+    return card.label
+  }
+
+  const renderCard = (card: TaskCategoryInfo) => {
+    const isSelected = selectedCard === card.id
+    const isOrchestrating = isSelected && !orchestration
+    return (
+      <button
+        key={card.id}
+        type="button"
+        onClick={() => handleCardClick(card)}
+        disabled={isOrchestrating}
+        data-testid={`studio-card-${card.id}`}
+        className={`group relative flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30 cursor-pointer
+          ${isSelected
+            ? 'border-[var(--ivory-accent)]/25 bg-[var(--ivory-accent-light)] shadow-[var(--shadow-md)]'
+            : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-elevated)] hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-md)]'
+          }
+          ${isOrchestrating ? 'opacity-70 pointer-events-none' : ''}`}
+      >
+        {/* Icon */}
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105
+          ${isSelected ? 'bg-[var(--ivory-accent)]/15 text-[var(--ivory-accent)]' : 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)]'}
+        `}>
+          {TASK_ICONS[card.icon] || <Sparkles size={22} />}
+        </div>
+
+        {/* Content */}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[13px] font-semibold text-[var(--ivory-text)]">{getCardLabel(card)}</span>
+            {RISK_ICONS[card.riskLevel]}
+            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--ivory-surface-2)] text-[var(--ivory-text-3)] font-medium font-body">
+              {MODE_LABELS[card.recommendedMode]} mode
+            </span>
+          </div>
+          <p className="text-[11px] text-[var(--ivory-text-3)] mt-1 leading-relaxed font-body">
+            {card.description}
+          </p>
+
+          {/* Hover hint */}
+          {!isSelected && (
+            <span className="inline-flex items-center gap-1 text-[10px] text-[var(--ivory-accent)] font-semibold mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              Configure <ChevronRight size={10} />
+            </span>
+          )}
+        </div>
+      </button>
+    )
+  }
+
+  const handlePrimaryActionClick = () => {
+    sessionStorage.setItem('auto-build-app-preview', 'true')
+    sessionStorage.setItem('build-app-style', projectStyle)
+    sessionStorage.setItem('build-app-prompt', primaryPrompt || 'Build a simple web utility')
+    sessionStorage.setItem('build-app-platform', targetPlatform)
+    
+    navigate('/preview')
+
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('composer-insert', {
+        detail: {
+          text: `Build a ${targetPlatform} project with the goal: "${primaryPrompt || 'Build a simple web utility'}". Use style "${projectStyle}". Output option is "Generate + Preview".`,
+          mode: 'replace'
+        }
+      }))
+    }, 150)
+  }
+
   return (
-    <div className="h-full overflow-y-auto bg-[var(--ivory-bg)]" data-testid="studio-page">
-      <div className="max-w-5xl mx-auto px-6 py-8">
+    <div className="h-full overflow-y-auto bg-[var(--ivory-bg)] bg-hero-radial animate-fade-in" data-testid="studio-page">
+      <div className="max-w-4xl mx-auto px-6 py-10">
 
         {/* === HERO === */}
-        <div className="mb-8 text-center">
+        <div className="mb-10 text-center flex flex-col items-center">
           <div className="inline-flex items-center justify-center mb-4">
-            <div className="w-14 h-14 rounded-2xl bg-[var(--ivory-accent-light)] flex items-center justify-center shadow-[var(--shadow-sm)]">
-              <Sparkles size={26} className="text-[var(--ivory-accent)]" />
+            <div className="w-12 h-12 rounded-2xl bg-[var(--ivory-accent-light)] flex items-center justify-center shadow-[var(--shadow-xs)]">
+              <Sparkles size={22} className="text-[var(--ivory-accent)]" />
             </div>
           </div>
-          <h1 className="text-[28px] font-bold tracking-tight text-[var(--ivory-text)] display-text mb-2">
-            What would you like to do?
+          <h1 className="text-4xl font-semibold tracking-tight text-[var(--ivory-text)] font-display mb-3">
+            Create with Aureon
           </h1>
-          <p className="text-[13px] text-[var(--ivory-text-3)] max-w-md mx-auto leading-relaxed">
-            Choose a task below. Aureon will route you to the right workspace,
-            suggest the best model, and never execute dangerous actions without approval.
+          <p className="text-sm text-[var(--ivory-text-3)] font-body max-w-lg leading-relaxed mb-6">
+            A premium desktop space optimized for app building, pair programming, and secure local automation.
           </p>
 
           {/* Autonomy indicator */}
-          <div className="inline-flex items-center gap-1.5 mt-4 px-3 py-1.5 rounded-full bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/50 text-[11px] font-medium text-[var(--ivory-text-2)]">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/50 text-[10px] font-semibold text-[var(--ivory-text-2)] shadow-[var(--shadow-xs)]">
             <ShieldCheck size={12} className="text-[var(--ivory-accent)]" />
             {AUTONOMY_LEVELS[autonomyLevel].label}: {AUTONOMY_LEVELS[autonomyLevel].description}
           </div>
         </div>
 
+        {/* === CENTRAL PRIMARY COMPOSER ACTION === */}
+        <div className="mb-10 max-w-2xl mx-auto rounded-[24px] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] p-4 shadow-[var(--shadow-md)]">
+          <textarea
+            value={primaryPrompt}
+            onChange={e => setPrimaryPrompt(e.target.value)}
+            placeholder="What would you like to build today? (e.g. Build a task manager with countdown timer)"
+            className="w-full h-16 p-2 bg-transparent text-xs text-[var(--ivory-text)] placeholder-[var(--ivory-text-3)]/60 border-none focus:outline-none resize-none font-body"
+          />
+          <div className="flex items-center justify-between border-t border-[var(--ivory-border)]/50 pt-3 mt-2 px-1">
+            <div className="flex items-center gap-2">
+              <select
+                value={targetPlatform}
+                onChange={e => setTargetPlatform(e.target.value)}
+                title="Target platform"
+                aria-label="Target platform"
+                className="px-2.5 py-1 text-[10px] rounded-lg bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)] font-semibold cursor-pointer outline-none"
+              >
+                <option value="Web app">Web App</option>
+                <option value="Desktop widget">Desktop Widget</option>
+                <option value="Mobile prototype">Mobile Prototype</option>
+              </select>
+              <select
+                value={projectStyle}
+                onChange={e => setProjectStyle(e.target.value)}
+                title="Theme style"
+                aria-label="Theme style"
+                className="px-2.5 py-1 text-[10px] rounded-lg bg-[var(--ivory-surface)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)] font-semibold cursor-pointer outline-none"
+              >
+                <option value="Calming Ivory">Calming Ivory</option>
+                <option value="Soft Teal">Soft Teal</option>
+                <option value="Deep Slate">Deep Slate</option>
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={handlePrimaryActionClick}
+              className="inline-flex h-8 items-center justify-center px-4 rounded-xl bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-xs font-bold text-white transition-colors cursor-pointer shadow-[var(--shadow-xs)]"
+            >
+              Build App <ArrowRight size={12} className="ml-1" />
+            </button>
+          </div>
+        </div>
+
         <SafetyNotice type="general" />
 
-        {/* === TASK CARDS GRID === */}
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {TASK_CATEGORIES.map(card => {
-            const isSelected = selectedCard === card.id
-            const isOrchestrating = isSelected && !orchestration
-            return (
-              <button
-                key={card.id}
-                type="button"
-                onClick={() => handleCardClick(card)}
-                disabled={isOrchestrating}
-                data-testid={`studio-card-${card.id}`}
-                className={`group relative flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30
-                  ${isSelected
-                    ? 'border-[var(--ivory-accent)]/25 bg-[var(--ivory-accent-light)] shadow-[var(--shadow-md)]'
-                    : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-elevated)] hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-md)]'
-                  }
-                  ${isOrchestrating ? 'opacity-70 pointer-events-none' : ''}`}
-              >
-                {/* Icon */}
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105
-                  ${isSelected ? 'bg-[var(--ivory-accent)]/15 text-[var(--ivory-accent)]' : 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)]'}
-                `}>
-                  {TASK_ICONS[card.icon] || <Sparkles size={22} />}
-                </div>
+        {/* === TASK CARDS GRID (4 MAIN CARDS) === */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {mainCards.map(renderCard)}
+        </div>
 
-                {/* Content */}
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[13px] font-semibold text-[var(--ivory-text)]">{card.label}</span>
-                    {RISK_ICONS[card.riskLevel]}
-                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[var(--ivory-surface-2)] text-[var(--ivory-text-3)] font-medium">
-                      {MODE_LABELS[card.recommendedMode]} mode
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[var(--ivory-text-3)] mt-1 leading-relaxed">
-                    {card.description}
-                  </p>
+        {/* === MORE CREATION TYPES DRAWER === */}
+        <div className="mt-8 text-center">
+          <button
+            type="button"
+            onClick={() => setShowMoreTypes(!showMoreTypes)}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-surface)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-colors cursor-pointer shadow-[var(--shadow-xs)] select-none"
+          >
+            More creation types
+            <ChevronDown size={12} className={`transition-transform duration-200 ${showMoreTypes ? 'rotate-180' : ''}`} />
+          </button>
 
-
-
-                  {/* Hover hint */}
-                  {!isSelected && (
-                    <span className="inline-flex items-center gap-1 text-[10px] text-[var(--ivory-accent)] font-semibold mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      Learn more <ChevronRight size={10} />
-                    </span>
-                  )}
-                </div>
-              </button>
-            )
-          })}
+          {showMoreTypes && (
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-left animate-in">
+              {secondaryCards.map(renderCard)}
+            </div>
+          )}
         </div>
 
         {/* === AUTONOMY SELECTOR === */}
-        <div className="mt-8">
-          <h2 className="text-[13px] font-bold text-[var(--ivory-text)] flex items-center gap-2 mb-3">
+        <div className="mt-10">
+          <h2 className="text-[12px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)] mb-3 flex items-center gap-1.5">
             <ShieldCheck size={14} className="text-[var(--ivory-accent)]" />
             Autonomy Level
           </h2>
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-4 gap-2">
             {AUTONOMY_LEVELS.filter(l => l.level > 0).map(level => {
               const isCurrent = autonomyLevel === level.level
               const IconComponent = (() => {
                 switch (level.icon) {
-                  case 'Eye': return <Eye size={14} />
-                  case 'Lightbulb': return <Lightbulb size={14} />
-                  case 'ShieldCheck': return <ShieldCheck size={14} />
-                  case 'FolderCheck': return <FolderCheck size={14} />
-                  case 'Zap': return <Zap size={14} />
-                  default: return <ShieldCheck size={14} />
+                  case 'Eye': return <Eye size={13} />
+                  case 'Lightbulb': return <Lightbulb size={13} />
+                  case 'ShieldCheck': return <ShieldCheck size={13} />
+                  case 'FolderCheck': return <FolderCheck size={13} />
+                  case 'Zap': return <Zap size={13} />
+                  default: return <ShieldCheck size={13} />
                 }
               })()
               return (
@@ -310,10 +414,10 @@ export function Studio(): React.ReactElement {
                   key={level.level}
                   type="button"
                   onClick={() => setAutonomyLevel(level.level)}
-                  className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border text-center transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30
+                  className={`flex flex-col items-center gap-1 p-3 rounded-xl border text-center transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30 cursor-pointer
                     ${isCurrent
                       ? 'border-[var(--ivory-accent)]/30 bg-[var(--ivory-accent-light)] shadow-[var(--shadow-sm)]'
-                      : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:border-[var(--ivory-accent)]/20'
+                      : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-elevated)] hover:border-[var(--ivory-accent)]/20'
                     }`}
                   data-testid={`autonomy-level-${level.level}`}
                 >
@@ -321,7 +425,7 @@ export function Studio(): React.ReactElement {
                     {IconComponent}
                   </span>
                   <span className="text-[10px] font-bold text-[var(--ivory-text)]">{level.level}</span>
-                  <span className="text-[9px] text-[var(--ivory-text-3)] leading-tight">{level.label}</span>
+                  <span className="text-[9px] text-[var(--ivory-text-3)] leading-tight font-body">{level.label}</span>
                 </button>
               )
             })}
@@ -329,12 +433,12 @@ export function Studio(): React.ReactElement {
         </div>
 
         {/* === SAFETY NOTICE === */}
-        <div className="mt-8 p-4 rounded-2xl border border-[var(--ivory-border)]/60 bg-[var(--ivory-elevated)]">
+        <div className="mt-8 p-3.5 rounded-2xl border border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)]/60 shadow-[var(--shadow-xs)]">
           <div className="flex items-start gap-2.5">
-            <ShieldCheck size={16} className="shrink-0 mt-0.5 text-[var(--ivory-accent)]" />
+            <ShieldCheck size={15} className="shrink-0 mt-0.5 text-[var(--ivory-accent)]" />
             <div>
-              <h3 className="text-[12px] font-bold text-[var(--ivory-text)]">Safety First</h3>
-              <p className="text-[11px] text-[var(--ivory-text-3)] mt-0.5 leading-relaxed">
+              <h3 className="text-[11px] font-bold text-[var(--ivory-text)]">Safety First</h3>
+              <p className="text-[10px] text-[var(--ivory-text-3)] mt-0.5 leading-relaxed font-body">
                 Every destructive or account action requires explicit confirmation.
                 No shell commands, file writes, Gmail actions, or account changes execute without your approval.
                 Your files are never sent to remote providers unless you explicitly attach them.
@@ -351,12 +455,11 @@ export function Studio(): React.ReactElement {
           setOrchestration(null)
           setShowConfirm(false)
         }}
-        title={activeCard ? `Studio Task: ${activeCard.label}` : 'Task Details'}
+        title={activeCard ? activeCard.label : ''}
       >
         {activeCard && (
           <div className="space-y-5" data-testid="studio-drawer">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Recommended Mode</span>
               <div className="text-[13px] font-semibold text-[var(--ivory-text)] mt-1 capitalize">
                 {activeCard.recommendedMode} Mode
               </div>

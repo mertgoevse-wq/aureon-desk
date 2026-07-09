@@ -4,6 +4,25 @@
 
 ---
 
+## Hero Theme & Overview Redesign — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (441 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+
+### Changes
+- Implemented radial gradient hero backgrounds and display Serif headings (`Create with Aureon`).
+- Streamlined Studio dashboard grid to exactly 4 categories (Build, Code, Create, Connect) and collapsed secondary types under a toggleable creation drawer.
+- Collapsed Right Inspector automatically on Studio workspace entry.
+- Centered ChatWorkspace home input card and limited suggestion list to exactly two horizontal pills.
+- Added compact Setup Provider badge context.
+- Added collapsible toggles to Project Explorer files lists and Server Logs console panels inside Code mode.
+- Muted sidebar active states and sidebar profile footer elements to reduce visual clutter.
+
+---
+
 ## Studio Wizard & Preview Autostart Repair — 2026-07-09
 
 | Check | Result |
