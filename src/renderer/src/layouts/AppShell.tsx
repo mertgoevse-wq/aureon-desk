@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { memo, useEffect, useState, useRef } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { RightInspector } from './RightInspector'
@@ -34,7 +34,7 @@ function insertClipboardText(target: HTMLInputElement | HTMLTextAreaElement, tex
   }))
 }
 
-export function AppShell(): React.ReactElement {
+export const AppShell = memo(function AppShell(): React.ReactElement {
   const navigate = useNavigate()
   const location = useLocation()
   const api = useIpc()
@@ -370,7 +370,7 @@ export function AppShell(): React.ReactElement {
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-all focus:outline-none"
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition focus:outline-none"
                 aria-label="Go back"
                 title="Back"
               >
@@ -379,7 +379,7 @@ export function AppShell(): React.ReactElement {
               <button
                 type="button"
                 onClick={() => navigate(1)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-all focus:outline-none"
+                className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition focus:outline-none"
                 aria-label="Go forward"
                 title="Forward"
               >
@@ -406,7 +406,7 @@ export function AppShell(): React.ReactElement {
                   role="tab"
                   {...{ 'aria-selected': selected }}
                   onClick={() => navigate(item.path)}
-                  className={`h-8 min-w-[76px] px-3 inline-flex items-center justify-center gap-1.5 rounded-xl text-[12px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
+                  className={`h-8 min-w-[76px] px-3 inline-flex items-center justify-center gap-1.5 rounded-xl text-[12px] font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
                     ${selected
                       ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] shadow-[var(--shadow-sm)]'
                       : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)]'}`}
@@ -459,4 +459,4 @@ export function AppShell(): React.ReactElement {
       <ToastContainer />
     </div>
   )
-}
+})

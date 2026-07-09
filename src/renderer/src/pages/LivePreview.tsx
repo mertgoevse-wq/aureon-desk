@@ -556,7 +556,7 @@ export function LivePreview(): React.ReactElement {
               type="button"
               onClick={() => handleRunDemo()}
               disabled={runningDemo}
-              className="w-full h-8 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--ivory-accent-light)] border border-[var(--ivory-accent)]/20 text-xs font-semibold text-[var(--ivory-text)] hover:bg-[var(--ivory-accent)]/15 transition-all shadow-[var(--shadow-xs)]"
+              className="w-full h-8 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--ivory-accent-light)] border border-[var(--ivory-accent)]/20 text-xs font-semibold text-[var(--ivory-text)] hover:bg-[var(--ivory-accent)]/15 transition shadow-[var(--shadow-xs)]"
             >
               <Zap size={12} className="text-[var(--ivory-accent)]" />
               {runningDemo ? 'Initializing Coding Demo...' : 'Run Coding Demo App'}
@@ -732,8 +732,12 @@ export function LivePreview(): React.ReactElement {
                             <Sparkles size={10} /> AI Generating
                           </span>
                           {generatingModelLabel && (
-                            <span className="text-[10px] text-[var(--ivory-text-3)] font-medium truncate max-w-[280px]">
-                              with {generatingModelLabel}
+                            <span className="text-[10px] text-[var(--ivory-text-3)] font-medium flex items-center gap-1.5 max-w-[280px] min-w-0">
+                              <span className="relative flex h-2 w-2 shrink-0">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--ivory-accent)] opacity-75" />
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--ivory-accent)]" />
+                              </span>
+                              <span className="truncate">with {generatingModelLabel}</span>
                             </span>
                           )}
                         </div>
@@ -962,7 +966,7 @@ export function LivePreview(): React.ReactElement {
                         key={s.id}
                         type="button"
                         onClick={() => handleFollowUp(s)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[12px] font-medium text-[var(--ivory-text-2)] hover:text-[var(--ivory-accent)] hover:border-[var(--ivory-accent)]/25 transition-all cursor-pointer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[12px] font-medium text-[var(--ivory-text-2)] hover:text-[var(--ivory-accent)] hover:border-[var(--ivory-accent)]/25 transition cursor-pointer"
                       >
                         {s.label}
                       </button>
@@ -1054,7 +1058,7 @@ export function LivePreview(): React.ReactElement {
                     type="button"
                     onClick={() => handleRunDemo('Calming Ivory')}
                     data-testid="preview-create-demo-cta"
-                    className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-[12px] font-bold text-white transition-all shadow-[var(--shadow-sm)] cursor-pointer"
+                    className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-[12px] font-bold text-white transition shadow-[var(--shadow-sm)] cursor-pointer"
                   >
                     <Play size={13} />
                     Create demo preview
@@ -1063,7 +1067,7 @@ export function LivePreview(): React.ReactElement {
                     type="button"
                     onClick={() => navigate('/vibe')}
                     data-testid="code-vibe-coding-cta"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 text-[12px] font-semibold text-[var(--ivory-text)] transition-all shadow-[var(--shadow-xs)]"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 text-[12px] font-semibold text-[var(--ivory-text)] transition shadow-[var(--shadow-xs)]"
                   >
                     <Sparkles size={13} className="text-[var(--ivory-accent)]" />
                     Try Vibe Coding

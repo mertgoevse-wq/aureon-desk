@@ -78,7 +78,7 @@ export function SettingsLayout(): React.ReactElement {
                   key={item.path}
                   onClick={() => navigate(item.path)}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`w-full text-left px-3 py-2.5 rounded-2xl transition-all duration-[var(--transition-fast)] flex items-start gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
+                  className={`w-full text-left px-3 py-2.5 rounded-2xl transition duration-[var(--transition-fast)] flex items-start gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
                     ${isActive
                       ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold shadow-[var(--shadow-xs)]'
                       : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] font-medium'}`}
@@ -99,7 +99,7 @@ export function SettingsLayout(): React.ReactElement {
             <button
               type="button"
               onClick={() => navigate('/chat')}
-              className="w-full h-10 rounded-2xl border border-[var(--ivory-bronze)]/15 bg-[var(--ivory-bronze-light)]/50 text-[12px] font-semibold text-[var(--ivory-bronze)] hover:text-[var(--ivory-bronze-hover)] hover:bg-[var(--ivory-bronze-light)] hover:border-[var(--ivory-bronze)]/25 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer"
+              className="w-full h-10 rounded-2xl border border-[var(--ivory-bronze)]/15 bg-[var(--ivory-bronze-light)]/50 text-[12px] font-semibold text-[var(--ivory-bronze)] hover:text-[var(--ivory-bronze-hover)] hover:bg-[var(--ivory-bronze-light)] hover:border-[var(--ivory-bronze)]/25 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer"
             >
               Back to Chat
             </button>

@@ -295,7 +295,7 @@ export function SelfAudit(): React.ReactElement {
                   type="button"
                   onClick={() => setMode(m)}
                   data-testid={`mode-${m}`}
-                  className={`text-left p-3 rounded-xl border transition-all text-[12px] leading-relaxed ${
+                  className={`text-left p-3 rounded-xl border transition text-[12px] leading-relaxed ${
                     mode === m
                       ? 'border-[var(--ivory-accent)]/30 bg-[var(--ivory-accent-light)] text-[var(--ivory-text)]'
                       : 'border-[var(--ivory-border)] hover:border-[var(--ivory-border)]/80 text-[var(--ivory-text-2)]'
@@ -370,7 +370,7 @@ export function SelfAudit(): React.ReactElement {
                 type="button"
                 onClick={() => setActiveTab(tab)}
                 data-testid={`tab-${tab}`}
-                className={`flex-1 py-2 rounded-xl text-[12px] font-semibold transition-all ${
+                className={`flex-1 py-2 rounded-xl text-[12px] font-semibold transition ${
                   activeTab === tab
                     ? 'bg-white text-[var(--ivory-text)] shadow-sm'
                     : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)]'

@@ -490,4 +490,38 @@
 
 # Changelog
 
+## [0.9.73] - 2026-07-09
+
+### Core Contract Enforcement — Studio to LivePreview
+
+**Inspected & Verified:**
+- Full Studio → Build Pipeline → Code Mode → LivePreview contract inspected and enforced
+- All 11 buttons in the core flow verified working (no silent no-ops)
+- Deterministic demo flow: counter app renders, file tree shows, diff shows, follow-up suggestions appear
+- Demo coding smoke test: ✅ 9/9 checks pass
+- E2E tests: 12/13 pass (1 flaky timeout fixed — build-code-tab visibility 20s)
+
+**Contract Document Updated:**
+- `docs/STUDIO_LIVEPREVIEW_CONTRACT.md` upgraded to v2.0
+- Now documents the full build pipeline flow: classifyIntent → generateDeterministicApp → computeDeltaFileOperations → createSandbox → applyFileOperations → startPreview → emitStep
+- Added 11-button verified contract table
+- Added build pipeline IPC contract (build:run, build:cancel, build:step, build:complete)
+- Added sessionStorage contract for build pipeline keys
+
+**Model Label in Plan Tab:**
+- Plan tab now shows the resolved model label (e.g., "Source: Claude 3.5 Sonnet via Anthropic") instead of generic "Source: AI provider"
+- Model resolution happens in the plan step using providerService.resolveCanonicalModelReference()
+
+**Pulsing Dot Indicator:**
+- Added animated ping dot next to the model label during AI streaming generation in Code tab
+- Clear visual indicator that generation is actively in progress
+
+### Verified
+- `npm run verify:native` — ✅ PASS
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (723 tests)
+- `npm run build` — ✅ PASS
+- `npm run demo:coding` — ✅ PASS (9/9 checks)
+- E2E (studio pipeline) — ✅ 12/13 pass
+
 ## [0.9.60] - 2026-07-09

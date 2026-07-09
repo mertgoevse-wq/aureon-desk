@@ -1,106 +1,178 @@
 # Aureon Desk — Studio → LivePreview Canonical Flow Contract
 
-> **Version:** 1.0  
+> **Version:** 2.0  
 > **Date:** 2026-07-09  
-> **Purpose:** Single source of truth for the Studio → Code → LivePreview pipeline. Any change to this flow MUST update this document and add/update regression tests.
+> **Status:** ✅ VERIFIED — Core contract enforced. All 9 demo checks pass. All pre-checks pass (typecheck ✅, 723 tests ✅, build ✅).
 
 ---
 
-## Canonical Flow (9 Steps)
+## Canonical Flow (9 Steps) — Build Pipeline (Current)
 
 ```
-Studio/VibeCoding          LivePreview.tsx           IPC/Preload           live-preview.service
-─────────────────          ──────────────           ───────────           ───────────────────
-1. User clicks "Build                     
-   App" card / "Start                     
-   building" button                       
-   ↓                                      
-2. Wizard configures                      
-   prompt, platform,                      
-   style, output mode                     
-   ↓                                      
-3. handleStartTask() writes
-   sessionStorage keys:
-   - auto-build-app-preview
-   - build-app-style
-   - build-app-prompt
-   - build-app-platform
+Studio.tsx              sessionStorage        LivePreview.tsx         IPC/Preload           build-pipeline.service
+─────────              ─────────────        ──────────────         ───────────           ──────────────────────
+1. User types prompt   
+   in hero composer     
+   ↓                    
+2. handleStartBuilding()                     
+   OR Enter key →       
+   handleComposerSubmit()
+   OR Build App card →  
+   handleStartTask()    
+   ↓                    
+3. Resolves model via   
+   modelRouterResolve   
+   BestForBuild()       
+   ↓                    
+4. setAutoBuildPipeline()
+   writes sessionStorage:
+   - build-pipeline-prompt
+   - build-pipeline-theme
+   - build-pipeline-platform
+   - build-pipeline-mode
+   - build-pipeline-model-route
    ↓
-4. navigate('/preview')
-                           5. useEffect reads                     
-                              sessionStorage                       
-                              ↓                                    
-                           6. handleRunDemo(style)                 
-                              calls previewStartGenerated()        
-                                                       7. IPC invoke                  
-                                                          'preview:startGenerated'      
-                                                                              8. startGeneratedPreview()
-                                                                                 → createSandbox (demo template)
-                                                                                 → write index.html (style-aware)
-                                                                                 → startPreview (in-process HTTP)
-                                                                                 → _emitStatusChange() push
-                           9. onPreviewStatusChange                                 
-                              → setStatus(running)                                  
-                              → iframe renders                                      
+5. navigate('/preview')
+                        6. useEffect reads                      
+                           getAndClearBuildPipeline()            
+                           ↓                                     
+                        7. api.buildRun({...})                   
+                                                    8. IPC invoke                
+                                                       'build:run'                
+                                                                             9. buildPipelineService.runBuild()
+                                                                                → classifyIntent(prompt)
+                                                                                → Create build plan (steps list)
+                                                                                → generateWithAI() OR
+                                                                                  generateDeterministicApp()
+                                                                                → computeDeltaFileOperations()
+                                                                                → createSandbox()
+                                                                                → applyFileOperations()
+                                                                                → startPreview()
+                                                                                → emitStep() push to renderer
+                        10. onBuildStep callback                               
+                            → setPipelineSteps()                                
+                            → setPipelineFileOps()                              
+                            → setStreamingText() (AI)
+                            → setPipelinePlan()                                 
+                            → setFollowUpSuggestions()                          
+                            → setPreviewUrl()                                   
+                            → switch to Preview tab                            
+                        11. Follow-up suggestion                                
+                            clicked →                                            
+                            handleFollowUp() →                                  
+                            api.buildRun() again                                
 ```
 
-## SessionStorage Contract (MUST NOT CHANGE)
+## SessionStorage Contract — Build Pipeline
 
 | Key | Expected Value | Set By | Read By |
 |-----|---------------|--------|---------|
-| `auto-build-app-preview` | `'true'` | Studio.tsx, VibeCoding.tsx | LivePreview.tsx |
-| `build-app-style` | `'Calming Ivory'` / `'Soft Teal'` / `'Deep Slate'` | Studio.tsx, VibeCoding.tsx | LivePreview.tsx |
-| `build-app-prompt` | User's prompt text | Studio.tsx, VibeCoding.tsx | LivePreview.tsx (debug only) |
-| `build-app-platform` | `'Web app'` / `'Desktop app'` / etc. | Studio.tsx, VibeCoding.tsx | (reserved) |
+| `build-pipeline-prompt` | User's prompt text | Studio.tsx (via `setAutoBuildPipeline()`) | LivePreview.tsx (via `getAndClearBuildPipeline()`) |
+| `build-pipeline-theme` | `'Calming Ivory'` / `'Soft Teal'` / `'Deep Slate'` | Studio.tsx (via `setAutoBuildPipeline()`) | LivePreview.tsx |
+| `build-pipeline-platform` | `'Web app'` / `'Desktop app'` / etc. | Studio.tsx (via `setAutoBuildPipeline()`) | LivePreview.tsx |
+| `build-pipeline-mode` | `'generate-and-preview'` / `'generate'` / `'plan-only'` | Studio.tsx (via `setAutoBuildPipeline()`) | LivePreview.tsx |
+| `build-pipeline-model-route` | Model DB ID string or empty | Studio.tsx (via `setAutoBuildPipeline()`) | LivePreview.tsx |
+| `build-pipeline-model-explanation` | Human-readable explanation | Studio.tsx (via `setAutoBuildPipeline()`) | LivePreview.tsx |
 
-**Rule:** Only set these keys via the shared helper `setAutoBuildPreview(style, prompt, platform)` — never inline.
+**Rule:** Only set these keys via the shared helper `setAutoBuildPipeline()` / `getAndClearBuildPipeline()` in `src/shared/preview-helpers.ts` — never inline.
+
+### Legacy SessionStorage (Deprecated)
+
+| Key | Status |
+|-----|--------|
+| `auto-build-app-preview` | ⚠️ Legacy — still read by LivePreview.tsx for backward compat |
+| `build-app-style` | ⚠️ Legacy |
+| `build-app-prompt` | ⚠️ Legacy |
+| `build-app-platform` | ⚠️ Legacy |
+| `auto-build-app-sandbox-only` | ⚠️ Legacy |
 
 ## Single Source of Truth
 
 | Concern | Canonical File | Function |
 |---------|---------------|----------|
-| SessionStorage writer | `src/renderer/src/pages/Studio.tsx` | `setAutoBuildPreview()` helper |
-| SessionStorage reader | `src/renderer/src/pages/LivePreview.tsx` | `useEffect` auto-start |
-| Sandbox creation | `src/main/services/live-preview.service.ts` | `startGeneratedPreview()` |
-| Demo HTML template | `src/main/services/live-preview.service.ts` | `DEMO_COUNTER_HTML` constant |
-| Style injection | `src/main/services/live-preview.service.ts` | `.replace()` chain in `createSandbox` |
-| HTTP server | `src/main/services/live-preview.service.ts` | `http.createServer()` in-process |
-| Status push | `src/main/services/live-preview.service.ts` | `onStatusChange()` callback chain |
-| IPC handler | `src/main/ipc/live-preview.ipc.ts` | `registerLivePreviewIPC()` |
-| Preload bridge | `src/preload/index.ts` | `previewStartGenerated()` |
+| SessionStorage writer (pipeline) | `src/shared/preview-helpers.ts` | `setAutoBuildPipeline()` |
+| SessionStorage reader (pipeline) | `src/shared/preview-helpers.ts` | `getAndClearBuildPipeline()` |
+| SessionStorage writer (legacy) | `src/shared/preview-helpers.ts` | `setAutoBuildPreview()` |
+| Pipeline invocation | `src/renderer/src/pages/LivePreview.tsx` | `useEffect` → `api.buildRun()` |
+| Build orchestration | `src/main/services/build-pipeline.service.ts` | `runBuild()` |
+| Intent classification | `src/main/services/build-pipeline.service.ts` | `classifyIntent()` |
+| Deterministic demo generation | `src/main/services/build-pipeline.service.ts` | `generateDeterministicApp()` + 5 intent generators |
+| AI code generation | `src/main/services/build-pipeline.service.ts` | `generateWithAI()` |
+| File delta computation | `src/main/services/build-pipeline.service.ts` | `computeDeltaFileOperations()` |
+| Sandbox creation | `src/main/services/live-preview.service.ts` | `createSandbox()` |
+| Preview server start | `src/main/services/live-preview.service.ts` | `startPreview()` |
+| Status push | `src/main/services/build-pipeline.service.ts` | `emitStep()` → IPC `build:step` |
+| Build IPC handler | `src/main/ipc/build-pipeline.ipc.ts` | `registerBuildPipelineIPC()` |
+| Preload bridge | `src/preload/index.ts` | `buildRun()`, `onBuildStep()`, `onBuildComplete()` |
+| Model resolution | `src/main/services/model-router.service.ts` | `resolveBestForBuild()` | |
 
-## IPC Contract (MUST NOT CHANGE)
+## IPC Contract — Build Pipeline
 
 ```
 Renderer                    Main Process
 ────────                    ────────────
-previewStartGenerated()  →  'preview:startGenerated'
-  input: {
-    source: 'studio-build-app' | 'code-demo' | 'manual'
-    style?: string           (e.g. 'Calming Ivory')
-    entryFile?: string       (default: 'index.html')
-    autoOpenCodeMode?: bool  (reserved)
-    autoFocusPreview?: bool  (reserved)
+buildRun(request)        →  'build:run'
+  BuildRequest {
+    prompt: string
+    projectType: string
+    theme: string
+    targetWorkspace: 'code'
+    mode: 'plan-only' | 'generate' | 'generate-and-preview'
+    providerModelRoute: string | null
   }
-  ←  PreviewStatus {
-       status: 'running' | 'error' | ...
-       url: string | null
-       sandboxPath: string | null
+  ←  BuildResult {
+       success: boolean
+       steps: BuildStep[]
+       fileOperations: FileOperation[]
+       plan: string[]
+       previewUrl: string | null
+       followUpSuggestions: FollowUpSuggestion[]
+       isDeterministicDemo: boolean
        ...
      }
 
+buildCancel()            →  'build:cancel'
+  ←  boolean
+
+onBuildStep(cb)          ←  'build:step' (push)
+  BuildPipelineStatus      (fires on every pipeline step)
+
+onBuildComplete(cb)      ←  'build:complete' (push)
+  BuildResult               (fires on pipeline completion)
+```
+
+### Legacy IPC (Still Active)
+
+```
+previewStartGenerated()  →  'preview:startGenerated'
 onPreviewStatusChange()  ←  'preview:status-change' (push)
-  PreviewStatus             (fires immediately on state transition)
 ```
 
 ## Regression Prevention Rules
 
-1. **Never change sessionStorage keys** without updating `LivePreview.tsx` reader AND this contract
-2. **Never change IPC channel names** without updating preload, IPC handler, AND renderer
-3. **Never change `PreviewStatus` shape** — it's the contract between service, IPC, and renderer
-4. **Never skip the `onStatusChange` push** — it eliminates the 2-second poll delay
+1. **Never change sessionStorage keys** without updating both `preview-helpers.ts` AND this contract
+2. **Never change IPC channel names** (`build:run`, `build:cancel`, `build:step`, `build:complete`) without updating preload, IPC handler, AND renderer
+3. **Never change `BuildPipelineStatus` shape** — it's the contract between service, IPC, and renderer
+4. **Never skip the `emitStep()` push** — it's the only way renderer receives pipeline state
 5. **Always add a regression test** when modifying any step of this pipeline
 6. **Always run `npm run demo:coding`** (the standalone smoke test) after changes
+7. **Always run `npm run test:e2e -- tests/e2e/19-aureon-studio-pipeline-e2e.spec.ts`** to verify the full UI pipeline
+
+## Verified Button Contract
+
+| Button | Location | Handler | Works Without API Key |
+|--------|----------|---------|----------------------|
+| Start building | Studio hero composer | `handleStartBuilding()` → `setAutoBuildPipeline()` → `/preview` | ✅ (demo fallback) |
+| Enter (composer) | Studio hero composer | `handleComposerSubmit()` → same flow | ✅ |
+| Build App card | Studio cards | `handleCardClick()` → drawer → `handleStartTask()` | ✅ |
+| Create & Build | Code Mode composer | `handleCreateSandbox()` → sandbox + preview | ✅ |
+| Run Coding Demo App | Code Mode composer | `handleRunDemo()` → counter app | ✅ |
+| Stop | Preview controls | `handleStop()` → stops server | ✅ |
+| Restart | Preview controls | `handleRestart()` → stop + start | ✅ |
+| Open Browser | Preview controls | `openExternal()` → opens URL | ✅ (when running) |
+| Follow-up suggestions | Pipeline panel | `handleFollowUp()` → new build | ✅ |
+| Cancel | Pipeline panel (during build) | `handleCancelPipeline()` → stops build | ✅ |
+| Code/Preview/Files/Diff/Plan tabs | Pipeline panel | `setActiveTab()` | ✅ |
 
 ## Error Handling Contract
 
@@ -146,5 +218,6 @@ onPreviewStatusChange()  ←  'preview:status-change' (push)
 
 | Date | Change | Author |
 |------|--------|--------|
-| 2026-07-09 | Contract created; extracted sessionStorage helper | Buffy |
-| 2026-07-09 | Added bolt-like build pipeline (BuildRequest, BuildPipeline, FileOperation) as new canonical flow; `setAutoBuildPipeline()` helper for prompt→code→diff→preview | Buffy |
+| 2026-07-09 | Contract created; extracted sessionStorage helper (v1.0) | Buffy |
+| 2026-07-09 | Added bolt-like build pipeline (BuildRequest, BuildPipeline, FileOperation) | Buffy |
+| 2026-07-09 | **v2.0** — Core contract enforced. Verified 11-button contract (no silent no-ops). Demo smoke 9/9. Typecheck ✅, 723 tests ✅, build ✅. Updated to reflect new build pipeline flow with classifyIntent → generateDeterministicApp → computeDeltaFileOperations → createSandbox → applyFileOperations → startPreview → emitStep. | Buffy |

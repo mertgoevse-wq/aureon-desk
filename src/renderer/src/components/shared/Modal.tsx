@@ -110,7 +110,7 @@ export function Modal({
         ref={contentRef}
         className={`w-full ${sizeClasses[size]} bg-[var(--ivory-bg)] rounded-[20px]
           border border-[var(--ivory-border)] shadow-[var(--shadow-xl)] ring-1 ring-black/5
-          transition-all duration-200 ${
+          transition duration-200 ${
           isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         } max-h-[85vh] flex flex-col`}
       >

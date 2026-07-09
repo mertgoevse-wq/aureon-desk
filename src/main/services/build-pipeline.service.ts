@@ -1206,6 +1206,22 @@ export const buildPipelineService = {
       emitStep(classifyStep, completedSteps, fileOps, previewUrl, previewStatus, false, null, isDemo, suggestions)
 
       // Step 2: Create build plan
+
+      // Resolve model label for plan display
+      let modelLabel: string | null = null
+      if (hasProvider && request.providerModelRoute) {
+        try {
+          const ref = providerService.resolveCanonicalModelReference(request.providerModelRoute)
+          if (ref) {
+            const provider = providerService.getProvider(ref.providerId)
+            const model = provider?.models.find(m => m.id === ref.modelId)
+            if (model) {
+              modelLabel = `${model.display_name || model.name} via ${ref.providerName}`
+            }
+          }
+        } catch { /* ignore resolution errors */ }
+      }
+
       const planStep = makeStep('plan', 'Creating build plan…')
       planStep.status = 'running'
       emitStep(planStep, completedSteps, fileOps, previewUrl, previewStatus, false, null, isDemo, suggestions)
@@ -1218,7 +1234,7 @@ export const buildPipelineService = {
         `Files to generate: ${classification.suggestedFiles.join(', ')}`,
         `Theme: ${request.theme}`,
         `Mode: ${request.mode}`,
-        isDemo ? 'Source: Deterministic local demo (no AI provider needed)' : 'Source: AI provider',
+        isDemo ? 'Source: Deterministic local demo (no AI provider needed)' : `Source: ${modelLabel || 'AI provider'}`,
       ]
       planStep.status = 'done'
       completedSteps.push(planStep)

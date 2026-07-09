@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MessageBubble } from './MessageBubble'
 import { MessageInput } from './MessageInput'
@@ -77,7 +77,7 @@ function getTimeAwareGreeting(): string {
   return 'Good evening'
 }
 
-export function ChatPanel(): React.ReactElement {
+export const ChatPanel = memo(function ChatPanel(): React.ReactElement {
   const { activeChat, activeChatId, addMessage, updateChatInList, chats, setActiveChatId, setActiveChat } = useChatStore()
   const { setCurrentAnalysis, addToHistory, setLoading, setError } = useRoutingStore()
   const api = useIpc()
@@ -480,7 +480,7 @@ export function ChatPanel(): React.ReactElement {
                 <button
                   key={item.label}
                   onClick={() => insertStarterPrompt(item.prompt)}
-                        className="group flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-elevated-hover)] border border-[var(--ivory-border)] hover:border-[var(--ivory-border-2)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] shadow-[var(--shadow-xs)] hover:shadow-[var(--shadow-md)] transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+                        className="group flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-elevated-hover)] border border-[var(--ivory-border)] hover:border-[var(--ivory-border-2)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] shadow-[var(--shadow-xs)] hover:shadow-[var(--shadow-md)] transition duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
                         data-testid={`suggestion-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
                         <div className="w-8 h-8 rounded-full bg-[var(--ivory-accent-light)] flex items-center justify-center shrink-0 text-[var(--ivory-accent)] group-hover:bg-white transition-colors">
@@ -599,4 +599,4 @@ export function ChatPanel(): React.ReactElement {
       />
     </div>
   )
-}
+})

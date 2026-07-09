@@ -549,7 +549,7 @@ export function ToolsPage(): React.ReactElement {
                   key={t}
                   type="button"
                   onClick={() => setNewServer(s => ({ ...s, transport: t }))}
-                  className={`px-3 py-2 rounded-xl text-xs font-medium border transition-all text-left
+                  className={`px-3 py-2 rounded-xl text-xs font-medium border transition text-left
                     ${newServer.transport === t
                       ? 'border-[var(--ivory-accent)]/30 bg-[var(--ivory-accent-light)] text-[var(--ivory-text)]'
                       : 'border-[var(--ivory-border)] bg-[var(--ivory-bg)] text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'

@@ -360,7 +360,7 @@ export function ChatWorkspace(): React.ReactElement {
                     key={idx}
                     type="button"
                     onClick={() => handleHomeSend(item.prompt)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/50 hover:border-[var(--ivory-accent)]/25 rounded-full text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-all cursor-pointer shadow-none select-none"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/50 hover:border-[var(--ivory-accent)]/25 rounded-full text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition cursor-pointer shadow-none select-none"
                   >
                     {item.icon}
                     <span>{item.label}</span>
@@ -369,7 +369,7 @@ export function ChatWorkspace(): React.ReactElement {
                 <button
                   type="button"
                   onClick={() => navigate('/vibe')}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 rounded-full text-[11px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] transition-all cursor-pointer select-none"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 rounded-full text-[11px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] transition cursor-pointer select-none"
                 >
                   <span>More…</span>
                 </button>
@@ -407,7 +407,7 @@ export function ChatWorkspace(): React.ReactElement {
                         const fullChat = await api.chatGet(chat.id)
                         setActiveChat(fullChat || null)
                       }}
-                      className="flex flex-col p-3 rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/20 transition-all text-left focus:outline-none cursor-pointer"
+                      className="flex flex-col p-3 rounded-xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/20 transition text-left focus:outline-none cursor-pointer"
                     >
                       <span className="block text-[12px] font-semibold text-[var(--ivory-text)] truncate">{chat.title}</span>
                       <span className="block text-[10px] text-[var(--ivory-text-3)] truncate font-body mt-0.5">
@@ -449,7 +449,7 @@ export function ChatWorkspace(): React.ReactElement {
               onClick={() => { setPromptsOpen(!promptsOpen); api.systemPromptList(false).then(setSystemPrompts) }}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full
                 bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)]
-                hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-border-2)] transition-all"
+                hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-border-2)] transition"
               data-testid="system-profile-selector"
             >
               <ScrollText size={12} className="text-[var(--ivory-accent)]" />

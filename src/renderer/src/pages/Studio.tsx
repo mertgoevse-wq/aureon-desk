@@ -229,7 +229,7 @@ export function Studio(): React.ReactElement {
         onClick={() => handleCardClick(card)}
         disabled={isOrchestrating}
         data-testid={`studio-card-${card.id}`}
-        className={`group relative flex flex-col items-start gap-2.5 p-4 rounded-2xl border text-left transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring-color)] cursor-pointer
+        className={`group relative flex flex-col items-start gap-2.5 p-4 rounded-2xl border text-left transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring-color)] cursor-pointer
           ${isSelected
             ? 'border-[var(--ivory-accent)]/25 bg-[var(--ivory-accent-light)] shadow-[var(--shadow-sm)]'
             : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-elevated)] hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-sm)]'
@@ -398,7 +398,7 @@ export function Studio(): React.ReactElement {
               onClick={() => {
                 setPrimaryPrompt(suggestion)
               }}
-              className="px-3 py-1.5 rounded-full border border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)] text-[12px] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:border-[var(--ivory-accent)]/20 transition-all cursor-pointer"
+              className="px-3 py-1.5 rounded-full border border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)] text-[12px] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:border-[var(--ivory-accent)]/20 transition cursor-pointer"
             >
               {suggestion}
             </button>
@@ -464,7 +464,7 @@ export function Studio(): React.ReactElement {
                   type="button"
                   onClick={() => setAutonomyLevel(level.level)}
                   title={level.description}
-                  className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring-color)] cursor-pointer
+                  className={`flex items-center justify-center w-8 h-8 rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring-color)] cursor-pointer
                     ${isCurrent
                       ? 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]'
                       : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-bg)]'
@@ -509,7 +509,7 @@ export function Studio(): React.ReactElement {
                           key={target}
                           type="button"
                           onClick={() => setTargetPlatform(target)}
-                          className={`py-2.5 px-3 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer ${
+                          className={`py-2.5 px-3 text-[12px] font-semibold border rounded-xl transition cursor-pointer ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                               : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -532,7 +532,7 @@ export function Studio(): React.ReactElement {
                           key={style}
                           type="button"
                           onClick={() => setProjectStyle(style)}
-                          className={`py-2.5 px-2 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer ${
+                          className={`py-2.5 px-2 text-[12px] font-semibold border rounded-xl transition cursor-pointer ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                               : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -555,7 +555,7 @@ export function Studio(): React.ReactElement {
                           key={opt}
                           type="button"
                           onClick={() => setOutputOption(opt)}
-                          className={`py-2.5 px-1 text-[12px] font-bold border rounded-xl transition-all cursor-pointer text-center ${
+                          className={`py-2.5 px-1 text-[12px] font-bold border rounded-xl transition cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                               : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -582,7 +582,7 @@ export function Studio(): React.ReactElement {
                           key={lang}
                           type="button"
                           onClick={() => setTargetLanguage(lang)}
-                          className={`py-1.5 px-1 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer text-center ${
+                          className={`py-1.5 px-1 text-[12px] font-semibold border rounded-xl transition cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                               : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -605,7 +605,7 @@ export function Studio(): React.ReactElement {
                           key={opt}
                           type="button"
                           onClick={() => setOutputOption(opt)}
-                          className={`py-2 px-2 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer text-center ${
+                          className={`py-2 px-2 text-[12px] font-semibold border rounded-xl transition cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                               : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -631,7 +631,7 @@ export function Studio(): React.ReactElement {
                         key={tone}
                         type="button"
                         onClick={() => setTextTone(tone)}
-                        className={`py-2 px-3 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer ${
+                        className={`py-2 px-3 text-[12px] font-semibold border rounded-xl transition cursor-pointer ${
                           isActive
                             ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                             : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -657,7 +657,7 @@ export function Studio(): React.ReactElement {
                           key={prov}
                           type="button"
                           onClick={() => setImageProvider(prov)}
-                          className={`py-2 px-3 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer text-left ${
+                          className={`py-2 px-3 text-[12px] font-semibold border rounded-xl transition cursor-pointer text-left ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                               : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -680,7 +680,7 @@ export function Studio(): React.ReactElement {
                           key={ratio}
                           type="button"
                           onClick={() => setImageRatio(ratio)}
-                          className={`py-2.5 px-1 text-[12px] font-bold border rounded-xl transition-all cursor-pointer text-center ${
+                          className={`py-2.5 px-1 text-[12px] font-bold border rounded-xl transition cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                               : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -720,7 +720,7 @@ export function Studio(): React.ReactElement {
                           key={prov}
                           type="button"
                           onClick={() => setVideoProvider(prov)}
-                          className={`py-2 px-3 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer text-left ${
+                          className={`py-2 px-3 text-[12px] font-semibold border rounded-xl transition cursor-pointer text-left ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                               : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -743,7 +743,7 @@ export function Studio(): React.ReactElement {
                           key={dur}
                           type="button"
                           onClick={() => setVideoDuration(dur)}
-                          className={`py-2 px-2 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer text-center ${
+                          className={`py-2 px-2 text-[12px] font-semibold border rounded-xl transition cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                               : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -783,7 +783,7 @@ export function Studio(): React.ReactElement {
                           key={prov}
                           type="button"
                           onClick={() => setMusicProvider(prov)}
-                          className={`py-2 px-3 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer text-left ${
+                          className={`py-2 px-3 text-[12px] font-semibold border rounded-xl transition cursor-pointer text-left ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                               : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -806,7 +806,7 @@ export function Studio(): React.ReactElement {
                           key={style}
                           type="button"
                           onClick={() => setMusicStyle(style)}
-                          className={`py-2 px-2 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer text-center ${
+                          className={`py-2 px-2 text-[12px] font-semibold border rounded-xl transition cursor-pointer text-center ${
                             isActive
                               ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                               : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -845,7 +845,7 @@ export function Studio(): React.ReactElement {
                         key={type}
                         type="button"
                         onClick={() => setFileType(type)}
-                        className={`py-2 px-1 text-[12px] font-bold border rounded-xl transition-all cursor-pointer text-center ${
+                        className={`py-2 px-1 text-[12px] font-bold border rounded-xl transition cursor-pointer text-center ${
                           isActive
                             ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                             : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -870,7 +870,7 @@ export function Studio(): React.ReactElement {
                         key={target}
                         type="button"
                         onClick={() => setScreenTarget(target)}
-                        className={`py-2.5 px-1 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer text-center ${
+                        className={`py-2.5 px-1 text-[12px] font-semibold border rounded-xl transition cursor-pointer text-center ${
                           isActive
                             ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                             : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -895,7 +895,7 @@ export function Studio(): React.ReactElement {
                         key={target}
                         type="button"
                         onClick={() => setConnectorTarget(target)}
-                        className={`py-2 px-3 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer ${
+                        className={`py-2 px-3 text-[12px] font-semibold border rounded-xl transition cursor-pointer ${
                           isActive
                             ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                             : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
@@ -920,7 +920,7 @@ export function Studio(): React.ReactElement {
                         key={trigger}
                         type="button"
                         onClick={() => setTriggerType(trigger)}
-                        className={`py-2 px-2 text-[12px] font-semibold border rounded-xl transition-all cursor-pointer ${
+                        className={`py-2 px-2 text-[12px] font-semibold border rounded-xl transition cursor-pointer ${
                           isActive
                             ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
                             : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'

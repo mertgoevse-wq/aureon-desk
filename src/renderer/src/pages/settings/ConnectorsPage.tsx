@@ -181,7 +181,7 @@ export function ConnectorsPage(): React.ReactElement {
                 key={preset.id}
                 type="button"
                 onClick={() => setSelectedPreset(preset)}
-                className="group text-left rounded-2xl border border-[var(--ivory-border)]/70 bg-[var(--ivory-elevated)] p-4 hover:border-[var(--ivory-accent)]/25 hover:shadow-[var(--shadow-md)] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30"
+                className="group text-left rounded-2xl border border-[var(--ivory-border)]/70 bg-[var(--ivory-elevated)] p-4 hover:border-[var(--ivory-accent)]/25 hover:shadow-[var(--shadow-md)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30"
                 data-testid={`connector-preset-${preset.id}`}
               >
                 <div className="flex items-start gap-3">
@@ -446,7 +446,7 @@ function SocialPresetCard({
     <button
       type="button"
       onClick={onOpen}
-      className="group text-left rounded-2xl border border-[var(--ivory-border)]/70 bg-[var(--ivory-elevated)] p-4 hover:border-[var(--ivory-accent)]/25 hover:shadow-[var(--shadow-md)] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30"
+      className="group text-left rounded-2xl border border-[var(--ivory-border)]/70 bg-[var(--ivory-elevated)] p-4 hover:border-[var(--ivory-accent)]/25 hover:shadow-[var(--shadow-md)] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30"
       data-testid={`social-connector-${preset.id}`}
     >
       <div className="flex items-start gap-3">

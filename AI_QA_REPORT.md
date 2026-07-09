@@ -4,6 +4,62 @@
 
 ---
 
+## Core Contract Enforcement — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| Critical issue review | ✅ PASS — 0 open Critical Issues |
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (723 tests, 28 files) |
+| `npm run build` | ✅ PASS |
+| `npm run demo:coding` (smoke test) | ✅ PASS (9/9 checks) |
+| Playwright E2E (studio pipeline) | ✅ 12/13 PASS |
+
+### Core Contract Status
+
+| Step | Contract | Status |
+|------|----------|--------|
+| 1 | User prompt → Studio composer | ✅ |
+| 2 | Studio → sessionStorage → navigate('/preview') | ✅ |
+| 3 | LivePreview mount → getAndClearBuildPipeline() | ✅ |
+| 4 | IPC `build:run` → `buildPipelineService.runBuild()` | ✅ |
+| 5 | classifyIntent → build_utility/build_app/etc. | ✅ |
+| 6 | generateDeterministicApp → 5 intent generators | ✅ |
+| 7 | computeDeltaFileOperations → create/update/delete/rename/mkdir | ✅ |
+| 8 | createSandbox → applyFileOperations → startPreview | ✅ |
+| 9 | emitStep → renderer onBuildStep → tabs (Code/Files/Diff/Plan) | ✅ |
+| 10 | Follow-up suggestions → handleFollowUp → new build | ✅ |
+| 11 | Deterministic demo works without API key | ✅ |
+
+### Verified Button Contract (11/11)
+
+| Button | Works Without API Key |
+|--------|----------------------|
+| Start building | ✅ |
+| Enter (composer) | ✅ |
+| Build App card | ✅ |
+| Create & Build | ✅ |
+| Run Coding Demo App | ✅ |
+| Stop | ✅ |
+| Restart | ✅ |
+| Open Browser | ✅ |
+| Follow-up suggestions | ✅ |
+| Cancel | ✅ |
+| Code/Preview/Files/Diff/Plan tabs | ✅ |
+
+### Changes
+
+| Area | Change |
+|------|--------|
+| Contract doc | Updated `STUDIO_LIVEPREVIEW_CONTRACT.md` to v2.0 — full build pipeline flow documented |
+| Plan tab | Model label now shown (e.g., "Source: Claude 3.5 Sonnet via Anthropic") |
+| Code tab | Pulsing dot indicator during AI streaming generation |
+| E2E flake fix | `build-code-tab` visibility timeout increased to 20s |
+| Contract doc | Added build pipeline IPC contract, sessionStorage contract, verified button contract |
+
+---
+
 ## Playwright E2E — Studio → Build Pipeline — 2026-07-09
 
 | Check | Result |

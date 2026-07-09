@@ -246,7 +246,7 @@ export function CoworkPage(): React.ReactElement {
                   <button
                     type="submit"
                     disabled={!newTaskTitle.trim()}
-                    className={`h-9 px-4 inline-flex items-center gap-1.5 rounded-xl text-[12px] font-semibold transition-all shadow-[var(--shadow-sm)]
+                    className={`h-9 px-4 inline-flex items-center gap-1.5 rounded-xl text-[12px] font-semibold transition shadow-[var(--shadow-sm)]
                       ${newTaskTitle.trim()
                         ? 'bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-dark)] cursor-pointer'
                         : 'bg-[var(--ivory-surface-2)] text-[var(--ivory-text-3)] cursor-not-allowed border border-[var(--ivory-border)]'}`}
@@ -277,7 +277,7 @@ export function CoworkPage(): React.ReactElement {
                       type="button"
                       key={t.id}
                       onClick={() => setActiveTaskId(t.id)}
-                      className={`w-full text-left p-2.5 rounded-xl border transition-all text-xs font-semibold
+                      className={`w-full text-left p-2.5 rounded-xl border transition text-xs font-semibold
                         ${t.id === activeTaskId
                           ? 'bg-[var(--ivory-surface)] border-[var(--ivory-accent)]/30 text-[var(--ivory-text)] shadow-[var(--shadow-sm)]'
                           : 'bg-[var(--ivory-bg)] border-[var(--ivory-border)] text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}

@@ -442,7 +442,7 @@ export function ProjectsPage(): React.ReactElement {
                   <Plus size={14} /> New Project
                 </Button>
                 <button type="button" onClick={() => navigate('/vibe')}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 text-xs font-semibold text-[var(--ivory-text)] transition-all shadow-[var(--shadow-xs)]">
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--ivory-accent-light)] hover:bg-[var(--ivory-accent)]/12 border border-[var(--ivory-accent)]/15 hover:border-[var(--ivory-accent)]/25 text-xs font-semibold text-[var(--ivory-text)] transition shadow-[var(--shadow-xs)]">
                   <Sparkles size={13} className="text-[var(--ivory-accent)]" />
                   New to coding? Try Vibe Coding
                 </button>

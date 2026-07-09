@@ -47,3 +47,6 @@ traces/
 *.key
 credentials.json
 *.tsbuildinfo
+
+# Large source assets (not distributed)
+assets/brand/source/

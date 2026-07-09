@@ -276,7 +276,7 @@ export function DeviceInputsPage(): React.ReactElement {
                         key={source.id}
                         type="button"
                         onClick={() => selectDevice(category, source.id)}
-                        className={`relative rounded-xl border-2 overflow-hidden transition-all cursor-pointer ${
+                        className={`relative rounded-xl border-2 overflow-hidden transition cursor-pointer ${
                           isSelected
                             ? 'border-[var(--ivory-accent)] ring-2 ring-[var(--ivory-accent)]/20'
                             : 'border-[var(--ivory-border)]/50 hover:border-[var(--ivory-border)]'

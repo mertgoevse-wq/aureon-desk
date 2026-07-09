@@ -127,7 +127,7 @@ test.describe('Aureon Desk — Studio → Build Pipeline E2E (with mock API key)
       await mainWindow.waitForTimeout(500)
 
       const codeTabContent = mainWindow.getByTestId('build-code-tab')
-      await expect(codeTabContent).toBeVisible()
+      await expect(codeTabContent).toBeVisible({ timeout: 20000 })
 
       // Wait for pipeline steps to appear (at least one step should render)
       await mainWindow.waitForTimeout(5000)

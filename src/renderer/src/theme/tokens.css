@@ -185,6 +185,28 @@ html, body, #root {
   overflow: hidden;
 }
 
+/* === GPU PERFORMANCE HINTS === */
+/* Hint browser to composite elements that animate, reducing GPU thrashing */
+.animate-in,
+.animate-fade-in,
+.animate-scale-in,
+.animate-slide-in,
+.animate-pulse-subtle {
+  will-change: transform, opacity;
+}
+
+/* Defer rendering of off-screen content in scrollable areas */
+.overflow-y-auto,
+.overflow-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* Reduce paint cost for elements with shadows */
+[class*="shadow-"] {
+  will-change: auto;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);

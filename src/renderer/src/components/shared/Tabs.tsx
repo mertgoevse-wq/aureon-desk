@@ -22,7 +22,7 @@ export function Tabs({ tabs, activeTab, onChange }: TabsProps): React.ReactEleme
           role="tab"
           aria-selected={activeTab === tab.id}
           onClick={() => onChange(tab.id)}
-          className={`px-3 py-1 text-xs rounded-[var(--radius-sm)] font-medium transition-all duration-[var(--transition-fast)]
+          className={`px-3 py-1 text-xs rounded-[var(--radius-sm)] font-medium transition duration-[var(--transition-fast)]
             ${activeTab === tab.id
               ? 'bg-[var(--ivory-bg)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
               : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]'

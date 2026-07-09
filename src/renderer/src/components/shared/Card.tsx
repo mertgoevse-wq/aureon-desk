@@ -29,7 +29,7 @@ export function Card({
       onClick={onClick}
       className={`rounded-[var(--radius-lg)] border border-[var(--ivory-border)] 
         bg-[var(--ivory-elevated)] shadow-[var(--shadow-xs)] ${paddingClasses[padding]}
-        ${hover ? 'hover:border-[var(--ivory-border-2)] hover:shadow-[var(--shadow-md)] transition-all duration-[var(--transition-fast)]' : ''}
+        ${hover ? 'hover:border-[var(--ivory-border-2)] hover:shadow-[var(--shadow-md)] transition duration-[var(--transition-fast)]' : ''}
         ${onClick ? 'cursor-pointer text-left w-full' : ''}
         ${className}`}
     >

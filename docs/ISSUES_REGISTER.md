@@ -1,7 +1,7 @@
 # Aureon Desk — Issues Register
 
-> **Last updated:** 2026-07-09 — Post-Run Consolidation
-> **Branch:** `main` at `c1f566e`
+> **Last updated:** 2026-07-09 — Core Contract Enforcement
+> **Branch:** `main`
 
 ---
 
@@ -11,16 +11,16 @@
 |----|------|-------|----------|------------|--------|-----------------|
 | — | — | **None found** | Latest pre-feature review plus baseline QA passed | — | — | — |
 
-### Critical Issue Checklist (2026-07-09)
+### Critical Issue Checklist (2026-07-09) — Updated
 
 | # | Check | Result |
 |---|-------|--------|
 | 1 | App starts (`npm run build` + `npm run dev`) | ✅ PASS |
 | 2 | Typecheck (`npm run typecheck`) | ✅ PASS |
-| 3 | Unit tests (`npm test`, 491 tests) | ✅ PASS |
+| 3 | Unit tests (`npm test`, 723 tests) | ✅ PASS |
 | 4 | Build (`npm run build`) | ✅ PASS |
 | 5 | Main navigation (Chat/Studio/Code/Settings/Cowork/LivePreview) | ✅ PASS |
-| 6 | Buttons/cards/dropdowns have handlers | ✅ PASS — 149+ onClick handlers verified |
+| 6 | Buttons/cards/dropdowns have handlers | ✅ PASS — 11-button contract verified |
 | 7 | Studio Build App flow opens and can submit | ✅ PASS (E2E verified) |
 | 8 | Task Brief Composer accepts typing/Enter | ✅ PASS |
 | 9 | LivePreview auto-opens/renders for Build App/Code flow | ✅ PASS (push sync+fast poll) |
@@ -35,9 +35,10 @@
 | 18 | No overlap at 1366×768 | ✅ PASS (E2E verified) |
 | 19 | No secrets in logs/docs/screenshots | ✅ PASS (secret scan clean) |
 | 20 | Performance reasonable on 16GB/no GPU | ✅ PASS (inferred from tests) |
-| 21 | Safe connector/social presets do not perform live third-party actions | ✅ PASS — placeholders/test messages only |
-| 22 | Social publish/reply/delete/upload actions require exact-content confirmation contract | ✅ PASS — `social-connectors.ts` tests |
-| 23 | Post-Run Consolidation — all 12 critical gates pass | ✅ PASS — typecheck, 597 tests, build, dev server, 0 circular deps |
+| 21 | Safe connector/social presets do not perform live third-party actions | ✅ PASS |
+| 22 | Social publish/reply/delete/upload actions require exact-content confirmation | ✅ PASS |
+| 23 | Core contract: Studio → Build Pipeline → Code → LivePreview | ✅ PASS — verified 9-step flow |
+| 24 | Deterministic demo works without API key | ✅ PASS — demo:coding 9/9 |
 
 ---
 

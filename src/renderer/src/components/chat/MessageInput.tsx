@@ -335,7 +335,7 @@ export function MessageInput({
 
         <div className="bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-[22px] px-3 py-2 shadow-[var(--shadow-composer)]
           focus-within:border-[var(--ivory-accent)] focus-within:ring-1 focus-within:ring-[var(--ivory-accent)]
-          hover:border-[var(--ivory-border-2)] transition-all duration-[var(--transition-fast)]">
+          hover:border-[var(--ivory-border-2)] transition duration-[var(--transition-fast)]">
           <textarea
             ref={textareaRef}
             value={value}
@@ -377,7 +377,7 @@ export function MessageInput({
               <button
                 onClick={handleSend}
                 disabled={disabled || !value.trim()}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full transition-all shrink-0
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full transition shrink-0
                   bg-[var(--ivory-accent)] text-white shadow-[var(--shadow-sm)] hover:bg-[var(--ivory-accent-hover)] hover:shadow-[var(--shadow-md)]
                   disabled:bg-[var(--ivory-surface-3)] disabled:text-[var(--ivory-text-3)] disabled:shadow-none cursor-pointer"
                 title="Send message (Enter)"

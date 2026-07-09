@@ -33,7 +33,7 @@ export function ChatList({ onSelectChat }: ChatListProps): React.ReactElement {
         <button
           key={chat.id}
           onClick={() => onSelectChat(chat.id)}
-          className={`text-left px-3 py-2 rounded-xl transition-all duration-[var(--transition-fast)] mx-2 w-[calc(100%-16px)] block cursor-pointer
+          className={`text-left px-3 py-2 rounded-xl transition duration-[var(--transition-fast)] mx-2 w-[calc(100%-16px)] block cursor-pointer
             ${isActive
               ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-text)] font-semibold shadow-[var(--shadow-xs)]'
               : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}

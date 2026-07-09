@@ -184,7 +184,7 @@ export function VibeCoding(): React.ReactElement {
           {/* View tabs */}
           <div className="inline-flex items-center gap-1 mt-5 p-1 rounded-2xl bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/50">
             <button type="button" onClick={() => { setView('onboarding'); handleReset() }}
-              className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition-all ${
+              className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition ${
                 view === 'onboarding'
                   ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] shadow-[var(--shadow-sm)]'
                   : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]'
@@ -193,7 +193,7 @@ export function VibeCoding(): React.ReactElement {
               Quick Start
             </button>
             <button type="button" onClick={() => { setView('guided'); handleReset() }}
-              className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition-all ${
+              className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition ${
                 view === 'guided'
                   ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] shadow-[var(--shadow-sm)]'
                   : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]'
@@ -202,7 +202,7 @@ export function VibeCoding(): React.ReactElement {
               Guided Builder
             </button>
             <button type="button" onClick={() => setView('learn')}
-              className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition-all ${
+              className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition ${
                 view === 'learn'
                   ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] shadow-[var(--shadow-sm)]'
                   : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]'
@@ -228,7 +228,7 @@ export function VibeCoding(): React.ReactElement {
                 {PROJECT_TYPES.map(type => (
                   <div key={type.id}
                     data-testid={`vibe-project-${type.id}`}
-                    className="flex flex-col rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/25 hover:shadow-[var(--shadow-md)] transition-all duration-150 text-left focus-within:ring-2 focus-within:ring-[var(--ivory-accent)]/30 overflow-hidden">
+                    className="flex flex-col rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/25 hover:shadow-[var(--shadow-md)] transition duration-150 text-left focus-within:ring-2 focus-within:ring-[var(--ivory-accent)]/30 overflow-hidden">
                     <button type="button" onClick={() => handleProjectTypeClick(type.id)}
                       className="group flex items-start gap-3 p-4 text-left w-full cursor-pointer">
                       <div className="w-10 h-10 rounded-xl bg-[var(--ivory-surface)] flex items-center justify-center shrink-0 text-[var(--ivory-text-2)] group-hover:scale-105 transition-transform">
@@ -279,7 +279,7 @@ export function VibeCoding(): React.ReactElement {
                 {QUICK_ACTIONS.map(action => (
                   <button key={action.id} type="button" onClick={() => handleQuickAction(action.id)}
                     data-testid={`vibe-action-${action.id}`}
-                    className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-sm)] transition-all duration-150 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30">
+                    className="flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-sm)] transition duration-150 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30">
                     <div className="w-9 h-9 rounded-xl bg-[var(--ivory-surface)] flex items-center justify-center text-[var(--ivory-text-2)]">
                       {LUCIDE_ICONS[action.icon] || <Lightbulb size={16} />}
                     </div>
@@ -318,7 +318,7 @@ export function VibeCoding(): React.ReactElement {
                 )).map(card => (
                   <button key={card.id} type="button" onClick={() => handleCardClick(card)}
                     data-testid={`vibe-card-${card.id}`}
-                    className="group flex items-start gap-3 p-4 rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-md)] transition-all duration-150 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30">
+                    className="group flex items-start gap-3 p-4 rounded-2xl bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-md)] transition duration-150 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30">
                     <div className="w-10 h-10 rounded-xl bg-[var(--ivory-surface)] flex items-center justify-center shrink-0 text-[var(--ivory-text-2)] group-hover:scale-105 transition-transform">
                       {LUCIDE_ICONS[card.icon] || <Lightbulb size={18} />}
                     </div>
@@ -377,7 +377,7 @@ export function VibeCoding(): React.ReactElement {
                       return (
                         <button key={option.id} type="button" onClick={() => handleGuidedSelect(option.id)}
                           data-testid={`guided-option-${option.id}`}
-                          className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30 ${
+                          className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/30 ${
                             isSelected
                               ? 'border-[var(--ivory-accent)]/30 bg-[var(--ivory-accent-light)] shadow-[var(--shadow-sm)]'
                               : 'border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] hover:border-[var(--ivory-accent)]/20 hover:bg-[var(--ivory-surface)]'

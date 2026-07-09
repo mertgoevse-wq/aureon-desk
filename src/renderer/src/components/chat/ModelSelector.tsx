@@ -119,7 +119,7 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps): React.Re
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full
           bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)]
-          hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-border-2)] transition-all cursor-pointer"
+          hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-border-2)] transition cursor-pointer"
         aria-label={isOpen ? 'Close model selector' : `Select model${selectedModel ? ` (current: ${selectedModel.display_name})` : ''}`}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
