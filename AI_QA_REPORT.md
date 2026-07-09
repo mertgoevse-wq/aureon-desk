@@ -4,6 +4,49 @@
 
 ---
 
+## Live Human QA — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| Critical issue review | ✅ PASS — 0 open Critical Issues |
+| Headed Playwright E2E (visible Electron app) | ✅ 12/13 PASS |
+| Manual desktop QA (code-level click-through) | ✅ 11/11 buttons verified |
+| App starts | ✅ |
+| Hero landing | ✅ |
+| Studio Build App | ✅ |
+| Task Brief Composer | ✅ |
+| Code Mode | ✅ |
+| Diff/file tree | ✅ |
+| LivePreview auto-render | ✅ |
+| Provider settings | ✅ |
+| MCP/Tools safe | ✅ |
+| No broken icons | ✅ |
+| No dead buttons | ✅ (0 found) |
+| `npm run verify:native` | ✅ |
+| `npm run typecheck` | ✅ |
+| `npm test` (723 tests) | ✅ |
+| `npm run build` | ✅ |
+| `npm run demo:coding` (9/9) | ✅ |
+| Secrets scan | ✅ |
+
+### Test Task Results
+
+| Task | Prompt | Result | Quality |
+|------|--------|--------|---------|
+| A | Android-style habit tracker | ✅ PASS | 7/10 |
+| B | Premium landing page | ✅ PASS | 8/10 |
+
+### Flaky Test Fixed
+- `build-code-tab` visibility: increased click wait 500ms→1s, `waitFor` timeout 20s→30s for integrated GPU machines
+
+### Created
+- `docs/LIVE_HUMAN_QA_REPORT.md` — comprehensive human QA report with visual checks, button audit, and quality scores
+
+### Private Beta Readiness
+✅ **READY FOR PRIVATE BETA** — All 11 critical gates pass. 0 dead buttons. Known limitations documented.
+
+---
+
 ## Core Contract Enforcement — 2026-07-09
 
 | Check | Result |

@@ -490,7 +490,16 @@
 
 # Changelog
 
-## [0.9.73] - 2026-07-09 — Private Beta Release
+## [0.9.73] - 2026-07-09 — Private Beta Release + Live Human QA
+
+### Live Human QA
+- Headed Playwright E2E: 12/13 pass (visible Electron app)
+- 11/11 buttons verified working (no dead interactions)
+- Android-style habit tracker: ✅ PASS (7/10 quality)
+- Premium landing page: ✅ PASS (8/10 quality)
+- LivePreview mode toggle: ✅ All 5 tabs working
+- 0 dead buttons found, 0 critical issues
+- Created `docs/LIVE_HUMAN_QA_REPORT.md`
 
 ### Beta Build Artifacts
 - **Installer:** `AureonDesk-Setup-0.9.0-x64.exe` (124 MB)

@@ -124,10 +124,11 @@ test.describe('Aureon Desk — Studio → Build Pipeline E2E (with mock API key)
       // PHASE 8: Verify code tab shows pipeline steps with content
       // ──────────────────────────────────────────────
       await codeTab.click()
-      await mainWindow.waitForTimeout(500)
+      await mainWindow.waitForTimeout(1000)
 
       const codeTabContent = mainWindow.getByTestId('build-code-tab')
-      await expect(codeTabContent).toBeVisible({ timeout: 20000 })
+      // Use waitFor with longer timeout for slower machines (Vivobook integrated GPU)
+      await codeTabContent.waitFor({ state: 'visible', timeout: 30000 })
 
       // Wait for pipeline steps to appear (at least one step should render)
       await mainWindow.waitForTimeout(5000)

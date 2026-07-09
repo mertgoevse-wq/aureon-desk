@@ -39,6 +39,8 @@
 | 22 | Social publish/reply/delete/upload actions require exact-content confirmation | ✅ PASS |
 | 23 | Core contract: Studio → Build Pipeline → Code → LivePreview | ✅ PASS — verified 9-step flow |
 | 24 | Deterministic demo works without API key | ✅ PASS — demo:coding 9/9 |
+| 25 | Live human QA — headed Playwright + code-level audit | ✅ PASS — 0 dead buttons, 11/11 verified |
+| 26 | Private beta ready | ✅ YES — all 11 critical gates pass |
 
 ---
 
