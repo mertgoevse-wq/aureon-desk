@@ -36,6 +36,7 @@ import { useIpc } from '../hooks/useIpc'
 import { useNavigate } from 'react-router-dom'
 import { Sparkles } from 'lucide-react'
 import { AUTO_PREVIEW_KEYS, clearAutoPreview, getAndClearBuildPipeline, setAutoBuildPipeline } from '@shared/preview-helpers'
+import { ModelSelector } from '../components/chat/ModelSelector'
 import type { BuildPipelineStatus, FileOperation, BuildStep, FollowUpSuggestion } from '@shared/types/build-pipeline'
 
 interface PreviewStatus {
@@ -98,6 +99,7 @@ export function LivePreview(): React.ReactElement {
   const [pipelinePrompt, setPipelinePrompt] = useState<string | null>(null)
   const [streamingText, setStreamingText] = useState<string | null>(null)
   const [isStreaming, setIsStreaming] = useState(false)
+  const [selectedModelId, setSelectedModelId] = useState<string | null>(null)
 
   const activeProject = projects.find(p => p.id === selectedProjectId)
 
@@ -341,13 +343,15 @@ export function LivePreview(): React.ReactElement {
     setActiveTab('code')
     setPipelinePrompt(suggestion.prompt)
 
-    // Resolve best model for the follow-up prompt
-    let modelRoute: string | null = null
-    try {
-      const selection = await api.modelRouterResolveBestForBuild(suggestion.prompt)
-      modelRoute = selection.modelDbId
-    } catch {
-      // Fallback to demo
+    // Use user-selected model if available, otherwise auto-resolve
+    let modelRoute: string | null = selectedModelId
+    if (!modelRoute) {
+      try {
+        const selection = await api.modelRouterResolveBestForBuild(suggestion.prompt)
+        modelRoute = selection.modelDbId
+      } catch {
+        // Fallback to demo
+      }
     }
 
     api.buildRun({
@@ -667,6 +671,13 @@ export function LivePreview(): React.ReactElement {
                   </button>
                 )}
 
+                {/* Model selector */}
+                {!pipelineRunning && (
+                  <div className="ml-auto mr-2">
+                    <ModelSelector value={selectedModelId} onChange={setSelectedModelId} />
+                  </div>
+                )}
+
                 {/* Deterministic demo badge */}
                 {pipelineStatus && pipelineStatus.isDeterministicDemo && (
                   <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium text-[var(--ivory-text-3)] bg-[var(--ivory-surface)] border border-[var(--ivory-border)]">
@@ -726,40 +737,99 @@ export function LivePreview(): React.ReactElement {
                     {pipelineFileOps.length > 0 && (
                       <div className="mt-3 pt-3 border-t border-[var(--ivory-border)]/50 space-y-1.5">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Generated files</span>
-                        {pipelineFileOps.map(op => (
+                        {pipelineFileOps.map(op => {
+                          const opIcon = op.type === 'create_file' ? <FilePlus size={12} className="text-emerald-600 shrink-0" />
+                            : op.type === 'update_file' ? <FilePen size={12} className="text-amber-600 shrink-0" />
+                            : op.type === 'delete_file' ? <FileMinus size={12} className="text-red-600 shrink-0" />
+                            : op.type === 'rename_file' ? <FileSymlink size={12} className="text-purple-600 shrink-0" />
+                            : op.type === 'mkdir' ? <FolderPlus size={12} className="text-blue-600 shrink-0" />
+                            : <FileText size={12} className="text-[var(--ivory-text-3)] shrink-0" />
+                          const opLabel = op.type === 'create_file' ? 'new'
+                            : op.type === 'update_file' ? 'edit'
+                            : op.type === 'delete_file' ? 'delete'
+                            : op.type === 'rename_file' ? 'rename'
+                            : op.type === 'mkdir' ? 'mkdir'
+                            : op.type
+                          return (
                           <button
                             key={op.id}
                             type="button"
                             onClick={() => { setSelectedFile(op); setActiveTab('diff') }}
                             className="flex items-center gap-2 w-full px-3 py-1.5 rounded-lg text-left hover:bg-[var(--ivory-surface)] transition-colors cursor-pointer"
                           >
-                            <FileText size={12} className="text-[var(--ivory-text-3)] shrink-0" />
+                            {opIcon}
                             <span className="text-[12px] font-mono text-[var(--ivory-text-2)] truncate">{op.path}</span>
-                            <span className="text-[10px] text-[var(--ivory-text-3)] ml-auto shrink-0">
+                            {op.type !== 'create_file' && (
+                              <span className={`text-[9px] font-semibold rounded-full px-1.5 py-0.5 ml-auto shrink-0 ${
+                                op.type === 'update_file' ? 'bg-amber-50 text-amber-700' :
+                                op.type === 'delete_file' ? 'bg-red-50 text-red-700' :
+                                op.type === 'rename_file' ? 'bg-purple-50 text-purple-700' :
+                                op.type === 'mkdir' ? 'bg-blue-50 text-blue-700' :
+                                'bg-[var(--ivory-surface)] text-[var(--ivory-text-3)]'
+                              }`}>{opLabel}</span>
+                            )}
+                            <span className="text-[10px] text-[var(--ivory-text-3)] shrink-0">
                               {op.status === 'pending' && 'pending'}
                               {op.status === 'applied' && <span className="text-green-600">applied</span>}
                               {op.status === 'failed' && <span className="text-red-600">failed</span>}
+                              {op.status === 'skipped' && <span className="text-[var(--ivory-text-3)]">unchanged</span>}
                             </span>
                           </button>
-                        ))}
+                        )})}
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* === FILES TAB — file tree === */}
+                {/* === FILES TAB — file tree with operation type indicators === */}
                 {activeTab === 'files' && (
                   <div className="space-y-1.5" data-testid="build-files-tab">
                     {pipelineFileOps.length === 0 ? (
                       <p className="text-[12px] text-[var(--ivory-text-3)] italic text-center py-6">No files generated yet.</p>
                     ) : (
-                      pipelineFileOps.map(op => (
-                        <div key={op.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg border border-[var(--ivory-border)]/40 bg-[var(--ivory-elevated)]">
-                          <FileText size={14} className="text-[var(--ivory-text-3)] shrink-0" />
+                      pipelineFileOps.map(op => {
+                        const OpIcon = op.type === 'create_file' ? FilePlus
+                          : op.type === 'update_file' ? FilePen
+                          : op.type === 'delete_file' ? FileMinus
+                          : op.type === 'rename_file' ? FileSymlink
+                          : op.type === 'mkdir' ? FolderPlus
+                          : FileText
+                        const opColor = op.type === 'create_file' ? 'text-emerald-600'
+                          : op.type === 'update_file' ? 'text-amber-600'
+                          : op.type === 'delete_file' ? 'text-red-600'
+                          : op.type === 'rename_file' ? 'text-purple-600'
+                          : op.type === 'mkdir' ? 'text-blue-600'
+                          : 'text-[var(--ivory-text-3)]'
+                        const opBgColor = op.type === 'create_file' ? 'bg-emerald-50 border-emerald-200'
+                          : op.type === 'update_file' ? 'bg-amber-50 border-amber-200'
+                          : op.type === 'delete_file' ? 'bg-red-50 border-red-200'
+                          : op.type === 'rename_file' ? 'bg-purple-50 border-purple-200'
+                          : op.type === 'mkdir' ? 'bg-blue-50 border-blue-200'
+                          : 'bg-[var(--ivory-elevated)] border-[var(--ivory-border)]/40'
+                        return (
+                        <div key={op.id} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg border ${opBgColor}`}>
+                          <OpIcon size={14} className={`${opColor} shrink-0`} />
                           <div className="min-w-0 flex-1">
                             <span className="text-[12px] font-mono text-[var(--ivory-text-2)] block truncate">{op.path}</span>
-                            <span className="text-[10px] text-[var(--ivory-text-3)]">{op.language} - {op.type}</span>
+                            <span className="text-[10px] text-[var(--ivory-text-3)]">
+                              {op.language}
+                              {op.oldPath && <span className="ml-1 opacity-70">← {op.oldPath}</span>}
+                            </span>
                           </div>
+                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${
+                            op.type === 'create_file' ? 'bg-emerald-100 text-emerald-700' :
+                            op.type === 'update_file' ? 'bg-amber-100 text-amber-700' :
+                            op.type === 'delete_file' ? 'bg-red-100 text-red-700' :
+                            op.type === 'rename_file' ? 'bg-purple-100 text-purple-700' :
+                            op.type === 'mkdir' ? 'bg-blue-100 text-blue-700' :
+                            'bg-[var(--ivory-surface)] text-[var(--ivory-text-3)]'
+                          }`}>
+                            {op.type === 'create_file' ? 'CREATE' :
+                             op.type === 'update_file' ? 'UPDATE' :
+                             op.type === 'delete_file' ? 'DELETE' :
+                             op.type === 'rename_file' ? 'RENAME' :
+                             op.type === 'mkdir' ? 'MKDIR' : 'FILE'}
+                          </span>
                           <button
                             type="button"
                             onClick={() => { setSelectedFile(op); setActiveTab('diff') }}
@@ -768,7 +838,7 @@ export function LivePreview(): React.ReactElement {
                             View diff
                           </button>
                         </div>
-                      ))
+                      )})
                     )}
                   </div>
                 )}
