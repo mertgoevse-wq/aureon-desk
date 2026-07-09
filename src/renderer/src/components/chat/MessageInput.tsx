@@ -1,12 +1,14 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
-import { Send, Paperclip, Wrench, FileCode, GitBranch, ClipboardCheck, Map, Eye, FileText, Zap, Settings, BookOpen } from 'lucide-react'
+import { Send, Paperclip, Wrench, FileCode, GitBranch, ClipboardCheck, Map, Eye, FileText, Zap, Settings, BookOpen, Archive, X } from 'lucide-react'
 import { usePromptLibraryStore } from '../../stores/promptLibraryStore'
 import { useIpc } from '../../hooks/useIpc'
 import { VariableFiller } from '../prompts/VariableFiller'
 import { DropZone } from '../shared/DropZone'
 import { AttachmentChip } from '../shared/AttachmentChip'
+import { Modal } from '../shared/Modal'
 import { useAttachmentStore } from '../../stores/attachmentStore'
-import type { FileProcessResult } from '@shared/attachments'
+import type { FileProcessResult, ZipInspectResult } from '@shared/attachments'
+import { formatFileSize } from '@shared/attachments'
 
 declare global {
   interface WindowEventMap {
@@ -80,6 +82,8 @@ export function MessageInput({
   const api = useIpc()
   const { attachments, addAttachments, removeAttachment, toggleContext, getContextSummary, clearAll } = useAttachmentStore()
   const [isProcessingDrop, setIsProcessingDrop] = useState(false)
+  const [zipInspectModal, setZipInspectModal] = useState<{ id: string; name: string; inspect: ZipInspectResult } | null>(null)
+  const [extracting, setExtracting] = useState(false)
 
   const resizeTextarea = useCallback(() => {
     const el = textareaRef.current
@@ -354,9 +358,12 @@ export function MessageInput({
                 onInspectZip={(id) => {
                   const a = attachments.find(x => x.id === id)
                   if (!a) return
-                  alert(`ZIP: ${a.name}
-                  
-Contents detected. Extract to sandbox?`)
+                  // Process the file to get ZIP inspection results
+                  api.attachmentProcessFile(a.path).then((result: FileProcessResult) => {
+                    if (result.zipInspect) {
+                      setZipInspectModal({ id, name: a.name, inspect: result.zipInspect })
+                    }
+                  }).catch(() => {})
                 }}
               />
             ))}
@@ -400,12 +407,25 @@ Contents detected. Extract to sandbox?`)
           <div className="flex items-center justify-between gap-3 border-t border-[var(--ivory-border)]/60 pt-2">
             <div className="flex items-center gap-1.5 min-w-0">
               <button
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)] transition-colors shrink-0"
+                className="relative inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)] transition-colors shrink-0"
                 title={`${attachments.length > 0 ? `${attachments.length} file(s) attached` : 'Attach file'}`}
                 aria-label="Attach file"
                 onClick={() => {
-                  // Trigger file dialog via IPC
-                  api.projectSelectFolder?.()
+                  // Open native file dialog for attachments
+                  api.attachmentSelectFiles().then(async (filePaths: string[]) => {
+                    if (!filePaths.length) return
+                    setIsProcessingDrop(true)
+                    try {
+                      for (const fp of filePaths) {
+                        try {
+                          const result: FileProcessResult = await api.attachmentProcessFile(fp)
+                          addAttachments([result.attachment])
+                        } catch { /* skip failed files */ }
+                      }
+                    } finally {
+                      setIsProcessingDrop(false)
+                    }
+                  }).catch(() => {})
                 }}
               >
                 <Paperclip size={15} className={attachments.length > 0 ? 'text-[var(--ivory-accent)]' : ''} />
@@ -442,10 +462,77 @@ Contents detected. Extract to sandbox?`)
               >
                 <Send size={15} />
               </button>
-              </div>              </div>
             </div>
           </div>
+          </div>
         </DropZone>
+
+        {/* ZIP inspect modal */}
+        {zipInspectModal && (
+          <Modal
+            isOpen={!!zipInspectModal}
+            onClose={() => setZipInspectModal(null)}
+            title={`ZIP Archive: ${zipInspectModal.name}`}
+            size="sm"
+          >
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50/60 border border-blue-200/40">
+                <Archive size={20} className="text-blue-600 shrink-0" />
+                <div>
+                  <p className="text-[13px] font-semibold text-[var(--ivory-text)]">{zipInspectModal.inspect.fileCount} files detected</p>
+                  <p className="text-[11px] text-[var(--ivory-text-3)]">{formatFileSize(zipInspectModal.inspect.totalSizeBytes)} total</p>
+                </div>
+              </div>
+              {zipInspectModal.inspect.tree.length > 0 && (
+                <div className="max-h-[200px] overflow-y-auto rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-surface)] p-2">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)] px-2 py-1">Contents</div>
+                  {zipInspectModal.inspect.tree.map((entry, i) => (
+                    <div key={i} className="px-2 py-1 text-[11px] font-mono text-[var(--ivory-text-2)] hover:bg-[var(--ivory-elevated)] rounded">
+                      {entry}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex gap-2 pt-2 border-t border-[var(--ivory-border)]/60">
+                <button
+                  type="button"
+                  onClick={() => setZipInspectModal(null)}
+                  className="flex-1 h-9 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[12px] font-semibold text-[var(--ivory-text-2)] transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <X size={13} /> Close
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setExtracting(true)
+                    try {
+                      const a = attachments.find(x => x.id === zipInspectModal.id)
+                      if (!a) return
+                      const result = await api.attachmentExtractZip(a.path)
+                      if (result.success) {
+                        // Process extracted files as new attachments
+                        for (const extractedPath of result.extractedPaths) {
+                          try {
+                            const r = await api.attachmentProcessFile(extractedPath)
+                            addAttachments([r.attachment])
+                          } catch { /* skip */ }
+                        }
+                      }
+                    } catch { /* ignore */ }
+                    finally {
+                      setExtracting(false)
+                      setZipInspectModal(null)
+                    }
+                  }}
+                  disabled={extracting}
+                  className="flex-1 h-9 rounded-xl bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-[12px] font-bold text-white transition-colors cursor-pointer disabled:opacity-60 flex items-center justify-center gap-1.5"
+                >
+                  {extracting ? 'Extracting...' : 'Extract & attach files'}
+                </button>
+              </div>
+            </div>
+          </Modal>
+        )}
       </div>
     </div>
   )

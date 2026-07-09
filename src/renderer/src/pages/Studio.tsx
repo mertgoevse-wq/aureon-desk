@@ -13,6 +13,10 @@ import { SafetyNotice } from '../components/vibe/SafetyNotice'
 import { setAutoBuildPreview, setAutoBuildSandboxOnly, setAutoBuildPipeline } from '@shared/preview-helpers'
 import { Drawer } from '../components/shared/Drawer'
 import { AureonMark } from '../components/shared/AureonMark'
+import { DropZone } from '../components/shared/DropZone'
+import { AttachmentChip } from '../components/shared/AttachmentChip'
+import { useAttachmentStore } from '../stores/attachmentStore'
+import type { FileProcessResult } from '@shared/attachments'
 
 const TASK_ICONS: Record<string, React.ReactElement> = {
   LayoutDashboard: <LayoutDashboard size={22} />,
@@ -42,6 +46,24 @@ export function Studio(): React.ReactElement {
 
   const [primaryPrompt, setPrimaryPrompt] = useState('')
   const [showMoreTypes, setShowMoreTypes] = useState(false)
+
+  // Attachment state
+  const { attachments, addAttachments, removeAttachment, toggleContext, getContextSummary } = useAttachmentStore()
+  const [isProcessingDrop, setIsProcessingDrop] = useState(false)
+
+  const handleFilesDropped = useCallback(async (filePaths: string[]) => {
+    setIsProcessingDrop(true)
+    try {
+      for (const fp of filePaths) {
+        try {
+          const result: FileProcessResult = await api.attachmentProcessFile(fp)
+          addAttachments([result.attachment])
+        } catch { /* skip */ }
+      }
+    } finally {
+      setIsProcessingDrop(false)
+    }
+  }, [api, addAttachments])
 
   // State hooks for configuration wizard
   const [promptText, setPromptText] = useState('')
@@ -348,7 +370,39 @@ export function Studio(): React.ReactElement {
         </p>
 
         {/* === CENTRAL COMPOSER === */}
-        <div className="w-full max-w-xl mb-6 rounded-2xl border border-[var(--ivory-border)]/70 bg-[var(--ivory-elevated)] p-4 shadow-[var(--shadow-composer)]" data-testid="hero-composer">
+        <div className="w-full max-w-xl mb-6">
+          {/* Attachment chips for Studio */}
+          {attachments.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-2" data-testid="studio-attachment-chips">
+              {attachments.map((att) => (
+                <AttachmentChip
+                  key={att.id}
+                  attachment={att}
+                  onRemove={removeAttachment}
+                  onToggleContext={toggleContext}
+                  onInspectZip={att.isZip ? (id) => {
+                    const a = attachments.find(x => x.id === id)
+                    if (!a) return
+                    api.attachmentProcessFile(a.path).then((result: FileProcessResult) => {
+                      if (result.zipInspect) {
+                        api.attachmentExtractZip(a.path).then((extractResult) => {
+                          if (extractResult.success) {
+                            extractResult.extractedPaths.forEach((p: string) => {
+                              api.attachmentProcessFile(p).then((r: FileProcessResult) => {
+                                addAttachments([r.attachment])
+                              }).catch(() => {})
+                            })
+                          }
+                        }).catch(() => {})
+                      }
+                    }).catch(() => {})
+                  } : undefined}
+                />
+              ))}
+            </div>
+          )}
+          <DropZone onFilesDropped={handleFilesDropped} disabled={isProcessingDrop}>
+          <div className="rounded-2xl border border-[var(--ivory-border)]/70 bg-[var(--ivory-elevated)] p-4 shadow-[var(--shadow-composer)]" data-testid="hero-composer">
           <textarea
             value={primaryPrompt}
             onChange={e => setPrimaryPrompt(e.target.value)}
@@ -382,6 +436,8 @@ export function Studio(): React.ReactElement {
               )}
             </button>
           </div>
+          </div>
+        </DropZone>
         </div>
 
         {/* Compact suggestions */}

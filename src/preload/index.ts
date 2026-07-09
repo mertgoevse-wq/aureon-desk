@@ -5,11 +5,12 @@ import type { ProviderAdapterInfo } from '../shared/types/provider'
 import type { AppSettings } from '../shared/types/settings'
 import type { AnalyzePromptInput, AnalyzePromptOutput } from '../shared/types/routing'
 import type { ImportedRepo, ImportedItem, ImportWarning, ImportResult, ImportRepoInput, ImportItemFilter } from '../shared/types/github'
-import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolExecuteInput, ToolExecuteResult } from '../shared/types/tool'
+import type { ToolRow, ToolCallLog, SafetyCheckResult, ToolExecuteInput, ToolExecuteResult, McpDiscoveryResult, McpPreset } from '../shared/types/tool'
 import type { ProjectRow, NewProject, ProjectUpdate, FileTreeNode, ProjectContext, FileTreeOptions } from '../shared/types/project'
 import type { AppLogRow, LogFilter, DebugBundle } from '../shared/types/log'
 import type { StudioIntentInput, StudioOrchestrationResult, TaskCategoryInfo, CapabilityDefinition, AutonomyLevelInfo } from '../shared/types/studio-core'
 import type { BuildRequest, BuildResult, BuildPipelineStatus } from '../shared/types/build-pipeline'
+import type { FileProcessResult, ZipExtractResult } from '../shared/attachments'
 import type { AuditRequest, AuditResult } from '../shared/self-audit'
 import type { ScreenSourcesRequest, ScreenSourcesResult } from '../shared/device-inputs'
 
@@ -245,6 +246,33 @@ const api = {
     ipcRenderer.invoke('tool:execute', toolId, input),
   toolGetCallLogs: (toolId?: string): Promise<ToolCallLog[]> =>
     ipcRenderer.invoke('tool:getCallLogs', toolId),
+  toolGetNetworkRiskWarning: (toolId: string): Promise<string | null> =>
+    ipcRenderer.invoke('tool:getNetworkRiskWarning', toolId),
+
+  // MCP Lifecycle
+  mcpConnect: (serverId: string): Promise<{ success: boolean; error?: string }> =>
+    ipcRenderer.invoke('mcp:connect', serverId),
+  mcpDisconnect: (serverId: string): Promise<boolean> =>
+    ipcRenderer.invoke('mcp:disconnect', serverId),
+  mcpTestConnection: (serverId: string): Promise<{ name: string; version: string; capabilities: string[] } | null> =>
+    ipcRenderer.invoke('mcp:testConnection', serverId),
+  mcpDiscover: (serverId: string): Promise<McpDiscoveryResult | null> =>
+    ipcRenderer.invoke('mcp:discover', serverId),
+  mcpExecute: (serverId: string, toolName: string, args: Record<string, unknown>): Promise<{
+    success: boolean
+    output: string
+    error: string | null
+    requiresConfirmation: boolean
+    safetyMessage: string
+    logId: string
+  }> =>
+    ipcRenderer.invoke('mcp:execute', serverId, toolName, args),
+  mcpGetDiscoveryData: (serverId: string): Promise<McpDiscoveryResult | null> =>
+    ipcRenderer.invoke('mcp:getDiscoveryData', serverId),
+  mcpGetPresets: (): Promise<McpPreset[]> =>
+    ipcRenderer.invoke('mcp:getPresets'),
+  mcpRedactEnvVars: (envVars: Record<string, string>): Promise<string> =>
+    ipcRenderer.invoke('mcp:redactEnvVars', envVars),
 
   // Projects
   projectList: (includeArchived?: boolean, search?: string): Promise<ProjectRow[]> =>
@@ -381,6 +409,17 @@ const api = {
     ipcRenderer.invoke('model-router:getUsage'),
   modelRouterClearUsage: (): Promise<boolean> =>
     ipcRenderer.invoke('model-router:clearUsage'),
+
+  // Attachments (Drag & Drop)
+  attachmentSelectFiles: (): Promise<string[]> =>
+    ipcRenderer.invoke('attachment:selectFiles'),
+  attachmentProcessFile: (filePath: string): Promise<FileProcessResult> =>
+    ipcRenderer.invoke('attachment:processFile', filePath),
+  attachmentProcessFiles: (filePaths: string[]): Promise<FileProcessResult[]> =>
+    ipcRenderer.invoke('attachment:processFiles', filePaths),
+  attachmentExtractZip: (zipPath: string, destDir: string): Promise<ZipExtractResult> =>
+    ipcRenderer.invoke('attachment:extractZip', zipPath, destDir),
+
   providerSmokeTest: (providerId: string): Promise<{
     success: boolean
     message: string

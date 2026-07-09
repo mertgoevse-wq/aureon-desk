@@ -13,6 +13,7 @@ import { registerLivePreviewIPC } from './live-preview.ipc'
 import { registerWindowIPC } from './window.ipc'
 import { registerStudioCoreIPC } from './studio-core.ipc'
 import { registerBuildPipelineIPC } from './build-pipeline.ipc'
+import { registerAttachmentsIPC } from './attachments.ipc'
 import { registerSelfAuditIPC } from './self-audit.ipc'
 import { registerDeviceInputsIPC } from './device-inputs.ipc'
 import { logger } from '../utils/logger'
@@ -35,6 +36,7 @@ export function registerAllIPC(): void {
   registerWindowIPC()
   registerStudioCoreIPC()
   registerBuildPipelineIPC()
+  registerAttachmentsIPC()
   registerSelfAuditIPC()
   registerDeviceInputsIPC()
 

@@ -101,6 +101,24 @@ export interface IpcApi {
   toolCheckSafety: (toolId: string, input: Record<string, unknown>) => Promise<import('../shared/types/tool').SafetyCheckResult>
   toolExecute: (toolId: string, input: Record<string, unknown>) => Promise<import('../shared/types/tool').ToolExecuteResult>
   toolGetCallLogs: (toolId?: string) => Promise<import('../shared/types/tool').ToolCallLog[]>
+  toolGetNetworkRiskWarning: (toolId: string) => Promise<string | null>
+
+  // MCP Lifecycle
+  mcpConnect: (serverId: string) => Promise<{ success: boolean; error?: string }>
+  mcpDisconnect: (serverId: string) => Promise<boolean>
+  mcpTestConnection: (serverId: string) => Promise<{ name: string; version: string; capabilities: string[] } | null>
+  mcpDiscover: (serverId: string) => Promise<import('../shared/types/tool').McpDiscoveryResult | null>
+  mcpExecute: (serverId: string, toolName: string, args: Record<string, unknown>) => Promise<{
+    success: boolean
+    output: string
+    error: string | null
+    requiresConfirmation: boolean
+    safetyMessage: string
+    logId: string
+  }>
+  mcpGetDiscoveryData: (serverId: string) => Promise<import('../shared/types/tool').McpDiscoveryResult | null>
+  mcpGetPresets: () => Promise<import('../shared/types/tool').McpPreset[]>
+  mcpRedactEnvVars: (envVars: Record<string, string>) => Promise<string>
   projectList: (includeArchived?: boolean, search?: string) => Promise<import('../shared/types/project').ProjectRow[]>
   projectGet: (id: string) => Promise<import('../shared/types/project').ProjectRow | undefined>
   projectCreate: (input: import('../shared/types/project').NewProject) => Promise<import('../shared/types/project').ProjectRow>
@@ -148,6 +166,13 @@ export interface IpcApi {
   modelRouterRecordUsage: (modelId: string) => Promise<boolean>
   modelRouterGetUsage: () => Promise<any[]>
   modelRouterClearUsage: () => Promise<boolean>
+
+  // Attachments (Drag & Drop)
+  attachmentSelectFiles: () => Promise<string[]>
+  attachmentProcessFile: (filePath: string) => Promise<import('../shared/attachments').FileProcessResult>
+  attachmentProcessFiles: (filePaths: string[]) => Promise<import('../shared/attachments').FileProcessResult[]>
+  attachmentExtractZip: (zipPath: string, destDir?: string) => Promise<import('../shared/attachments').ZipExtractResult>
+
   providerSmokeTest: (providerId: string) => Promise<{ success: boolean; message: string; modelUsed: string | null; durationMs: number; responsePreview: string | null }>
   providerSmokeTestAll: () => Promise<{ results: Array<{ providerId: string; providerName: string; success: boolean; message: string; modelUsed: string | null; durationMs: number }>; total: number; passed: number; failed: number; skipped: number }>
 }
