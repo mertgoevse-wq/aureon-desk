@@ -9,7 +9,7 @@ describe('UI Store — Panel Sizes', () => {
       sidebarWidth: 232,
       inspectorWidth: 340,
       sidebarCollapsed: false,
-      inspectorOpen: true,
+      inspectorOpen: false,
     })
   })
 
@@ -48,11 +48,11 @@ describe('UI Store — Panel Sizes', () => {
 
   it('should toggle inspector open state', () => {
     const store = useUIStore.getState()
-    expect(store.inspectorOpen).toBe(true)
+    expect(store.inspectorOpen).toBe(false)
     store.toggleInspector()
-    expect(useUIStore.getState().inspectorOpen).toBe(false)
-    useUIStore.getState().toggleInspector()
     expect(useUIStore.getState().inspectorOpen).toBe(true)
+    useUIStore.getState().toggleInspector()
+    expect(useUIStore.getState().inspectorOpen).toBe(false)
   })
 
   it('should reset layout to defaults', () => {
@@ -68,7 +68,7 @@ describe('UI Store — Panel Sizes', () => {
     expect(s.sidebarWidth).toBe(232)
     expect(s.inspectorWidth).toBe(340)
     expect(s.sidebarCollapsed).toBe(false)
-    expect(s.inspectorOpen).toBe(true)
+    expect(s.inspectorOpen).toBe(false)
   })
 })
 

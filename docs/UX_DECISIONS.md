@@ -2,6 +2,50 @@
 
 Last updated: 2026-07-09
 
+## Hero Landing Page & Calm Theme (2026-07-09)
+
+Decision: Make Studio the default landing page with a real hero experience, and refine the entire color system to feel calmer and more premium — closer in spirit to Claude Desktop.
+
+### Hero Landing Page
+- Studio is now the index route (`/`), ChatWorkspace moved to `/chat`
+- Large AureonMark (56px) with scale-in animation as the hero mark
+- Heading: "Build calmly with Aureon" in serif display font (Crimson Text)
+- Subtitle: "A guided AI workspace for chat, code, projects, tools, and live preview."
+- Central composer with two CTAs: "Start building" (opens Build wizard drawer) and "Open chat" (routes to /chat)
+- 4 compact suggestion pills below composer for quick prompt ideas
+- 4 primary action cards: Build, Code, Create, Connect — clean icons with descriptions
+- "More" button toggles secondary creation types (text, image, video, music, file/screen analysis)
+- Enter in composer starts build flow directly to LivePreview
+- Inspector collapsed by default on landing (only shows on /chat route)
+
+### Calm Color System
+- Primary accent softened from aggressive orange-terracotta #C75B39 to muted bronze #B8683A
+- Focus ring changed from solid accent to semi-transparent rgba(184, 104, 58, 0.35) — gentle, not glowing
+- Shadow opacity reduced across all levels for softer depth perception
+- Hero radial gradient calmed to 0.06 opacity (was 0.28)
+
+### Dark Theme (Warm Charcoal)
+- `[data-theme="dark"]` CSS block with warm charcoal palette — never pure black
+- Background #2A2520, surface #251F1A, elevated #322C26
+- Text #E8E0D6 (warm off-white), accent #C8805A (visible warm bronze)
+- All backward-compat ivory aliases automatically inherit dark values via var() references
+- Dark theme hero radial gradient variant
+- Theme select in General Settings now actually applies and persists to settings DB
+- Theme loaded on app mount via AppShell → loadPersistedTheme
+- Extracted to `src/renderer/src/utils/theme.ts` to avoid circular dependency
+
+### Typography
+- Minimum caption size raised from 11px to 12px (readability)
+- Body line-height improved from 1.6 to 1.65
+- All elements get consistent 1.5 line-height baseline
+
+### Routing
+- Studio is the new home (`/`), Chat is now `/chat`
+- All navigate('/') calls updated to navigate('/chat') across the codebase
+- Inspector only shows on `/chat` route — collapsed on landing by default
+- uiStore inspectorOpen default changed to false
+- Mode switch in topbar updated: Studio→`/`, Chat→`/chat`
+
 ## Final UI Beauty & Declutter Pass (2026-07-09)
 
 Decision: Reduce the visual weight of the brand terracotta accent across non-primary elements. All secondary card icons (task cards in Studio, project type/quick action/templates/guided builder icons in VibeCoding) now use neutral ivory-surface backgrounds with graphite text instead of accent-light terracotta. Only hero icons and primary CTAs ("Start building" button, hero section marks) retain the brand terracotta. The hero radial gradient was softened further (opacity 0.50 → 0.28).

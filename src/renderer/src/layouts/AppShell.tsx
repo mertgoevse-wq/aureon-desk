@@ -7,6 +7,7 @@ import { CommandPalette } from '../components/shared/CommandPalette'
 import { ShortcutsHelp } from '../components/shared/ShortcutsHelp'
 import type { CommandItem } from '../components/shared/CommandPalette'
 import { useUIStore, loadPanelSizes } from '../stores/uiStore'
+import { loadPersistedTheme } from '../utils/theme'
 import { useChatStore } from '../stores/chatStore'
 import { useIpc } from '../hooks/useIpc'
 
@@ -43,14 +44,14 @@ export function AppShell(): React.ReactElement {
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const paletteOpenRef = useRef(false)
   const shortcutsOpenRef = useRef(false)
-  const showInspector = location.pathname === '/' || location.pathname.startsWith('/studio')
+  const showInspector = location.pathname === '/chat'
   const modeItems = [
-    { id: 'studio', label: 'Studio', path: '/studio', icon: <Sparkles size={14} /> },
-    { id: 'chat', label: 'Chat', path: '/', icon: <MessageSquare size={14} /> },
+    { id: 'studio', label: 'Studio', path: '/', icon: <Sparkles size={14} /> },
+    { id: 'chat', label: 'Chat', path: '/chat', icon: <MessageSquare size={14} /> },
     { id: 'cowork', label: 'Cowork', path: '/cowork', icon: <Users size={14} /> },
     { id: 'code', label: 'Code', path: '/preview', icon: <Code2 size={14} /> }
   ]
-  const activeMode = location.pathname.startsWith('/studio')
+  const activeMode = location.pathname === '/' || location.pathname.startsWith('/studio')
     ? 'studio'
     : location.pathname.startsWith('/preview')
       ? 'code'
@@ -68,9 +69,10 @@ export function AppShell(): React.ReactElement {
     return () => window.removeEventListener('open-command-palette', openPalette)
   }, [])
 
-  // Load persisted panel sizes on mount
+  // Load persisted panel sizes and theme on mount
   useEffect(() => {
     loadPanelSizes()
+    loadPersistedTheme()
   }, [])
 
 
@@ -191,7 +193,7 @@ export function AppShell(): React.ReactElement {
       setChats([newItem, ...useChatStore.getState().chats])
       setActiveChatId(chat.id)
       setActiveChat({ ...chat, messages: [] })
-      navigate('/')
+      navigate('/chat')
     } catch { /* ignore */ }
   }
 
@@ -215,7 +217,7 @@ export function AppShell(): React.ReactElement {
       label: 'Chats',
       description: 'View and manage conversations',
       icon: <MessageSquare size={14} />,
-      onSelect: () => navigate('/')
+      onSelect: () => navigate('/chat')
     },
     {
       id: 'cowork',

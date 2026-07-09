@@ -1,5 +1,59 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-09 23:00 +02:00 — Hero Landing Page & Calm Theme
+
+Branch: `main`
+Commit at start: `e68ad1c` (Audit current product gaps and manual UX baseline)
+
+### Session Purpose
+
+Create a real hero landing page / home screen and refine the whole app theme to feel calmer, more premium, less harsh, and closer in spirit to Claude Desktop. Add a dark theme. Wire the theme select to actually work.
+
+### Files Changed
+
+**Theme & Typography:**
+- **Modified:** `src/renderer/src/theme/tokens.css` — accent softened #C75B39→#B8683A, added [data-theme="dark"] warm charcoal block, softer focus ring (rgba), reduced shadow opacity, dark hero radial
+- **Modified:** `src/renderer/src/theme/typography.css` — min caption 11px→12px, body line-height 1.6→1.65, all elements 1.5 line-height baseline
+
+**Routing:**
+- **Modified:** `src/renderer/src/App.tsx` — Studio is index route, ChatWorkspace moved to `/chat`
+- **Modified:** `src/renderer/src/layouts/AppShell.tsx` — mode switch paths, showInspector only on /chat, navigate('/')→navigate('/chat'), imports loadPersistedTheme
+- **Modified:** `src/renderer/src/layouts/Sidebar.tsx` — all navigate('/')→navigate('/chat'), isActive updated, studio nav→navigate('/'), removed dead handleNewTask
+- **Modified:** `src/renderer/src/pages/VibeCoding.tsx` — navigate('/')→navigate('/chat') (3 locations)
+- **Modified:** `src/renderer/src/layouts/SettingsLayout.tsx` — back button→navigate('/chat')
+
+**Hero Landing Page:**
+- **Modified:** `src/renderer/src/pages/Studio.tsx` — complete redesign: AureonMark, "Build calmly with Aureon", subtitle, central composer with Start building + Open chat, 4 action cards, More drawer, Enter submits, all labels 12px minimum, removed unused RISK_ICONS/MODE_LABELS/AlertTriangle
+
+**Theme System:**
+- **Created:** `src/renderer/src/utils/theme.ts` — applyTheme + loadPersistedTheme utility
+- **Modified:** `src/renderer/src/pages/settings/GeneralSettingsPage.tsx` — imports applyTheme from utils, theme select applies data-theme + persists
+- **Modified:** `src/renderer/src/stores/uiStore.ts` — inspectorOpen default false, resetLayout inspectorOpen false
+
+**Tests:**
+- **Modified:** `tests/unit/ui-desktop-polish.test.ts` — inspectorOpen default false
+- **Modified:** `tests/unit/home-composer-polish.test.ts` — +20 new tests: hero landing, dark theme, inspector collapsed, calm theme
+
+### Code Review Issues Fixed
+
+| Issue | Severity | Fix |
+|-----|----------|-----|
+| handleStartBuilding overwrites user prompt | CRITICAL | Added optional initialPrompt parameter to handleCardClick |
+| AppShell→GeneralSettingsPage circular dependency | Medium | Extracted theme logic to utils/theme.ts |
+| handleNewTask dead code in Sidebar | Low | Removed |
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (511 tests, 22 files) |
+| `npm run build` | ✅ PASS |
+| Code review round 1 | ✅ 3 issues found |
+| Code review round 2 | ✅ All fixed, no issues |
+
+---
+
 ## 2026-07-09 22:00 +02:00 — Product Stability Audit & Bug Fixes
 
 Branch: `main`

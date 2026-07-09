@@ -4,6 +4,41 @@
 
 ---
 
+## Hero Landing Page & Calm Theme — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (511 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| Code review (round 1) | ✅ PASS — 3 issues found, all fixed |
+| Code review (round 2) | ✅ PASS — no issues |
+
+### Changes
+
+| Area | Change |
+|------|--------|
+| Routing | Studio is index route `/`, ChatWorkspace moved to `/chat` |
+| Studio.tsx | Complete hero redesign: AureonMark, "Build calmly with Aureon", central composer, 4 action cards, More drawer |
+| tokens.css | Accent softened #C75B39→#B8683A, added [data-theme=dark] warm charcoal, softer focus ring, reduced shadow opacity |
+| typography.css | Min caption 11px→12px, body line-height 1.6→1.65 |
+| GeneralSettingsPage | Theme select now applies data-theme + persists |
+| utils/theme.ts | New: applyTheme + loadPersistedTheme extracted from page |
+| AppShell | Imports loadPersistedTheme, showInspector only on /chat |
+| Sidebar/VibeCoding/SettingsLayout | All navigate('/')→navigate('/chat') |
+| uiStore | inspectorOpen default false, resetLayout inspectorOpen false |
+| Tests | +20 new tests: hero landing, dark theme, inspector collapsed, calm theme |
+
+### Code Review Issues Fixed
+
+| Issue | Fix |
+|-------|-----|
+| CRITICAL: handleStartBuilding overwrites user prompt | Added optional initialPrompt parameter to handleCardClick |
+| Circular dependency: AppShell→GeneralSettingsPage | Extracted theme logic to utils/theme.ts |
+| Dead code: handleNewTask in Sidebar | Removed |
+
+---
+
 ## Product Stability Audit — 2026-07-09
 
 | Check | Result |

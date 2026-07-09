@@ -1,3 +1,76 @@
+## [0.9.63] - 2026-07-09
+
+### Added — Hero Landing Page & Calm Theme
+
+**Hero Landing Page:**
+
+- Studio is now the default landing page (index route `/`)
+- Large AureonMark (56px) with scale-in animation
+- Heading: "Build calmly with Aureon" (serif display font)
+- Subtitle: "A guided AI workspace for chat, code, projects, tools, and live preview."
+- Central composer with "Start building" (opens Build wizard) and "Open chat" (routes to /chat) CTAs
+- 4 compact suggestion pills (pomodoro timer, markdown editor, weather dashboard, contact form)
+- 4 primary action cards: Build, Code, Create, Connect
+- "More" button toggles secondary creation types (text, image, video, music, file analysis, screen analysis)
+- Enter in composer starts build flow directly to LivePreview
+- Autonomy selector preserved as compact inline icon row
+- All wizard labels bumped from 10-11px to 12px minimum
+
+**Calm Color System:**
+
+- Accent softened from aggressive #C75B39 to muted bronze #B8683A
+- Focus ring changed from solid accent to semi-transparent rgba(184, 104, 58, 0.35)
+- Shadow opacity reduced across all levels for softer depth
+- Hero radial gradient calmed to 0.06 opacity
+
+**Dark Theme (Warm Charcoal):**
+
+- `[data-theme="dark"]` CSS block with warm charcoal palette (never pure black)
+- Background #2A2520, surface #251F1A, elevated #322C26
+- Text #E8E0D6, accent #C8805A (visible warm bronze)
+- All ivory aliases automatically inherit dark values via var() references
+- Dark theme hero radial gradient variant
+- Theme select in General Settings now actually applies and persists to settings DB
+- `src/renderer/src/utils/theme.ts` — extracted applyTheme/loadPersistedTheme utility
+- Theme loaded on app mount via AppShell
+
+**Typography Refinement:**
+
+- Minimum caption size raised from 11px to 12px
+- Body line-height improved from 1.6 to 1.65
+- All elements get consistent 1.5 line-height baseline
+
+**Routing Change:**
+
+- Studio is now the index route (`/`)
+- ChatWorkspace moved to `/chat`
+- All navigate('/') calls updated to navigate('/chat') across AppShell, Sidebar, VibeCoding, SettingsLayout
+- Inspector only shows on `/chat` route (collapsed on landing by default)
+- uiStore inspectorOpen default changed to false
+
+**Code Cleanup:**
+
+- Removed dead code: handleNewTask in Sidebar.tsx (unused)
+- Removed unused RISK_ICONS and MODE_LABELS constants from Studio.tsx
+- Removed unused AlertTriangle import from Studio.tsx
+- Fixed circular dependency: theme logic extracted from GeneralSettingsPage to utils/theme.ts
+- Fixed handleStartBuilding prompt preservation bug (user's typed prompt no longer overwritten)
+
+### Tests Added
+
+- Hero landing page tests (heading, subtitle, CTAs, action cards, routes)
+- Dark theme tests (not pure black, visible accent, light text)
+- Inspector collapsed tests (default false, only on /chat)
+- Calm theme tests (muted accent, semi-transparent focus ring, softer shadows, 12px minimum)
+- Updated ui-desktop-polish tests for new inspectorOpen default
+
+### Verified
+
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (511 tests, 22 files)
+- `npm run build` — ✅ PASS
+- Code review — ✅ PASS (2 rounds, all issues fixed)
+
 ## [0.9.62] - 2026-07-09
 
 ### Fixed — Product Stability Audit Bug Fixes

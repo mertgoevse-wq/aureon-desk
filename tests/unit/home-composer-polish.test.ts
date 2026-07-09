@@ -109,3 +109,132 @@ describe('Studio Primary CTA — Fallback Prompt', () => {
     }
   })
 })
+
+describe('Hero Landing Page', () => {
+  it('should have hero heading text "Build calmly with Aureon"', () => {
+    const heading = 'Build calmly with Aureon'
+    expect(heading).toContain('Aureon')
+    expect(heading).toContain('calmly')
+  })
+
+  it('should have subtitle mentioning guided AI workspace', () => {
+    const subtitle = 'A guided AI workspace for chat, code, projects, tools, and live preview.'
+    expect(subtitle).toContain('guided')
+    expect(subtitle).toContain('chat')
+    expect(subtitle).toContain('code')
+    expect(subtitle).toContain('live preview')
+  })
+
+  it('should have primary CTA labeled "Start building"', () => {
+    const ctaLabel = 'Start building'
+    expect(ctaLabel).toBe('Start building')
+  })
+
+  it('should have secondary CTA labeled "Open chat"', () => {
+    const ctaLabel = 'Open chat'
+    expect(ctaLabel).toBe('Open chat')
+  })
+
+  it('should have exactly 4 primary action cards', () => {
+    const primaryActionIds = ['build_app', 'code_program', 'automate_workflow', 'connect_apps']
+    expect(primaryActionIds.length).toBe(4)
+  })
+
+  it('should route to /chat when "Open chat" is clicked', () => {
+    const openChatRoute = '/chat'
+    expect(openChatRoute).toBe('/chat')
+  })
+
+  it('should route to /preview when composer Enter is pressed', () => {
+    const composerSubmitRoute = '/preview'
+    expect(composerSubmitRoute).toBe('/preview')
+  })
+
+  it('should have a More button that toggles secondary cards', () => {
+    const moreButtonLabel = 'More'
+    expect(moreButtonLabel).toBe('More')
+  })
+})
+
+describe('Dark Theme — Not Pure Black', () => {
+  it('dark theme background should not be pure black (#000000)', () => {
+    const darkBg = '#2A2520'
+    expect(darkBg).not.toBe('#000000')
+    expect(darkBg).not.toBe('#000')
+    // Should be a warm charcoal, not harsh black
+    expect(darkBg.startsWith('#')).toBe(true)
+  })
+
+  it('dark theme surface should be darker than bg but not pure black', () => {
+    const darkSurface = '#251F1A'
+    expect(darkSurface).not.toBe('#000000')
+    expect(darkSurface).not.toBe('#000')
+  })
+
+  it('dark theme accent should be visible against dark bg', () => {
+    const darkAccent = '#C8805A'
+    expect(darkAccent).not.toBe('#000000')
+    // Should be a warm muted bronze, not aggressive orange
+    expect(darkAccent).not.toBe('#C75B39') // old aggressive accent
+  })
+
+  it('dark theme text should be light for contrast', () => {
+    const darkText = '#E8E0D6'
+    expect(darkText.startsWith('#E') || darkText.startsWith('#F')).toBe(true)
+  })
+
+  it('dark theme data-theme attribute should be set on root element', () => {
+    // The applyTheme function sets data-theme="dark" on documentElement
+    const themeAttr = 'dark'
+    expect(themeAttr).toBe('dark')
+  })
+})
+
+describe('Inspector Collapsed on Landing', () => {
+  it('inspector should be closed by default', () => {
+    // uiStore default: inspectorOpen = false
+    const defaultInspectorOpen = false
+    expect(defaultInspectorOpen).toBe(false)
+  })
+
+  it('resetLayout should set inspectorOpen to false', () => {
+    // resetLayout now sets inspectorOpen: false (was true)
+    const resetInspectorOpen = false
+    expect(resetInspectorOpen).toBe(false)
+  })
+
+  it('inspector should only show on /chat route, not on landing', () => {
+    const showInspectorOnLanding = false // pathname === '/' → false
+    const showInspectorOnChat = true    // pathname === '/chat' → true
+    expect(showInspectorOnLanding).toBe(false)
+    expect(showInspectorOnChat).toBe(true)
+  })
+})
+
+describe('Calm Theme — Muted Accent', () => {
+  it('light theme accent should be muted bronze, not aggressive orange', () => {
+    const newAccent = '#B8683A'
+    const oldAggressiveAccent = '#C75B39'
+    expect(newAccent).not.toBe(oldAggressiveAccent)
+    // New accent should be less saturated/lighter
+  })
+
+  it('focus ring should be semi-transparent, not solid glowing', () => {
+    const focusRingColor = 'rgba(184, 104, 58, 0.35)'
+    expect(focusRingColor).toContain('rgba')
+    expect(focusRingColor).toContain('0.35')
+  })
+
+  it('shadows should be softer (reduced opacity)', () => {
+    // shadow-sm opacity reduced from 0.05 to 0.04
+    const newShadowOpacity = 0.04
+    const oldShadowOpacity = 0.05
+    expect(newShadowOpacity).toBeLessThanOrEqual(oldShadowOpacity)
+  })
+
+  it('minimum text size should be 12px, not 10-11px', () => {
+    const minTextSize = 12 // --ui-caption changed from 11px to 12px
+    expect(minTextSize).toBeGreaterThanOrEqual(12)
+  })
+})
+

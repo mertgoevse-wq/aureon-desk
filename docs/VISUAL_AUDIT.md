@@ -6,6 +6,44 @@
 
 ---
 
+## Hero Landing Page & Calm Theme Audit (2026-07-09)
+
+### Hero Landing Page — NEW ✅
+- AureonMark (56px) with scale-in animation as hero mark
+- Heading "Build calmly with Aureon" in serif display font, centered
+- Subtitle: "A guided AI workspace for chat, code, projects, tools, and live preview."
+- Central composer with Start building + Open chat CTAs
+- 4 compact suggestion pills (pomodoro, markdown editor, weather, contact form)
+- 4 primary action cards: Build, Code, Create, Connect — clean icons + descriptions
+- "More" button toggles secondary creation types
+- Autonomy selector preserved as compact inline icon row
+- All wizard labels minimum 12px (was 10-11px)
+
+### Calm Color System — REFINED ✅
+- Accent softened: #C75B39 → #B8683A (muted bronze, less aggressive)
+- Focus ring: solid accent → semi-transparent rgba(184, 104, 58, 0.35)
+- Shadow opacity reduced across all levels
+- Hero radial gradient calmed to 0.06 opacity
+
+### Dark Theme — NEW ✅
+- Warm charcoal palette (never pure black): bg #2A2520, surface #251F1A
+- Text #E8E0D6, accent #C8805A (visible warm bronze)
+- All ivory aliases inherit dark values via var() references
+- Theme select in General Settings applies + persists
+- Loaded on app mount via loadPersistedTheme
+
+### Routing — CHANGED ✅
+- Studio is index route (`/`), Chat moved to `/chat`
+- Inspector only shows on `/chat`, collapsed by default on landing
+- Mode switch: Studio→`/`, Chat→`/chat`
+
+### Typography — REFINED ✅
+- Min caption 11px → 12px
+- Body line-height 1.6 → 1.65
+- Consistent 1.5 line-height baseline for all elements
+
+---
+
 ## Settings, Providers & MCP Polish Audit (2026-07-09)
 
 ### Settings Layout — REFINED

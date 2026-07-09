@@ -27,13 +27,14 @@ const router = createHashRouter([
     path: '/',
     element: <AppShell />,
     children: [
-      { index: true, element: <ChatWorkspace /> },
+      { index: true, element: <Studio /> },
+      { path: 'chat', element: <ChatWorkspace /> },
+      { path: 'studio', element: <Studio /> },
       { path: 'cowork', element: <CoworkPage /> },
       { path: 'prompts', element: <PromptLibrary /> },
       { path: 'projects', element: <ProjectsPage /> },
       { path: 'tools', element: <ToolsPage /> },
       { path: 'preview', element: <LivePreview /> },
-      { path: 'studio', element: <Studio /> },
       { path: 'vibe', element: <VibeCoding /> },
       {
         path: 'settings',

@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Settings as SettingsIcon, ShieldCheck } from 'lucide-react'
 import { SettingsSection, SettingsRow, Toggle } from '../../components/settings/SettingsComponents'
 import { Select } from '../../components/shared/Select'
+import { applyTheme } from '../../utils/theme'
 
 export function GeneralSettingsPage(): React.ReactElement {
   const [startOnBoot, setStartOnBoot] = useState(false)
@@ -10,6 +11,25 @@ export function GeneralSettingsPage(): React.ReactElement {
   const [themeMode, setThemeMode] = useState('ivory')
   const [unhideApps, setUnhideApps] = useState(false)
   const [notifications, setNotifications] = useState(true)
+
+  // Load persisted theme on mount
+  useEffect(() => {
+    ;(async () => {
+      try {
+        if (!window.api) return
+        const saved = await window.api.settingsGet('ui.theme')
+        if (saved && saved !== 'ivory') {
+          setThemeMode(saved)
+          applyTheme(saved)
+        }
+      } catch { /* ignore */ }
+    })()
+  }, [])
+
+  const handleThemeChange = useCallback((mode: string) => {
+    setThemeMode(mode)
+    applyTheme(mode)
+  }, [])
 
   return (
     <div className="space-y-6" data-testid="settings-general-page">
@@ -70,11 +90,10 @@ export function GeneralSettingsPage(): React.ReactElement {
         >
           <Select
             value={themeMode}
-            onChange={setThemeMode}
+            onChange={handleThemeChange}
             options={[
               { value: 'ivory', label: 'Calm Ivory Theme' },
-              { value: 'light', label: 'Standard Light' },
-              { value: 'dark', label: 'Sleek Dark Mode' }
+              { value: 'dark', label: 'Warm Charcoal (Dark)' }
             ]}
             data-testid="select-theme"
           />

@@ -80,7 +80,7 @@ export function VibeCoding(): React.ReactElement {
         }))
       }, 150)
     } else {
-      navigate('/')
+      navigate('/chat')
       setTimeout(() => {
         window.dispatchEvent(new CustomEvent('composer-insert', {
           detail: { text: card.prompt, mode: 'replace' }
@@ -109,7 +109,7 @@ export function VibeCoding(): React.ReactElement {
     if (card) {
       handleCardClick(card)
     } else {
-      navigate('/')
+      navigate('/chat')
       setTimeout(() => {
         window.dispatchEvent(new CustomEvent('composer-insert', {
           detail: { text: `I want to build a ${typeId}. Help me plan and create it step by step. I'm a beginner so please explain everything.`, mode: 'replace' }
@@ -138,7 +138,7 @@ export function VibeCoding(): React.ReactElement {
 
   const handleUsePrompt = useCallback(() => {
     if (!builtPrompt) return
-    navigate('/')
+    navigate('/chat')
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent('composer-insert', {
         detail: { text: builtPrompt, mode: 'replace' }

@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* === SEMANTIC UI TYPOGRAPHY CLASSES === */
-.text-ui-caption { font-size: var(--ui-caption); }       /* 11px — badges, kbd, micro-labels */
+.text-ui-caption { font-size: var(--ui-xs); }              /* 12px — minimum readable size, was 11px */
 .text-ui-xs { font-size: var(--ui-xs); }                  /* 12px — secondary labels, meta */
 .text-ui-sm { font-size: var(--ui-sm); }                  /* 13px — body, settings, chat */
 .text-ui { font-size: var(--ui); }                        /* 14px — primary UI text */
@@ -22,12 +22,13 @@ h1, h2, h3, h4, h5, h6 {
 /* === BODY — all body/UI text is clean sans-serif === */
 body, p, span, div, li, td, th, label, input, textarea, select, button {
   font-family: var(--font-body);
+  line-height: 1.5;
 }
 
 /* Consistent base font size for readability */
 body {
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 /* === CODE === */
@@ -81,6 +82,11 @@ pre code {
 .prose em {
   font-style: italic;
   color: var(--ivory-text-2);
+}
+
+.prose .secondary-text {
+  color: var(--ivory-text-2);
+  line-height: 1.65;
 }
 
 .prose ul, .prose ol {

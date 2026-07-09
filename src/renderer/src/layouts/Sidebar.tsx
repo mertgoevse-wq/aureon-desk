@@ -83,24 +83,12 @@ export function Sidebar(): React.ReactElement {
     setChats([newItem, ...useChatStore.getState().chats])
     setActiveChatId(chat.id)
     setActiveChat({ ...chat, messages: [] })
-    navigate('/')
+    navigate('/chat')
   }, [api, setChats, setActiveChatId, setActiveChat, navigate])
-
-  const handleNewTask = useCallback(async () => {
-    await handleNewChat()
-    window.setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('composer-insert', {
-        detail: {
-          text: 'Turn this into a practical task plan. Ask for missing context first, then propose the next concrete steps.',
-          mode: 'replace'
-        }
-      }))
-    }, 120)
-  }, [handleNewChat])
 
   const handleSelectChat = useCallback(async (id: string) => {
     setActiveChatId(id)
-    navigate('/')
+    navigate('/chat')
     try {
       const chat = await api.chatGet(id)
       setActiveChat(chat || null)
@@ -109,7 +97,11 @@ export function Sidebar(): React.ReactElement {
     }
   }, [api, navigate, setActiveChatId, setActiveChat])
 
-  const isActive = (path: string) => location.pathname === path || (path === '/' && location.pathname === '/')
+
+  const isActive = (path: string) => {
+    if (path === '/studio') return location.pathname === '/' || location.pathname === '/studio'
+    return location.pathname === path
+  }
 
   if (sidebarCollapsed) {
     return (
@@ -148,7 +140,7 @@ export function Sidebar(): React.ReactElement {
         <div className="w-5 border-t border-[var(--ivory-border)] my-1" />
         <button
           type="button"
-          onClick={() => navigate('/studio')}
+          onClick={() => navigate('/')}
           className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/studio') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
           aria-label="Studio"
           data-testid="nav-studio"
@@ -157,8 +149,8 @@ export function Sidebar(): React.ReactElement {
         </button>
         <button
           type="button"
-          onClick={() => navigate('/')}
-          className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+          onClick={() => navigate('/chat')}
+          className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/chat') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
           aria-label="Chat"
           data-testid="nav-chats"
         >
@@ -248,7 +240,7 @@ export function Sidebar(): React.ReactElement {
           <div className="grid grid-cols-4 gap-1 pt-0.5" aria-label="Workspace shortcuts">
             <button
               type="button"
-              onClick={() => navigate('/studio')}
+              onClick={() => navigate('/')}
               className={`h-8 inline-flex items-center justify-center rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer ${isActive('/studio') ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               aria-label="Studio"
               title="Studio"
@@ -258,8 +250,8 @@ export function Sidebar(): React.ReactElement {
             </button>
             <button
               type="button"
-              onClick={() => navigate('/')}
-              className={`h-8 inline-flex items-center justify-center rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer ${isActive('/') ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              onClick={() => navigate('/chat')}
+              className={`h-8 inline-flex items-center justify-center rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer ${isActive('/chat') ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               aria-label="Chat"
               title="Chat"
               data-testid="nav-chats"
@@ -330,7 +322,7 @@ export function Sidebar(): React.ReactElement {
             <p className="text-ui-caption uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)] font-body">Recents</p>
             <button
               type="button"
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/chat')}
               className="text-ui-caption font-semibold text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 rounded-md cursor-pointer"
             >
               View

@@ -52,7 +52,7 @@ export const useUIStore = create<UIState>((set, get) => ({
       sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
       inspectorWidth: DEFAULT_INSPECTOR_WIDTH,
       sidebarCollapsed: false,
-      inspectorOpen: true,
+      inspectorOpen: false,
     })
     try {
       window.api?.settingsSet('ui.sidebarWidth', String(DEFAULT_SIDEBAR_WIDTH))
