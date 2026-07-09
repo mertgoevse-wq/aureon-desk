@@ -135,5 +135,19 @@ export function registerProviderIPC(): void {
     return modelRouterService.resolveBestModelForBuild(prompt)
   })
 
+  ipcMain.handle('model-router:recordUsage', (_event, modelId: string) => {
+    modelRouterService.recordUsage(modelId)
+    return true
+  })
+
+  ipcMain.handle('model-router:getUsage', () => {
+    return modelRouterService.getUsage()
+  })
+
+  ipcMain.handle('model-router:clearUsage', () => {
+    modelRouterService.clearAllUsage()
+    return true
+  })
+
   logger.info('Provider IPC handlers registered')
 }

@@ -10,6 +10,10 @@ import {
   getExhaustedModels,
   clearModelExhaustion,
   clearAllExhaustion,
+  recordModelUsage,
+  getAllModelUsage,
+  getModelUsage,
+  clearAllUsage,
   MODEL_SCORES,
   type ModelTask,
   type ModelScore,
@@ -151,6 +155,46 @@ export const modelRouterService = {
    */
   getAllScores(): ModelScore[] {
     return MODEL_SCORES
+  },
+
+  // ---- Token Usage Tracking ----
+
+  /**
+   * Record a successful API request for a model.
+   * Called after chat completions or build pipeline code generation succeeds.
+   */
+  recordUsage(modelId: string): void {
+    const score = this.findModelScore(modelId)
+    recordModelUsage(
+      modelId,
+      score?.displayName || modelId,
+      score?.provider || 'unknown',
+      score?.hasFreeTier || false,
+    )
+  },
+
+  /**
+   * Get usage stats for all models, sorted by request count descending.
+   */
+  getUsage() {
+    return getAllModelUsage()
+  },
+
+  /**
+   * Clear all usage tracking.
+   */
+  clearAllUsage(): void {
+    clearAllUsage()
+  },
+
+  /**
+   * Find a ModelScore entry by modelId.
+   * Uses exact match first, then suffix match (for OpenRouter-prefixed names like openai/gpt-4o).
+   */
+  findModelScore(modelId: string): ModelScore | undefined {
+    return MODEL_SCORES.find(m =>
+      m.modelId === modelId || modelId.endsWith('/' + m.modelId)
+    )
   },
 
   /**

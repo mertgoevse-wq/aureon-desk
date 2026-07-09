@@ -145,6 +145,9 @@ export interface IpcApi {
   modelRouterClearExhaustion: (modelId?: string) => Promise<boolean>
   modelRouterGetAllScores: () => Promise<any[]>
   modelRouterResolveBestForBuild: (prompt: string) => Promise<{ modelDbId: string | null; explanation: string; task: string; isDemo: boolean }>
+  modelRouterRecordUsage: (modelId: string) => Promise<boolean>
+  modelRouterGetUsage: () => Promise<any[]>
+  modelRouterClearUsage: () => Promise<boolean>
 }
 
 declare global {

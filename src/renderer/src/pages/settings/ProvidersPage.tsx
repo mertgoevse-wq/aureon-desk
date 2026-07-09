@@ -2,7 +2,7 @@ import { useEffect, useCallback, useState } from 'react'
 import {
   Eye, EyeOff, Trash2, Check, AlertTriangle, Plus,
   Wifi, Zap, Server, Monitor, Globe, Star, Wrench,
-  Activity, Clock
+  Activity, Clock, BarChart3, RotateCcw
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'
 import { Input } from '../../components/shared/Input'
@@ -54,8 +54,21 @@ export function ProvidersPage(): React.ReactElement {
   const [showCustomForm, setShowCustomForm] = useState(false)
   const [customForm, setCustomForm] = useState({ name: '', slug: '', baseUrl: '', apiKey: '' })
   const [customError, setCustomError] = useState<string | null>(null)
+  const [modelUsage, setModelUsage] = useState<any[]>([])
+  const [loadingUsage, setLoadingUsage] = useState(false)
 
   useEffect(() => { loadData() }, [])
+
+  const loadUsage = useCallback(async () => {
+    setLoadingUsage(true)
+    try {
+      const usage = await api.modelRouterGetUsage()
+      setModelUsage(usage)
+    } catch { /* ignore */ }
+    finally { setLoadingUsage(false) }
+  }, [api])
+
+  useEffect(() => { loadUsage() }, [loadUsage])
 
   const loadData = useCallback(async () => {
     const [prov, adaps] = await Promise.all([
@@ -292,6 +305,91 @@ export function ProvidersPage(): React.ReactElement {
           <Button onClick={handleCreateCustom} className="w-full">Create Provider</Button>
         </div>
       </Modal>
+
+      {/* === Token Usage Panel === */}
+      <Card className="mb-5">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <BarChart3 size={16} className="text-[var(--ivory-accent)]" />
+              <h3 className="text-base font-semibold">Token Usage</h3>
+            </div>
+            <p className="text-xs text-[var(--ivory-text-3)] leading-relaxed">
+              Request counts per model. Free-tier models are highlighted. Counts reset when the app restarts.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={async () => { await api.modelRouterClearUsage(); loadUsage() }}
+              disabled={modelUsage.length === 0}
+              title="Reset all usage counts"
+            >
+              <RotateCcw size={13} />
+            </Button>
+            <Button size="sm" variant="secondary" onClick={loadUsage} loading={loadingUsage}>
+              Refresh
+            </Button>
+          </div>
+        </div>
+
+        {loadingUsage ? (
+          <div className="text-center py-6 text-[var(--ivory-text-3)] text-xs">Loading usage data...</div>
+        ) : modelUsage.length === 0 ? (
+          <div className="text-center py-6 text-[var(--ivory-text-3)] text-xs italic">
+            No requests recorded yet. Send a chat message or run a build to populate usage stats.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {/* Header row */}
+            <div className="grid grid-cols-[1fr_120px_80px_140px] gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">
+              <span>Model</span>
+              <span className="text-right">Requests</span>
+              <span className="text-right">Tier</span>
+              <span className="text-right">Last Used</span>
+            </div>
+
+            {modelUsage.map((entry: any) => {
+              const displayName = entry.displayName || entry.modelId
+              return (
+                <div
+                  key={entry.modelId}
+                  className={`grid grid-cols-[1fr_120px_80px_140px] gap-2 py-2.5 px-3 rounded-xl border transition-colors ${
+                    entry.isFreeTier
+                      ? 'bg-[var(--ivory-accent-light)]/30 border-[var(--ivory-accent)]/20'
+                      : 'bg-[var(--ivory-bg)] border-[var(--ivory-border)]/40'
+                  }`}
+                >
+                  <div className="min-w-0">
+                    <span className="text-[12px] font-semibold text-[var(--ivory-text)] block truncate">
+                      {displayName}
+                    </span>
+                    <span className="text-[10px] text-[var(--ivory-text-3)]">
+                      {entry.provider}
+                    </span>
+                  </div>
+                  <span className="text-right text-[13px] font-bold font-mono text-[var(--ivory-text)] self-center">
+                    {entry.requestCount}
+                  </span>
+                  <span className="text-right self-center">
+                    {entry.isFreeTier ? (
+                      <Badge variant="success" size="sm">Free</Badge>
+                    ) : (
+                      <Badge variant="default" size="sm">Paid</Badge>
+                    )}
+                  </span>
+                  <span className="text-right text-[10px] text-[var(--ivory-text-3)] font-mono self-center">
+                    {entry.lastUsedAt
+                      ? new Date(entry.lastUsedAt).toLocaleTimeString()
+                      : '—'}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </Card>
 
       <div className="space-y-5">
         {adapters.map((adapter: ProviderAdapterInfo) => {

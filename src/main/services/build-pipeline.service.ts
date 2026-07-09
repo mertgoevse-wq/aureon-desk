@@ -6,6 +6,7 @@ import { logger } from '../utils/logger'
 import { redactSecrets } from './log-redacter'
 import { livePreviewService } from './live-preview.service'
 import { providerService } from './provider.service'
+import { modelRouterService } from './model-router.service'
 import type {
   BuildRequest,
   BuildResult,
@@ -442,6 +443,9 @@ Generate the complete HTML, CSS, and JavaScript files for this app. Output ONLY 
     modelName: ref.modelName,
     responseLength: responseText.length,
   })
+
+  // Record usage for token tracking
+  modelRouterService.recordUsage(model.name)
 
   // Parse the response — try JSON first, then markdown code blocks
   const files = parseCodeResponse(responseText)

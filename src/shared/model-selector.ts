@@ -135,6 +135,55 @@ export function clearAllExhaustion(): void {
   _exhaustedModels.clear()
 }
 
+// ---- Token Usage Tracking ----
+
+/** Per-model usage record */
+export interface ModelUsage {
+  modelId: string
+  displayName: string
+  provider: string
+  requestCount: number
+  isFreeTier: boolean
+  lastUsedAt: number | null
+}
+
+/** In-memory usage registry (lives in main process via model-router service). */
+const _usageRegistry: Map<string, ModelUsage> = new Map()
+
+/** Record a successful API request for a model. */
+export function recordModelUsage(modelId: string, displayName: string, provider: string, hasFreeTier: boolean): void {
+  const existing = _usageRegistry.get(modelId)
+  if (existing) {
+    existing.requestCount++
+    existing.lastUsedAt = Date.now()
+  } else {
+    _usageRegistry.set(modelId, {
+      modelId,
+      displayName,
+      provider,
+      requestCount: 1,
+      isFreeTier: hasFreeTier,
+      lastUsedAt: Date.now(),
+    })
+  }
+}
+
+/** Get usage stats for all models. */
+export function getAllModelUsage(): ModelUsage[] {
+  return Array.from(_usageRegistry.values())
+    .sort((a, b) => b.requestCount - a.requestCount)
+}
+
+/** Get usage for a specific model. */
+export function getModelUsage(modelId: string): ModelUsage | undefined {
+  return _usageRegistry.get(modelId)
+}
+
+/** Clear all usage tracking. */
+export function clearAllUsage(): void {
+  _usageRegistry.clear()
+}
+
 /**
  * Select the best model for a given task.
  * Returns the highest-scoring model that is available AND not exhausted.

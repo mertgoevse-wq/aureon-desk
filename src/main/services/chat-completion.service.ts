@@ -1,5 +1,6 @@
 import { chatService } from './chat.service'
 import { providerService } from './provider.service'
+import { modelRouterService } from './model-router.service'
 import { promptService } from './prompt.service'
 import { projectService } from './project.service'
 import { buildRequest } from './request-builder'
@@ -130,6 +131,9 @@ export const chatCompletionService = {
       const startTime = Date.now()
 
       const responseText = await this.callProvider(provider, model, built)
+
+      // Record usage for token tracking
+      modelRouterService.recordUsage(model.name)
 
       const duration = Date.now() - startTime
       logger.info(`Chat completion completed in ${duration}ms`, {

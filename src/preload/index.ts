@@ -375,6 +375,12 @@ const api = {
     isDemo: boolean
   }> =>
     ipcRenderer.invoke('model-router:resolveBestForBuild', prompt),
+  modelRouterRecordUsage: (modelId: string): Promise<boolean> =>
+    ipcRenderer.invoke('model-router:recordUsage', modelId),
+  modelRouterGetUsage: (): Promise<any[]> =>
+    ipcRenderer.invoke('model-router:getUsage'),
+  modelRouterClearUsage: (): Promise<boolean> =>
+    ipcRenderer.invoke('model-router:clearUsage'),
 }
 
 // Expose the API in the main world
