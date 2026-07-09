@@ -19,6 +19,11 @@ import {
   ChevronDown,
   Loader2,
   FileCode,
+  FilePlus,
+  FilePen,
+  FileMinus,
+  FileSymlink,
+  FolderPlus,
   GitCompare,
   ListChecks,
   Lightbulb,
@@ -91,6 +96,8 @@ export function LivePreview(): React.ReactElement {
   const [pipelineFileOps, setPipelineFileOps] = useState<FileOperation[]>([])
   const [pipelinePlan, setPipelinePlan] = useState<string[]>([])
   const [pipelinePrompt, setPipelinePrompt] = useState<string | null>(null)
+  const [streamingText, setStreamingText] = useState<string | null>(null)
+  const [isStreaming, setIsStreaming] = useState(false)
 
   const activeProject = projects.find(p => p.id === selectedProjectId)
 
@@ -185,6 +192,11 @@ export function LivePreview(): React.ReactElement {
       setPipelineSteps(s.completedSteps)
       setPipelineFileOps(s.fileOperations)
       setFollowUpSuggestions(s.followUpSuggestions)
+      // Handle streaming text
+      if (s.streamingRawText) {
+        setStreamingText(s.streamingRawText)
+        setIsStreaming(s.isStreaming || false)
+      }
       if (s.previewUrl) {
           // Update preview status from pipeline
           setStatus(prev => {
@@ -198,6 +210,8 @@ export function LivePreview(): React.ReactElement {
         }
       if (s.isComplete) {
         setPipelineRunning(false)
+        setIsStreaming(false)
+        setStreamingText(null)
         if (s.previewUrl) setActiveTab('preview') // Switch to preview after render
       }
       if (s.error) setError(s.error)
@@ -695,6 +709,18 @@ export function LivePreview(): React.ReactElement {
                         </div>
                       )}
                     </div>
+
+                    {/* Streaming code preview during AI generation */}
+                    {isStreaming && streamingText && (
+                      <div className="mt-3 pt-3 border-t border-[var(--ivory-border)]/50 space-y-1.5">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-accent)] flex items-center gap-1.5">
+                          <Sparkles size={10} /> AI Generating...
+                        </span>
+                        <div className="rounded-xl border border-[var(--ivory-accent)]/20 bg-[var(--ivory-elevated)] p-3 font-mono text-[11px] text-[var(--ivory-text-2)] leading-relaxed max-h-[280px] overflow-y-auto whitespace-pre-wrap break-all">
+                          {streamingText}
+                        </div>
+                      </div>
+                    )}
 
                     {/* File currently being worked on */}
                     {pipelineFileOps.length > 0 && (

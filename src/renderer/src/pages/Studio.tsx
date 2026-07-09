@@ -114,16 +114,30 @@ export function Studio(): React.ReactElement {
 
     // Custom build/compiler integration
     if (selectedCard === 'build_app') {
-      if (outputOption === 'Generate + Preview') {
-        setAutoBuildPipeline({ style: projectStyle, prompt: promptText, platform: targetPlatform, mode: 'generate-and-preview' })
-        targetPath = '/preview'
-      } else if (outputOption === 'Generate sandbox') {
-        setAutoBuildPipeline({ style: projectStyle, prompt: promptText, platform: targetPlatform, mode: 'generate' })
-        targetPath = '/preview'
-      } else {
-        setAutoBuildPipeline({ style: projectStyle, prompt: promptText, platform: targetPlatform, mode: 'plan-only' })
-        targetPath = '/preview'
-      }
+      const mode = outputOption === 'Generate + Preview' ? 'generate-and-preview' as const
+        : outputOption === 'Generate sandbox' ? 'generate' as const : 'plan-only' as const
+      // Set sessionStorage synchronously first (without modelRoute) to avoid
+      // race condition where LivePreview mounts before async model resolution completes.
+      setAutoBuildPipeline({
+        style: projectStyle,
+        prompt: promptText,
+        platform: targetPlatform,
+        mode,
+      })
+      targetPath = '/preview'
+      // Resolve best model asynchronously and update sessionStorage
+      api.modelRouterResolveBestForBuild(promptText).then((selection: { modelDbId: string | null; explanation: string; task: string; isDemo: boolean }) => {
+        setAutoBuildPipeline({
+          style: projectStyle,
+          prompt: promptText,
+          platform: targetPlatform,
+          mode,
+          modelRoute: selection.modelDbId,
+          modelExplanation: selection.explanation,
+        })
+      }).catch(() => {
+        // Already set without modelRoute; deterministic demo fallback
+      })
     } else if (selectedCard === 'code_program') {
       if (outputOption === 'Generate sandbox') {
         setAutoBuildSandboxOnly({ style: 'Minimalist', prompt: `Write a program in ${targetLanguage}: ${promptText}`, platform: 'Web app' })

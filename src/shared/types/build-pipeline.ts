@@ -107,6 +107,10 @@ export interface BuildPipelineStatus {
   error: string | null
   isDeterministicDemo: boolean
   followUpSuggestions: FollowUpSuggestion[]
+  /** Raw streaming text during AI code generation (accumulated) */
+  streamingRawText?: string
+  /** Whether AI streaming generation is in progress */
+  isStreaming?: boolean
 }
 
 /** Build intent classification result */

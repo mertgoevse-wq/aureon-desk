@@ -389,6 +389,21 @@ const api = {
     responsePreview: string | null
   }> =>
     ipcRenderer.invoke('provider:smokeTest', providerId),
+  providerSmokeTestAll: (): Promise<{
+    results: Array<{
+      providerId: string
+      providerName: string
+      success: boolean
+      message: string
+      modelUsed: string | null
+      durationMs: number
+    }>
+    total: number
+    passed: number
+    failed: number
+    skipped: number
+  }> =>
+    ipcRenderer.invoke('provider:smokeTestAll'),
 }
 
 // Expose the API in the main world
