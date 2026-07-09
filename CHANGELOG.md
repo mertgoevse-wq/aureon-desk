@@ -1,3 +1,39 @@
+## [0.9.70] - 2026-07-09
+
+### Added — Smart Model Selection & Device Inputs Foundation
+
+**Device Inputs:**
+- Created `src/shared/device-inputs.ts` — shared types for camera, microphone, screen capture with safety contracts
+- Created `src/main/services/device-inputs.service.ts` — screen capture via Electron desktopCapturer
+- Created `src/main/ipc/device-inputs.ipc.ts` — IPC handlers for screen source listing
+- Created `src/renderer/src/pages/settings/DeviceInputsPage.tsx` — full settings UI with device detection, permission states, preview controls, screen source thumbnails
+- Added "Device Inputs" nav item in Settings (Camera icon)
+- Wired routing, IPC registration, and preload API
+
+**Smart Model Selection:**
+- Created `src/shared/model-selector.ts` — auto-chooses best model based on context
+- Supports 5 task types: code_generation, chat, vision, reasoning, fast_inference
+- Scores 15+ models across OpenAI, Anthropic, Google, DeepSeek, Mistral, Groq, OpenRouter, Ollama
+- `selectBestModel()` — picks highest-scoring available model
+- `selectModelForPrompt()` — analyzes prompt keywords to determine task type
+- `explainModelSelection()` — human-readable selection reasoning
+- Free model preference for low-complexity tasks
+
+### Cleanup
+- Removed dead `getMainWindowId()` from device-inputs service
+- Removed unused exports from shared types
+- Removed dead imports from DeviceInputsPage
+
+### Test Results
+- Demo coding pipeline: ✅ PASS (counter app generated and verified)
+- E2E smoke tests: ✅ 7/9 pass (2 flakes — Electron DevTools WebSocket)
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (597 tests)
+- `npm run build` — ✅ PASS
+- Code review — ✅ PASS
+
 ## [0.9.69] - 2026-07-09
 
 ### Added — Real AI Provider Code Generation in Build Pipeline

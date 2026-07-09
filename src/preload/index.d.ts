@@ -138,6 +138,7 @@ export interface IpcApi {
   selfAuditRunAuditOnly: (request: import('../shared/self-audit').AuditRequest) => Promise<{ success: boolean; report?: any; error?: string }>
   selfAuditGeneratePlan: (report: any) => Promise<{ success: boolean; plan?: any; error?: string }>
   selfAuditGeneratePatch: (plan: any, report: any) => Promise<{ success: boolean; patchProposal?: any; error?: string }>
+  deviceInputsListScreenSources: (request: import('../shared/device-inputs').ScreenSourcesRequest) => Promise<import('../shared/device-inputs').ScreenSourcesResult>
 }
 
 declare global {

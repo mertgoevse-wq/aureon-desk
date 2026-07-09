@@ -11,6 +11,7 @@ import type { AppLogRow, LogFilter, DebugBundle } from '../shared/types/log'
 import type { StudioIntentInput, StudioOrchestrationResult, TaskCategoryInfo, CapabilityDefinition, AutonomyLevelInfo } from '../shared/types/studio-core'
 import type { BuildRequest, BuildResult, BuildPipelineStatus } from '../shared/types/build-pipeline'
 import type { AuditRequest, AuditResult } from '../shared/self-audit'
+import type { ScreenSourcesRequest, ScreenSourcesResult } from '../shared/device-inputs'
 
 // Define the IPC API exposed to the renderer
 const api = {
@@ -341,6 +342,10 @@ const api = {
     ipcRenderer.invoke('self-audit:generatePlan', report),
   selfAuditGeneratePatch: (plan: any, report: any): Promise<{ success: boolean; patchProposal?: any; error?: string }> =>
     ipcRenderer.invoke('self-audit:generatePatch', plan, report),
+
+  // Device Inputs
+  deviceInputsListScreenSources: (request: ScreenSourcesRequest): Promise<ScreenSourcesResult> =>
+    ipcRenderer.invoke('device-inputs:listScreenSources', request),
 }
 
 // Expose the API in the main world

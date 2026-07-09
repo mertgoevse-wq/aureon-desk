@@ -2,6 +2,7 @@ import React from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   Boxes,
+  Camera,
   Code2,
   FileText,
   FolderOpen,
@@ -36,7 +37,8 @@ const navItems: SettingsNavItem[] = [
   { icon: <LockKeyhole size={16} />, label: 'Capabilities', description: 'Guarded access', path: '/settings/capabilities' },
   { icon: <FileText size={16} />, label: 'Logs', description: 'Runtime events', path: '/settings/logs' },
   { icon: <Code2 size={16} />, label: 'Developer', description: 'Debug and tests', path: '/settings/developer' },
-  { icon: <ScanLine size={16} />, label: 'Self Audit', description: 'Inspect & improve', path: '/settings/self-audit' }
+  { icon: <ScanLine size={16} />, label: 'Self Audit', description: 'Inspect & improve', path: '/settings/self-audit' },
+  { icon: <Camera size={16} />, label: 'Device Inputs', description: 'Cam, mic, screen', path: '/settings/device-inputs' }
 ]
 
 function isActivePath(currentPath: string, itemPath: string): boolean {

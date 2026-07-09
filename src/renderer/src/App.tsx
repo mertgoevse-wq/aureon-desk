@@ -22,6 +22,7 @@ import { Studio } from './pages/Studio'
 import { ConnectorsPage } from './pages/settings/ConnectorsPage'
 import { CapabilitiesPage } from './pages/settings/CapabilitiesPage'
 import { SelfAudit } from './pages/SelfAudit'
+import { DeviceInputsPage } from './pages/settings/DeviceInputsPage'
 
 const router = createHashRouter([
   {
@@ -58,7 +59,8 @@ const router = createHashRouter([
           { path: 'extensions', element: <SettingsPlaceholderPage /> },
           { path: 'security', element: <SettingsPlaceholderPage /> },
           { path: 'capabilities', element: <CapabilitiesPage /> },
-          { path: 'self-audit', element: <SelfAudit /> }
+          { path: 'self-audit', element: <SelfAudit /> },
+          { path: 'device-inputs', element: <DeviceInputsPage /> }
         ]
       }
     ]

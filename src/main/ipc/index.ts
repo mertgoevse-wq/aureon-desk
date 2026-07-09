@@ -14,6 +14,7 @@ import { registerWindowIPC } from './window.ipc'
 import { registerStudioCoreIPC } from './studio-core.ipc'
 import { registerBuildPipelineIPC } from './build-pipeline.ipc'
 import { registerSelfAuditIPC } from './self-audit.ipc'
+import { registerDeviceInputsIPC } from './device-inputs.ipc'
 import { logger } from '../utils/logger'
 
 export function registerAllIPC(): void {
@@ -35,6 +36,7 @@ export function registerAllIPC(): void {
   registerStudioCoreIPC()
   registerBuildPipelineIPC()
   registerSelfAuditIPC()
+  registerDeviceInputsIPC()
 
   logger.info('All IPC handlers registered')
 }
