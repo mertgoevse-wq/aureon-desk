@@ -4,6 +4,24 @@
 
 ---
 
+## Studio Wizard & Preview Autostart Repair — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (438 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| `npx playwright test tests/e2e/99-human-click-qa.spec.ts` | ✅ PASS |
+
+### Changes
+- Implemented parameter wizard selectors in Studio Task Drawer.
+- Configured sessionStorage routing to autostart sandbox compilation and previewing on mounting Code Mode page.
+- Added custom dynamic styling (Calming Ivory, Soft Teal, Deep Slate) from Studio page through live preview compiler service.
+- Added new vitest unit test in `live-preview.test.ts` verifying theme style code injection.
+- Captured clickable UI elements audit under `docs/CLICKABLES_AUDIT.md`.
+
+---
+
 ## Human-Style Visible Manual Click QA — 2026-07-09
 
 | Check | Result |

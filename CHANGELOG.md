@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.9.48] - 2026-07-09
+
+### Added — Studio Wizard & Preview Autostart Repair
+
+**Studio Task Wizard Drawer:**
+- Added custom input selectors and interactive parameter wizard blocks to all 10 task categories in the Drawer.
+- Enabled custom starter prompt edits, linking text area to component state and key down listeners (Enter to launch).
+- Configured warning banner blocks showing action link button to Provider credentials page if missing capabilities are detected.
+
+**LivePreview Autostart Compiler & Style Integration:**
+- Connected sessionStorage parameters to route between Studio page and Code mode.
+- Mount effect auto-invokes Sandbox creation, compiler, and start-up server on loading `/preview`.
+- Added custom design styling (Calming Ivory, Soft Teal, Deep Slate) support to preload interface and Electron LivePreview service.
+- Dynamically customize CSS background and borders of sandbox counter template matching selected style.
+
+**Audit & Verification:**
+- Compiled `docs/CLICKABLES_AUDIT.md` detailing interactive UI items.
+- Added unit test in `live-preview.test.ts` checking dynamic theme HTML content injection.
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (438 tests, 22 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.47] - 2026-07-09
 
 ### Added — Human Click QA & Interaction Repair

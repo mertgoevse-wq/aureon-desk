@@ -79,7 +79,7 @@ export interface IpcApi {
   previewWriteFile: (sandboxPath: string, relativePath: string, content: string) => Promise<{ success: boolean; error?: string }>
   previewListSandboxes: () => Promise<Array<{ id: string; path: string; createdAt: string }>>
   previewCleanup: (maxAgeHours?: number) => Promise<number>
-  previewCreateDemo: (port?: number) => Promise<any>
+  previewCreateDemo: (port?: number, style?: string) => Promise<any>
   toolList: () => Promise<import('../shared/types/tool').ToolRow[]>
   toolGet: (id: string) => Promise<import('../shared/types/tool').ToolRow | undefined>
   toolCreate: (input: any) => Promise<import('../shared/types/tool').ToolRow>

@@ -109,6 +109,16 @@ describe('LivePreview Service — Sandbox Creation', () => {
     expect(status.status).toBe('idle')
     expect(status.id).toBeNull()
   })
+
+  it('should support dynamic style in demo sandbox', () => {
+    mockFs.writeFileSync = vi.fn()
+    livePreviewService.createSandbox({ templateType: 'demo', style: 'Soft Teal' })
+    const writeCalls = mockFs.writeFileSync.mock.calls
+    const indexWrite = writeCalls.find((call: any) => call[0].endsWith('index.html'))
+    expect(indexWrite).toBeDefined()
+    const content = indexWrite[1]
+    expect(content).toContain('background: #F0F7F6;')
+  })
 })
 
 describe('LivePreview Service — Path Validation', () => {

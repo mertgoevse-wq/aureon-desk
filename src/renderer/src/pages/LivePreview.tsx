@@ -108,6 +108,20 @@ export function LivePreview(): React.ReactElement {
     }
   }, [status.logs])
 
+  useEffect(() => {
+    const shouldAutoStartPreview = sessionStorage.getItem('auto-build-app-preview')
+    const shouldAutoStartSandbox = sessionStorage.getItem('auto-build-app-sandbox-only')
+    
+    if (shouldAutoStartPreview === 'true') {
+      sessionStorage.removeItem('auto-build-app-preview')
+      const style = sessionStorage.getItem('build-app-style') || 'Calming Ivory'
+      handleRunDemo(style)
+    } else if (shouldAutoStartSandbox === 'true') {
+      sessionStorage.removeItem('auto-build-app-sandbox-only')
+      handleCreateSandbox()
+    }
+  }, [])
+
   const handleCopy = useCallback(() => {
     if (status.url) {
       navigator.clipboard.writeText(status.url)
@@ -133,11 +147,11 @@ export function LivePreview(): React.ReactElement {
     }
   }
 
-  const handleRunDemo = async () => {
+  const handleRunDemo = async (style?: string) => {
     setRunningDemo(true)
     setError(null)
     try {
-      const result = await api.previewCreateDemo()
+      const result = await api.previewCreateDemo(undefined, style)
       if (result.success) {
         await refreshStatus()
       } else {
@@ -348,7 +362,7 @@ export function LivePreview(): React.ReactElement {
             {/* Coding Demo trigger button */}
             <button
               type="button"
-              onClick={handleRunDemo}
+              onClick={() => handleRunDemo()}
               disabled={runningDemo}
               className="w-full h-8 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[var(--ivory-accent-light)] border border-[var(--ivory-accent)]/20 text-xs font-semibold text-[var(--ivory-text)] hover:bg-[var(--ivory-accent)]/15 transition-all shadow-[var(--shadow-xs)]"
             >

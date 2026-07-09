@@ -33,6 +33,7 @@ export interface PreviewLogEntry {
 export interface CreateSandboxInput {
   templateType?: string
   port?: number
+  style?: string
 }
 
 export interface PreviewStatus {
@@ -302,7 +303,29 @@ export const livePreviewService = {
       if (templateType === 'html') {
         fs.writeFileSync(path.join(sandboxPath, 'index.html'), SAMPLE_HTML, 'utf-8')
       } else if (templateType === 'demo') {
-        fs.writeFileSync(path.join(sandboxPath, 'index.html'), DEMO_COUNTER_HTML, 'utf-8')
+        let htmlContent = DEMO_COUNTER_HTML
+        const selectedStyle = input.style || 'Calming Ivory'
+        if (selectedStyle === 'Soft Teal') {
+          htmlContent = htmlContent
+            .replace('background: #FAF8F5;', 'background: #F0F7F6;')
+            .replace('color: #2C2416;', 'color: #1A2F2C;')
+            .replace('color: #C75B39;', 'color: #2A8A7C;')
+            .replace('background: #C75B39;', 'background: #2A8A7C;')
+            .replace('background: #B04D2E;', 'background: #1F6B60;')
+        } else if (selectedStyle === 'Deep Slate') {
+          htmlContent = htmlContent
+            .replace('background: #FAF8F5;', 'background: #1E293B;')
+            .replace('color: #2C2416;', 'color: #F1F5F9;')
+            .replace('color: #C75B39;', 'color: #38BDF8;')
+            .replace('background: #C75B39;', 'background: #38BDF8;')
+            .replace('background: #B04D2E;', 'background: #0284C7;')
+            .replace('background: white;', 'background: #334155;')
+            .replace('color: #5C4A3A;', 'color: #E2E8F0;')
+            .replace('background: #EDE4D8;', 'background: #475569;')
+            .replace('background: #D9CDBE;', 'background: #64748B;')
+            .replace('border-top: 1px solid #EDE4D8;', 'border-top: 1px solid #475569;')
+        }
+        fs.writeFileSync(path.join(sandboxPath, 'index.html'), htmlContent, 'utf-8')
         // Marker file so startPreview detects the demo template type
         fs.writeFileSync(path.join(sandboxPath, '.aureon-demo'), templateType, 'utf-8')
       } else if (templateType === 'vite-react') {
@@ -337,12 +360,12 @@ export const livePreviewService = {
    * Self-Test Coding Agent Demo: generates the Aureon Counter Demo sandbox,
    * starts the preview server, and returns the full result.
    */
-  createDemo(port?: number): CodingDemoResult {
+  createDemo(port?: number, style?: string): CodingDemoResult {
     const filesWritten: string[] = []
 
     try {
       // 1. Create sandbox with demo template
-      const sandbox = this.createSandbox({ templateType: 'demo', port })
+      const sandbox = this.createSandbox({ templateType: 'demo', port, style })
       if (!sandbox.success) {
         return { success: false, sandboxId: '', sandboxPath: '', url: null, filesWritten, previewStatus: this.getStatus(), error: sandbox.error }
       }

@@ -32,8 +32,8 @@ export function registerLivePreviewIPC(): void {
     livePreviewService.cleanupSandboxes(maxAgeHours)
   )
 
-  ipcMain.handle('preview:createDemo', (_e, port?: number): CodingDemoResult =>
-    livePreviewService.createDemo(port)
+  ipcMain.handle('preview:createDemo', (_e, port?: number, style?: string): CodingDemoResult =>
+    livePreviewService.createDemo(port, style)
   )
 
   logger.info('LivePreview IPC handlers registered')

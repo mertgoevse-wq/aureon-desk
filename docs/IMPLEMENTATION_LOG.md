@@ -1,5 +1,42 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-09 11:30 +02:00 — Studio Wizard & Preview Autostart Repair
+
+Branch: `main`
+Commit at start: `0.9.47` (Human Click QA & Interaction Repair)
+
+### Session Purpose
+Implement task parameters wizard inside Studio Drawer, configure auto-start sandbox compilation server on navigating from Studio to LivePreview workspace, support custom styles (Ivory, Teal, Slate) in generated sandbox app, and verify with updated unit/E2E tests.
+
+### Files Changed
+
+**Created:**
+- **New:** `docs/CLICKABLES_AUDIT.md` — complete catalog of all interactive elements.
+
+**Modified:**
+- **Modified:** `src/renderer/src/pages/Studio.tsx` — added platform, styling, and provider wizard options; wired key listeners and sessionStorage.
+- **Modified:** `src/renderer/src/pages/LivePreview.tsx` — checks sessionStorage triggers on mount to bootstrap the preview compilation server.
+- **Modified:** `src/preload/index.ts` / `index.d.ts` — extended `previewCreateDemo` with custom style arguments.
+- **Modified:** `src/main/ipc/live-preview.ipc.ts` / `src/main/services/live-preview.service.ts` — passed style parameter down and customized counter CSS style dynamically.
+- **Modified:** `tests/unit/live-preview.test.ts` — added unit test coverage for dynamic CSS theme overrides.
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (438 tests) |
+| `npm run build` | ✅ PASS |
+| `npx playwright test tests/e2e/99-human-click-qa.spec.ts` | ✅ PASS |
+
+### Key Changes
+- Wizard selectors added for all 10 task cards inside the slide-out drawer panel.
+- "Build App" triggers instant Code mode LivePreview autostart compiler via sessionStorage.
+- Dynamic theme styles (Ivory, Teal, Slate) customize backgrounds/text colors of generated sandbox apps.
+- Double-checked that Enter launches flows and Escape dismisses drawers.
+
+---
+
 ## 2026-07-09 09:40 +02:00 — Human-Style Visible Manual Click QA & Repaired Flows
 
 Branch: `main`

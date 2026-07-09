@@ -194,8 +194,8 @@ const api = {
     ipcRenderer.invoke('preview:listSandboxes'),
   previewCleanup: (maxAgeHours?: number): Promise<number> =>
     ipcRenderer.invoke('preview:cleanup', maxAgeHours),
-  previewCreateDemo: (port?: number): Promise<any> =>
-    ipcRenderer.invoke('preview:createDemo', port),
+  previewCreateDemo: (port?: number, style?: string): Promise<any> =>
+    ipcRenderer.invoke('preview:createDemo', port, style),
 
   // Tools / MCP
   toolList: (): Promise<ToolRow[]> =>
