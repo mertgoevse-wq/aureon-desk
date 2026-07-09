@@ -381,6 +381,14 @@ const api = {
     ipcRenderer.invoke('model-router:getUsage'),
   modelRouterClearUsage: (): Promise<boolean> =>
     ipcRenderer.invoke('model-router:clearUsage'),
+  providerSmokeTest: (providerId: string): Promise<{
+    success: boolean
+    message: string
+    modelUsed: string | null
+    durationMs: number
+    responsePreview: string | null
+  }> =>
+    ipcRenderer.invoke('provider:smokeTest', providerId),
 }
 
 // Expose the API in the main world

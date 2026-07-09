@@ -149,5 +149,9 @@ export function registerProviderIPC(): void {
     return true
   })
 
+  ipcMain.handle('provider:smokeTest', async (_event, providerId: string) => {
+    return await modelRouterService.smokeTestProvider(providerId)
+  })
+
   logger.info('Provider IPC handlers registered')
 }

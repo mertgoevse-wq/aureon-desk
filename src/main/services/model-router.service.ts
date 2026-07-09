@@ -255,4 +255,198 @@ export const modelRouterService = {
       isDemo: false,
     }
   },
+
+  // ---- Provider Smoke Test ----
+
+  /**
+   * Run a quick smoke test on a provider: sends a simple code generation prompt
+   * and verifies the provider returns a valid response.
+   */
+  async smokeTestProvider(providerId: string): Promise<{
+    success: boolean
+    message: string
+    modelUsed: string | null
+    durationMs: number
+    responsePreview: string | null
+  }> {
+    const provider = providerService.getProvider(providerId)
+    if (!provider) {
+      return { success: false, message: 'Provider not found', modelUsed: null, durationMs: 0, responsePreview: null }
+    }
+
+    if (provider.is_enabled !== 1) {
+      return { success: false, message: 'Provider is disabled. Enable it to run a smoke test.', modelUsed: null, durationMs: 0, responsePreview: null }
+    }
+
+    const isLocal = provider.adapter === 'ollama' || provider.adapter === 'lmstudio'
+    if (!isLocal) {
+      const hasKey = providerService.getMaskedApiKey(providerId)
+      if (!hasKey) {
+        return { success: false, message: 'No API key configured. Add your key and try again.', modelUsed: null, durationMs: 0, responsePreview: null }
+      }
+    }
+
+    // Find an enabled model
+    const enabledModels = (provider.models || []).filter(m => m.is_enabled === 1)
+    if (enabledModels.length === 0) {
+      return { success: false, message: 'No enabled models found for this provider.', modelUsed: null, durationMs: 0, responsePreview: null }
+    }
+
+    // Try the default model first, then the first enabled
+    const model = enabledModels.find(m => m.is_default === 1) || enabledModels[0]
+    const modelRef = providerService.resolveCanonicalModelReference(model.id)
+    if (!modelRef) {
+      return { success: false, message: `Could not resolve model ${model.display_name || model.name}.`, modelUsed: model.display_name || model.name, durationMs: 0, responsePreview: null }
+    }
+
+    const apiKey = isLocal ? null : providerService.getApiKey(providerId)
+    const baseUrl = modelRef.baseUrl || provider.base_url || ''
+    const samplePrompt = 'Respond with exactly: {"status":"ok","message":"Smoke test passed"}'
+
+    logger.info(`Running smoke test for ${provider.name} / ${model.name}`)
+    const startTime = Date.now()
+
+    try {
+      const responseText = await this._callSmokeTest(baseUrl, apiKey, model.name, provider.adapter)
+      const durationMs = Date.now() - startTime
+
+      // Check if response contains expected content
+      const hasOk = responseText.toLowerCase().includes('ok') || responseText.includes('smoke')
+      const preview = responseText.slice(0, 200)
+
+      logger.info(`Smoke test passed for ${provider.name} in ${durationMs}ms`)
+
+      // Record usage
+      this.recordUsage(model.name)
+
+      return {
+        success: true,
+        message: hasOk
+          ? `✅ Response received in ${durationMs}ms — provider is working.`
+          : `⚠️ Response received in ${durationMs}ms but didn't match expected format.`,
+        modelUsed: model.display_name || model.name,
+        durationMs,
+        responsePreview: preview,
+      }
+    } catch (err) {
+      const durationMs = Date.now() - startTime
+      const msg = err instanceof Error ? err.message : String(err)
+      logger.error(`Smoke test failed for ${provider.name}: ${msg}`)
+
+      // Determine a user-friendly error
+      let friendlyMsg = msg
+      if (msg.includes('401') || msg.includes('403') || msg.includes('Unauthorized') || msg.includes('Authentication')) {
+        friendlyMsg = 'Authentication failed. Check your API key.'
+      } else if (msg.includes('429')) {
+        friendlyMsg = 'Rate limited. Wait a moment and try again.'
+      } else if (msg.includes('timeout') || msg.includes('ETIMEDOUT') || msg.includes('aborted')) {
+        friendlyMsg = 'Request timed out. The provider may be slow or unreachable.'
+      } else if (msg.includes('ECONNREFUSED') || msg.includes('fetch failed') || msg.includes('ENOTFOUND')) {
+        friendlyMsg = 'Cannot reach the provider. Check the base URL and network connection.'
+      }
+
+      return {
+        success: false,
+        message: friendlyMsg,
+        modelUsed: model.display_name || model.name,
+        durationMs,
+        responsePreview: null,
+      }
+    }
+  },
+
+  /**
+   * Internal: call a provider with a simple smoke-test prompt.
+   */
+  async _callSmokeTest(
+    baseUrl: string,
+    apiKey: string | null,
+    modelName: string,
+    adapter: string,
+  ): Promise<string> {
+    if (adapter === 'ollama') {
+      const ollamaBase = baseUrl.replace(/\/v1\/?$/, '')
+      const response = await fetch(`${ollamaBase}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: modelName,
+          messages: [{ role: 'user', content: 'Respond with exactly: {"status":"ok","message":"Smoke test passed"}' }],
+          stream: false,
+        }),
+        signal: AbortSignal.timeout(30000),
+      })
+      if (!response.ok) throw new Error(`Ollama returned ${response.status}`)
+      const data = await response.json() as Record<string, unknown>
+      const msg = data.message as { content?: string } | undefined
+      return msg?.content || ''
+    }
+
+    // OpenAI-compatible for everything else
+    const url = `${baseUrl}/chat/completions`
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (apiKey) {
+      if (adapter === 'anthropic') {
+        headers['x-api-key'] = apiKey
+      } else {
+        headers['Authorization'] = `Bearer ${apiKey}`
+      }
+    }
+    if (adapter === 'openrouter') {
+      headers['HTTP-Referer'] = 'aureon-desk'
+      headers['X-Title'] = 'Aureon Desk Smoke Test'
+    }
+
+    // For Anthropic, use the Messages API
+    if (adapter === 'anthropic') {
+      const response = await fetch(`${baseUrl}/messages`, {
+        method: 'POST',
+        headers: { ...headers, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({
+          model: modelName,
+          max_tokens: 128,
+          messages: [{ role: 'user', content: 'Respond with exactly: {"status":"ok","message":"Smoke test passed"}' }],
+        }),
+        signal: AbortSignal.timeout(30000),
+      })
+      if (!response.ok) throw new Error(`Anthropic returned ${response.status}`)
+      const data = await response.json() as Record<string, unknown>
+      const content = data.content as Array<{ text?: string }> | undefined
+      return content?.[0]?.text || ''
+    }
+
+    // For Google Gemini
+    if (adapter === 'google') {
+      const response = await fetch(`${baseUrl}/models/${modelName}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: 'Respond with exactly: {"status":"ok","message":"Smoke test passed"}' }] }],
+        }),
+        signal: AbortSignal.timeout(30000),
+      })
+      if (!response.ok) throw new Error(`Gemini returned ${response.status}`)
+      const data = await response.json() as Record<string, unknown>
+      const candidates = data.candidates as Array<{ content?: { parts?: Array<{ text?: string }> } }> | undefined
+      return candidates?.[0]?.content?.parts?.[0]?.text || ''
+    }
+
+    // OpenAI-compatible (OpenAI, OpenRouter, NVIDIA, Groq, Mistral, DeepSeek, Custom, LM Studio)
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        model: modelName,
+        messages: [{ role: 'user', content: 'Respond with exactly: {"status":"ok","message":"Smoke test passed"}' }],
+        max_tokens: 128,
+        temperature: 0,
+      }),
+      signal: AbortSignal.timeout(30000),
+    })
+
+    if (!response.ok) throw new Error(`Provider returned ${response.status}`)
+    const data = await response.json() as Record<string, unknown>
+    const choices = data.choices as Array<{ message?: { content?: string } }> | undefined
+    return choices?.[0]?.message?.content || ''
+  },
 }

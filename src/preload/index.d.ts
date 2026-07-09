@@ -148,6 +148,7 @@ export interface IpcApi {
   modelRouterRecordUsage: (modelId: string) => Promise<boolean>
   modelRouterGetUsage: () => Promise<any[]>
   modelRouterClearUsage: () => Promise<boolean>
+  providerSmokeTest: (providerId: string) => Promise<{ success: boolean; message: string; modelUsed: string | null; durationMs: number; responsePreview: string | null }>
 }
 
 declare global {

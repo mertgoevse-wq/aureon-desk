@@ -2,7 +2,7 @@ import { useEffect, useCallback, useState } from 'react'
 import {
   Eye, EyeOff, Trash2, Check, AlertTriangle, Plus,
   Wifi, Zap, Server, Monitor, Globe, Star, Wrench,
-  Activity, Clock, BarChart3, RotateCcw
+  Activity, Clock, BarChart3, RotateCcw, Code2
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'
 import { Input } from '../../components/shared/Input'
@@ -56,6 +56,8 @@ export function ProvidersPage(): React.ReactElement {
   const [customError, setCustomError] = useState<string | null>(null)
   const [modelUsage, setModelUsage] = useState<any[]>([])
   const [loadingUsage, setLoadingUsage] = useState(false)
+  const [smokeTestResults, setSmokeTestResults] = useState<Record<string, { success: boolean; message: string; modelUsed: string | null; durationMs: number; responsePreview: string | null } | null>>({})
+  const [smokeTestingId, setSmokeTestingId] = useState<string | null>(null)
 
   useEffect(() => { loadData() }, [])
 
@@ -183,6 +185,22 @@ export function ProvidersPage(): React.ReactElement {
     loadData()
   }, [api, loadData])
 
+  const handleSmokeTest = useCallback(async (providerId: string) => {
+    setSmokeTestingId(providerId)
+    setSmokeTestResults(prev => ({ ...prev, [providerId]: null }))
+    try {
+      const result = await api.providerSmokeTest(providerId)
+      setSmokeTestResults(prev => ({ ...prev, [providerId]: result }))
+      showToast(result.success ? 'success' : 'error', result.success ? 'Smoke test passed' : 'Smoke test failed')
+    } catch (err) {
+      setSmokeTestResults(prev => ({
+        ...prev,
+        [providerId]: { success: false, message: String(err), modelUsed: null, durationMs: 0, responsePreview: null }
+      }))
+    }
+    finally { setSmokeTestingId(null) }
+  }, [api])
+
   const handleCreateCustom = useCallback(async () => {
     if (!customForm.name || !customForm.slug) { setCustomError('Name and slug are required'); return }
     setCustomError(null)
@@ -275,10 +293,31 @@ export function ProvidersPage(): React.ReactElement {
                   <span className="text-[10px] text-[var(--ivory-text-3)]">
                     {result ? new Date(result.checkedAt).toLocaleTimeString() : 'No result'}
                   </span>
-                  <Button size="sm" variant="ghost" onClick={() => handleTestConnection(provider.id)} disabled={isTesting || testingAll} loading={isTesting}>
-                    <Wifi size={13} /> Test
-                  </Button>
+                  <div className="flex items-center gap-1.5">
+                    <Button size="sm" variant="ghost" onClick={() => handleSmokeTest(provider.id)} disabled={smokeTestingId === provider.id || (!isLocal && !hasKey) || provider.is_enabled !== 1} loading={smokeTestingId === provider.id}>
+                      <Code2 size={13} /> Sample
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => handleTestConnection(provider.id)} disabled={isTesting || testingAll} loading={isTesting}>
+                      <Wifi size={13} /> Test
+                    </Button>
+                  </div>
                 </div>
+                {/* Smoke test result */}
+                {(() => {
+                  const sr = smokeTestResults[provider.id]
+                  if (!sr) return null
+                  return (
+                    <div className={`mt-2 p-2 rounded-lg text-[10px] leading-relaxed ${sr.success ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)]' : 'bg-[var(--ivory-error-bg)] text-[var(--ivory-error)]'}`}>
+                      <div className="flex items-center gap-1.5">
+                        {sr.success ? <Check size={10} /> : <AlertTriangle size={10} />}
+                        <span className="font-semibold">{sr.success ? 'Passed' : 'Failed'}</span>
+                        {sr.modelUsed && <span className="opacity-70">— {sr.modelUsed}</span>}
+                        {sr.durationMs > 0 && <span className="opacity-70">({sr.durationMs}ms)</span>}
+                      </div>
+                      <p className="mt-0.5 opacity-80">{sr.message}</p>
+                    </div>
+                  )
+                })()}
               </div>
             )
           })}
