@@ -43,3 +43,4 @@ screenshots/
 *.pem
 *.key
 credentials.json
+*.tsbuildinfo

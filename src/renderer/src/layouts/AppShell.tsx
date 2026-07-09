@@ -402,7 +402,7 @@ export function AppShell(): React.ReactElement {
                   key={item.id}
                   type="button"
                   role="tab"
-                  aria-selected={selected}
+                  {...{ 'aria-selected': selected }}
                   onClick={() => navigate(item.path)}
                   className={`h-8 min-w-[76px] px-3 inline-flex items-center justify-center gap-1.5 rounded-xl text-[12px] font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
                     ${selected

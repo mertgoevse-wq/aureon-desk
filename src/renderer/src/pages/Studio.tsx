@@ -268,10 +268,17 @@ export function Studio(): React.ReactElement {
               </div>
             )}
 
-            <div className="space-y-1.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Starter Prompt</span>
+            <div className="space-y-1.5 flex flex-col">
+              <label
+                htmlFor="studio-prompt-input"
+                className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]"
+              >
+                Starter Prompt
+              </label>
               <textarea
+                id="studio-prompt-input"
                 data-testid="studio-prompt-input"
+                placeholder="Enter or customize starter prompt..."
                 className="w-full h-24 p-3 text-[12px] border border-[var(--ivory-border)] rounded-xl bg-[var(--ivory-bg)] text-[var(--ivory-text)] focus:outline-none focus:ring-1 focus:ring-[var(--ivory-accent)]/50 resize-none font-body"
                 defaultValue={activeCard.starterPrompt}
               />
