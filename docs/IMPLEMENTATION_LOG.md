@@ -1,5 +1,133 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-09 — Safe Self-Audit & Optimization System
+
+Branch: `main`
+
+### Session Purpose
+
+Add a safe self-optimization system so Aureon can inspect its own repo, detect issues, generate improvement plans, and propose patches — without silently editing itself. All analysis is local, read-only, and requires explicit approval before any changes.
+
+### Critical Issue Review
+
+- Read `docs/ISSUES_REGISTER.md`, `AI_QA_REPORT.md`, `CHANGELOG.md`, `docs/IMPLEMENTATION_LOG.md`, and relevant QA docs before feature work.
+- Latest Issues Register listed no open Critical Issues (22/22 checks pass).
+- Known non-critical placeholders remain: MCP live execution, Cowork real execution, OAuth connector flows.
+
+### Files Created
+
+- `src/shared/self-audit.ts` — shared types: 12 audit categories, 4 severity levels, 4 audit modes, AuditReport, ImprovementPlan, PatchProposal, agent prompt generator, redacted/safe file patterns
+- `src/main/services/self-audit.service.ts` — main process audit engine: scanProjectStructure, checkCriticalIssues, checkBuildTestHealth, checkSecuritySecrets, checkDocs, checkDeadCode, generatePlan, generatePatchProposal, runAudit, runFullPipeline
+- `src/main/ipc/self-audit.ipc.ts` — IPC handlers: self-audit:run, self-audit:runAuditOnly, self-audit:generatePlan, self-audit:generatePatch
+- `src/renderer/src/pages/SelfAudit.tsx` — full UI page with: audit mode selector, run button, category results (expandable), improvement plan tab, patch proposal tab, approval flow (approve/reject), copy/send/open actions, export report
+- `tests/unit/self-audit.test.ts` — 36 unit tests covering categories, redacted patterns, report/plan/patch safety, approval state, agent prompts
+- `docs/SELF_OPTIMIZATION.md` — comprehensive feature documentation
+
+### Files Modified
+
+- `src/renderer/src/App.tsx` — added `/self-audit` and `/settings/self-audit` routes
+- `src/renderer/src/layouts/SettingsLayout.tsx` — added Self Audit nav item with ScanLine icon
+- `src/main/ipc/index.ts` — registered `registerSelfAuditIPC`
+- `src/preload/index.ts` — exposed `selfAuditRun`, `selfAuditRunAuditOnly`, `selfAuditGeneratePlan`, `selfAuditGeneratePatch`
+- `src/preload/index.d.ts` — added type declarations for self-audit API
+- `README.md`, `SECURITY_NOTES.md`, `AI_QA_REPORT.md`, `CHANGELOG.md`, `docs/IMPLEMENTATION_LOG.md` — documented the new system
+
+### Safety Model
+
+- **Read-only**: Audit service NEVER writes files. All operations are fs.readFileSync, fs.readdirSync, fs.existsSync.
+- **No remote**: All analysis is local. No data sent to remote providers.
+- **Secret redaction**: Sensitive files (.env, *.db, node_modules/, logs/, etc.) always excluded.
+- **Mode-gated**: local_only only reads package.json. docs_only only reads markdown. Full mode reads source but never transmits.
+- **Approval required**: Patch proposals start in 'pending' state. Must be explicitly approved before any changes.
+- **No autonomous self-modification**: The system generates plans and proposals — it never applies patches automatically.
+
+### Bugs Fixed During Review
+
+| Bug | Severity | Fix |
+|-----|----------|-----|
+| PROJECT_ROOT resolved to wrong dir (3 levels up instead of 2) | Critical | Fixed with fallback verification against package.json |
+| local_only mode read source file contents | Major | Added early return guards in checkCriticalIssues and checkDeadCode |
+| any types in IPC handlers | Major | Replaced with AuditReport and ImprovementPlan types |
+| Placeholder categories counted as 'pass' instead of 'skipped' | Minor | Changed checkPlaceholderCategory status to 'skipped' |
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `git status` | ✅ main, up to date |
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` (pre-change) | ✅ PASS |
+| `npm test` (pre-change, 561 tests) | ✅ PASS |
+| `npm run build` (pre-change) | ✅ PASS |
+| `npm run typecheck` (post-change) | ✅ PASS |
+| `npm test` (post-change, 597 tests) | ✅ PASS |
+| `npm run build` (post-change) | ✅ PASS |
+| Code review | ✅ PASS — 4 issues found and fixed |
+
+### Remaining Limits
+
+- 7 of 12 categories are structural placeholders (require running app for deep analysis)
+- Visual QA (manual npm run dev click-through) deferred
+- SessionStorage key for Open in Code Mode not yet consumed by LivePreview
+- AI_QA_REPORT.md and CHANGELOG.md contents not deeply analyzed (only existence checked)
+
+---
+
+## 2026-07-09 16:40 +02:00 — Safe Connector, MCP, and Social Preset Catalog
+
+Branch: `main`
+
+### Session Purpose
+
+Add a safe connector/MCP preset catalog and extend it with a Social Connectors Hub. The work stays API/OAuth-first and placeholder-safe: no unauthorized WhatsApp automation, no social browser scraping, no live posting, no token persistence from setup drawers, and no fake vendor logos.
+
+### Critical Issue Review
+
+- Read `docs/ISSUES_REGISTER.md`, `AI_QA_REPORT.md`, `CHANGELOG.md`, `docs/IMPLEMENTATION_LOG.md`, and relevant QA docs before feature work.
+- Latest Issues Register listed no open Critical Issues.
+- Known non-critical placeholders remain: MCP live execution, Cowork real execution, OAuth connector flows, and some settings placeholder pages.
+
+### Files Created
+
+- `src/shared/connector-presets.ts` — 15 connector/MCP presets with auth fields, scopes, risks, setup guidance, test behavior, supported actions, and limitations.
+- `src/shared/social-connectors.ts` — 8 social connector presets and social action contracts.
+- `tests/unit/connector-presets.test.ts` — connector preset validation and safety tests.
+- `tests/unit/social-connectors.test.ts` — social connector validation and confirmation tests.
+- `docs/CONNECTOR_PRESETS.md` — preset catalog and safety model documentation.
+- `docs/VENDOR_CONNECTOR_POLICY.md` — neutral icon and official vendor asset policy.
+
+### Files Modified
+
+- `src/renderer/src/pages/settings/ConnectorsPage.tsx` — rebuilt Connectors around registry-driven cards, search/filter, configuration drawer, Social Connectors section, test placeholders, and confirmation modal preview.
+- `tests/e2e/18-aureon-studio-vibe-flow.spec.ts` — added connector drawer and social connector drawer/confirmation coverage.
+- `.gitignore` — added `scratch/` to avoid committing local diagnostic files.
+- `README.md`, `SECURITY_NOTES.md`, `AI_QA_REPORT.md`, `CHANGELOG.md`, `docs/ISSUES_REGISTER.md` — documented the new safe connector/social hub and QA status.
+
+### Safety Decisions
+
+- Gmail OAuth is planned only and requires explicit OAuth scopes plus user approval for send/modify actions.
+- WhatsApp is limited to official WhatsApp Business API placeholders. No WhatsApp Web, phone-screen, or personal-account automation exists in this build.
+- Phone Companion is planned only until a companion app, local pairing, and explicit device permissions exist.
+- Social publish/reply/delete/upload actions require exact content preview, explicit confirmation, and cancel support.
+- Connector drawers do not persist secrets. Live encrypted storage remains in provider settings or future connector vault flows.
+
+### Commands Run So Far
+
+| Command | Result |
+|---------|--------|
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (561 tests after social hub) |
+| `npm run build` | ✅ PASS before social hub, final build pending |
+| Visible `npm run dev` manual QA | ✅ PASS before connector/social implementation; final social manual QA pending |
+
+### Remaining Before Commit
+
+- Run final visible Social Connectors manual QA.
+- Run final `npm run verify:native`, `npm run typecheck`, `npm test`, `npm run build`, E2E/QA gates as feasible.
+- Run secret scan and staged-file review.
+- Commit and push `main`, then sync `main:master` if safe.
+
 ## 2026-07-09 23:30 +02:00 — Bolt-Like Prompt → Code → LivePreview Pipeline
 
 Branch: `main`

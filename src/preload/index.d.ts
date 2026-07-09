@@ -134,6 +134,10 @@ export interface IpcApi {
   buildCancel: () => Promise<boolean>
   onBuildStep: (callback: (status: import('../shared/types/build-pipeline').BuildPipelineStatus) => void) => () => void
   onBuildComplete: (callback: (result: import('../shared/types/build-pipeline').BuildResult) => void) => () => void
+  selfAuditRun: (request: import('../shared/self-audit').AuditRequest) => Promise<import('../shared/self-audit').AuditResult>
+  selfAuditRunAuditOnly: (request: import('../shared/self-audit').AuditRequest) => Promise<{ success: boolean; report?: any; error?: string }>
+  selfAuditGeneratePlan: (report: any) => Promise<{ success: boolean; plan?: any; error?: string }>
+  selfAuditGeneratePatch: (plan: any, report: any) => Promise<{ success: boolean; patchProposal?: any; error?: string }>
 }
 
 declare global {

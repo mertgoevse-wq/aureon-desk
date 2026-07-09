@@ -9,6 +9,7 @@ import {
   KeyRound,
   LockKeyhole,
   Palette,
+  ScanLine,
   ScrollText,
   Settings,
   Shield,
@@ -34,7 +35,8 @@ const navItems: SettingsNavItem[] = [
   { icon: <Shield size={16} />, label: 'Privacy & Security', description: 'Local permissions', path: '/settings/security' },
   { icon: <LockKeyhole size={16} />, label: 'Capabilities', description: 'Guarded access', path: '/settings/capabilities' },
   { icon: <FileText size={16} />, label: 'Logs', description: 'Runtime events', path: '/settings/logs' },
-  { icon: <Code2 size={16} />, label: 'Developer', description: 'Debug and tests', path: '/settings/developer' }
+  { icon: <Code2 size={16} />, label: 'Developer', description: 'Debug and tests', path: '/settings/developer' },
+  { icon: <ScanLine size={16} />, label: 'Self Audit', description: 'Inspect & improve', path: '/settings/self-audit' }
 ]
 
 function isActivePath(currentPath: string, itemPath: string): boolean {

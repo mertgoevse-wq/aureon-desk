@@ -240,6 +240,66 @@ test.describe('Aureon Desk — Studio, Vibe Coding & Provider Flow', () => {
     expect(await checkForErrorPage(mainWindow)).toBeNull()
   })
 
+  test('Connector presets — catalog filters and configure drawer opens', async ({ mainWindow, pageErrors }) => {
+    await mainWindow.getByTestId('nav-settings').click()
+    await mainWindow.waitForTimeout(500)
+    const connectorsNav = mainWindow.getByTestId('settings-nav-connectors')
+    await expect(connectorsNav).toBeVisible({ timeout: 5000 })
+    await connectorsNav.click()
+    await mainWindow.waitForTimeout(1000)
+
+    await expect(mainWindow.getByTestId('connectors-page')).toBeVisible({ timeout: 5000 })
+    await expect(mainWindow.getByTestId('connector-preset-gmail_oauth')).toBeVisible()
+    await expect(mainWindow.getByTestId('connector-preset-whatsapp_business_api')).toBeVisible()
+
+    await mainWindow.getByTestId('connector-preset-search').fill('whatsapp')
+    await expect(mainWindow.getByTestId('connector-preset-whatsapp_business_api')).toBeVisible()
+    await expect(mainWindow.getByTestId('connector-preset-gmail_oauth')).toHaveCount(0)
+
+    await mainWindow.getByTestId('connector-preset-whatsapp_business_api').click()
+    await expect(mainWindow.getByTestId('connector-config-drawer')).toBeVisible({ timeout: 3000 })
+    await expect(mainWindow.getByText(/Official API only/i)).toBeVisible()
+    await mainWindow.getByTestId('connector-test-button').click()
+    await expect(mainWindow.getByTestId('connector-test-result')).toContainText(/Mock mode only/i)
+
+    await screenshot(mainWindow, 'connector_preset_drawer')
+
+    expect(pageErrors.length).toBe(0)
+    expect(await checkForErrorPage(mainWindow)).toBeNull()
+  })
+
+  test('Social connectors — cards, drawer, test placeholder, and confirmation modal work', async ({ mainWindow, pageErrors }) => {
+    await mainWindow.getByTestId('nav-settings').click()
+    await mainWindow.waitForTimeout(500)
+    const connectorsNav = mainWindow.getByTestId('settings-nav-connectors')
+    await expect(connectorsNav).toBeVisible({ timeout: 5000 })
+    await connectorsNav.click()
+    await mainWindow.waitForTimeout(1000)
+
+    await expect(mainWindow.getByTestId('social-connectors-section')).toBeVisible()
+    await expect(mainWindow.getByTestId('social-connector-facebook_graph_api')).toBeVisible()
+    await expect(mainWindow.getByTestId('social-connector-instagram_graph_api')).toBeVisible()
+    await expect(mainWindow.getByTestId('social-connector-youtube_data_api')).toBeVisible()
+
+    await mainWindow.getByTestId('social-connector-youtube_data_api').click()
+    await expect(mainWindow.getByTestId('social-config-drawer')).toBeVisible({ timeout: 3000 })
+    await expect(mainWindow.getByText(/youtube.readonly/i)).toBeVisible()
+    await expect(mainWindow.getByText(/generate thumbnail prompt/i)).toBeVisible()
+
+    await mainWindow.getByTestId('social-test-button').click()
+    await expect(mainWindow.getByTestId('social-test-result')).toContainText(/Placeholder/i)
+
+    await mainWindow.getByTestId('social-draft-action').first().click()
+    await expect(mainWindow.getByTestId('social-action-confirmation-modal')).toBeVisible({ timeout: 3000 })
+    await expect(mainWindow.getByText(/Exact content preview/i)).toBeVisible()
+    await mainWindow.getByRole('button', { name: /cancel/i }).click()
+
+    await screenshot(mainWindow, 'social_connector_drawer')
+
+    expect(pageErrors.length).toBe(0)
+    expect(await checkForErrorPage(mainWindow)).toBeNull()
+  })
+
   // === VIBE CODING ===
 
   test('Vibe Coding — cards render and are clickable', async ({ mainWindow, pageErrors }) => {

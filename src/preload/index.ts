@@ -10,6 +10,7 @@ import type { ProjectRow, NewProject, ProjectUpdate, FileTreeNode, ProjectContex
 import type { AppLogRow, LogFilter, DebugBundle } from '../shared/types/log'
 import type { StudioIntentInput, StudioOrchestrationResult, TaskCategoryInfo, CapabilityDefinition, AutonomyLevelInfo } from '../shared/types/studio-core'
 import type { BuildRequest, BuildResult, BuildPipelineStatus } from '../shared/types/build-pipeline'
+import type { AuditRequest, AuditResult } from '../shared/self-audit'
 
 // Define the IPC API exposed to the renderer
 const api = {
@@ -330,6 +331,16 @@ const api = {
       ipcRenderer.removeListener('build:complete', listener)
     }
   },
+
+  // Self-Audit
+  selfAuditRun: (request: AuditRequest): Promise<AuditResult> =>
+    ipcRenderer.invoke('self-audit:run', request),
+  selfAuditRunAuditOnly: (request: AuditRequest): Promise<{ success: boolean; report?: any; error?: string }> =>
+    ipcRenderer.invoke('self-audit:runAuditOnly', request),
+  selfAuditGeneratePlan: (report: any): Promise<{ success: boolean; plan?: any; error?: string }> =>
+    ipcRenderer.invoke('self-audit:generatePlan', report),
+  selfAuditGeneratePatch: (plan: any, report: any): Promise<{ success: boolean; patchProposal?: any; error?: string }> =>
+    ipcRenderer.invoke('self-audit:generatePatch', plan, report),
 }
 
 // Expose the API in the main world

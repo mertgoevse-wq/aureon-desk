@@ -1,3 +1,67 @@
+## [0.9.66] - 2026-07-09
+
+### Added — Safe Self-Audit & Optimization System
+
+- Created `src/shared/self-audit.ts` — shared types: 12 audit categories, 4 severity levels, 4 audit modes, report/plan/patch types, agent prompt generator, redacted/safe file patterns
+- Created `src/main/services/self-audit.service.ts` — main process audit engine: scans project structure, reads key docs, runs category checks, generates improvement plans, creates patch proposals
+- Created `src/main/ipc/self-audit.ipc.ts` — IPC handlers for audit:run, audit:runAuditOnly, generatePlan, generatePatch
+- Created `src/renderer/src/pages/SelfAudit.tsx` — full UI page with audit controls, mode selection, category results (expandable), improvement plan tab, patch proposal tab, approval flow, copy/send/open actions
+- Added 12 audit categories: critical issues, dead buttons, LivePreview health, Studio health, provider health, MCP safety, UI clutter, performance, docs, dead code, security/secrets, build/test health
+- Added 4 audit modes: local_only (structure + package.json only), docs_only, selected_files, full (with redaction)
+- Added patch proposal flow with explicit approval gate — no autonomous self-modification
+- Added agent prompt generation for Chat/Code mode handoff
+- Added local-only safe mode, redaction warnings, and mode-gated file reading
+
+### Tests Added
+
+- Added `tests/unit/self-audit.test.ts` — 36 unit tests covering: category completeness, redacted/safe patterns, report structure, plan generation, patch safety (approval state required, no auto-apply), agent prompt generation, finding fields, severity levels
+
+### Wired
+
+- Registered SelfAudit route in App.tsx (`/self-audit` and `/settings/self-audit`)
+- Added Self Audit nav item in SettingsLayout with ScanLine icon
+- Registered self-audit IPC handlers in `src/main/ipc/index.ts`
+- Exposed `selfAuditRun`, `selfAuditRunAuditOnly`, `selfAuditGeneratePlan`, `selfAuditGeneratePatch` in preload bridge
+
+### Verified
+
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (597 tests, 26 files)
+- `npm run build` — ✅ PASS
+- Code review — ✅ PASS (issues found and fixed)
+
+## [0.9.65] - 2026-07-09
+
+### Added — Safe Connector & MCP Preset Catalog
+
+- Added `src/shared/connector-presets.ts` as the canonical safe preset catalog for 15 services:
+  OpenAI API, Google Gemini API, OpenRouter, Anthropic, Gmail OAuth, Google Drive OAuth, Google Calendar OAuth, GitHub, MCP Server Custom, Local Ollama, LM Studio, Phone Companion, WhatsApp Business API, Email SMTP/IMAP, and Browser Search MCP.
+- Rebuilt Settings → Connectors around the preset catalog with search, status filters, neutral Lucide icons, risk/status badges, setup guidance, permission explanations, required-field preview, connection-test messaging, and a right-side configuration drawer.
+- Marked Gmail OAuth as planned with explicit OAuth scopes and user-approval requirements.
+- Marked WhatsApp as an official WhatsApp Business API placeholder only; no WhatsApp Web, phone-screen, or personal-account automation.
+- Marked Phone Companion as planned until a companion app, local pairing, and explicit device permissions exist.
+- Added `.gitignore` coverage for `scratch/` so local diagnostic files do not enter commits.
+- Added `src/shared/social-connectors.ts` with safe social connector presets for Facebook Graph API, Instagram Graph API, YouTube Data API, YouTube Upload, TikTok, X/Twitter, LinkedIn, and WhatsApp Business API.
+- Added a Social Connectors section to Settings → Connectors with neutral icons, scopes, "what this can do", "what this cannot do", test placeholders, draft action previews, and a confirmation modal contract.
+- Added explicit social action contracts for comment summaries, draft posts/replies, analytics placeholders, video descriptions, hashtags, upload checklists, scheduled drafts, and confirmation-only publish/reply/delete/upload actions.
+
+### Tests Added
+
+- Added `tests/unit/connector-presets.test.ts` for preset validation, Gmail scopes, WhatsApp API-only guardrails, Phone Companion planned status, and neutral icon contracts.
+- Added `tests/unit/social-connectors.test.ts` for social registry validation, YouTube/Meta scopes, confirmation-only destructive actions, and WhatsApp Business API constraints.
+- Added an E2E drawer/filter check to `tests/e2e/18-aureon-studio-vibe-flow.spec.ts`.
+- Added an E2E Social Connectors drawer/confirmation flow to `tests/e2e/18-aureon-studio-vibe-flow.spec.ts`.
+
+### Verified
+
+- Pre-change `npm run verify:native` — ✅ PASS
+- Pre-change `npm run typecheck` — ✅ PASS
+- Pre-change `npm test` — ✅ PASS (549 tests)
+- Pre-change `npm run build` — ✅ PASS
+- Visible Electron manual QA via `npm run dev` — ✅ PASS for Studio prompt typing, Enter-to-Code/LivePreview route, LivePreview local server, and Task Brief Composer typing
+- Post-change `npm run typecheck` — ✅ PASS
+- Post-change `npm test` — ✅ PASS (561 tests)
+
 ## [0.9.64] - 2026-07-09
 
 ### Added — Bolt-Like Prompt → Code → LivePreview Pipeline

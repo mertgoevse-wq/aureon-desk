@@ -21,6 +21,7 @@ import { VibeCoding } from './pages/VibeCoding'
 import { Studio } from './pages/Studio'
 import { ConnectorsPage } from './pages/settings/ConnectorsPage'
 import { CapabilitiesPage } from './pages/settings/CapabilitiesPage'
+import { SelfAudit } from './pages/SelfAudit'
 
 const router = createHashRouter([
   {
@@ -35,6 +36,7 @@ const router = createHashRouter([
       { path: 'projects', element: <ProjectsPage /> },
       { path: 'tools', element: <ToolsPage /> },
       { path: 'preview', element: <LivePreview /> },
+      { path: 'self-audit', element: <SelfAudit /> },
       { path: 'vibe', element: <VibeCoding /> },
       {
         path: 'settings',
@@ -55,7 +57,8 @@ const router = createHashRouter([
           { path: 'developer', element: <DeveloperSettingsPage /> },
           { path: 'extensions', element: <SettingsPlaceholderPage /> },
           { path: 'security', element: <SettingsPlaceholderPage /> },
-          { path: 'capabilities', element: <CapabilitiesPage /> }
+          { path: 'capabilities', element: <CapabilitiesPage /> },
+          { path: 'self-audit', element: <SelfAudit /> }
         ]
       }
     ]

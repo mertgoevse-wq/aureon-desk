@@ -87,6 +87,9 @@ Output files in `dist/`:
 - ✅ **System Prompt Profile Engine** (CRUD, archive, duplicate, hierarchy resolver, safety checks)
 - ✅ **GitHub Star List Importer** (29 repos, multi-format parser, safety engine, classifier, approve→Prompt Library/System Profiles/Skill Registry, retry failed imports, warning details)
 - ✅ **MCP-Style Tool Manager & Safety Gate** (master-detail layout, 3 built-in mock tools, 9 permissions, call history with human-friendly labels, safety gate, 31 tool-specific tests, 348 total)
+- ✅ **Connector Preset Catalog** (OpenAI, Gemini, OpenRouter, Anthropic, Gmail, Google Drive/Calendar, GitHub, MCP, local models, phone companion, WhatsApp Business API, SMTP/IMAP, browser search MCP)
+- ✅ **Safe Social Connectors Hub** (Facebook, Instagram, YouTube, TikTok, X/Twitter, LinkedIn, WhatsApp Business API placeholders with official API/OAuth guidance and confirmation contracts)
+- ✅ **Self-Audit & Optimization System** (inspect project structure, detect issues across 12 categories, generate improvement plans, propose patches with explicit approval gates — no autonomous self-modification)
 - ✅ Prompt Intelligence Engine (12 intents, 12 agents, 28 skills, rule-based routing)
 - ✅ Prompt library with tags, categories, search, favorites, usage tracking
 - ✅ Slash command integration with combined built-in + library palette
@@ -245,6 +248,38 @@ Manage AI capability tools and MCP servers with a clean master-detail layout:
 - **Imported tools**: Disabled by default, must be explicitly trusted before use
 - **Destructive permissions**: file_write, shell_command, git, database, secrets require confirmation
 - **Call history**: Timestamped logs with human-friendly status labels, sanitized input/output previews, no secrets exposed
+
+## Connector Presets & Social Hub
+
+Open **Settings -> Connectors** to review safe setup presets for providers, OAuth apps, local models, MCP servers, and social platforms.
+
+- **Connector catalog**: OpenAI API, Google Gemini API, OpenRouter, Anthropic, Gmail OAuth, Google Drive/Calendar placeholders, GitHub, MCP Server Custom, Local Ollama, LM Studio, Phone Companion, WhatsApp Business API, SMTP/IMAP, and Browser Search MCP
+- **Social section**: Facebook Graph API, Instagram Graph API, YouTube Data API, YouTube Upload placeholder, TikTok, X/Twitter, LinkedIn, and WhatsApp Business API
+- **Safety model**: setup drawers show required fields, scopes, permissions, limitations, and mock/live test behavior; they do not persist secrets
+- **Social actions**: summarize comments, draft posts/replies, analyze stats, generate video descriptions, generate hashtags, and create upload checklists are safe draft actions
+- **Confirmation required**: posting, replying, deleting, and uploading must show exact content before action and support cancel
+- **Vendor icons**: neutral Lucide icons only unless official assets exist in `assets/vendor/` with attribution
+
+Full docs:
+- [`docs/CONNECTOR_PRESETS.md`](./docs/CONNECTOR_PRESETS.md)
+- [`docs/VENDOR_CONNECTOR_POLICY.md`](./docs/VENDOR_CONNECTOR_POLICY.md)
+
+## Self-Audit & Optimization
+
+Open **Settings → Self Audit** to inspect this project, detect issues, and generate improvement plans.
+
+- **12 audit categories**: Critical issues, dead buttons, LivePreview health, Studio health, provider health, MCP safety, UI clutter, performance, docs, dead code, security/secrets, build & test health
+- **4 audit modes**: Local-only (structure + package.json), Docs-only, Selected files, Full audit
+- **Safety-gated**: All analysis is local — nothing is sent to remote providers. Sensitive files (.env, *.db, logs/) are always redacted
+- **Improvement plans**: Generate prioritized task lists with risk estimates, file lists, and test plans
+- **Patch proposals**: View file lists, risk estimates, and test plans — must be explicitly approved before any changes are applied
+- **Agent prompts**: Export prompts for use in Chat or Code mode
+- **No auto-modification**: Aureon will never modify itself without your explicit approval
+
+Full docs:
+- [`docs/CONNECTOR_PRESETS.md`](./docs/CONNECTOR_PRESETS.md)
+- [`docs/VENDOR_CONNECTOR_POLICY.md`](./docs/VENDOR_CONNECTOR_POLICY.md)
+- [`docs/SELF_OPTIMIZATION.md`](./docs/SELF_OPTIMIZATION.md)
 
 ## LivePreview Workspace
 

@@ -4,6 +4,94 @@
 
 ---
 
+## Safe Self-Audit & Optimization System — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| Critical issue review | ✅ PASS — no open Critical Issues in `docs/ISSUES_REGISTER.md` |
+| `npm run verify:native` (pre-change) | ✅ PASS |
+| `npm run typecheck` (pre-change) | ✅ PASS |
+| `npm test` (pre-change, 561 unit tests) | ✅ PASS |
+| `npm run build` (pre-change) | ✅ PASS |
+| `npm run typecheck` (post-change) | ✅ PASS |
+| `npm test` (post-change, 597 unit tests) | ✅ PASS |
+| `npm run build` (post-change) | ✅ PASS |
+| Code review | ✅ PASS — issues found and fixed (PROJECT_ROOT path, local_only guards, any types) |
+
+### Changes
+
+| Area | Change |
+|------|--------|
+| Shared types | Created `src/shared/self-audit.ts` with 12 categories, 4 severities, 4 modes, redacted/safe patterns |
+| Audit engine | Created `src/main/services/self-audit.service.ts` — read-only, local-only, mode-gated file reading |
+| IPC | Created `src/main/ipc/self-audit.ipc.ts` — typed handlers for audit/plan/patch |
+| UI page | Created `src/renderer/src/pages/SelfAudit.tsx` — full audit UI with 3-tab layout |
+| Routing | Added `/self-audit` and `/settings/self-audit` routes, settings nav item |
+| Preload | Exposed 4 self-audit IPC methods to renderer |
+| Tests | Added `tests/unit/self-audit.test.ts` — 36 tests (597 total) |
+| Safety | No autonomous self-modification, mode-gated reads, always redacts secrets, approval gate |
+
+### Bugs Fixed During Review
+
+| Bug | Severity | Fix |
+|-----|----------|-----|
+| PROJECT_ROOT resolved to wrong dir (3 levels up instead of 2) | Critical | Fixed with fallback verification against package.json |
+| `local_only` mode read source file contents | Major | Added early return guards in checkCriticalIssues and checkDeadCode |
+| `any` types in IPC handlers | Major | Replaced with AuditReport and ImprovementPlan types |
+| Placeholder categories counted as 'pass' instead of 'skipped' | Minor | Changed checkPlaceholderCategory status to 'skipped' |
+
+### Remaining Limits
+
+- 7 of 12 categories are structural placeholders (require running app for deep analysis)
+- Visual QA (manual `npm run dev` click-through) deferred
+- SessionStorage key for Open in Code Mode not yet consumed by LivePreview
+- `AI_QA_REPORT.md` and `CHANGELOG.md` contents not deeply analyzed (only existence checked)
+
+---
+
+## Safe Connector & MCP Preset Catalog — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| Critical issue review | ✅ PASS — no open Critical Issues in `docs/ISSUES_REGISTER.md` |
+| `npm run verify:native` (pre-change) | ✅ PASS |
+| `npm run typecheck` (pre-change) | ✅ PASS |
+| `npm test` (pre-change, 549 unit tests) | ✅ PASS |
+| `npm run build` (pre-change) | ✅ PASS |
+| Visible Electron manual QA (`npm run dev`) | ✅ PASS |
+| `npm run typecheck` (post-change) | ✅ PASS |
+| `npm test` (post-change, 555 unit tests) | ✅ PASS |
+
+### Changes
+
+| Area | Change |
+|------|--------|
+| Preset registry | Created `src/shared/connector-presets.ts` with 15 safe connector/MCP presets |
+| Connectors UI | Rebuilt Settings → Connectors with search, filters, status/risk badges, configure drawer, required fields, permission explanations, and mock/live test messaging |
+| Safety | Gmail requires OAuth scopes and confirmation; WhatsApp is official Business API placeholder only; Phone Companion is planned only |
+| Tests | Added 6 unit tests and 1 E2E drawer/filter test |
+| Repo hygiene | Added `scratch/` to `.gitignore` so diagnostic files stay local |
+| Social hub | Added Facebook, Instagram, YouTube, TikTok, X/Twitter, LinkedIn, and WhatsApp Business API social presets |
+| Social safety | Publish, reply, delete, and upload actions require exact content preview, explicit confirmation, and cancel support |
+
+### Manual QA Notes
+
+- Launched the real Electron app visibly with `npm run dev`.
+- Typed into the Studio composer and pressed Enter; the app navigated to Code mode and started the LivePreview local demo pipeline.
+- Confirmed the LivePreview server entered Running state and rendered the local preview frame.
+- Typed into the Task Brief Composer after navigation; text input was accepted.
+- No account, OAuth, WhatsApp, phone, or third-party service action was performed.
+- Social Connector UI is implemented as safe setup/draft/confirmation placeholders only. No social post, reply, delete, upload, scraping, or browser automation was performed.
+
+### Remaining Limits
+
+- Gmail, Google Drive, Google Calendar, WhatsApp Business API, Phone Companion, SMTP/IMAP, and Browser Search MCP are setup-contract placeholders, not live integrations.
+- The preset drawer intentionally does not persist secrets. Live secret storage remains in Providers & Models or future encrypted connector vault flows.
+- Social OAuth/API flows are setup contracts only. Future live posting/uploading must pass through exact-content confirmation and cancel.
+- Full E2E, `qa:ai`, and final build are still pending for the end-of-session gate.
+
+---
+
 ## Bolt-Like Prompt → Code → LivePreview Pipeline — 2026-07-09
 
 | Check | Result |

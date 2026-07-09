@@ -6,6 +6,7 @@
 - **Scope**: Encryption keys are user-scoped. A key encrypted on one Windows user account cannot be decrypted on another machine or by another user.
 - **Storage**: Encrypted keys are stored as base64-encoded strings in the `api_key_enc` column of the `providers` table in the local SQLite database.
 - **Never plaintext**: API keys are never written to disk in plaintext. The `api_key_enc` column always contains DPAPI-encrypted data.
+- **Connector drawers**: Connector and Social setup drawers are setup previews only. They do not persist tokens; live credential storage must use the encrypted provider vault or a future connector vault flow.
 
 ### Credential Flow
 
@@ -224,6 +225,31 @@ The Settings page also exposes a Provider Test Center for a consolidated provide
 - **Status-only key display**: The UI shows whether a key is stored or missing, never the decrypted key.
 - **Local provider handling**: Ollama and LM Studio are labeled as no-key-needed and only checked against localhost model endpoints.
 - **Timing metadata only**: Latency and last-checked timestamps are stored in component state, not persisted as chat history.
+
+## Connector & Social Preset Safety
+
+Connector presets are setup contracts, not blanket authorization.
+
+- Gmail, Google Drive, Google Calendar, SMTP/IMAP, Browser Search MCP, Phone Companion, WhatsApp Business API, and Social platform connectors remain placeholders unless a live OAuth/API flow is explicitly implemented.
+- Gmail send/modify flows require OAuth scopes and explicit user approval.
+- WhatsApp is limited to official WhatsApp Business API placeholders. Aureon Desk does not automate WhatsApp Web, phone screens, or personal accounts in this build.
+- Phone Companion is planned only until a companion app, local pairing, and explicit device permissions exist.
+- Facebook, Instagram, YouTube, TikTok, X/Twitter, LinkedIn, and WhatsApp Business API social presets use official API/OAuth setup guidance only.
+- Posting, replying, deleting, and uploading must show exact content, recipient/account/channel, and action details before execution, and must support cancel.
+- Drafting, summarizing, analytics placeholders, hashtag generation, description generation, and upload checklist creation are local preparation actions unless a future live API flow is approved.
+- No fake vendor logos are used. Connector UIs render neutral Lucide icons unless official assets are present in `assets/vendor/` with attribution.
+
+## Self-Audit System Safety
+
+The Self-Audit system (`src/main/services/self-audit.service.ts`, Settings → Self Audit) inspects the project locally to detect issues and propose improvements. It is governed by the following safety rules:
+
+- **Read-only**: The audit service NEVER writes files, modifies code, or runs shell commands that could alter the project. All operations are `fs.readFileSync`, `fs.readdirSync`, and `fs.existsSync`.
+- **No remote calls**: All analysis is performed locally. No data is ever sent to remote providers or external APIs.
+- **Secret redaction**: Sensitive files (`.env`, `*.db`, `*.sqlite`, `node_modules/`, `logs/`, `app-data/`, `test-results/`, etc.) are always excluded from audit scans regardless of mode.
+- **Mode-gated file reading**: `local_only` mode only reads `package.json` (not source code). `docs_only` mode only reads markdown docs. `full` mode reads source files but never transmits them.
+- **Approval required**: Patch proposals start in `pending` state. They must be explicitly approved by the user before any changes can be applied. Aureon will never modify itself without explicit consent.
+- **No autonomous self-modification**: The system generates plans and proposals — it never applies patches automatically. The `approvalState` field must be set to `approved` explicitly.
+- **Agent prompts are templates**: Generated agent prompts include safety instructions (`Do NOT modify files without explicit user approval`) and redaction warnings.
 
 ### Local Provider Testing
 

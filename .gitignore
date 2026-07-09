@@ -12,6 +12,7 @@ release/
 logs/
 app-data/
 imported-repos/
+scratch/
 .DS_Store
 Thumbs.db
 *.log

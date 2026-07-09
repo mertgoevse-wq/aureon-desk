@@ -1,7 +1,7 @@
 # Aureon Desk — Issues Register
 
-> **Last updated:** 2026-07-09 — Global Run Protocol initial audit
-> **Branch:** `main` at `adf6dbb`
+> **Last updated:** 2026-07-09 — Connector/Social preset pass
+> **Branch:** `main`
 
 ---
 
@@ -9,7 +9,7 @@
 
 | ID | Area | Issue | Evidence | Root Cause | Status | Fixed In Commit |
 |----|------|-------|----------|------------|--------|-----------------|
-| — | — | **None found** | All 20 critical checks pass (see below) | — | — | — |
+| — | — | **None found** | Latest pre-feature review plus baseline QA passed | — | — | — |
 
 ### Critical Issue Checklist (2026-07-09)
 
@@ -35,6 +35,8 @@
 | 18 | No overlap at 1366×768 | ✅ PASS (E2E verified) |
 | 19 | No secrets in logs/docs/screenshots | ✅ PASS (secret scan clean) |
 | 20 | Performance reasonable on 16GB/no GPU | ✅ PASS (inferred from tests) |
+| 21 | Safe connector/social presets do not perform live third-party actions | ✅ PASS — placeholders/test messages only |
+| 22 | Social publish/reply/delete/upload actions require exact-content confirmation contract | ✅ PASS — `social-connectors.ts` tests |
 
 ---
 
@@ -49,6 +51,7 @@
 | M-05 | Prompt Library | "Save current composer text as a prompt" is placeholder | `PromptLibrary.tsx:147` — "composer integration comes later" | Not yet wired to chat composer | OPEN | — |
 | M-06 | Chat | No file attachment UI | Schema has attachment columns, no upload button | Deferred feature | ✅ KNOWN | — |
 | M-07 | Providers | Custom provider adapter routing not fully tested with real endpoints | `chat-completion.service.ts` — 8 adapters, OpenRouter most tested | Limited test infrastructure | OPEN | — |
+| M-08 | Social Connectors | OAuth/API flows are setup-contract placeholders | `social-connectors.ts`, `ConnectorsPage.tsx` — test placeholders only | Intentional safe first pass | ✅ KNOWN | — |
 
 ---
 
