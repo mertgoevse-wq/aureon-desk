@@ -1,5 +1,63 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-09 22:00 +02:00 — Product Stability Audit & Bug Fixes
+
+Branch: `main`
+Commit at start: `adf6dbb` (Prepare private beta release artifacts)
+
+### Session Purpose
+
+Deep source-level inspection of the entire repo to create a concrete product stabilization plan before large changes. Fix only the most obvious blockers. No E2E run, no giant redesign.
+
+### Files Changed
+
+- **Modified:** `src/renderer/src/pages/LivePreview.tsx` — fixed error retry style loss bug (save style in ref before `clearAutoPreview()`), replaced hardcoded `'build-app-style'` with `AUTO_PREVIEW_KEYS.style` constant
+- **Modified:** `README.md` — fixed broken GitHub banner image path from non-existent `nano-banana/` directory to correct `assets/brand/aureon-github-banner-1200.png`
+
+### Files Created
+
+- **Created:** `docs/CURRENT_PRODUCT_GAP_AUDIT.md` — comprehensive 15-section product gap audit
+- **Created:** `docs/MANUAL_PRODUCT_QA_NOTES.md` — source-level manual QA click-through notes
+
+### Docs Updated
+
+- **Modified:** `CHANGELOG.md` — v0.9.62 entry
+- **Modified:** `AI_QA_REPORT.md` — product stability audit section prepended
+- **Modified:** `docs/IMPLEMENTATION_LOG.md` — this entry
+
+### Bugs Found & Fixed
+
+| Bug | Severity | Fix |
+|-----|----------|-----|
+| LivePreview retry loses theme style | Medium | Save style in `useRef` before `clearAutoPreview()` wipes sessionStorage |
+| Hardcoded sessionStorage key in retry | Low | Use `AUTO_PREVIEW_KEYS.style` constant instead of `'build-app-style'` |
+| README broken banner path | Low | Update to `assets/brand/aureon-github-banner-1200.png` |
+
+### Key Audit Findings (Not Fixed — Deferred)
+
+1. **No AI → code → LivePreview pipeline** — biggest blocker, requires full implementation prompt
+2. **No first-run onboarding** — second blocker, requires design + implementation
+3. **Mock file explorer in LivePreview** — feature gap
+4. **General Settings toggles not persisted** — feature gap
+5. **`studio-core.service.ts` regex syntax error** in analyze_file pattern — doesn't crash, deferred
+6. **`build-app-prompt`/`build-app-platform` sessionStorage keys never read** — dead code
+7. **Native `<select>` elements in CoworkPage and ProjectsPage** — consistency issue
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `git status` | ✅ main, up to date |
+| `git branch -a -vv` | ✅ main synced, master 44 behind |
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (491 tests, 22 files) |
+| `npm run build` | ✅ PASS |
+| Secret scan | ✅ PASS — only docs/tests/mock |
+| Code review | ✅ PASS — no issues |
+
+---
+
 ## 2026-07-09 21:00 +02:00 — Final UI Beauty & Declutter Pass
 
 Branch: `main`

@@ -68,6 +68,9 @@ export function LivePreview(): React.ReactElement {
   const [copied, setCopied] = useState(false)
   const [customUrl, setCustomUrl] = useState('')
   const logRef = useRef<HTMLDivElement>(null)
+  // Save the auto-preview style before clearAutoPreview() wipes sessionStorage.
+  // The error retry handler needs this to re-run the demo with the correct theme.
+  const autoPreviewStyleRef = useRef<string | null>(null)
 
   const activeProject = projects.find(p => p.id === selectedProjectId)
 
@@ -130,9 +133,11 @@ export function LivePreview(): React.ReactElement {
     
     if (shouldAutoStartPreview === 'true') {
       const style = sessionStorage.getItem(AUTO_PREVIEW_KEYS.style) || 'Calming Ivory'
+      autoPreviewStyleRef.current = style
       clearAutoPreview()
       handleRunDemo(style)
     } else if (shouldAutoStartSandbox === 'true') {
+      autoPreviewStyleRef.current = sessionStorage.getItem(AUTO_PREVIEW_KEYS.style)
       clearAutoPreview()
       handleCreateSandbox()
     }
@@ -520,9 +525,9 @@ export function LivePreview(): React.ReactElement {
                     type="button"
                     onClick={() => {
                       setError(null)
-                      const isDemo = status.templateType === 'demo' || sessionStorage.getItem('build-app-style')
+                      const isDemo = status.templateType === 'demo' || autoPreviewStyleRef.current
                       if (isDemo) {
-                        const style = sessionStorage.getItem('build-app-style') || 'Calming Ivory'
+                        const style = autoPreviewStyleRef.current || 'Calming Ivory'
                         handleRunDemo(style)
                       } else {
                         handleCreateSandbox()

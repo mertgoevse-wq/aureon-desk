@@ -1,7 +1,7 @@
 # Aureon Desk
 
 <p align="center">
-  <img src="assets/brand/nano-banana/aureon-github-banner.png" alt="Aureon Desk" width="800" style="max-width:100%;" />
+  <img src="assets/brand/aureon-github-banner-1200.png" alt="Aureon Desk" width="800" style="max-width:100%;" />
 </p>
 
 <p align="center">

@@ -4,6 +4,40 @@
 
 ---
 
+## Product Stability Audit — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run verify:native` | ✅ PASS |
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (491 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| Secret scan (`sk-or-v1`, `AIza`, `sk-`) | ✅ PASS — only docs/tests/mock |
+| Source audit | ✅ Complete — 15-section gap audit |
+| Manual QA notes | ✅ Complete — source-level click-through |
+
+### Bugs Fixed
+
+| Bug | Location | Fix |
+|-----|----------|-----|
+| LivePreview retry loses theme style | `LivePreview.tsx:128-134, 523-525` | Save style in ref before `clearAutoPreview()`; use `AUTO_PREVIEW_KEYS.style` constant |
+| Hardcoded sessionStorage key | `LivePreview.tsx:523, 525` | Replace `'build-app-style'` with `AUTO_PREVIEW_KEYS.style` |
+| README broken banner path | `README.md:4` | Update to `assets/brand/aureon-github-banner-1200.png` |
+
+### Docs Created
+
+- `docs/CURRENT_PRODUCT_GAP_AUDIT.md` — 15-section comprehensive product gap audit
+- `docs/MANUAL_PRODUCT_QA_NOTES.md` — source-level manual QA click-through notes
+
+### Key Findings
+
+- **Biggest blocker:** No AI → code → LivePreview pipeline (bolt.diy core loop missing)
+- **Second blocker:** No first-run onboarding flow
+- All 23 routes functional, all buttons have handlers, no crashes, no secrets
+- 3 obvious bugs fixed (style loss, hardcoded key, broken README path)
+
+---
+
 ## Private Beta Release Build — 2026-07-09
 
 | Check | Result |
