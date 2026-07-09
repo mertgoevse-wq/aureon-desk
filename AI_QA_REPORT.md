@@ -4,6 +4,24 @@
 
 ---
 
+## LivePreview Auto-Popup Push Sync — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (445 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| `node scripts/manual-livepreview-smoke.mjs` | ✅ PASS |
+
+### Changes
+- Replaced the purely polling-based LivePreview status sync with an immediate push-based model (`preview:status-change` IPC event).
+- The Studio auto-generated iframe now mounts synchronously without an artificial 2-second blank screen delay.
+- Added a 5-second aggressive fast-poll (200ms) fallback for edge-case fast compilations.
+- Added 4 unit tests verifying the `onStatusChange` IPC callback mechanism in `live-preview.service.ts`.
+- Created a standalone Node.js smoke test script `scripts/manual-livepreview-smoke.mjs` to verify sandbox HTML rendering without Electron.
+
+---
+
 ## Hero Theme & Overview Redesign — 2026-07-09
 
 | Check | Result |

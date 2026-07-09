@@ -18,9 +18,14 @@ sequenceDiagram
     Renderer->>Preload: window.api.previewStartGenerated(input)
     Preload->>MainIPC: ipcRenderer.invoke('preview:startGenerated', input)
     MainIPC->>Service: livePreviewService.startGeneratedPreview(input)
-    Service-->>MainIPC: returns PreviewStatus
-    MainIPC-->>Preload: returns PreviewStatus
-    Preload-->>Renderer: returns PreviewStatus
+    Service-->>MainIPC: returns {status: 'starting'} (async listen)
+    MainIPC-->>Preload: returns {status: 'starting'}
+    Preload-->>Renderer: returns {status: 'starting'}
+
+    Note over Service,Renderer: Async HTTP server listen callback fires
+    Service->>MainIPC: _emitStatusChange() ('running')
+    MainIPC->>Preload: webContents.send('preview:status-change', 'running')
+    Preload->>Renderer: onPreviewStatusChange callback fires
 ```
 
 ---
@@ -34,7 +39,8 @@ Exposed methods inside `src/preload/index.ts` include:
 - `previewStatus()`: Invokes `preview:status`
 - `previewWriteFile(sandboxPath, relativePath, content)`: Invokes `preview:writeFile`
 - `previewCreateDemo(port, style)`: Invokes `preview:createDemo`
-- `previewStartGenerated(input)`: Invokes `preview:startGenerated` [NEW]
+- `previewStartGenerated(input)`: Invokes `preview:startGenerated`
+- `onPreviewStatusChange(callback)`: Registers listener for `preview:status-change` IPC push events
 
 ---
 
@@ -72,17 +78,24 @@ Exposed methods inside `src/preload/index.ts` include:
   ```
 
 - **State Synchronization:**
-  - The renderer polls the status every 2 seconds via `api.previewStatus()`.
+  - The renderer subscribes to immediate IPC push events (`onPreviewStatusChange`) eliminating the 2-second delay.
+  - A fast 200ms short-poll runs for the first 5 seconds after a compilation request as a fallback.
+  - A slow 2-second background poll ensures resilience if IPC events are missed.
   - Background logs are buffered in `_session.logs` (limited to 100 entries) and rendered dynamically inside the Server Logs Console.
   - Stopped/Error states reset session variables and tear down active servers.
 
 ---
 
-## 5. Root Cause Analysis: Studio Auto-Popup Failure
+## 5. Root Cause Analysis: Studio Auto-Popup Failure (Fixed)
 
-Previously, when the user chose "Generate + Preview" in Aureon Studio, the flow failed to render automatically because:
+Previously, when the user chose "Generate + Preview" in Aureon Studio, the iframe failed to render immediately because:
 
-1. **Lack of Integration Flow:** The Studio page only routed the navigation to `/preview` (Code Mode) but did not pass any execution metadata or auto-trigger context.
-2. **Missing Initialization Hooks:** The `LivePreview.tsx` page mounted in a clean, idle state. It had no knowledge that it was routed from a Build App card action, requiring the user to manually click the "Run Coding Demo App" or "Start Server" buttons.
-3. **No Dynamic Theme Propagation:** The main process service only supported a static counter HTML preset, preventing the wizard's chosen style (teal, slate, etc.) from styling the generated output.
-4. **No-op Error State:** Compilation and start-up errors were captured in state but never rendered in the UI, resulting in silent failures when a port was blocked or file writes failed.
+1. **Async Node.js API:** `livePreviewService.startPreview()` calls `http.createServer().listen()`, which fires its callback asynchronously.
+2. **Premature Status Return:** The IPC handler returned immediately with `{status: 'starting'}` before the callback could set the status to `running`.
+3. **Poll Delay:** The renderer waited for its next 2-second poll interval before checking the status again, creating an artificial 2-second blank screen.
+
+### The Fix
+
+1. **Push Mechanism:** The main process now fires a `preview:status-change` IPC event to all windows when the server enters `running` or `error` state.
+2. **Renderer Subscription:** The React component subscribes via `useEffect` and updates state immediately—**zero delay**.
+3. **Fast-Poll Fallback:** An aggressive 200ms poll runs for 5 seconds after `handleRunDemo()` resolves as a belt-and-suspenders fallback for incredibly fast compilation cycles.

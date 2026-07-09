@@ -1,5 +1,41 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-09 13:40 +02:00 — LivePreview Auto-Popup Repair & Push Sync
+
+Branch: `main`
+Commit at start: `0.9.49`
+
+### Session Purpose
+Fix the LivePreview auto-popup failure where the generated iframe wouldn't display immediately due to an async timing gap in the Node.js `http.Server.listen()` call and a 2-second renderer polling interval.
+
+### Files Changed
+
+**Modified:**
+- **Modified:** [live-preview.service.ts](file:///C:/Users/mertg/Desktop/code/src/main/services/live-preview.service.ts) — added `_statusChangeCallback` hook to catch async `running` state.
+- **Modified:** [live-preview.ipc.ts](file:///C:/Users/mertg/Desktop/code/src/main/ipc/live-preview.ipc.ts) — subscribed to status change to push `preview:status-change` IPC events.
+- **Modified:** [index.ts](file:///C:/Users/mertg/Desktop/code/src/preload/index.ts) / [index.d.ts](file:///C:/Users/mertg/Desktop/code/src/preload/index.d.ts) — exposed `onPreviewStatusChange` to renderer.
+- **Modified:** [LivePreview.tsx](file:///C:/Users/mertg/Desktop/code/src/renderer/src/pages/LivePreview.tsx) — subscribed to push events and added a 5-second fast-poll (200ms) fallback.
+- **Modified:** [live-preview.test.ts](file:///C:/Users/mertg/Desktop/code/tests/unit/live-preview.test.ts) — added tests for `onStatusChange` mechanisms (4 new tests).
+
+**Created:**
+- **New:** [manual-livepreview-smoke.mjs](file:///C:/Users/mertg/Desktop/code/scripts/manual-livepreview-smoke.mjs) — standalone Node.js smoke test for the sandbox and in-process HTTP server.
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (445 tests) |
+| `npm run build` | ✅ PASS |
+| `node scripts/manual-livepreview-smoke.mjs` | ✅ PASS |
+
+### Key Changes
+- Shifted from a pure polling model to an immediate push-based event model for Preview state transitions.
+- The React iframe now mounts synchronously after the `server.listen` callback fires.
+- Unit tests expanded to ensure sandbox creation and server mocking handle async event emission correctly.
+
+---
+
 ## 2026-07-09 13:00 +02:00 — Calm Ivory Hero Theme & Simplified Overview
 
 Branch: `main`

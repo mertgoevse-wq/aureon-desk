@@ -103,8 +103,19 @@ export function LivePreview(): React.ReactElement {
   useEffect(() => {
     refreshStatus()
     const interval = setInterval(refreshStatus, 2000)
-    return () => clearInterval(interval)
-  }, [refreshStatus])
+
+    // Subscribe to push-based status changes from main process.
+    // This fires immediately when the server enters 'running' or 'error',
+    // eliminating the 2-second poll delay.
+    const unsubscribe = api.onPreviewStatusChange((pushed: PreviewStatus) => {
+      setStatus(pushed)
+    })
+
+    return () => {
+      clearInterval(interval)
+      unsubscribe()
+    }
+  }, [refreshStatus, api])
 
   useEffect(() => {
     if (logRef.current) {
@@ -164,6 +175,17 @@ export function LivePreview(): React.ReactElement {
       })
       if (result.status !== 'error') {
         await refreshStatus()
+        // Fast-poll for up to 5 seconds (200ms intervals) so the iframe
+        // appears before the next regular 2-second cycle fires.
+        let ticks = 0
+        const fastPoll = setInterval(async () => {
+          ticks++
+          const s = await api.previewStatus()
+          setStatus(s)
+          if (s.status === 'running' || s.status === 'error' || s.status === 'stopped' || ticks >= 25) {
+            clearInterval(fastPoll)
+          }
+        }, 200)
       } else {
         setError(result.error || 'Demo failed to initialize')
       }

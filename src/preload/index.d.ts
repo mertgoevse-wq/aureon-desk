@@ -89,6 +89,8 @@ export interface IpcApi {
     autoOpenCodeMode?: boolean
     autoFocusPreview?: boolean
   }) => Promise<any>
+  /** Subscribe to push-based preview status changes. Returns cleanup fn. */
+  onPreviewStatusChange: (callback: (status: any) => void) => () => void
   toolList: () => Promise<import('../shared/types/tool').ToolRow[]>
   toolGet: (id: string) => Promise<import('../shared/types/tool').ToolRow | undefined>
   toolCreate: (input: any) => Promise<import('../shared/types/tool').ToolRow>
@@ -124,6 +126,10 @@ export interface IpcApi {
   windowClose: () => void
   windowIsMaximized: () => Promise<boolean>
   onMaximizedState: (callback: (maximized: boolean) => void) => () => void
+  studioOrchestrate: (input: import('../shared/types/studio-core').StudioIntentInput) => Promise<import('../shared/types/studio-core').StudioOrchestrationResult>
+  studioTaskCategories: () => Promise<import('../shared/types/studio-core').TaskCategoryInfo[]>
+  studioCapabilities: () => Promise<import('../shared/types/studio-core').CapabilityDefinition[]>
+  studioAutonomyLevels: () => Promise<import('../shared/types/studio-core').AutonomyLevelInfo[]>
 }
 
 declare global {

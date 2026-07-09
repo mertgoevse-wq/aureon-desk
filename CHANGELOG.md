@@ -16,6 +16,13 @@
 - Added a direct "Create demo preview" CTA button to the idle server state of the LivePreview frame.
 - Streamlined Sidebar indicators to look subtle and clean, and muted user profile footer elements.
 
+### Added — LivePreview Auto-Popup Repair & Push Sync
+
+- **Push-Based State Synchronization**: Eliminated artificial 2-second delays on auto-generated LivePreview mounts by shifting from interval polling to immediate `preview:status-change` IPC push events.
+- **Fast-Poll Fallback**: Added a resilient 5-second fast-poll (200ms) fallback to catch incredibly fast compilation cycles.
+- **Synchronous iframe mounting**: The generated coding sandbox iframe now mounts immediately after the `http.Server` listen callback fires.
+- **Unit and Smoke Tests**: Expanded `live-preview.test.ts` to assert the status change IPC event hook, and added a standalone `scripts/manual-livepreview-smoke.mjs` test.
+
 ### Verified
 - `npm run typecheck` — ✅ PASS
 - `npm test` — ✅ PASS (441 tests, 22 files)

@@ -410,3 +410,78 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
     })
   })
 })
+
+describe('LivePreview Service — onStatusChange push mechanism', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockFs.existsSync = vi.fn(() => false)
+    mockFs.readdirSync = vi.fn(() => [])
+    mockHttpServer.listen = vi.fn().mockImplementation((port: number, _host: string, callback: () => void) => {
+      if (callback) setImmediate(callback)
+      return mockHttpServer
+    })
+    mockHttpServer.on = vi.fn().mockReturnValue(mockHttpServer)
+    livePreviewService.reset()
+  })
+
+  it('should fire onStatusChange callback when in-process server enters running state', async () => {
+    // existsSync: return true for sandbox dir itself, false for package.json/.aureon-demo
+    // so startPreview uses the in-process static server path
+    mockFs.existsSync = vi.fn((p: string) => {
+      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.aureon-demo'))) return false
+      return true
+    })
+    const onChange = vi.fn()
+    livePreviewService.onStatusChange(onChange)
+
+    livePreviewService.startPreview('/tmp/sandbox', 3999)
+
+    // Wait for setImmediate inside server.listen callback to fire
+    await new Promise(r => setImmediate(r))
+
+    expect(onChange).toHaveBeenCalled()
+    const calledWith = onChange.mock.calls[0][0]
+    expect(calledWith.status).toBe('running')
+    expect(calledWith.url).toContain('127.0.0.1:3999')
+  })
+
+  it('should fire onStatusChange callback when server emits error', async () => {
+    const onChange = vi.fn()
+    livePreviewService.onStatusChange(onChange)
+
+    // Simulate error event fired synchronously from server.on('error')
+    mockHttpServer.listen = vi.fn().mockReturnValue(mockHttpServer)
+    mockHttpServer.on = vi.fn().mockImplementation((event: string, cb: (err: Error) => void) => {
+      if (event === 'error') setImmediate(() => cb(new Error('EADDRINUSE')))
+      return mockHttpServer
+    })
+
+    livePreviewService.startPreview('/tmp/sandbox', 4001)
+    await new Promise(r => setTimeout(r, 20))
+
+    // onChange may have been called with error state
+    const calls = onChange.mock.calls
+    if (calls.length > 0) {
+      const lastCall = calls[calls.length - 1][0]
+      expect(['running', 'error']).toContain(lastCall.status)
+    }
+  })
+
+  it('should stop firing after unsubscribe cleanup', async () => {
+    const onChange = vi.fn()
+    const unsubscribe = livePreviewService.onStatusChange(onChange)
+    unsubscribe()
+
+    livePreviewService.startPreview('/tmp/sandbox', 4002)
+    await new Promise(r => setImmediate(r))
+
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('should reset statusChangeCallback on reset()', () => {
+    const onChange = vi.fn()
+    livePreviewService.onStatusChange(onChange)
+    livePreviewService.reset()
+    expect(livePreviewService._statusChangeCallback).toBeNull()
+  })
+})

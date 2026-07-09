@@ -207,6 +207,20 @@ const api = {
   }): Promise<any> =>
     ipcRenderer.invoke('preview:startGenerated', input),
 
+  /**
+   * Subscribe to live push-based preview status changes from the main process.
+   * Fires immediately when the preview server enters 'running' or 'error' state,
+   * eliminating the 2-second poll delay.
+   * Returns a cleanup function to unsubscribe (use in useEffect cleanup).
+   */
+  onPreviewStatusChange: (callback: (status: any) => void): (() => void) => {
+    const listener = (_event: any, status: any) => callback(status)
+    ipcRenderer.on('preview:status-change', listener)
+    return () => {
+      ipcRenderer.removeListener('preview:status-change', listener)
+    }
+  },
+
   // Tools / MCP
   toolList: (): Promise<ToolRow[]> =>
     ipcRenderer.invoke('tool:list'),

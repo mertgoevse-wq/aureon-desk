@@ -293,6 +293,23 @@ const MIME_TYPES: Record<string, string> = {
 export const livePreviewService = {
   _session: null as PreviewSession | null,
   _httpServer: null as http.Server | null,
+  _statusChangeCallback: null as ((status: PreviewStatus) => void) | null,
+
+  /**
+   * Register a callback that fires whenever the preview status transitions
+   * to 'running' or 'error'. Used by the IPC layer to push events to the renderer.
+   * Returns a function to unsubscribe.
+   */
+  onStatusChange(cb: (status: PreviewStatus) => void): () => void {
+    this._statusChangeCallback = cb
+    return () => { this._statusChangeCallback = null }
+  },
+
+  _emitStatusChange(): void {
+    if (this._statusChangeCallback) {
+      try { this._statusChangeCallback(this._status()) } catch { /* nop */ }
+    }
+  },
 
   getSandboxRoot(): string {
     const sandboxDir = path.join(app.getPath('userData'), 'preview-sandbox')
@@ -623,6 +640,8 @@ export const livePreviewService = {
           addLog('stdout', `Static server listening on http://127.0.0.1:${actualPort}`)
           if (this._session && this._session.id === sessionId) {
             this._session.status = 'running'
+            // Push status change to renderer immediately (no poll delay)
+            this._emitStatusChange()
           }
         })
 
@@ -631,6 +650,8 @@ export const livePreviewService = {
           if (this._session && this._session.id === sessionId) {
             this._session.status = 'error'
             this._session.error = err.message
+            // Push error status to renderer immediately
+            this._emitStatusChange()
           }
         })
 
@@ -718,7 +739,7 @@ export const livePreviewService = {
     } catch { return 0 }
   },
 
-  reset(): void { this._session = null },
+  reset(): void { this._session = null; this._statusChangeCallback = null },
 }
 
 try { if (typeof app.on === 'function') app.on('before-quit', () => livePreviewService.stopPreview()) } catch { /* test env */ }

@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron'
+import { ipcMain, BrowserWindow } from 'electron'
 import { livePreviewService } from '../services/live-preview.service'
 import { logger } from '../utils/logger'
 import type { CreateSandboxInput, PreviewStatus, CodingDemoResult } from '../services/live-preview.service'
@@ -39,6 +39,20 @@ export function registerLivePreviewIPC(): void {
   ipcMain.handle('preview:startGenerated', (_e, input: any) =>
     livePreviewService.startGeneratedPreview(input)
   )
+
+  // Push status-change events to all renderer windows immediately.
+  // This eliminates the 2-second poll delay when the preview server starts.
+  livePreviewService.onStatusChange((status: PreviewStatus) => {
+    try {
+      BrowserWindow.getAllWindows().forEach(win => {
+        if (!win.isDestroyed()) {
+          win.webContents.send('preview:status-change', status)
+        }
+      })
+    } catch (err) {
+      logger.error(`preview:status-change push failed: ${err}`)
+    }
+  })
 
   logger.info('LivePreview IPC handlers registered')
 }
