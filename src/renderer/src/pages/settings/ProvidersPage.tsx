@@ -2,7 +2,7 @@ import { useEffect, useCallback, useState } from 'react'
 import {
   Eye, EyeOff, Trash2, Check, AlertTriangle, Plus,
   Wifi, Zap, Server, Monitor, Globe, Star, Wrench,
-  Activity, Clock, BarChart3, RotateCcw, Code2
+  Activity, Clock, BarChart3, RotateCcw, Code2, FlaskConical
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'
 import { Input } from '../../components/shared/Input'
@@ -58,6 +58,8 @@ export function ProvidersPage(): React.ReactElement {
   const [loadingUsage, setLoadingUsage] = useState(false)
   const [smokeTestResults, setSmokeTestResults] = useState<Record<string, { success: boolean; message: string; modelUsed: string | null; durationMs: number; responsePreview: string | null } | null>>({})
   const [smokeTestingId, setSmokeTestingId] = useState<string | null>(null)
+  const [smokeTestingAll, setSmokeTestingAll] = useState(false)
+  const [smokeTestAllSummary, setSmokeTestAllSummary] = useState<{ total: number; passed: number; failed: number; skipped: number } | null>(null)
 
   useEffect(() => { loadData() }, [])
 
@@ -185,6 +187,36 @@ export function ProvidersPage(): React.ReactElement {
     loadData()
   }, [api, loadData])
 
+  const handleSmokeTestAll = useCallback(async () => {
+    setSmokeTestingAll(true)
+    setSmokeTestAllSummary(null)
+    // Clear individual results
+    setSmokeTestResults({})
+    try {
+      const result = await api.providerSmokeTestAll()
+      // Map results back to per-provider state for inline display
+      const mapped: Record<string, { success: boolean; message: string; modelUsed: string | null; durationMs: number; responsePreview: string | null }> = {}
+      for (const r of result.results) {
+        mapped[r.providerId] = {
+          success: r.success,
+          message: r.message,
+          modelUsed: r.modelUsed,
+          durationMs: r.durationMs,
+          responsePreview: null,
+        }
+      }
+      setSmokeTestResults(mapped)
+      setSmokeTestAllSummary({ total: result.total, passed: result.passed, failed: result.failed, skipped: result.skipped })
+      showToast(
+        result.passed > 0 ? 'success' : 'error',
+        `${result.passed} passed, ${result.failed} failed, ${result.skipped} skipped`
+      )
+    } catch (err) {
+      showToast('error', 'Smoke test all failed: ' + String(err))
+    }
+    finally { setSmokeTestingAll(false) }
+  }, [api])
+
   const handleSmokeTest = useCallback(async (providerId: string) => {
     setSmokeTestingId(providerId)
     setSmokeTestResults(prev => ({ ...prev, [providerId]: null }))
@@ -248,9 +280,14 @@ export function ProvidersPage(): React.ReactElement {
               Check credential status, local server reachability, response latency, and sanitized error details without exposing API keys.
             </p>
           </div>
-          <Button size="sm" variant="secondary" onClick={handleRunAllTests} disabled={testingAll || providers.length === 0} loading={testingAll}>
-            <Wifi size={14} /> Test All
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="ghost" onClick={handleSmokeTestAll} disabled={smokeTestingAll || providers.length === 0} loading={smokeTestingAll}>
+              <FlaskConical size={14} /> Smoke test all
+            </Button>
+            <Button size="sm" variant="secondary" onClick={handleRunAllTests} disabled={testingAll || providers.length === 0} loading={testingAll}>
+              <Wifi size={14} /> Test All
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
@@ -322,6 +359,26 @@ export function ProvidersPage(): React.ReactElement {
             )
           })}
         </div>
+
+        {/* Smoke test all summary bar */}
+        {smokeTestAllSummary && (
+          <div className={`mt-4 p-3 rounded-xl flex items-center gap-3 flex-wrap text-[12px] font-medium ${
+            smokeTestAllSummary.passed > 0
+              ? 'bg-[var(--ivory-success-bg)] border border-[var(--ivory-success)]/20 text-[var(--ivory-success)]'
+              : 'bg-[var(--ivory-error-bg)] border border-[var(--ivory-error)]/20 text-[var(--ivory-error)]'
+          }`}>
+            <FlaskConical size={14} className="shrink-0" />
+            <span>Smoke tests complete:</span>
+            <span className="font-bold">{smokeTestAllSummary.passed} passed</span>
+            {smokeTestAllSummary.failed > 0 && (
+              <span className="font-bold">{smokeTestAllSummary.failed} failed</span>
+            )}
+            {smokeTestAllSummary.skipped > 0 && (
+              <span className="opacity-70">{smokeTestAllSummary.skipped} skipped</span>
+            )}
+            <span className="text-[11px] opacity-70">of {smokeTestAllSummary.total} providers</span>
+          </div>
+        )}
       </Card>
 
       {/* Custom Provider Modal */}

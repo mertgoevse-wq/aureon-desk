@@ -1,4 +1,5 @@
 import { providerService } from './provider.service'
+import { callProviderApi } from './provider-call'
 import { logger } from '../utils/logger'
 import {
   selectBestModel,
@@ -259,8 +260,7 @@ export const modelRouterService = {
   // ---- Provider Smoke Test ----
 
   /**
-   * Run a quick smoke test on a provider: sends a simple code generation prompt
-   * and verifies the provider returns a valid response.
+   * Run a quick smoke test on a single provider.
    */
   async smokeTestProvider(providerId: string): Promise<{
     success: boolean
@@ -356,6 +356,68 @@ export const modelRouterService = {
   },
 
   /**
+   * Run smoke tests across all configured providers at once.
+   * Returns per-provider results with summary counts.
+   */
+  async smokeTestAllProviders(): Promise<{
+    results: Array<{
+      providerId: string
+      providerName: string
+      success: boolean
+      message: string
+      modelUsed: string | null
+      durationMs: number
+    }>
+    total: number
+    passed: number
+    failed: number
+    skipped: number
+  }> {
+    const allProviders = providerService.listProviders()
+    const enabled = allProviders.filter(p => p.is_enabled === 1)
+    const results: Array<{
+      providerId: string
+      providerName: string
+      success: boolean
+      message: string
+      modelUsed: string | null
+      durationMs: number
+    }> = []
+
+    let passed = 0
+    let failed = 0
+
+    logger.info(`Running smoke tests for ${enabled.length} enabled providers`)
+
+    for (const provider of enabled) {
+      // smokeTestProvider handles all validation internally (key, models, etc.)
+      const result = await this.smokeTestProvider(provider.id)
+      results.push({
+        providerId: provider.id,
+        providerName: provider.name,
+        success: result.success,
+        message: result.message,
+        modelUsed: result.modelUsed,
+        durationMs: result.durationMs,
+      })
+      if (result.success) passed++
+      else failed++
+    }
+
+    const skipped = allProviders.length - enabled.length
+
+    logger.info(`Smoke tests complete: ${passed} passed, ${failed} failed, ${skipped} skipped`)
+
+    return {
+      results,
+      total: allProviders.length,
+      passed,
+      failed,
+      skipped,
+    }
+  },
+
+  /**
    * Internal: call a provider with a simple smoke-test prompt.
    */
   async _callSmokeTest(
@@ -364,89 +426,15 @@ export const modelRouterService = {
     modelName: string,
     adapter: string,
   ): Promise<string> {
-    if (adapter === 'ollama') {
-      const ollamaBase = baseUrl.replace(/\/v1\/?$/, '')
-      const response = await fetch(`${ollamaBase}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: modelName,
-          messages: [{ role: 'user', content: 'Respond with exactly: {"status":"ok","message":"Smoke test passed"}' }],
-          stream: false,
-        }),
-        signal: AbortSignal.timeout(30000),
-      })
-      if (!response.ok) throw new Error(`Ollama returned ${response.status}`)
-      const data = await response.json() as Record<string, unknown>
-      const msg = data.message as { content?: string } | undefined
-      return msg?.content || ''
-    }
-
-    // OpenAI-compatible for everything else
-    const url = `${baseUrl}/chat/completions`
-    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-    if (apiKey) {
-      if (adapter === 'anthropic') {
-        headers['x-api-key'] = apiKey
-      } else {
-        headers['Authorization'] = `Bearer ${apiKey}`
-      }
-    }
-    if (adapter === 'openrouter') {
-      headers['HTTP-Referer'] = 'aureon-desk'
-      headers['X-Title'] = 'Aureon Desk Smoke Test'
-    }
-
-    // For Anthropic, use the Messages API
-    if (adapter === 'anthropic') {
-      const response = await fetch(`${baseUrl}/messages`, {
-        method: 'POST',
-        headers: { ...headers, 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({
-          model: modelName,
-          max_tokens: 128,
-          messages: [{ role: 'user', content: 'Respond with exactly: {"status":"ok","message":"Smoke test passed"}' }],
-        }),
-        signal: AbortSignal.timeout(30000),
-      })
-      if (!response.ok) throw new Error(`Anthropic returned ${response.status}`)
-      const data = await response.json() as Record<string, unknown>
-      const content = data.content as Array<{ text?: string }> | undefined
-      return content?.[0]?.text || ''
-    }
-
-    // For Google Gemini
-    if (adapter === 'google') {
-      const response = await fetch(`${baseUrl}/models/${modelName}:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: 'Respond with exactly: {"status":"ok","message":"Smoke test passed"}' }] }],
-        }),
-        signal: AbortSignal.timeout(30000),
-      })
-      if (!response.ok) throw new Error(`Gemini returned ${response.status}`)
-      const data = await response.json() as Record<string, unknown>
-      const candidates = data.candidates as Array<{ content?: { parts?: Array<{ text?: string }> } }> | undefined
-      return candidates?.[0]?.content?.parts?.[0]?.text || ''
-    }
-
-    // OpenAI-compatible (OpenAI, OpenRouter, NVIDIA, Groq, Mistral, DeepSeek, Custom, LM Studio)
-    const response = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        model: modelName,
-        messages: [{ role: 'user', content: 'Respond with exactly: {"status":"ok","message":"Smoke test passed"}' }],
-        max_tokens: 128,
-        temperature: 0,
-      }),
-      signal: AbortSignal.timeout(30000),
+    return callProviderApi({
+      adapter,
+      baseUrl,
+      apiKey,
+      model: modelName,
+      messages: [{ role: 'user', content: 'Respond with exactly: {"status":"ok","message":"Smoke test passed"}' }],
+      temperature: 0,
+      maxTokens: 128,
+      timeoutMs: 30000,
     })
-
-    if (!response.ok) throw new Error(`Provider returned ${response.status}`)
-    const data = await response.json() as Record<string, unknown>
-    const choices = data.choices as Array<{ message?: { content?: string } }> | undefined
-    return choices?.[0]?.message?.content || ''
   },
 }

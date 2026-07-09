@@ -126,6 +126,20 @@ export const PROVIDER_ADAPTERS: ProviderAdapterInfo[] = [
     ]
   },
   {
+    slug: 'huggingface',
+    name: 'HuggingFace',
+    description: 'HuggingFace Inference API — access 150,000+ models, free tier available',
+    defaultBaseUrl: 'https://api-inference.huggingface.co/v1',
+    authType: 'api_key',
+    capabilities: ['text', 'tool_use', 'streaming'],
+    defaultModels: [
+      { name: 'mistralai/Mistral-7B-Instruct-v0.3', displayName: 'Mistral 7B Instruct', contextWindow: 32768 },
+      { name: 'meta-llama/Llama-3.1-8B-Instruct', displayName: 'Llama 3.1 8B Instruct', contextWindow: 131072 },
+      { name: 'google/gemma-2-9b-it', displayName: 'Gemma 2 9B', contextWindow: 8192 },
+      { name: 'Qwen/Qwen2.5-7B-Instruct', displayName: 'Qwen 2.5 7B', contextWindow: 32768 },
+    ]
+  },
+  {
     slug: 'custom',
     name: 'Custom OpenAI-Compatible',
     description: 'Any OpenAI-compatible API endpoint',

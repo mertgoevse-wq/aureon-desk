@@ -64,6 +64,11 @@ export const MODEL_SCORES: ModelScore[] = [
 
   // Ollama (local)
   { modelId: 'llama3.2', displayName: 'Llama 3.2 (Local)', provider: 'ollama', scores: { code_generation: 60, chat: 70, vision: 0, reasoning: 60, fast_inference: 65 }, isFree: true, isLocal: true, hasFreeTier: false },
+
+  // HuggingFace Inference API (free tier available)
+  { modelId: 'mistralai/Mistral-7B-Instruct-v0.3', displayName: 'Mistral 7B Instruct', provider: 'huggingface', scores: { code_generation: 68, chat: 72, vision: 0, reasoning: 65, fast_inference: 78 }, isFree: true, isLocal: false, hasFreeTier: true },
+  { modelId: 'meta-llama/Llama-3.1-8B-Instruct', displayName: 'Llama 3.1 8B Instruct', provider: 'huggingface', scores: { code_generation: 72, chat: 78, vision: 0, reasoning: 70, fast_inference: 75 }, isFree: true, isLocal: false, hasFreeTier: true },
+  { modelId: 'Qwen/Qwen2.5-7B-Instruct', displayName: 'Qwen 2.5 7B', provider: 'huggingface', scores: { code_generation: 75, chat: 70, vision: 0, reasoning: 72, fast_inference: 80 }, isFree: true, isLocal: false, hasFreeTier: true },
 ]
 
 /** Task descriptions for UI display */

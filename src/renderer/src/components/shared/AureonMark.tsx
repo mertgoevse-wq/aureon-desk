@@ -27,7 +27,7 @@ export function AureonMark({ size = 32, className = '', withRing = true, variant
     )
   }
 
-  const viewBox = withRing ? '0 0 64 64' : '10 12 44 40'
+  const viewBox = withRing ? '0 0 256 256' : '17 24 51 45'
   return (
     <svg
       width={size}
@@ -37,22 +37,28 @@ export function AureonMark({ size = 32, className = '', withRing = true, variant
       aria-hidden="true"
       className={className}
     >
+      <defs>
+        <linearGradient id={`mark-grad-${size}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="var(--ivory-accent)" />
+          <stop offset="100%" stopColor="var(--ivory-accent-hover)" />
+        </linearGradient>
+      </defs>
       {withRing && (
-        <circle
-          cx="32"
-          cy="32"
-          r="30"
-          fill="var(--ivory-accent-light)"
-          stroke="var(--ivory-accent)"
-          strokeWidth="1.5"
-          opacity="0.9"
-        />
+        <>
+          <circle cx="128" cy="128" r="118" fill="var(--ivory-accent-light)" stroke="var(--ivory-accent)" strokeWidth="2" strokeOpacity="0.25" />
+          <circle cx="128" cy="128" r="108" fill="none" stroke="#E8A45C" strokeWidth="0.75" strokeOpacity="0.15" />
+        </>
       )}
-      <path d="M18 44L26 20H29L21 44H18Z" fill="var(--ivory-accent)" />
-      <path d="M46 44L38 20H35L43 44H46Z" fill="var(--ivory-accent)" />
-      <rect x="23" y="34" width="18" height="3.5" rx="1" fill="var(--ivory-accent)" />
+      <path d="M72 178L104 72H110L78 178H72Z" fill={`url(#mark-grad-${size})`} />
+      <path d="M184 178L152 72H146L178 178H184Z" fill={`url(#mark-grad-${size})`} />
+      <rect x="92" y="140" width="72" height="6" rx="3" fill={`url(#mark-grad-${size})`} />
       {withRing && (
-        <circle cx="32" cy="40" r="1.5" fill="#E8A45C" opacity="0.8" />
+        <>
+          <circle cx="128" cy="66" r="3" fill="#E8A45C" opacity="0.6" />
+          <circle cx="128" cy="166" r="2.5" fill="#E8A45C" opacity="0.4" />
+          <circle cx="66" cy="128" r="2" fill="#E8A45C" opacity="0.35" />
+          <circle cx="190" cy="128" r="2" fill="#E8A45C" opacity="0.35" />
+        </>
       )}
     </svg>
   )

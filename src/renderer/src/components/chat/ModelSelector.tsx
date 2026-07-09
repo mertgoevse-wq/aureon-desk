@@ -18,12 +18,42 @@ interface ModelOption {
   is_local?: boolean
 }
 
+/** Provider-level smoke test status for connection indicator dots */
+type SmokeStatus = 'untested' | 'pass' | 'fail' | 'testing'
+
+function smokeTestDot(status: SmokeStatus): React.ReactElement {
+  const colors: Record<SmokeStatus, string> = {
+    pass: 'bg-emerald-500',
+    fail: 'bg-amber-500',
+    untested: 'bg-gray-300',
+    testing: 'bg-gray-400 animate-pulse',
+  }
+  const titles: Record<SmokeStatus, string> = {
+    pass: 'Provider connection verified',
+    fail: 'Provider connection failed — check Settings',
+    untested: 'Not tested yet — run smoke test in Settings',
+    testing: 'Testing connection…',
+  }
+  return (
+    <span
+      className={`inline-block w-2 h-2 rounded-full shrink-0 ${colors[status]}`}
+      title={titles[status]}
+      aria-label={titles[status]}
+    />
+  )
+}
+
 export function ModelSelector({ value, onChange }: ModelSelectorProps): React.ReactElement {
   const api = useIpc()
   const navigate = useNavigate()
   const [models, setModels] = useState<ModelOption[]>([])
   const [isOpen, setIsOpen] = useState(false)
+  const [smokeStatuses, setSmokeStatuses] = useState<Record<string, SmokeStatus>>({})
+  const [smokeTesting, setSmokeTesting] = useState(false)
 
+  const SMOKE_CACHE_KEY = 'aureon-smoke-statuses'
+
+  // Fetch enabled models
   useEffect(() => {
     api.modelAllEnabled().then((data: ModelOption[]) => {
       // Sort: local providers first, then remote, then by display name
@@ -37,9 +67,46 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps): React.Re
     }).catch(console.error)
   }, [api])
 
+  // Load smoke test results once per session (cached in sessionStorage).
+  // Uses provider_name for cross-referencing since providerSmokeTestAll returns
+  // results keyed by display name, not DB UUID or adapter slug.
+  useEffect(() => {
+    // Try cached results first
+    const cached = sessionStorage.getItem(SMOKE_CACHE_KEY)
+    if (cached) {
+      try {
+        setSmokeStatuses(JSON.parse(cached))
+        return
+      } catch { /* corrupted cache — re-run */ }
+    }
+
+    // No cache — run smoke tests once
+    setSmokeTesting(true)
+    api.providerSmokeTestAll().then((result: { results: Array<{ providerId: string; providerName: string; success: boolean }>; total: number; passed: number; failed: number; skipped: number }) => {
+      const statuses: Record<string, SmokeStatus> = {}
+      for (const r of result.results) {
+        // Key by provider name — models expose provider_name, smoke results expose providerName.
+        // Note: if two providers share the same display name, the last result wins.
+        statuses[r.providerName] = r.success ? 'pass' : 'fail'
+      }
+      setSmokeStatuses(statuses)
+      // Cache for this session
+      try { sessionStorage.setItem(SMOKE_CACHE_KEY, JSON.stringify(statuses)) } catch { /* ignore */ }
+    }).catch(() => {
+      // Smoke test unavailable — all dots remain 'untested'
+    }).finally(() => {
+      setSmokeTesting(false)
+    })
+  }, [api])
+
   const selectedModel = models.find(m => m.id === value)
   const selectedLabel = selectedModel ? `${selectedModel.provider_name} · ${selectedModel.display_name}` : 'Select model'
   const hasModels = models.length > 0
+  // Smoke status for selected model's provider (main button dot)
+  // Key by provider_name to match smoke test results
+  const selectedSmoke: SmokeStatus = selectedModel
+    ? (smokeStatuses[selectedModel.provider_name] || (smokeTesting ? 'testing' : 'untested'))
+    : smokeTesting ? 'testing' : 'untested'
 
   const handleSelect = useCallback((modelId: string | null) => {
     onChange(modelId)
@@ -57,6 +124,7 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps): React.Re
         aria-expanded={isOpen}
         aria-haspopup="listbox"
       >
+        {smokeTestDot(selectedSmoke)}
         <Zap size={12} className="text-[var(--ivory-accent)]" />
         <span className="max-w-[180px] truncate font-medium">
           {selectedLabel}
@@ -101,6 +169,7 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps): React.Re
               {models.map((model) => {
                 const isLocal = model.provider_slug === 'ollama' || model.provider_slug === 'lmstudio'
                 const isSelected = model.id === value
+                const smoke: SmokeStatus = smokeStatuses[model.provider_name] || (smokeTesting ? 'testing' : 'untested')
                 return (
                   <button
                     key={model.id}
@@ -111,6 +180,7 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps): React.Re
                     <div className="flex items-center justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
+                          {smokeTestDot(smoke)}
                           <span className="truncate font-medium">{model.display_name}</span>
                           {isLocal ? (
                             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] font-medium shrink-0">

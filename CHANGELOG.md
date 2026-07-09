@@ -1,3 +1,46 @@
+## [0.9.72] - 2026-07-09
+
+### Added — Full 5 File Operation Types in Build Pipeline
+
+**Delta Computation Engine:**
+- Added `computeDeltaFileOperations` — compares new generated files against existing sandbox files to produce the correct operation type, not just `create_file`
+- All 5 operation types now fully implemented end-to-end: `create_file` (new file), `update_file` (modified with before/after diff), `delete_file` (removed with destructive risk), `rename_file` (detected by content match with oldPath), `mkdir` (directory creation)
+- Added `readExistingSandboxFiles` — recursively reads text files from the sandbox directory to detect existing state for delta computation
+- Wired `livePreviewService.getStatus().sandboxPath` so follow-up builds automatically detect existing files and produce correct delta operations
+- Added `opLabels` map — per-file generation steps now show the correct verb: Creating/Updating/Deleting/Renaming/Making directory
+- Skipped (unchanged) files are excluded from generation steps, avoiding noise
+- Added `fileLanguage` and `fileRisk` helpers — delete_file automatically classified as 'destructive'
+
+**Security Hardening:**
+- `applyFileOperations` now skips `status: 'skipped'` ops — no unnecessary disk writes
+- Path traversal check added on `rename_file` old path — both new and old paths verified against sandbox boundary
+
+**UI — Per-Type Visual Differentiation:**
+- Added 5 new Lucide icon imports: `FilePlus`, `FilePen`, `FileMinus`, `FileSymlink`, `FolderPlus`
+- CODE tab generated files list now shows distinct icons and colored labels per operation type
+- FILES tab now shows colored backgrounds (emerald/amber/red/purple/blue), icons, and uppercase TYPE badges (CREATE/UPDATE/DELETE/RENAME/MKDIR)
+- `oldPath` display for rename operations (e.g., "src/app.tsx ← src/App.tsx")
+- `skipped` status and `unchanged` label for files with no content changes
+
+**Tests:**
+- Added tests for all 5 operation types: `update_file` with before/after/diff, `delete_file` with destructive risk, `rename_file` with oldPath, `mkdir` semantics
+- Updated risk classification test to verify safe vs destructive per operation type
+
+### Verified
+
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (710 tests, 28 files)
+- `npm run build` — ✅ PASS
+- Code review — ✅ PASS (3 rounds, issues found and fixed: dead `matchedNew` variable removed, skipped ops not re-written, rename path traversal check added, `toUpperCase` error fixed)
+
+### Remaining Limits
+
+- No integration-style tests for `computeDeltaFileOperations` itself (only unit tests for individual operation types)
+- All operations still applied to a fresh sandbox (old sandbox used for delta detection, new sandbox for apply)
+- Rename detection by content match won't catch renames where content also changed
+
+---
+
 ## [0.9.71] - 2026-07-09
 
 ### Added — NVIDIA NIM Support & Smart Model Routing
@@ -165,6 +208,42 @@
 - `npm test` — ✅ PASS (597 tests, 26 files)
 - `npm run build` — ✅ PASS
 - Code review — ✅ PASS (issues found and fixed)
+
+## [0.9.66] - 2026-07-09
+
+### Added — Premium Brand Assets
+
+- Created premium SVG logo set: `aureon-mark.svg` (256x256 abstract "A" with aureole ring, neural node dots, gradient fills), `aureon-icon.svg` (rounded rectangle app icon), `aureon-wordmark.svg` (mark + serif text + tagline)
+- Updated `AureonMark.tsx` with premium inline SVG: gradient `url(#mark-grad-{size})`, larger viewBox, neural node dots at cardinal positions, subtle connection lines
+
+### Added — HuggingFace Provider
+
+- Added HuggingFace Inference API provider adapter to `PROVIDER_ADAPTERS` with 4 models: Mistral 7B Instruct, Llama 3.1 8B Instruct, Gemma 2 9B, Qwen 2.5 7B
+- Added 3 HuggingFace model scores to `MODEL_SCORES` with `hasFreeTier: true` for free-tier auto-preference
+- Added `huggingface` to OpenAI-compatible adapter routing in `provider-call.ts`
+
+### Added — System Prompts Repository
+
+- Cloned `system_prompts_leaks` repo (317 files) with Anthropic Claude Desktop, OpenAI Codex, Google Gemini, xAI Grok, and misc system prompts
+- Repo structure catalogued: Anthropic/ (Official, Claude Code), OpenAI/ (API, Codex), Google/ (Gemini models), xAI/ (Grok models), Misc/ (Copilot, Perplexity, Meta, etc.)
+
+### Changed — Cleanup
+
+- Removed model-specific attribution from `AGENTS.md` ("Antigravity, Codex" → "AI sessions")
+- Removed stale "Codex Prompts 1-4" from prompt queue in AGENTS.md
+- Updated provider-call.ts adapter comment to include HuggingFace
+
+### Details
+
+- Premium logo: warm terracotta gradient (#C75B39 → #B8683A), golden accent dots (#E8A45C), ivory background (#F3EFE6)
+- HuggingFace: OpenAI-compatible `/v1/chat/completions` endpoint, free tier with rate limits and cold start
+- System prompts repo: 317 files available for future per-model prompt selection UI
+
+### Verified
+
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (706 tests, 28 files)
+- `npm run build` — ✅ PASS
 
 ## [0.9.65] - 2026-07-09
 

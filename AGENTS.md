@@ -1,6 +1,6 @@
 # Aureon Desk — AGENTS.md
 
-> Agent handoff instructions for Antigravity, Codex, and any future AI session working on this repo.
+> Agent handoff instructions for AI sessions working on this repo.
 
 ---
 
@@ -113,13 +113,12 @@ chore: <description of maintenance work>
 
 ---
 
-## Prompt Queue (as of 2026-07-08)
+## Prompt Queue (as of 2026-07-09)
 
 | # | Prompt | Status |
 |---|--------|--------|
-| 1–4 | Codex Prompts 1–4 | ✅ Done |
-| 5 | Desktop Shell Polish — Window Topbar Navigation Premium Feel | 🔲 Next |
-| 6+ | TBD based on Prompt 5 results | — |
+| 1 | Desktop Shell Polish | ✅ Done |
+| 2+ | TBD | — |
 
 ---
 
