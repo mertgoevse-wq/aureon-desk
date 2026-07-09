@@ -91,10 +91,14 @@ export function createMainWindow(): BrowserWindow {
 }
 
 function getAppIcon(): string | undefined {
-  // Try the icon.ico path (works in dev and production via electron-builder)
+  // In packaged apps, icon is in extraResources
+  if (app.isPackaged) {
+    const packagedPath = join(process.resourcesPath, 'build/icon.ico')
+    if (existsSync(packagedPath)) return packagedPath
+  }
+  // Dev path
   const devPath = join(__dirname, '../../build/icon.ico')
   if (existsSync(devPath)) return devPath
-  // In packaged apps, electron-builder handles the icon automatically
   return undefined
 }
 

@@ -70,6 +70,9 @@ export interface BuildRequest {
   targetWorkspace: string
   providerModelRoute?: string | null
   mode: BuildMode
+  /** Optional path to an existing sandbox used as a diff base for follow-up builds.
+   * When null/undefined (fresh build), all files show as create_file in the diff UI. */
+  baseSandboxPath?: string | null
 }
 
 /** The full build result returned after pipeline completes */

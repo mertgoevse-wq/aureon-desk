@@ -851,8 +851,19 @@ Generate the complete HTML, CSS, and JavaScript files for this app. Output ONLY 
   return files
 }
 
-/** Parse AI response into files. Tries JSON first, then markdown code blocks. */
+/** Parse AI response into files. Tries JSON first, then markdown code blocks.
+ * Accepts arbitrary file paths including SVG, nested dirs, and additional assets. */
 function parseCodeResponse(text: string): Record<string, string> {
+  // Allowed file extensions for safety
+  const ALLOWED_EXTS = ['.html', '.css', '.js', '.ts', '.jsx', '.tsx', '.json', '.svg', '.txt', '.md', '.xml']
+  function isSafePath(p: string): boolean {
+    const normalized = p.replace(/\\/g, '/')
+    // Block path traversal
+    if (normalized.includes('..')) return false
+    const ext = normalized.includes('.') ? normalized.slice(normalized.lastIndexOf('.')) : ''
+    return ALLOWED_EXTS.includes(ext.toLowerCase())
+  }
+
   // Try direct JSON parse
   try {
     const trimmed = text.trim()
@@ -862,9 +873,9 @@ function parseCodeResponse(text: string): Record<string, string> {
       : trimmed
     const parsed = JSON.parse(jsonStr) as Record<string, unknown>
     const files: Record<string, string> = {}
-    for (const key of ['index.html', 'styles.css', 'app.js']) {
-      if (typeof parsed[key] === 'string' && parsed[key].length > 10) {
-        files[key] = parsed[key] as string
+    for (const [key, value] of Object.entries(parsed)) {
+      if (typeof value === 'string' && value.length > 10 && isSafePath(key)) {
+        files[key] = value
       }
     }
     if (Object.keys(files).length > 0) return files
@@ -872,14 +883,14 @@ function parseCodeResponse(text: string): Record<string, string> {
     // Not valid JSON, try markdown code blocks
   }
 
-  // Try extracting from markdown code blocks
+  // Try extracting from markdown code blocks (fix: use correct regex groups)
   const files: Record<string, string> = {}
-  const codeBlockRegex = /```\s*(html|css|javascript|js)\s*\n([\s\S]*?)```/gi
-  const langMap: Record<string, string> = { html: 'index.html', css: 'styles.css', javascript: 'app.js', js: 'app.js' }
-  let match
+  const codeBlockRegex = /```\s*(html|css|javascript|js|svg)\s*\n([\s\S]*?)```/gi
+  const langMap: Record<string, string> = { html: 'index.html', css: 'styles.css', javascript: 'app.js', js: 'app.js', svg: 'icon.svg' }
+  let match: RegExpExecArray | null
   while ((match = codeBlockRegex.exec(text)) !== null) {
-    const lang = match[0].match(/```(\w+)/)?.[1] || ''
-    const content = match[1].trim()
+    const lang = match[1]
+    const content = match[2].trim()
     const fileName = langMap[lang]
     if (fileName && content.length > 10 && !files[fileName]) {
       files[fileName] = content
@@ -1267,13 +1278,12 @@ export const buildPipelineService = {
       } else {
         files = generateDeterministicApp(request.prompt, request.theme, classification.suggestedName, classification.intent)
       }
-      // Compute file operations — check existing sandbox files for delta (follow-up builds).
-      // The sandbox from a previous build may still exist on disk even if the preview server
-      // has stopped, so we check both the current sandboxPath and livePreviewService's status.
+      // Compute file operations for UI diff display.
+      // For fresh/initial builds, don't diff against a previous sandbox —
+      // always use null so ALL files show as create_file ops.
       let existingFiles: Record<string, string> | null = null
-      const currentSandboxPath = sandboxPath || livePreviewService.getStatus().sandboxPath
-      if (currentSandboxPath) {
-        existingFiles = readExistingSandboxFiles(currentSandboxPath)
+      if (request.baseSandboxPath) {
+        existingFiles = readExistingSandboxFiles(request.baseSandboxPath)
       }
       fileOps = createFileOperations(files, existingFiles)
 
@@ -1315,28 +1325,41 @@ export const buildPipelineService = {
         return buildSuccess(request, completedSteps, fileOps, plan, null, null, null, suggestions, isDemo)
       }
 
-      // Step 5: Apply to sandbox
-      const applyStep = makeStep('apply', 'Applying file operations to sandbox…')
+      // Step 5: Apply to sandbox — write FULL file snapshot (not delta-only).
+      // Delta ops are for UI display only; the sandbox always gets every generated file.
+      const applyStep = makeStep('apply', 'Writing files to sandbox…')
       applyStep.status = 'running'
       emitStep(applyStep, completedSteps, fileOps, previewUrl, previewStatus, false, null, isDemo, suggestions)
 
-      // Create sandbox using live preview service
+      // Create sandbox directory
       const sandboxResult = livePreviewService.createSandbox({ templateType: 'html' })
       if (!sandboxResult.success) {
         throw new Error(sandboxResult.error || 'Failed to create sandbox')
       }
       sandboxPath = sandboxResult.sandboxPath
 
-      fileOps = applyFileOperations(sandboxPath, fileOps)
+      // Write ALL generated files into the sandbox (not just delta ops)
+      for (const [relPath, content] of Object.entries(files)) {
+        const resolved = path.resolve(sandboxPath, relPath)
+        if (!resolved.startsWith(path.resolve(sandboxPath))) {
+          throw new Error(`Path traversal blocked: ${relPath}`)
+        }
+        const dir = path.dirname(resolved)
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+        const safeContent = redactSecrets(content)
+        fs.writeFileSync(resolved, safeContent, 'utf-8')
+      }
+
       await sleep(200)
       if (_cancelled) return cancelResult(request, completedSteps, fileOps, suggestions, isDemo)
 
       applyStep.status = 'done'
-      applyStep.message = `${fileOps.filter(o => o.status === 'applied').length} files applied`
+      applyStep.message = `${Object.keys(files).length} files written to sandbox`
       completedSteps.push(applyStep)
       emitStep(applyStep, completedSteps, fileOps, previewUrl, previewStatus, false, null, isDemo, suggestions)
 
-      // Step 6-8: Start preview (if generate-and-preview mode)
+      // Step 6-8: Start preview server (only for generate-and-preview mode).
+      // Files were already written to the sandbox in Step 5 above.
       if (request.mode === 'generate-and-preview') {
         const previewStep = makeStep('preview_start', 'Starting preview server…')
         previewStep.status = 'running'
@@ -1345,7 +1368,7 @@ export const buildPipelineService = {
 
         // Stop any existing preview, then start the new sandbox
         livePreviewService.stopPreview()
-        const status = livePreviewService.startPreview(sandboxPath)
+        const status = livePreviewService.startPreview(sandboxPath!)
         previewStatus = status.status
         previewUrl = status.url
 
@@ -1353,7 +1376,7 @@ export const buildPipelineService = {
           throw new Error(status.error || 'Preview server failed to start')
         }
 
-        // Wait for running state (in-process server is synchronous, so it should be immediate)
+        // Wait for running state
         await sleep(300)
         if (_cancelled) return cancelResult(request, completedSteps, fileOps, suggestions, isDemo)
 

@@ -3,6 +3,10 @@ import { Send, Paperclip, Wrench, FileCode, GitBranch, ClipboardCheck, Map, Eye,
 import { usePromptLibraryStore } from '../../stores/promptLibraryStore'
 import { useIpc } from '../../hooks/useIpc'
 import { VariableFiller } from '../prompts/VariableFiller'
+import { DropZone } from '../shared/DropZone'
+import { AttachmentChip } from '../shared/AttachmentChip'
+import { useAttachmentStore } from '../../stores/attachmentStore'
+import type { FileProcessResult } from '@shared/attachments'
 
 declare global {
   interface WindowEventMap {
@@ -74,6 +78,8 @@ export function MessageInput({
   const prompts = usePromptLibraryStore(s => s.prompts)
   const loadPrompts = usePromptLibraryStore(s => s.setPrompts)
   const api = useIpc()
+  const { attachments, addAttachments, removeAttachment, toggleContext, getContextSummary, clearAll } = useAttachmentStore()
+  const [isProcessingDrop, setIsProcessingDrop] = useState(false)
 
   const resizeTextarea = useCallback(() => {
     const el = textareaRef.current
@@ -122,12 +128,15 @@ export function MessageInput({
   const handleSend = useCallback(() => {
     const trimmed = value.trim()
     if (!trimmed || disabled) return
-    onSend(trimmed)
+    // Append attachment context summary to the message
+    const contextSummary = getContextSummary()
+    const fullContent = trimmed + contextSummary
+    onSend(fullContent)
     setValue('')
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
     }
-  }, [value, disabled, onSend])
+  }, [value, disabled, onSend, getContextSummary])
 
   const replaceSlash = useCallback((content: string) => {
     const slashPos = value.lastIndexOf('/')
@@ -333,9 +342,48 @@ export function MessageInput({
           />
         )}
 
-        <div className="bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-[22px] px-3 py-2 shadow-[var(--shadow-composer)]
-          focus-within:border-[var(--ivory-accent)] focus-within:ring-1 focus-within:ring-[var(--ivory-accent)]
-          hover:border-[var(--ivory-border-2)] transition duration-[var(--transition-fast)]">
+        {/* Attachment chips row */}
+        {attachments.length > 0 && (
+          <div className="mx-4 mt-2 flex flex-wrap gap-2" data-testid="attachment-chips">
+            {attachments.map((att) => (
+              <AttachmentChip
+                key={att.id}
+                attachment={att}
+                onRemove={removeAttachment}
+                onToggleContext={toggleContext}
+                onInspectZip={(id) => {
+                  const a = attachments.find(x => x.id === id)
+                  if (!a) return
+                  alert(`ZIP: ${a.name}
+                  
+Contents detected. Extract to sandbox?`)
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        <DropZone
+          onFilesDropped={async (filePaths) => {
+            setIsProcessingDrop(true)
+            try {
+              for (const fp of filePaths) {
+                try {
+                  const result: FileProcessResult = await api.attachmentProcessFile(fp)
+                  addAttachments([result.attachment])
+                } catch {
+                  // Skip files that fail to process
+                }
+              }
+            } finally {
+              setIsProcessingDrop(false)
+            }
+          }}
+          disabled={disabled || isProcessingDrop}
+        >
+          <div className="bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-[22px] px-3 py-2 shadow-[var(--shadow-composer)]
+            focus-within:border-[var(--ivory-accent)] focus-within:ring-1 focus-within:ring-[var(--ivory-accent)]
+            hover:border-[var(--ivory-border-2)] transition duration-[var(--transition-fast)]">
           <textarea
             ref={textareaRef}
             value={value}
@@ -353,11 +401,19 @@ export function MessageInput({
             <div className="flex items-center gap-1.5 min-w-0">
               <button
                 className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)] transition-colors shrink-0"
-                title="Attach file (coming soon)"
+                title={`${attachments.length > 0 ? `${attachments.length} file(s) attached` : 'Attach file'}`}
                 aria-label="Attach file"
-                disabled
+                onClick={() => {
+                  // Trigger file dialog via IPC
+                  api.projectSelectFolder?.()
+                }}
               >
-                <Paperclip size={15} />
+                <Paperclip size={15} className={attachments.length > 0 ? 'text-[var(--ivory-accent)]' : ''} />
+                {attachments.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--ivory-accent)] text-white text-[9px] font-bold flex items-center justify-center">
+                    {attachments.length}
+                  </span>
+                )}
               </button>
               <button
                 type="button"
@@ -386,9 +442,10 @@ export function MessageInput({
               >
                 <Send size={15} />
               </button>
+              </div>              </div>
             </div>
           </div>
-        </div>
+        </DropZone>
       </div>
     </div>
   )

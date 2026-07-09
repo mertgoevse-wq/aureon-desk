@@ -621,14 +621,20 @@ export const livePreviewService = {
               })
               res.end(fs.readFileSync(filePath))
             } else {
-              const indexHtml = path.join(sandboxPath, 'index.html')
-              if (fs.existsSync(indexHtml)) {
-                res.writeHead(200, { 'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*' })
-                res.end(fs.readFileSync(indexHtml))
-              } else {
-                res.writeHead(404, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' })
-                res.end('Not Found')
+              // Only fall back to index.html for extensionless routes (SPA routing).
+              // For missing asset files (.js, .css, .svg, .png, etc.), return 404
+              // so the browser doesn't try to render HTML as a script/stylesheet.
+              const ext = path.extname(cleanPath).toLowerCase()
+              if (!ext) {
+                const indexHtml = path.join(sandboxPath, 'index.html')
+                if (fs.existsSync(indexHtml)) {
+                  res.writeHead(200, { 'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*' })
+                  res.end(fs.readFileSync(indexHtml))
+                  return
+                }
               }
+              res.writeHead(404, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' })
+              res.end('Not Found')
             }
           } catch (e: any) {
             res.writeHead(500, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' })

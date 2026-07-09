@@ -51,3 +51,11 @@ extraResources:
     to: better-sqlite3/build
     filter:
       - "**/*"
+  - from: build/icon.ico
+    to: build/icon.ico
+  - from: build/icon.png
+    to: build/icon.png
+  - from: public/brand
+    to: public/brand
+    filter:
+      - "**/*"
