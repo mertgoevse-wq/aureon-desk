@@ -111,6 +111,8 @@ export interface BuildPipelineStatus {
   streamingRawText?: string
   /** Whether AI streaming generation is in progress */
   isStreaming?: boolean
+  /** Human-readable provider/model label during AI generation (e.g. "Claude 3.5 Sonnet via Anthropic") */
+  generatingModelLabel?: string
 }
 
 /** Build intent classification result */

@@ -99,6 +99,7 @@ export function LivePreview(): React.ReactElement {
   const [pipelinePrompt, setPipelinePrompt] = useState<string | null>(null)
   const [streamingText, setStreamingText] = useState<string | null>(null)
   const [isStreaming, setIsStreaming] = useState(false)
+  const [generatingModelLabel, setGeneratingModelLabel] = useState<string | null>(null)
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null)
 
   const activeProject = projects.find(p => p.id === selectedProjectId)
@@ -198,6 +199,7 @@ export function LivePreview(): React.ReactElement {
       if (s.streamingRawText) {
         setStreamingText(s.streamingRawText)
         setIsStreaming(s.isStreaming || false)
+        if (s.generatingModelLabel) setGeneratingModelLabel(s.generatingModelLabel)
       }
       if (s.previewUrl) {
           // Update preview status from pipeline
@@ -214,6 +216,7 @@ export function LivePreview(): React.ReactElement {
         setPipelineRunning(false)
         setIsStreaming(false)
         setStreamingText(null)
+        setGeneratingModelLabel(null)
         if (s.previewUrl) setActiveTab('preview') // Switch to preview after render
       }
       if (s.error) setError(s.error)
@@ -724,9 +727,16 @@ export function LivePreview(): React.ReactElement {
                     {/* Streaming code preview during AI generation */}
                     {isStreaming && streamingText && (
                       <div className="mt-3 pt-3 border-t border-[var(--ivory-border)]/50 space-y-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-accent)] flex items-center gap-1.5">
-                          <Sparkles size={10} /> AI Generating...
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-accent)] flex items-center gap-1.5">
+                            <Sparkles size={10} /> AI Generating
+                          </span>
+                          {generatingModelLabel && (
+                            <span className="text-[10px] text-[var(--ivory-text-3)] font-medium truncate max-w-[280px]">
+                              with {generatingModelLabel}
+                            </span>
+                          )}
+                        </div>
                         <div className="rounded-xl border border-[var(--ivory-accent)]/20 bg-[var(--ivory-elevated)] p-3 font-mono text-[11px] text-[var(--ivory-text-2)] leading-relaxed max-h-[280px] overflow-y-auto whitespace-pre-wrap break-all">
                           {streamingText}
                         </div>

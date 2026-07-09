@@ -807,7 +807,8 @@ Generate the complete HTML, CSS, and JavaScript files for this app. Output ONLY 
     // Only push every ~10 token callbacks to avoid overwhelming IPC
     if (streamingTokens % 10 === 0 && _stepCallback && _currentBuildId) {
       emitStep(makeStep('generate', `Generating code… (${(streamingText.length / 1024).toFixed(1)} KB)`),
-        [], [], null, null, false, null, false, [], streamingText, true)
+        [], [], null, null, false, null, false, [], streamingText, true,
+        `${model.display_name || model.name} via ${ref.providerName}`)
     }
   }
 
@@ -967,8 +968,6 @@ function computeDeltaFileOperations(
 
   // Track which existing files have been matched to a new file
   const matchedExisting = new Set<string>()
-  // Track which new files have been matched to an existing file
-  const matchedNew = new Set<string>()
 
   // Process new files: determine create_file vs update_file vs rename_file
   for (const [newPath, newContent] of Object.entries(newFiles)) {
@@ -977,7 +976,6 @@ function computeDeltaFileOperations(
     if (existingFiles[newPath] !== undefined) {
       // File exists at same path
       matchedExisting.add(newPath)
-      matchedNew.add(newPath)
       if (existingFiles[newPath] === newContent) {
         // Content unchanged — skip (no operation needed)
         ops.push({
@@ -1009,7 +1007,6 @@ function computeDeltaFileOperations(
       // Same content exists at a different path — rename_file
       const oldPath = contentToExistingPath.get(newContent)!
       matchedExisting.add(oldPath)
-      matchedNew.add(newPath)
       ops.push({
         id: uuid(),
         type: 'rename_file',
@@ -1101,6 +1098,11 @@ function readExistingSandboxFiles(sandboxPath: string): Record<string, string> {
 function applyFileOperations(sandboxPath: string, operations: FileOperation[]): FileOperation[] {
   const applied: FileOperation[] = []
   for (const op of operations) {
+    // Skip unchanged files — no need to re-write identical content
+    if (op.status === 'skipped') {
+      applied.push(op)
+      continue
+    }
     try {
       const resolved = path.resolve(sandboxPath, op.path)
       // Block path traversal
@@ -1120,6 +1122,10 @@ function applyFileOperations(sandboxPath: string, operations: FileOperation[]): 
         if (fs.existsSync(resolved)) fs.unlinkSync(resolved)
       } else if (op.type === 'rename_file' && op.oldPath) {
         const oldResolved = path.resolve(sandboxPath, op.oldPath)
+        // Also block path traversal on the old path
+        if (!oldResolved.startsWith(path.resolve(sandboxPath))) {
+          throw new Error('Old path escapes sandbox directory')
+        }
         if (fs.existsSync(oldResolved)) {
           fs.renameSync(oldResolved, resolved)
         }
@@ -1136,7 +1142,7 @@ function applyFileOperations(sandboxPath: string, operations: FileOperation[]): 
 }
 
 /** Stream a step to the renderer via callback */
-function emitStep(step: BuildStep, completedSteps: BuildStep[], fileOps: FileOperation[], previewUrl: string | null, previewStatus: string | null, isComplete: boolean, error: string | null, isDemo: boolean, suggestions: FollowUpSuggestion[], streamingRawText?: string, isStreaming?: boolean) {
+function emitStep(step: BuildStep, completedSteps: BuildStep[], fileOps: FileOperation[], previewUrl: string | null, previewStatus: string | null, isComplete: boolean, error: string | null, isDemo: boolean, suggestions: FollowUpSuggestion[], streamingRawText?: string, isStreaming?: boolean, generatingModelLabel?: string) {
   if (_stepCallback) {
     const status: BuildPipelineStatus = {
       buildId: _currentBuildId,
@@ -1151,6 +1157,7 @@ function emitStep(step: BuildStep, completedSteps: BuildStep[], fileOps: FileOpe
       followUpSuggestions: suggestions,
       streamingRawText: streamingRawText || undefined,
       isStreaming: isStreaming || undefined,
+      generatingModelLabel: generatingModelLabel || undefined,
     }
     try {
       _stepCallback(status)
@@ -1244,10 +1251,13 @@ export const buildPipelineService = {
       } else {
         files = generateDeterministicApp(request.prompt, request.theme, classification.suggestedName, classification.intent)
       }
-      // Compute file operations — check existing sandbox files for delta (follow-up builds)
+      // Compute file operations — check existing sandbox files for delta (follow-up builds).
+      // The sandbox from a previous build may still exist on disk even if the preview server
+      // has stopped, so we check both the current sandboxPath and livePreviewService's status.
       let existingFiles: Record<string, string> | null = null
-      if (sandboxPath) {
-        existingFiles = readExistingSandboxFiles(sandboxPath)
+      const currentSandboxPath = sandboxPath || livePreviewService.getStatus().sandboxPath
+      if (currentSandboxPath) {
+        existingFiles = readExistingSandboxFiles(currentSandboxPath)
       }
       fileOps = createFileOperations(files, existingFiles)
 
