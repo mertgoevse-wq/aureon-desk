@@ -139,6 +139,12 @@ export interface IpcApi {
   selfAuditGeneratePlan: (report: any) => Promise<{ success: boolean; plan?: any; error?: string }>
   selfAuditGeneratePatch: (plan: any, report: any) => Promise<{ success: boolean; patchProposal?: any; error?: string }>
   deviceInputsListScreenSources: (request: import('../shared/device-inputs').ScreenSourcesRequest) => Promise<import('../shared/device-inputs').ScreenSourcesResult>
+  modelRouterSelectForPrompt: (prompt: string) => Promise<{ task: string; model: any; modelDbId: string | null; explanation: string; availableProviders: string[] }>
+  modelRouterHandleExhaustion: (exhaustedModelId: string, task: string, reason?: string) => Promise<{ fallbackModel: any; fallbackDbId: string | null; cooldownMinutes: number }>
+  modelRouterGetExhausted: () => Promise<any[]>
+  modelRouterClearExhaustion: (modelId?: string) => Promise<boolean>
+  modelRouterGetAllScores: () => Promise<any[]>
+  modelRouterResolveBestForBuild: (prompt: string) => Promise<{ modelDbId: string | null; explanation: string; task: string; isDemo: boolean }>
 }
 
 declare global {

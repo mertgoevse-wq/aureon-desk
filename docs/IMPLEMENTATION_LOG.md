@@ -1,5 +1,59 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-09 — NVIDIA NIM Support & Smart Model Routing
+
+Branch: `main`
+Commit at start: `6efabc8` (Smart Model Selection & Device Inputs)
+
+### Session Purpose
+
+Add NVIDIA NIM free-tier provider support, implement token-based model switching with exhaustion tracking, and integrate the smart model selector into the Studio build flow so prompts automatically use the best available AI model.
+
+### Files Created
+
+- `src/main/services/model-router.service.ts` — main-process bridge between smart model selector and provider DB; resolves best model for build, handles exhaustion events, resolves ModelScore to DB model ID
+
+### Files Modified
+
+- `src/shared/constants.ts` — added NVIDIA NIM adapter with 3 models (Nemotron 70B, 340B, 51B) at `https://integrate.api.nvidia.com/v1`
+- `src/shared/model-selector.ts` — added `hasFreeTier` field to `ModelScore` interface, NVIDIA model scores, exhaustion tracking (`markModelExhausted`, `isModelExhausted`, `clearModelExhaustion`, `getExhaustedModels`, 5-min cooldown), `selectFallbackModel()`, free-tier bonus logic
+- `src/main/ipc/provider.ipc.ts` — added 6 new IPC handlers: `model-router:selectForPrompt`, `model-router:handleExhaustion`, `model-router:getExhausted`, `model-router:clearExhaustion`, `model-router:getAllScores`, `model-router:resolveBestForBuild`
+- `src/preload/index.ts` + `index.d.ts` — wired model router API (6 methods) into renderer bridge
+- `src/shared/preview-helpers.ts` — added `pipelineModelRoute` and `pipelineModelExplanation` to `AUTO_PREVIEW_KEYS`, extended `setAutoBuildPipeline()` and `getAndClearBuildPipeline()` to carry model route through sessionStorage
+- `src/renderer/src/pages/Studio.tsx` — `handleStartBuilding` and `handleComposerSubmit` now async; resolve best model via `api.modelRouterResolveBestForBuild()` before navigating; loading state on button; model explanation badge in UI; `resolvingModel` state wired to button disabled + spinner
+- `src/renderer/src/pages/LivePreview.tsx` — pipeline trigger now reads `modelRoute` from sessionStorage and passes to `buildRun`; `handleFollowUp` now resolves best model instead of hardcoded `null`
+- `src/main/services/chat-completion.service.ts` — added `nvidia` case to `callProvider` switch for OpenAI-compatible routing
+- `tests/unit/live-preview.test.ts` — updated `AUTO_PREVIEW_KEYS` contract test with 2 new keys
+
+### Code Review Issues Fixed
+
+| Issue | Fix |
+|-------|-----|
+| Missing `hasFreeTier` on 12 existing ModelScore entries | Added explicit `hasFreeTier: false` |
+| `ModelTask` type mismatch in `provider.ipc.ts` line 113 | Added `type` import + `as ModelTask` cast |
+| Dead `modelSelection`/`resolvingModel` state in Studio.tsx | Wired into UI — resolving state disables button + shows spinner, model explanation badge shown |
+| `handleFollowUp` hardcoded `providerModelRoute: null` | Now calls `api.modelRouterResolveBestForBuild()` before follow-up builds |
+| NVIDIA not in `chat-completion.service.ts` adapter routing | Added `nvidia` case alongside `openai`, `groq`, etc. |
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS (after 13 errors fixed) |
+| `npm test` | ✅ PASS (597 tests, 26 files) |
+| `npm run build` | ✅ PASS |
+| Code review | ✅ PASS — 5 issues found and fixed |
+
+### Key Architecture Decisions
+
+- **NVIDIA NIM is OpenAI-compatible** — uses existing OpenAI adapter path, no new adapter code needed beyond provider definition
+- **Exhaustion tracking is in-memory** — shared module state in main process, resets on app restart; 5-minute cooldown per model
+- **Free-tier bonus**: `hasFreeTier: true` gives +10 score boost; OpenRouter `:free` models also get this
+- **Pipeline model resolution happens in renderer** — Studio resolves model before navigation, passes through sessionStorage to LivePreview which reads it on mount
+- **All fallbacks are graceful** — no model → demo, AI fails → demo, exhaustion → next best → demo
+
+---
+
 ## 2026-07-09 — Post-Run Consolidation
 
 Branch: `main`

@@ -113,6 +113,19 @@ export const PROVIDER_ADAPTERS: ProviderAdapterInfo[] = [
     defaultModels: []
   },
   {
+    slug: 'nvidia',
+    name: 'NVIDIA NIM',
+    description: 'NVIDIA Inference Microservices — free tier available via build.nvidia.com',
+    defaultBaseUrl: 'https://integrate.api.nvidia.com/v1',
+    authType: 'api_key',
+    capabilities: ['text', 'tool_use', 'streaming'],
+    defaultModels: [
+      { name: 'nvidia/llama-3.1-nemotron-70b-instruct', displayName: 'Llama 3.1 Nemotron 70B', contextWindow: 131072 },
+      { name: 'nvidia/nemotron-4-340b-instruct', displayName: 'Nemotron 4 340B', contextWindow: 128000 },
+      { name: 'nvidia/llama-3.1-nemotron-51b-instruct', displayName: 'Llama 3.1 Nemotron 51B', contextWindow: 131072 },
+    ]
+  },
+  {
     slug: 'custom',
     name: 'Custom OpenAI-Compatible',
     description: 'Any OpenAI-compatible API endpoint',

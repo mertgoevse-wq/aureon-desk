@@ -1,3 +1,46 @@
+## [0.9.71] - 2026-07-09
+
+### Added — NVIDIA NIM Support & Smart Model Routing
+
+**NVIDIA NIM Provider:**
+- Added NVIDIA NIM adapter to `PROVIDER_ADAPTERS` in `constants.ts` — free tier available via build.nvidia.com
+- OpenAI-compatible API at `https://integrate.api.nvidia.com/v1`
+- 3 default models: Llama 3.1 Nemotron 70B, Nemotron 4 340B, Llama 3.1 Nemotron 51B
+- `nvidia` adapter case added to `chat-completion.service.ts` callProvider routing
+
+**Token-Based Model Switching:**
+- Extended `model-selector.ts` with exhaustion tracking: `markModelExhausted()`, `isModelExhausted()`, `clearModelExhaustion()`
+- 5-minute auto-cooldown: exhausted models reset after cooldown period
+- `selectFallbackModel()` — picks next best model when primary is exhausted
+- Free tier bonus: models with `hasFreeTier: true` get +10 score boost
+- All models now explicitly set `hasFreeTier: false` for type safety
+
+**Model Router Service:**
+- Created `src/main/services/model-router.service.ts` — main-process bridge between smart selector and provider DB
+- `resolveBestModelForBuild()` — auto-selects best model for pipeline code generation
+- `handleExhaustion()` — marks model exhausted + returns fallback
+- Resolves ModelScore to DB model ID for pipeline integration
+
+**Smart Model Selection in Studio Build Flow:**
+- Studio → LivePreview pipeline now resolves the best available AI model before starting build
+- `providerModelRoute` passed through sessionStorage pipeline contract
+- Follow-up suggestions also use smart model resolution
+- Loading state on "Start building" button while resolving model
+- Model explanation shown in Studio (e.g., "Selected Llama 3.1 Nemotron 70B for Code Generation")
+
+**Wired:**
+- 6 new IPC handlers: `model-router:selectForPrompt`, `model-router:handleExhaustion`, `model-router:getExhausted`, `model-router:clearExhaustion`, `model-router:getAllScores`, `model-router:resolveBestForBuild`
+- Preload bridge fully typed for model router API
+- Preview helpers updated with `pipelineModelRoute` and `pipelineModelExplanation` sessionStorage keys
+- LivePreview.tsx `handleFollowUp` now uses smart model selection instead of hardcoded null
+- Test updated for new sessionStorage keys
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (597 tests)
+- `npm run build` — ✅ PASS
+- Code review — ✅ PASS (issues found and fixed)
+
 ## [0.9.70] - 2026-07-09
 
 ### Added — Smart Model Selection & Device Inputs Foundation

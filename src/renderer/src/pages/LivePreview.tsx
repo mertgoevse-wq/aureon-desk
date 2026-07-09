@@ -164,7 +164,7 @@ export function LivePreview(): React.ReactElement {
         theme: pipelineTrigger.theme,
         targetWorkspace: 'code',
         mode: pipelineTrigger.mode as 'plan-only' | 'generate' | 'generate-and-preview',
-        providerModelRoute: null,
+        providerModelRoute: pipelineTrigger.modelRoute || null,
       }).catch(console.error)
     } else if (shouldAutoStartPreview === 'true') {
       const style = sessionStorage.getItem(AUTO_PREVIEW_KEYS.style) || 'Calming Ivory'
@@ -315,7 +315,7 @@ export function LivePreview(): React.ReactElement {
     } catch { /* ignore */ }
   }
 
-  const handleFollowUp = (suggestion: FollowUpSuggestion) => {
+  const handleFollowUp = async (suggestion: FollowUpSuggestion) => {
     // Reset state from previous build before starting new one
     setPipelineSteps([])
     setPipelineFileOps([])
@@ -326,13 +326,23 @@ export function LivePreview(): React.ReactElement {
     setPipelineRunning(true)
     setActiveTab('code')
     setPipelinePrompt(suggestion.prompt)
+
+    // Resolve best model for the follow-up prompt
+    let modelRoute: string | null = null
+    try {
+      const selection = await api.modelRouterResolveBestForBuild(suggestion.prompt)
+      modelRoute = selection.modelDbId
+    } catch {
+      // Fallback to demo
+    }
+
     api.buildRun({
       prompt: suggestion.prompt,
       projectType: 'Web app',
       theme: 'Calming Ivory',
       targetWorkspace: 'code',
       mode: 'generate-and-preview',
-      providerModelRoute: null,
+      providerModelRoute: modelRoute,
     }).catch(console.error)
   }
 

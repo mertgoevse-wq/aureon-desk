@@ -228,6 +228,7 @@ export const chatCompletionService = {
       case 'groq':
       case 'mistral':
       case 'deepseek':
+      case 'nvidia':
       case 'custom':
       default:
         return this.callOpenAICompatible(built, model, provider)

@@ -1,6 +1,8 @@
 import { ipcMain } from 'electron'
 import { providerService } from '../services/provider.service'
+import { modelRouterService } from '../services/model-router.service'
 import { PROVIDER_ADAPTERS } from '../../shared/constants'
+import type { ModelTask } from '../../shared/model-selector'
 import { logger } from '../utils/logger'
 
 export function registerProviderIPC(): void {
@@ -100,6 +102,37 @@ export function registerProviderIPC(): void {
 
   ipcMain.handle('provider:fetchOllamaModels', async (_event, baseUrl?: string) => {
     return await providerService.fetchOllamaModels(baseUrl)
+  })
+
+  // ---- Model Router (smart selection + token exhaustion) ----
+
+  ipcMain.handle('model-router:selectForPrompt', (_event, prompt: string) => {
+    return modelRouterService.selectModelForPrompt(prompt)
+  })
+
+  ipcMain.handle('model-router:handleExhaustion', (_event, exhaustedModelId: string, task: string, reason?: string) => {
+    return modelRouterService.handleExhaustion(exhaustedModelId, task as ModelTask, reason)
+  })
+
+  ipcMain.handle('model-router:getExhausted', () => {
+    return modelRouterService.getExhausted()
+  })
+
+  ipcMain.handle('model-router:clearExhaustion', (_event, modelId?: string) => {
+    if (modelId) {
+      modelRouterService.clearExhaustion(modelId)
+    } else {
+      modelRouterService.clearAllExhaustion()
+    }
+    return true
+  })
+
+  ipcMain.handle('model-router:getAllScores', () => {
+    return modelRouterService.getAllScores()
+  })
+
+  ipcMain.handle('model-router:resolveBestForBuild', (_event, prompt: string) => {
+    return modelRouterService.resolveBestModelForBuild(prompt)
   })
 
   logger.info('Provider IPC handlers registered')

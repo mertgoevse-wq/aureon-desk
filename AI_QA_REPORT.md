@@ -4,6 +4,48 @@
 
 ---
 
+## NVIDIA NIM Support & Smart Model Routing — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| Critical issue review | ✅ PASS — no open Critical Issues |
+| `npm run typecheck` (post-change) | ✅ PASS |
+| `npm test` (post-change, 597 tests) | ✅ PASS |
+| `npm run build` (post-change) | ✅ PASS |
+| Code review | ✅ PASS — 5 issues found and fixed |
+
+### Changes
+
+| Area | Change |
+|------|--------|
+| NVIDIA adapter | Added to `PROVIDER_ADAPTERS` with 3 models (Nemotron 70B, 340B, 51B) |
+| Token exhaustion | Exhaustion tracking with 5-min cooldown, fallback routing, auto-clear |
+| Model router | New `model-router.service.ts` — bridges smart selector with provider DB |
+| Studio integration | Smart model resolution before build, loading state, model explanation in UI |
+| Pipeline contract | `providerModelRoute` + `modelExplanation` in sessionStorage pipeline keys |
+| Follow-up builds | `handleFollowUp` now resolves best model instead of hardcoded null |
+| Adapter routing | `nvidia` case added to `chat-completion.service.ts` callProvider |
+
+### Safety
+
+- API keys retrieved from encrypted vault — never exposed
+- NVIDIA free tier models marked `hasFreeTier: true` for auto-preference
+- Exhaustion tracking prevents repeated failed calls to rate-limited models
+- Graceful fallback to local demo when no provider available
+- All `ModelScore` entries explicitly set `hasFreeTier` for type safety
+
+### Code Review Issues Fixed
+
+| Issue | Fix |
+|-------|-----|
+| Missing `hasFreeTier` on existing models (12x type errors) | Added explicit `hasFreeTier: false` to all non-NVIDIA entries |
+| `ModelTask` type mismatch in IPC handler | Added type import and cast |
+| Dead `modelSelection`/`resolvingModel` state | Wired into UI — loading state on button, model explanation badge |
+| `handleFollowUp` hardcoded `providerModelRoute: null` | Now resolves model before follow-up builds |
+| NVIDIA not in `chat-completion.service.ts` adapter routing | Added `nvidia` case |
+
+---
+
 ## Real AI Provider Code Generation — 2026-07-09
 
 | Check | Result |

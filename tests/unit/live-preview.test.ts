@@ -495,6 +495,12 @@ describe('Studio → LivePreview Regression Contract', () => {
     expect(AUTO_PREVIEW_KEYS.style).toBe('build-app-style')
     expect(AUTO_PREVIEW_KEYS.prompt).toBe('build-app-prompt')
     expect(AUTO_PREVIEW_KEYS.platform).toBe('build-app-platform')
+    expect(AUTO_PREVIEW_KEYS.pipelinePrompt).toBe('build-pipeline-prompt')
+    expect(AUTO_PREVIEW_KEYS.pipelineTheme).toBe('build-pipeline-theme')
+    expect(AUTO_PREVIEW_KEYS.pipelinePlatform).toBe('build-pipeline-platform')
+    expect(AUTO_PREVIEW_KEYS.pipelineMode).toBe('build-pipeline-mode')
+    expect(AUTO_PREVIEW_KEYS.pipelineModelRoute).toBe('build-pipeline-model-route')
+    expect(AUTO_PREVIEW_KEYS.pipelineModelExplanation).toBe('build-pipeline-model-explanation')
   })
 
   it('startGeneratedPreview should create demo sandbox and not error', () => {

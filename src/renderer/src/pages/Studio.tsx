@@ -243,12 +243,35 @@ export function Studio(): React.ReactElement {
     )
   }
 
-  const handleStartBuilding = () => {
+  const [modelSelection, setModelSelection] = useState<{ modelDbId: string | null; explanation: string; isDemo: boolean } | null>(null)
+  const [resolvingModel, setResolvingModel] = useState(false)
+  const [showModelInfo, setShowModelInfo] = useState(false)
+
+  const handleStartBuilding = async () => {
     // "Start building" — if user typed a prompt, start the pipeline directly
     // Otherwise open the Build App wizard (drawer)
     if (primaryPrompt.trim()) {
-      setAutoBuildPipeline({ style: projectStyle, prompt: primaryPrompt, platform: targetPlatform, mode: 'generate-and-preview' })
-      navigate('/preview')
+      setResolvingModel(true)
+      try {
+        const selection = await api.modelRouterResolveBestForBuild(primaryPrompt)
+        setModelSelection(selection)
+        setShowModelInfo(true)
+        setAutoBuildPipeline({
+          style: projectStyle,
+          prompt: primaryPrompt,
+          platform: targetPlatform,
+          mode: 'generate-and-preview',
+          modelRoute: selection.modelDbId,
+          modelExplanation: selection.explanation,
+        })
+        navigate('/preview')
+      } catch {
+        // Fallback: use demo without model
+        setAutoBuildPipeline({ style: projectStyle, prompt: primaryPrompt, platform: targetPlatform, mode: 'generate-and-preview' })
+        navigate('/preview')
+      } finally {
+        setResolvingModel(false)
+      }
     } else {
       const buildCard = TASK_CATEGORIES.find(c => c.id === 'build_app')
       if (buildCard) {
@@ -257,10 +280,27 @@ export function Studio(): React.ReactElement {
     }
   }
 
-  const handleComposerSubmit = () => {
+  const handleComposerSubmit = async () => {
     // Enter in the hero composer starts the bolt-like build pipeline
     const prompt = primaryPrompt || 'Build a simple web utility'
-    setAutoBuildPipeline({ style: projectStyle, prompt, platform: targetPlatform, mode: 'generate-and-preview' })
+    setResolvingModel(true)
+    try {
+      const selection = await api.modelRouterResolveBestForBuild(prompt)
+      setModelSelection(selection)
+      setShowModelInfo(true)
+      setAutoBuildPipeline({
+        style: projectStyle,
+        prompt,
+        platform: targetPlatform,
+        mode: 'generate-and-preview',
+        modelRoute: selection.modelDbId,
+        modelExplanation: selection.explanation,
+      })
+    } catch {
+      setAutoBuildPipeline({ style: projectStyle, prompt, platform: targetPlatform, mode: 'generate-and-preview' })
+    } finally {
+      setResolvingModel(false)
+    }
 
     navigate('/preview')
   }
@@ -317,10 +357,15 @@ export function Studio(): React.ReactElement {
             <button
               type="button"
               onClick={handleStartBuilding}
-              className="inline-flex h-9 items-center justify-center gap-2 px-5 rounded-xl bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-[12px] font-bold text-white transition-colors cursor-pointer shadow-[var(--shadow-xs)]"
+              disabled={resolvingModel}
+              className="inline-flex h-9 items-center justify-center gap-2 px-5 rounded-xl bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-[12px] font-bold text-white transition-colors cursor-pointer shadow-[var(--shadow-xs)] disabled:opacity-60 disabled:cursor-wait"
               data-testid="hero-start-building-btn"
             >
-              Start building <ArrowRight size={13} />
+              {resolvingModel ? (
+                <>Resolving model<ArrowRight size={13} className="animate-pulse" /></>
+              ) : (
+                <>Start building <ArrowRight size={13} /></>
+              )}
             </button>
           </div>
         </div>
@@ -370,6 +415,15 @@ export function Studio(): React.ReactElement {
             </div>
           )}
         </div>
+
+        {/* === AUTONOMY SELECTOR === */}
+        {/* Smart model selection info — shown after a model is resolved */}
+        {modelSelection && !modelSelection.isDemo && (
+          <div className="mt-4 mb-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--ivory-accent-light)]/50 border border-[var(--ivory-accent)]/15 text-[11px] text-[var(--ivory-text-2)] font-medium">
+            <Sparkles size={11} className="text-[var(--ivory-accent)]" />
+            <span className="truncate max-w-[300px]">{modelSelection.explanation}</span>
+          </div>
+        )}
 
         {/* === AUTONOMY SELECTOR === */}
         <div className="mt-10 flex items-center justify-center gap-3">

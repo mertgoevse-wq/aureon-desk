@@ -346,6 +346,35 @@ const api = {
   // Device Inputs
   deviceInputsListScreenSources: (request: ScreenSourcesRequest): Promise<ScreenSourcesResult> =>
     ipcRenderer.invoke('device-inputs:listScreenSources', request),
+
+  // Model Router (smart selection + token exhaustion)
+  modelRouterSelectForPrompt: (prompt: string): Promise<{
+    task: string
+    model: any
+    modelDbId: string | null
+    explanation: string
+    availableProviders: string[]
+  }> =>
+    ipcRenderer.invoke('model-router:selectForPrompt', prompt),
+  modelRouterHandleExhaustion: (exhaustedModelId: string, task: string, reason?: string): Promise<{
+    fallbackModel: any
+    fallbackDbId: string | null
+    cooldownMinutes: number
+  }> =>
+    ipcRenderer.invoke('model-router:handleExhaustion', exhaustedModelId, task, reason),
+  modelRouterGetExhausted: (): Promise<any[]> =>
+    ipcRenderer.invoke('model-router:getExhausted'),
+  modelRouterClearExhaustion: (modelId?: string): Promise<boolean> =>
+    ipcRenderer.invoke('model-router:clearExhaustion', modelId),
+  modelRouterGetAllScores: (): Promise<any[]> =>
+    ipcRenderer.invoke('model-router:getAllScores'),
+  modelRouterResolveBestForBuild: (prompt: string): Promise<{
+    modelDbId: string | null
+    explanation: string
+    task: string
+    isDemo: boolean
+  }> =>
+    ipcRenderer.invoke('model-router:resolveBestForBuild', prompt),
 }
 
 // Expose the API in the main world

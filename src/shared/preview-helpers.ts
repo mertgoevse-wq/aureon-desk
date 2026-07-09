@@ -19,6 +19,8 @@ export const AUTO_PREVIEW_KEYS = {
   pipelineTheme: 'build-pipeline-theme',
   pipelinePlatform: 'build-pipeline-platform',
   pipelineMode: 'build-pipeline-mode',
+  pipelineModelRoute: 'build-pipeline-model-route',
+  pipelineModelExplanation: 'build-pipeline-model-explanation',
 } as const
 
 export interface AutoPreviewConfig {
@@ -61,33 +63,41 @@ export function clearAutoPreview(): void {
   sessionStorage.removeItem(AUTO_PREVIEW_KEYS.pipelineTheme)
   sessionStorage.removeItem(AUTO_PREVIEW_KEYS.pipelinePlatform)
   sessionStorage.removeItem(AUTO_PREVIEW_KEYS.pipelineMode)
+  sessionStorage.removeItem(AUTO_PREVIEW_KEYS.pipelineModelRoute)
+  sessionStorage.removeItem(AUTO_PREVIEW_KEYS.pipelineModelExplanation)
 }
 
 /**
  * Set sessionStorage to trigger the new build pipeline on Code mode mount.
  * This uses the bolt-like prompt → code → diff → preview flow.
  */
-export function setAutoBuildPipeline(config: AutoPreviewConfig & { mode?: string }): void {
+export function setAutoBuildPipeline(config: AutoPreviewConfig & { mode?: string; modelRoute?: string | null; modelExplanation?: string }): void {
   sessionStorage.setItem(AUTO_PREVIEW_KEYS.pipelinePrompt, config.prompt)
   sessionStorage.setItem(AUTO_PREVIEW_KEYS.pipelineTheme, config.style)
   sessionStorage.setItem(AUTO_PREVIEW_KEYS.pipelinePlatform, config.platform)
   sessionStorage.setItem(AUTO_PREVIEW_KEYS.pipelineMode, config.mode || 'generate-and-preview')
+  sessionStorage.setItem(AUTO_PREVIEW_KEYS.pipelineModelRoute, config.modelRoute || '')
+  sessionStorage.setItem(AUTO_PREVIEW_KEYS.pipelineModelExplanation, config.modelExplanation || '')
 }
 
 /**
  * Read and clear the build pipeline trigger from sessionStorage.
  * Returns null if no pipeline trigger is set.
  */
-export function getAndClearBuildPipeline(): { prompt: string; theme: string; platform: string; mode: string } | null {
+export function getAndClearBuildPipeline(): { prompt: string; theme: string; platform: string; mode: string; modelRoute: string | null; modelExplanation: string } | null {
   const prompt = sessionStorage.getItem(AUTO_PREVIEW_KEYS.pipelinePrompt)
   if (!prompt) return null
   const theme = sessionStorage.getItem(AUTO_PREVIEW_KEYS.pipelineTheme) || 'Calming Ivory'
   const platform = sessionStorage.getItem(AUTO_PREVIEW_KEYS.pipelinePlatform) || 'Web app'
   const mode = sessionStorage.getItem(AUTO_PREVIEW_KEYS.pipelineMode) || 'generate-and-preview'
+  const modelRoute = sessionStorage.getItem(AUTO_PREVIEW_KEYS.pipelineModelRoute) || null
+  const modelExplanation = sessionStorage.getItem(AUTO_PREVIEW_KEYS.pipelineModelExplanation) || ''
   // Clear pipeline keys only
   sessionStorage.removeItem(AUTO_PREVIEW_KEYS.pipelinePrompt)
   sessionStorage.removeItem(AUTO_PREVIEW_KEYS.pipelineTheme)
   sessionStorage.removeItem(AUTO_PREVIEW_KEYS.pipelinePlatform)
   sessionStorage.removeItem(AUTO_PREVIEW_KEYS.pipelineMode)
-  return { prompt, theme, platform, mode }
+  sessionStorage.removeItem(AUTO_PREVIEW_KEYS.pipelineModelRoute)
+  sessionStorage.removeItem(AUTO_PREVIEW_KEYS.pipelineModelExplanation)
+  return { prompt, theme, platform, mode, modelRoute: modelRoute || null, modelExplanation }
 }
