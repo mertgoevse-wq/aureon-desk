@@ -7,13 +7,14 @@
 ## LivePreview Auto-Popup Push Sync — 2026-07-09
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (445 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 | `node scripts/manual-livepreview-smoke.mjs` | ✅ PASS |
 
 ### Changes
+
 - Replaced the purely polling-based LivePreview status sync with an immediate push-based model (`preview:status-change` IPC event).
 - The Studio auto-generated iframe now mounts synchronously without an artificial 2-second blank screen delay.
 - Added a 5-second aggressive fast-poll (200ms) fallback for edge-case fast compilations.
@@ -25,12 +26,13 @@
 ## Hero Theme & Overview Redesign — 2026-07-09
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (441 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - Implemented radial gradient hero backgrounds and display Serif headings (`Create with Aureon`).
 - Streamlined Studio dashboard grid to exactly 4 categories (Build, Code, Create, Connect) and collapsed secondary types under a toggleable creation drawer.
 - Collapsed Right Inspector automatically on Studio workspace entry.
@@ -44,13 +46,14 @@
 ## Studio Wizard & Preview Autostart Repair — 2026-07-09
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (438 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 | `npx playwright test tests/e2e/99-human-click-qa.spec.ts` | ✅ PASS |
 
 ### Changes
+
 - Implemented parameter wizard selectors in Studio Task Drawer.
 - Configured sessionStorage routing to autostart sandbox compilation and previewing on mounting Code Mode page.
 - Added custom dynamic styling (Calming Ivory, Soft Teal, Deep Slate) from Studio page through live preview compiler service.
@@ -62,13 +65,14 @@
 ## Human-Style Visible Manual Click QA — 2026-07-09
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (437 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 | `npx playwright test tests/e2e/99-human-click-qa.spec.ts --headed` | ✅ PASS (27 screenshots captured) |
 
 ### Changes
+
 - Integrated details slide-out `Drawer` in `Studio.tsx` to handle category card orchestration.
 - Added native Escape key listener inside the shared `Modal` component.
 - Removed custom window controls expectations from E2E test specs (since native OS titlebar frame is now standard).
@@ -78,12 +82,13 @@
 ## Product Structure Polish — Reduced Clutter — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (348 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - Chat: starter prompts 6→4, removed vibe coding section, recents 3→2
 - Cowork: removed redundant nav buttons (mode switch covers navigation)
 - Vibe Coding: "All templates" collapsed by default with count badge
@@ -93,12 +98,13 @@
 ## MCP Tools — Master-Detail Layout — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (348 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - ToolsPage redesigned as master-detail layout (left tool list + right detail panel)
 - Added Status & Risk section (Enabled, Trusted, Risk Level, Approval Required, Last Run)
 - Clean empty state: "No MCP servers connected"
@@ -109,12 +115,13 @@
 ## MCP Tools Polish — Tests & UX Consistency — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (348 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - Added 18 unit tests (13→31): destructive blocking, router no-auto-run, enable/disable, modal, secrets redaction
 - ToolsPage: permission descriptions now match safety gate, human-friendly status labels in call history
 - Safety model confirmed: imported tools disabled, destructive blocked, secrets redacted, no auto-run
@@ -124,12 +131,13 @@
 ## Drawer & SelectMenu — Compact Overlay Expansion — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (331 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - Created `Drawer.tsx` — right-side slide-in panel with focus trap, ESC, click-outside, animation, ARIA
 - Created `SelectMenu.tsx` — compact anchored popover menu with keyboard nav (arrow keys, enter, esc), auto-focus, alignment support
 - Fixed `ProjectsPage.tsx` — replaced custom inline modal (no focus trap, no ARIA) with shared `Modal` component
@@ -140,12 +148,13 @@
 ## MCP Tools Repair — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (331 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - ToolsPage complete rewrite: Cards, expandable rows, per-tool safety checks, Toggle for enable/disable, danger Delete
 - Add MCP Server Modal with transport picker, safety warning, disabled-by-default
 - Call History: Card wrapper, status badges, timestamps, sanitized previews
@@ -156,12 +165,13 @@
 ## Provider Settings Layout Repair — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (331 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - Provider card restructured into 6 clear sections with dividers
 - API key input: raw `<input>` → shared `<Input>` component; eye icon side-by-side
 - Actions footer: Test/Toggle/Delete moved from cramped header to dedicated row
@@ -174,12 +184,13 @@
 ## Compact Modals & Popovers — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (331 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - Created `Popover.tsx` — reusable anchored popover + searchable SelectPopover
 - Enhanced `Modal.tsx` — focus trapping, compact sizing (320-560px), smooth transitions, ARIA
 - Converted ProvidersPage Add Custom form to compact 380px Modal
@@ -190,12 +201,13 @@
 ## Desktop Shell Simplification — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (331 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - Switched to native Windows frame (removed `frame: false`) — native min/max/close controls replace custom ones
 - Removed custom window controls, drag regions, isMaximized tracking from AppShell
 - Sidebar: default 240→232px, collapsed 48→56px, lighter surface (#F9F6F0)
@@ -207,7 +219,7 @@
 ## Manual QA & UX Baseline — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run verify:native` | ✅ PASS |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (331 unit tests) | ✅ PASS |
@@ -217,6 +229,7 @@
 | Source-aware review | ✅ Complete — `docs/DEEPSEEK_CURRENT_STATE.md` (comprehensive rewrite) |
 
 ### Audit Summary
+
 - **Branch:** `main` at `56b8cd9`
 - **19 UI screens inventoried** — 17 working, 2 partial (Cowork simulated, Tools/MCP registry)
 - **Changes:** `VibeCoding.tsx` — removed unused `TUTORIAL_CARDS` import
@@ -225,6 +238,7 @@
 - **origin/master is stale:** 21 commits behind — should sync after commit
 
 ### Visual Issues (Source Level)
+
 - 10px text remaining in VibeCoding.tsx (5 locations: step labels, option descriptions, link text)
 - 9px badge text in VibeCoding.tsx ("Code mode" badge)
 - Sidebar/content color divide improved but still present
@@ -232,6 +246,7 @@
 - MCP tool execution not wired (registry only)
 
 ### Resolved Since Last Audit
+
 - ✅ Large logo PNGs (4.8MB) removed — `public/brand/` ~16MB → ~0.15MB
 - ✅ Inline AureonMark SVG extracted to shared component
 - ✅ Native HTML `<details>` replaced with custom accordion in BeginnerHelp
@@ -245,12 +260,13 @@
 ## Cleanup — Duplicate Docs, Assets, Dead Code — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (331 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - Removed 3 old huge PNGs from public/brand/ (~16MB → ~0.15MB)
 - Updated AureonMark.tsx to use optimized size variants
 - Marked 4 historical docs (MVP_TEST_PLAN, ROADMAP, CONTINUATION_NOTES, FREEBUFF_PROJECT_MEMORY)
@@ -260,12 +276,13 @@
 ## Vibe Coding Expansion — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (331 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - VibeTemplates: 8→15 cards, guided builder gets android-app, prompted safety instructions
 - VibeCoding dashboard: hero section, 6 project type cards, 6 quick actions, guided builder polish
 - Tutorial cards: 8 shared TUTORIAL_CARDS, BeginnerHelp 6→9 blocks
@@ -276,13 +293,14 @@
 ## Premium UI Repair — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run verify:native` | ✅ PASS |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (318 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - Brand: Created BrandLockup/BrandLockupCompact components; mark 34→40px, title 15→18px
 - Sidebar: Width 260→240px, surface lightened `#F3EFE6`→`#F7F3EC`, min clamp 200→192px
 - Typography: 7 semantic UI classes added, text-[10px]→text-ui-caption (11px) everywhere except badges
@@ -297,7 +315,7 @@
 ## DeepSeek Manual QA Baseline — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run verify:native` | ✅ PASS |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (318 unit tests) | ✅ PASS |
@@ -306,6 +324,7 @@
 | Source-aware review | ✅ Complete — `docs/DEEPSEEK_CURRENT_REVIEW.md` |
 
 ### Review Summary
+
 - **Architecture**: Electron 43 + React 19 + TypeScript + Tailwind CSS v4 + drizzle-orm + better-sqlite3
 - **UI screens**: 15 screens inventoried with pass/fail status
 - **Top 3 UI problems**: Sidebar too dominant, typography inconsistent (10px labels, mixed scale), provider page raw `<input>` elements
@@ -318,12 +337,13 @@
 ## Repo Cleanup — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (318 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 
 ### Changes
+
 - Merged duplicate Toggle components (shared + settings) into canonical `shared/Toggle.tsx`
 - Removed stale `ui-audit-*` screenshots from `tests/e2e/artifacts/`
 - Removed stale PNG screenshots from `tests/e2e/artifacts/`
@@ -334,7 +354,7 @@
 ## Brand Asset Integration (Nano Banana) — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` (305 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
@@ -345,7 +365,7 @@
 
 Since `gh` CLI authentication is not available, update the repo manually:
 
-1. Go to https://github.com/mertgoevse-wq/aureon-desk/settings
+1. Go to <https://github.com/mertgoevse-wq/aureon-desk/settings>
 2. Set description: *"A calm desktop AI workspace for chat, code, projects, tools, and live preview."*
 3. Add topics: `electron`, `react`, `typescript`, `tailwindcss`, `desktop-app`, `ai-workspace`, `ai-chat`, `openrouter`, `ollama`, `lm-studio`, `live-preview`, `local-first`, `windows`, `sqlite`
 4. Set social preview image to `assets/brand/aureon-github-banner.png`
@@ -355,13 +375,14 @@ Since `gh` CLI authentication is not available, update the repo manually:
 ## Premium UI Polish (Brand, Sidebar, Typography, Providers) — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run typecheck` | ✅ PASS — zero TypeScript errors |
 | `npm test` (305 unit tests) | ✅ PASS |
 | `npm run build` | ✅ PASS |
 | Code review | ✅ PASS — no issues |
 
 ### Changes Summary
+
 - Created shared `AureonMark` component, replaced 3 inline SVG instances
 - Sidebar narrowed from 280px → 260px with softer borders
 - ProvidersPage: API key inline layout, restored Input component, cleaner model rows
@@ -375,7 +396,7 @@ Since `gh` CLI authentication is not available, update the repo manually:
 ## Freebuff Ingestion & Manual Visual QA — 2026-07-08
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run verify:native` | ✅ PASS — better-sqlite3 binary present |
 | `npm run typecheck` | ✅ PASS — zero TypeScript errors |
 | `npm test` (305 unit tests) | ✅ PASS |
@@ -386,6 +407,7 @@ Since `gh` CLI authentication is not available, update the repo manually:
 | Project memory created | ✅ `docs/FREEBUFF_PROJECT_MEMORY.md` |
 
 ### Visual Issues Found (Non-Blocking)
+
 1. Aureon logo SVG mark too small (24px in 48px container)
 2. Sidebar default 280px too wide
 3. Inconsistent typography scale
@@ -400,7 +422,7 @@ Since `gh` CLI authentication is not available, update the repo manually:
 ## Settings Redesign & Code Mode Workspace — 2026-07-08 (Antigravity)
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run verify:native` | ✅ PASS — better-sqlite3 binary present |
 | `npm run typecheck` | ✅ PASS — zero TypeScript errors |
 | `npm test` (305 unit tests) | ✅ PASS — includes workspace policies & settings redesign unit tests |
@@ -411,6 +433,7 @@ Since `gh` CLI authentication is not available, update the repo manually:
 ---
 
 ## Desktop Shell Polish & Home Composer Experience — 2026-07-08 (Antigravity)
+
 |-------|--------|
 | `npm run verify:native` | ✅ PASS — better-sqlite3 binary present |
 | `npm run typecheck` | ✅ PASS — zero TypeScript errors |
@@ -424,7 +447,7 @@ Since `gh` CLI authentication is not available, update the repo manually:
 ## Ingestion Baseline — 2026-07-08 (Antigravity)
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | `npm run verify:native` | ✅ PASS — better-sqlite3 binary present |
 | `npm run typecheck` | ✅ PASS — zero TypeScript errors |
 | `npm test` (283 unit tests) | ✅ PASS |
@@ -438,7 +461,7 @@ Since `gh` CLI authentication is not available, update the repo manually:
 ## Full E2E Baseline (previous session — 2026-07-08 Codex Prompt 4)
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | Typecheck (`npm run typecheck`) | ✅ PASS |
 | Unit Tests (`npm test`) | ✅ PASS (283 tests) |
 | Build (`npm run build`) | ✅ PASS |
@@ -456,7 +479,7 @@ Since `gh` CLI authentication is not available, update the repo manually:
 ### Latest Workspace + Routing Validation (2026-07-08)
 
 | Check | Result |
-|-------|--------|
+| ------- | -------- |
 | Typecheck (`npm run typecheck`) | ✅ PASS |
 | Targeted Chat Completion Unit (`npx vitest run tests/unit/chat-completion.test.ts`) | ✅ PASS (40 tests) |
 | Unit Tests (`npm test`) | ✅ PASS (283 tests) |
@@ -465,6 +488,7 @@ Since `gh` CLI authentication is not available, update the repo manually:
 | Full E2E (`npm run test:e2e`) | ✅ PASS (84 tests) |
 
 Key QA coverage:
+
 - Provider/model routing rejects stale renderer selections before network requests.
 - Anthropic Claude routes through the Anthropic adapter.
 - Gemini routes through the Google adapter.
@@ -477,7 +501,9 @@ Key QA coverage:
 ## Coding Agent Demo — Self-Test Result
 
 ### Overview
+
 The Coding Agent Demo proves Aureon Desk can:
+
 1. Take a user instruction → generate a deterministic sandbox app
 2. Write the app files to an isolated sandbox directory
 3. Start a local preview server on a detected free port
@@ -487,7 +513,7 @@ The Coding Agent Demo proves Aureon Desk can:
 ### Generated App: "Aureon Counter Demo"
 
 | Requirement | Status |
-|------------|--------|
+| ------------ | -------- |
 | Ivory background (#FAF8F5) | ✅ |
 | Title "Aureon Counter Demo" | ✅ |
 | Subtitle "Self-Test Coding Agent Demo" | ✅ |
@@ -502,6 +528,7 @@ The Coding Agent Demo proves Aureon Desk can:
 **Demo CLI exit code:** 0 (success)
 
 ### Sandbox Safety
+
 - Files written under OS temp directory with random ID
 - Server bound to 127.0.0.1 only (no external access)
 - Sandbox deleted after verification
@@ -513,6 +540,7 @@ The Coding Agent Demo proves Aureon Desk can:
 ## Test Coverage Summary
 
 ### Smoke Tests (01-aureon-smoke.spec.ts)
+
 - ✅ Electron app launches and main window appears
 - ✅ Window title includes "Aureon Desk"
 - ✅ No raw React error page is visible
@@ -524,26 +552,32 @@ The Coding Agent Demo proves Aureon Desk can:
 - ✅ No uncaught renderer errors
 
 ### Navigation Tests (02-aureon-navigation.spec.ts)
+
 - ✅ Chats, Prompts, Projects, Tools, Settings, Preview navigation
 - ✅ All transitions without crashes
 
 ### Settings Tests (03-aureon-settings.spec.ts)
+
 - ✅ Provider Test Center: Test All, per-provider status
 - ✅ API-key inputs accept typing and Ctrl+V paste
 - ✅ No raw API keys visible in DOM
 
 ### Chat Tests (04-aureon-chat.spec.ts)
+
 - ✅ New Chat creates chat
 - ✅ Send button disabled when empty, enabled with text
 - ✅ Sending without provider shows warning (no crash)
 
 ### LivePreview Tests (09-aureon-live-preview.spec.ts)
+
 - ✅ Navigate to Preview, create sandbox, URL bar, iframe, stop server
 
 ### Coding Demo Tests (10-aureon-coding-demo.spec.ts)
+
 - ✅ Run Coding Demo, verify counter page, stop preview
 
 ### Model Selection Tests (11-aureon-model-selection.spec.ts)
+
 - ✅ Auto-selects default model, shows setup card when deselected
 
 ---
@@ -551,7 +585,7 @@ The Coding Agent Demo proves Aureon Desk can:
 ## Artifacts
 
 | Artifact | Path |
-|----------|------|
+| ---------- | ------ |
 | Unit test results | console output (`npm test`) |
 | E2E screenshots | `tests/e2e/artifacts/` |
 | Playwright traces | `test-results/` |

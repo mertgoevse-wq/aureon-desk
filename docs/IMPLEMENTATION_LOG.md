@@ -6,11 +6,13 @@ Branch: `main`
 Commit at start: `0.9.49`
 
 ### Session Purpose
+
 Fix the LivePreview auto-popup failure where the generated iframe wouldn't display immediately due to an async timing gap in the Node.js `http.Server.listen()` call and a 2-second renderer polling interval.
 
 ### Files Changed
 
 **Modified:**
+
 - **Modified:** [live-preview.service.ts](file:///C:/Users/mertg/Desktop/code/src/main/services/live-preview.service.ts) — added `_statusChangeCallback` hook to catch async `running` state.
 - **Modified:** [live-preview.ipc.ts](file:///C:/Users/mertg/Desktop/code/src/main/ipc/live-preview.ipc.ts) — subscribed to status change to push `preview:status-change` IPC events.
 - **Modified:** [index.ts](file:///C:/Users/mertg/Desktop/code/src/preload/index.ts) / [index.d.ts](file:///C:/Users/mertg/Desktop/code/src/preload/index.d.ts) — exposed `onPreviewStatusChange` to renderer.
@@ -18,18 +20,20 @@ Fix the LivePreview auto-popup failure where the generated iframe wouldn't displ
 - **Modified:** [live-preview.test.ts](file:///C:/Users/mertg/Desktop/code/tests/unit/live-preview.test.ts) — added tests for `onStatusChange` mechanisms (4 new tests).
 
 **Created:**
+
 - **New:** [manual-livepreview-smoke.mjs](file:///C:/Users/mertg/Desktop/code/scripts/manual-livepreview-smoke.mjs) — standalone Node.js smoke test for the sandbox and in-process HTTP server.
 
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (445 tests) |
 | `npm run build` | ✅ PASS |
 | `node scripts/manual-livepreview-smoke.mjs` | ✅ PASS |
 
 ### Key Changes
+
 - Shifted from a pure polling model to an immediate push-based event model for Preview state transitions.
 - The React iframe now mounts synchronously after the `server.listen` callback fires.
 - Unit tests expanded to ensure sandbox creation and server mocking handle async event emission correctly.
@@ -42,11 +46,13 @@ Branch: `main`
 Commit at start: `0.9.48` (Studio Wizard & Preview Autostart Repair)
 
 ### Session Purpose
+
 Implement layout changes for the calm ivory theme, design a centered chat workspace input composer with restricted suggestion count, collapse secondary creations inside a toggleable drawer, and configure collapsible sections for files and logs to maximize the preview layout.
 
 ### Files Changed
 
 **Modified:**
+
 - **Modified:** [tokens.css](file:///C:/Users/mertg/Desktop/code/src/renderer/src/theme/tokens.css) — Added radial top gradient accent background utility.
 - **Modified:** [Studio.tsx](file:///C:/Users/mertg/Desktop/code/src/renderer/src/pages/Studio.tsx) — Center composer input grid, serif fonts display heading, 2x2 primary grid, toggleable drawer, and Right Inspector mount close callback.
 - **Modified:** [ChatWorkspace.tsx](file:///C:/Users/mertg/Desktop/code/src/renderer/src/pages/ChatWorkspace.tsx) — Centered layout, limit suggestions to 2 pills, quiet feed layout, and Setup Provider alert badge.
@@ -56,12 +62,13 @@ Implement layout changes for the calm ivory theme, design a centered chat worksp
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (441 tests) |
 | `npm run build` | ✅ PASS |
 
 ### Key Changes
+
 - Shifted typography styles to serif display headings (`Crimson Text`) and sans-serif UI controls (`Inter`).
 - Centered main message input composer with exactly two suggestion pills underneath.
 - Added toggle buttons to collapse file explorer tree and logs console, freeing up live preview iframe workspace space.
@@ -75,14 +82,17 @@ Branch: `main`
 Commit at start: `0.9.47` (Human Click QA & Interaction Repair)
 
 ### Session Purpose
+
 Implement task parameters wizard inside Studio Drawer, configure auto-start sandbox compilation server on navigating from Studio to LivePreview workspace, support custom styles (Ivory, Teal, Slate) in generated sandbox app, and verify with updated unit/E2E tests.
 
 ### Files Changed
 
 **Created:**
+
 - **New:** `docs/CLICKABLES_AUDIT.md` — complete catalog of all interactive elements.
 
 **Modified:**
+
 - **Modified:** `src/renderer/src/pages/Studio.tsx` — added platform, styling, and provider wizard options; wired key listeners and sessionStorage.
 - **Modified:** `src/renderer/src/pages/LivePreview.tsx` — checks sessionStorage triggers on mount to bootstrap the preview compilation server.
 - **Modified:** `src/preload/index.ts` / `index.d.ts` — extended `previewCreateDemo` with custom style arguments.
@@ -92,13 +102,14 @@ Implement task parameters wizard inside Studio Drawer, configure auto-start sand
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (438 tests) |
 | `npm run build` | ✅ PASS |
 | `npx playwright test tests/e2e/99-human-click-qa.spec.ts` | ✅ PASS |
 
 ### Key Changes
+
 - Wizard selectors added for all 10 task cards inside the slide-out drawer panel.
 - "Build App" triggers instant Code mode LivePreview autostart compiler via sessionStorage.
 - Dynamic theme styles (Ivory, Teal, Slate) customize backgrounds/text colors of generated sandbox apps.
@@ -112,14 +123,17 @@ Branch: `main`
 Commit at start: `e087fc1` (Connectors Hub with Scoped Permissions)
 
 ### Session Purpose
+
 Perform manual click QA inside the running Electron application visibly, capturing screenshots of 9 target flows, fixing obvious layout/routing/modal issues, and documenting results.
 
 ### Files Changed
 
 **Created:**
+
 - **New:** `tests/e2e/99-human-click-qa.spec.ts` — E2E manual click QA simulator, verifying all 9 primary user flows and capturing 27 headed screens.
 
 **Modified:**
+
 - **Modified:** `src/renderer/src/pages/Studio.tsx` — integrated shared `<Drawer>` component to show categorization, platform target selector, plans, warnings, and route dispatch controls.
 - **Modified:** `src/renderer/src/components/shared/Modal.tsx` — registered native Escape keydown listener to close dialogs.
 - **Modified:** `tests/e2e/13-aureon-window-controls.spec.ts` — removed custom window control expectations since standard native title bars are used.
@@ -127,13 +141,14 @@ Perform manual click QA inside the running Electron application visibly, capturi
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (437 tests) |
 | `npm run build` | ✅ PASS |
 | `npx playwright test tests/e2e/99-human-click-qa.spec.ts --headed` | ✅ PASS (All 27 screenshots captured) |
 
 ### Key Changes
+
 - Integrated full drawer task categorization detail panel in Aureon Studio.
 - Added native ESC key listener for shared Modal overlay dialogues.
 - Cleaned up custom window control checks in E2E tests for native title bars compatibility.
@@ -147,11 +162,13 @@ Branch: `main`
 Commit at start: `c1df6bb` (MCP tools polish)
 
 ### Session Purpose
+
 Redesign ToolsPage from single-column expand/collapse cards to a proper master-detail layout with left tool list and right detail panel.
 
 ### Files Changed
 
 **Modified:**
+
 - **Modified:** `src/renderer/src/pages/settings/ToolsPage.tsx` — complete master-detail rewrite
 - **Modified:** `README.md` — added Tools & MCP Manager section
 
@@ -163,6 +180,7 @@ Redesign ToolsPage from single-column expand/collapse cards to a proper master-d
 | `npm test` | ✅ PASS (348 tests) |
 
 ### Key Changes
+
 - Left panel (260px): scrollable tool list with status icons, badges, permission previews
 - Right panel: full detail with Transport, Permissions, Status & Risk (Enabled/Trusted/Risk/Approval/Last Run), Test controls, Actions footer
 - Auto-selects first tool, preserves selection across refreshes
@@ -177,23 +195,26 @@ Branch: `main`
 Commit at start: `122e89d` (Drawer & SelectMenu)
 
 ### Session Purpose
+
 Expand test coverage for the MCP/Tools safety system and polish the ToolsPage UX with consistent labeling.
 
 ### Files Changed
 
 **Modified:**
+
 - **Modified:** `tests/unit/tool-manager.test.ts` — expanded from 13 to 31 tests (6 new suites: destructive blocking, router no-auto-run, enable/disable, modal behavior, secrets redaction)
 - **Modified:** `src/renderer/src/pages/settings/ToolsPage.tsx` — permission descriptions now consistent with safety gate, added human-friendly STATUS_LABELS for call history
 
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (348 tests) |
 | `npm run build` | ✅ PASS |
 
 ### Key Changes
+
 - 18 new tests covering destructive blocking, router suggestions, enable/disable, modal behavior, secrets redaction
 - ToolsPage call history now shows "Blocked (untrusted)" instead of "blocked untrusted"
 - Permission descriptions aligned between renderer UI and main-process safety gate
@@ -206,26 +227,30 @@ Branch: `main`
 Commit at start: `c41d068` (quiet right inspector)
 
 ### Session Purpose
+
 Expand the compact overlay system with Drawer (right slide-in panel) and SelectMenu (simple anchored popover menu). Fix ProjectsPage custom inline modal to use shared Modal component.
 
 ### Files Changed
 
 **Created:**
+
 - **New:** `src/renderer/src/components/shared/Drawer.tsx` — right-side slide-in panel with focus trap, ESC/click-outside close, smooth slide animation, ARIA, auto-focus
 - **New:** `src/renderer/src/components/shared/SelectMenu.tsx` — compact anchored popover menu with keyboard nav (arrow keys, enter, esc), auto-focus, alignment support (left/right/center), ARIA listbox/option
 
 **Modified:**
+
 - **Modified:** `src/renderer/src/pages/ProjectsPage.tsx` — replaced custom inline modal (fixed div with manual X button, no focus trap/ESC/ARIA) with shared `Modal` component; removed unused `X` icon import
 
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (331 tests) |
 | `npm run build` | ✅ PASS |
 
 ### Key Changes Summary
+
 - Drawer: 420px right slide-in, focus trapped, ESC closes, click-outside closes
 - SelectMenu: keyboard-navigable popover menu, auto-focus on open, alignment support
 - ProjectsPage: "Create Project" now opens in shared Modal (560px) instead of custom inline modal
@@ -239,12 +264,15 @@ Branch: `main`
 Commit at start: `e04a3ac`
 
 ### Session Purpose
+
 Repair and polish the MCP/Tools page into a real safe capability manager with clean UX. Replace raw technical UI with structured Cards, proper shared components, and an Add MCP Server modal.
 
 ### Files Changed
+
 - **Modified:** `src/renderer/src/pages/settings/ToolsPage.tsx` — complete rewrite
 
 ### Key Changes
+
 - **Complete rewrite**: Header → Safety notice → Call History → Tool Cards with expand/collapse → Add MCP Server Modal
 - **Enable/disable**: `variant="primary"` button → Toggle component
 - **Delete**: ghost icon → `variant="danger"` button
@@ -255,6 +283,7 @@ Repair and polish the MCP/Tools page into a real safe capability manager with cl
 - **Toast notifications**: added for enable/disable, trust/untrust, delete, execute
 
 **Docs:**
+
 - **Modified:** `CHANGELOG.md` — v0.9.39 entry
 - **Modified:** `AI_QA_REPORT.md` — MCP repair results
 - **Modified:** `docs/IMPLEMENTATION_LOG.md` — this entry
@@ -263,6 +292,7 @@ Repair and polish the MCP/Tools page into a real safe capability manager with cl
 - **Modified:** `SECURITY_NOTES.md` — tool safety notes
 
 ### Verified
+
 - `npm run typecheck` — ✅ PASS
 - `npm test` — ✅ PASS (331 tests)
 - `npm run build` — ✅ PASS
@@ -275,12 +305,15 @@ Branch: `main`
 Commit at start: `9f25099`
 
 ### Session Purpose
+
 Fix Provider Settings page: overlapping buttons, cramped toggles, orange overuse, form density issues. Restructure into clear sections with proper alignment.
 
 ### Files Changed
+
 - **Modified:** `src/renderer/src/pages/settings/ProvidersPage.tsx` — complete layout overhaul
 
 ### Key Changes
+
 - **Section structure**: Provider card split into clear sections — Header, Capabilities, Connection (Base URL), API Key, Models, Actions Footer — each separated by `border-t` dividers
 - **API key input**: Replaced raw `<input>` with shared `<Input>` component; eye toggle moved from absolute positioned to side-by-side icon button
 - **Actions footer**: Test, Toggle+Enabled label, and Delete moved from cramped header row to dedicated footer with proper spacing
@@ -292,12 +325,14 @@ Fix Provider Settings page: overlapping buttons, cramped toggles, orange overuse
 - **API key wrapping**: `flex-wrap` and `min-w-[200px]` on input container for narrow card widths
 
 **Docs:**
+
 - **Modified:** `CHANGELOG.md` — v0.9.38 entry
 - **Modified:** `AI_QA_REPORT.md` — provider repair results
 - **Modified:** `docs/VISUAL_AUDIT.md` — updated provider layout notes
 - **Modified:** `docs/IMPLEMENTATION_LOG.md` — this entry
 
 ### Verified
+
 - `npm run typecheck` — ✅ PASS
 - `npm test` — ✅ PASS (331 tests)
 - `npm run build` — ✅ PASS
@@ -310,20 +345,25 @@ Branch: `main`
 Commit at start: `42f76a9`
 
 ### Session Purpose
+
 Replace oversized center panels and selectors with compact modal dialogs and anchored popovers. Create reusable overlay system components.
 
 ### Files Changed
 
 **Created:**
+
 - **New:** `src/renderer/src/components/shared/Popover.tsx` — reusable `Popover` (anchored dropdown with ESC/click-outside/focus-loss close, alignment/side props) and `SelectPopover` (searchable select list with keyboard navigation)
 
 **Enhanced:**
+
 - **Modified:** `src/renderer/src/components/shared/Modal.tsx` — complete rewrite: added focus trapping (Tab/Shift+Tab cycling), compact sizing (xs:320px, sm:380px, md:460px, lg:560px), proper ARIA attributes, body overflow management, smooth scale+opacity transitions, auto-focus first element, restore focus on close, `mounted` state with exit animation cleanup
 
 **Converted:**
+
 - **Modified:** `src/renderer/src/pages/settings/ProvidersPage.tsx` — "Add Custom Provider" form converted from full-width inline form to compact Modal dialog (size='sm': 380px max), removed unused `X` icon import
 
 **Docs:**
+
 - **Modified:** `CHANGELOG.md` — v0.9.37 entry
 - **Modified:** `AI_QA_REPORT.md` — compact popovers results
 - **Modified:** `docs/IMPLEMENTATION_LOG.md` — this entry
@@ -332,12 +372,13 @@ Replace oversized center panels and selectors with compact modal dialogs and anc
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (331 tests, 19 files) |
 | `npm run build` | ✅ PASS |
 
 ### Key Changes Summary
+
 - Created reusable Popover + SelectPopover components
 - Enhanced Modal with focus trapping and compact sizing
 - Converted ProvidersPage Add Custom form to Modal
@@ -351,14 +392,17 @@ Branch: `main`
 Commit at start: `d60f26c`
 
 ### Session Purpose
+
 Simplify the desktop shell: fix window controls (native frame), slim oversized sidebar, reduce center workspace overload, and create a calmer, more desktop-native feel.
 
 ### Files Changed
 
 **Main Process:**
+
 - **Modified:** `src/main/windows.ts` — removed `frame: false` → native Windows frame with native controls
 
 **Renderer:**
+
 - **Modified:** `src/renderer/src/layouts/AppShell.tsx` — removed custom window controls (min/max/close), removed WebkitAppRegion drag regions, removed isMaximized state, reduced header h-14→h-12
 - **Modified:** `src/renderer/src/layouts/Sidebar.tsx` — collapsed width w-12→w-14 (56px), removed WebkitAppRegion from header, removed Vibe Coding button from projects grid, removed unused Sparkles import
 - **Modified:** `src/renderer/src/stores/uiStore.ts` — DEFAULT_SIDEBAR_WIDTH 240→232, min clamp 192→188
@@ -366,10 +410,12 @@ Simplify the desktop shell: fix window controls (native frame), slim oversized s
 - **Modified:** `src/renderer/src/theme/tokens.css` — sidebar surface color lighter (#F7F3EC→#F9F6F0)
 
 **Tests:**
+
 - **Modified:** `tests/unit/ui-desktop-polish.test.ts` — sidebar width and clamp assertions
 - **Modified:** `tests/unit/home-composer-polish.test.ts` — starter prompts count 8→6
 
 **Docs:**
+
 - **Modified:** `CHANGELOG.md` — v0.9.36 entry
 - **Modified:** `AI_QA_REPORT.md` — shell simplification results
 - **Modified:** `docs/IMPLEMENTATION_LOG.md` — this entry
@@ -379,12 +425,13 @@ Simplify the desktop shell: fix window controls (native frame), slim oversized s
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (331 tests, 19 files) |
 | `npm run build` | ✅ PASS |
 
 ### Key Changes Summary
+
 - Native Windows frame replaces custom controls (no more duplicate/misplaced controls)
 - Sidebar: lighter, narrower default (232px), wider collapsed (56px)
 - Center: fewer suggestion chips, less visual noise
@@ -398,12 +445,15 @@ Branch: `main`
 Commit at start: `56b8cd9`
 
 ### Session Purpose
+
 Full project audit: typecheck/tests/build/secret scan, deep source inspection, app launch verification, comprehensive documentation update. No E2E run per user request.
 
 ### Files Changed
+
 - **Modified:** `src/renderer/src/pages/VibeCoding.tsx` — removed unused `TUTORIAL_CARDS` import (Learn tab uses `BeginnerHelp` component)
 
 ### Files Updated
+
 - **Rewritten:** `docs/DEEPSEEK_CURRENT_STATE.md` — comprehensive audit (19 screens, 10 providers, MCP/tools, LivePreview, vibe coding, visual issues, security, test coverage, prioritized next steps)
 - **Modified:** `CHANGELOG.md` — v0.9.35 entry
 - **Modified:** `AI_QA_REPORT.md` — manual QA results prepended
@@ -413,7 +463,7 @@ Full project audit: typecheck/tests/build/secret scan, deep source inspection, a
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `git status` | `main` at `56b8cd9`, 1 modified file |
 | `git branch -a -vv` | `main` synced, `origin/master` stale (behind 21) |
 | `npm run verify:native` | ✅ PASS |
@@ -424,6 +474,7 @@ Full project audit: typecheck/tests/build/secret scan, deep source inspection, a
 | `npm run dev` | ✅ PASS — Vite dev server, Electron window created |
 
 ### Key Findings
+
 - **19 UI screens** — 17 working, 2 partial
 - **10 providers** — all adapters defined and testable
 - **Vibe Coding** — 15 templates, 3-tab dashboard, guided builder
@@ -440,15 +491,17 @@ Branch: `main`
 Commit at start: `81cd5e4`
 
 ### Session Purpose
+
 Remove duplicate assets, mark stale docs as historical, consolidate public/brand/.
 
 ### Files Changed
+
 - `public/brand/aureon-mark.png`, `aureon-logo.png`, `aureon-github-banner.png` — removed (~16MB)
 - `src/renderer/src/components/shared/AureonMark.tsx` — use optimized size variants
 - `MVP_TEST_PLAN.md`, `ROADMAP.md`, `CONTINUATION_NOTES.md`, `docs/FREEBUFF_PROJECT_MEMORY.md` — marked HISTORICAL/ARCHIVED
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (331 tests) |
 | `npm run build` | ✅ PASS |
@@ -461,9 +514,11 @@ Branch: `main`
 Commit at start: `b89e1ef`
 
 ### Session Purpose
+
 Expand vibe coding experience with dashboard, new templates, tutorials, and entry points.
 
 ### Files Changed
+
 - `src/shared/vibe-templates.ts` — 8→15 cards, TUTORIAL_CARDS, android-app option, PROMPT_TEMPLATES
 - `src/renderer/src/pages/VibeCoding.tsx` — dashboard rewrite
 - `src/renderer/src/components/vibe/BeginnerHelp.tsx` — 6→9 blocks
@@ -471,7 +526,7 @@ Expand vibe coding experience with dashboard, new templates, tutorials, and entr
 - `tests/unit/vibe-coding.test.ts` — 31 tests
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (331 tests) |
 | `npm run build` | ✅ PASS |
@@ -484,9 +539,11 @@ Branch: `main`
 Commit at start: `e8f6fe5` ("Document DeepSeek manual QA baseline")
 
 ### Session Purpose
+
 Fix visual issues identified in the DeepSeek review: brand/header repair, sidebar less dominant, typography overhaul, provider layout repair, settings polish, vibe coding suggestions, BeginnerHelp accordion.
 
 ### Files Changed
+
 - **Modified:** `src/renderer/src/stores/uiStore.ts` — sidebar width 260→240, min clamp 200→192
 - **Modified:** `src/renderer/src/theme/tokens.css` — lighter sidebar surface #F7F3EC, semantic UI text CSS vars
 - **Modified:** `src/renderer/src/theme/typography.css` — added .text-ui-caption/.text-ui-xs/.text-ui-sm/.text-ui/.text-ui-lg/.text-ui-xl/.text-ui-2xl classes
@@ -502,7 +559,7 @@ Fix visual issues identified in the DeepSeek review: brand/header repair, sideba
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (318 tests) |
 | `npm run build` | ✅ PASS |
@@ -515,12 +572,15 @@ Branch: `main`
 Commit at start: `c4cea6d` ("Clean duplicate files dead code and stale artifacts")
 
 ### Session Purpose
+
 Source-aware manual QA: inspect the complete current source, document all UI issues, record a baseline review, and push to GitHub. No E2E was run.
 
 ### Files Created
+
 - **New:** `docs/DEEPSEEK_CURRENT_REVIEW.md` — comprehensive source-aware codebase review
 
 ### Files Updated
+
 - **Modified:** `CHANGELOG.md` — v0.9.31 entry
 - **Modified:** `AI_QA_REPORT.md` — DeepSeek manual QA baseline entry
 - **Modified:** `docs/VISUAL_AUDIT.md` — updated with DeepSeek source-aware findings
@@ -529,7 +589,7 @@ Source-aware manual QA: inspect the complete current source, document all UI iss
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `git status` | `main`, clean + `assets/brand/source/` untracked |
 | `git branch -a -vv` | `main` at `c4cea6d`, synced with origin |
 | `npm run verify:native` | ✅ PASS |
@@ -539,6 +599,7 @@ Source-aware manual QA: inspect the complete current source, document all UI iss
 | Secret scan | ✅ PASS |
 
 ### Key Findings
+
 - **3 critical UI problems**: Sidebar visual dominance, typography inconsistency (10px labels), provider page raw `<input>` elements
 - **6 duplicate/dead-code suspects**: StatusPill/Badge, Toggle re-export, brand assets ×3, SettingsPlaceholderPage, Cowork/Capabilities overlap
 - **5 asset size issues**: 4.8MB logo PNGs need optimization
@@ -552,9 +613,11 @@ Branch: `main`
 Commit at start: `180e9d3`
 
 ### Session Purpose
+
 Integrate 5 Nano Banana brand images across the app: app icon, mark, logo, wordmark, GitHub banner.
 
 ### Files Changed
+
 - **New:** `scripts/generate-nano-icon.js` — ICO/PNG generation from Nano Banana PNG
 - **New:** `docs/BRAND_GUIDELINES.md` — full brand guidelines
 - **New:** `assets/brand/aureon-mark.png`, `aureon-logo.png`, `aureon-wordmark.png`, `aureon-app-icon.png`, `aureon-github-banner.png`
@@ -567,13 +630,14 @@ Integrate 5 Nano Banana brand images across the app: app icon, mark, logo, wordm
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (305 tests) |
 | `npm run build` | ✅ PASS |
 | `node scripts/generate-nano-icon.js` | ✅ ICO 66KB, PNG 61KB |
 
 ### GitHub Manual Steps Documented
+
 - Repo description, topics, social preview in README and AI_QA_REPORT
 
 ---
@@ -584,9 +648,11 @@ Branch: `main`
 Commit at start: `3f5964d`
 
 ### Session Purpose
+
 Fix visible UI problems from user video: branding, sidebar width, typography, provider layout, native checkboxes, suggestions.
 
 ### Files Changed
+
 - **New:** `src/renderer/src/components/shared/AureonMark.tsx` — shared SVG brand mark component
 - **Modified:** `src/renderer/src/layouts/Sidebar.tsx` — AureonMark, narrower spacing, softer borders, reduced heights
 - **Modified:** `src/renderer/src/layouts/AppShell.tsx` — AureonMark in collapsed state
@@ -601,12 +667,13 @@ Fix visible UI problems from user video: branding, sidebar width, typography, pr
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `npm run typecheck` | ✅ PASS |
 | `npm test` | ✅ PASS (305 tests) |
 | `npm run build` | ✅ PASS |
 
 ### Key UX Changes
+
 - Brand mark now 34px in sidebar (was 21px hidden in 48px container)
 - Sidebar 260px (was 280px)
 - API key input and Save button now side-by-side
@@ -621,16 +688,19 @@ Branch: `main`
 Commit at session start: `c670501 docs: update CONTINUATION_NOTES.md for handoff`
 
 ### Session Purpose
+
 Full project ingestion, code audit, manual visual QA (code-based), and documentation baseline for Freebuff. No code changes — analysis and documentation only per user request.
 
 ### Files Inspected
 
 **Documentation (all):**
+
 - `package.json`, `README.md`, `CHANGELOG.md`, `AI_QA_REPORT.md`, `SECURITY_NOTES.md`
 - `AGENTS.md`, `QA_CHECKLIST.md`, `CONTINUATION_NOTES.md`, `ARCHITECTURE.md`
 - `docs/CURRENT_STATE.md`, `docs/PROJECT_INDEX.md`, `docs/UX_DECISIONS.md`, `docs/VISUAL_AUDIT.md`, `docs/IMPLEMENTATION_LOG.md`
 
 **Renderer Source (full):**
+
 - `src/renderer/src/App.tsx`
 - `src/renderer/src/layouts/AppShell.tsx`, `Sidebar.tsx`, `RightInspector.tsx`, `SettingsLayout.tsx`
 - `src/renderer/src/pages/ChatWorkspace.tsx`, `CoworkPage.tsx`, `LivePreview.tsx`
@@ -640,18 +710,21 @@ Full project ingestion, code audit, manual visual QA (code-based), and documenta
 - `src/renderer/src/theme/tokens.css`, `typography.css`
 
 **Main Process:**
+
 - `src/main/index.ts`, `src/main/windows.ts`
 
 **Shared:**
+
 - `src/shared/constants.ts`
 
 **Config:**
+
 - `.gitignore`
 
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `git status` | `main`, clean + `assets/brand/source/` untracked |
 | `git branch -a -vv` | `main` at `c670501`, `origin/master` at `c670501` (synced) |
 | `git remote -v` | `origin → github.com/mertgoevse-wq/aureon-desk.git` |
@@ -666,7 +739,7 @@ Full project ingestion, code audit, manual visual QA (code-based), and documenta
 ### Docs Created / Updated
 
 | File | Action |
-|------|--------|
+| ------ | -------- |
 | `docs/FREEBUFF_PROJECT_MEMORY.md` | ✅ Created (architecture map, UI state, issues, implementation order) |
 | `CHANGELOG.md` | ✅ Updated (v0.9.27 entry) |
 | `AI_QA_REPORT.md` | ✅ Updated (Freebuff ingestion prepended) |
@@ -675,7 +748,7 @@ Full project ingestion, code audit, manual visual QA (code-based), and documenta
 ### Visual Issues Identified (Code-Based Audit)
 
 | # | Issue | Location |
-|---|-------|----------|
+| --- | ------- | ---------- |
 | 1 | Aureon logo SVG too small (24px in 48px container) | Sidebar.tsx, AppShell.tsx |
 | 2 | Sidebar default width 280px too wide | Sidebar.tsx, uiStore.ts |
 | 3 | Inconsistent typography scale (mix of px/text classes) | Multiple components |
@@ -688,6 +761,7 @@ Full project ingestion, code audit, manual visual QA (code-based), and documenta
 ### Brand Assets Inventory
 
 5 untracked Nano Banana brand assets found in `assets/brand/source/nano-banana/`:
+
 - `aureon-app-icon.png`
 - `aureon-dark-logo-presentation.png`
 - `aureon-github-banner.png`
@@ -714,16 +788,19 @@ Branch: `main`
 Commit at session start: `44323f3 Enforce provider model routing consistency`
 
 ### Session Purpose
+
 Full project ingestion, audit, and documentation before starting Prompt 5 (Desktop Shell Polish).
 Performed by: Antigravity/Gemini (Claude Sonnet 4.6 Thinking)
 
 ### Files Inspected
 
 **Root/Config:**
+
 - `package.json`, `electron.vite.config.ts`, `.gitignore`, `electron-builder.yml`
 - `CHANGELOG.md`, `AI_QA_REPORT.md`, `SECURITY_NOTES.md`, `CONTINUATION_NOTES.md`
 
 **Main Process:**
+
 - `src/main/index.ts`, `src/main/windows.ts`
 - `src/main/db/schema.ts`, `src/main/db/connection.ts`, `src/main/db/migrate.ts`, `src/main/db/seed.ts`
 - `src/main/ipc/` — all 13 IPC handler files
@@ -731,9 +808,11 @@ Performed by: Antigravity/Gemini (Claude Sonnet 4.6 Thinking)
 - `src/main/security/vault.ts`, `src/main/utils/logger.ts`
 
 **Preload:**
+
 - `src/preload/index.ts`, `src/preload/index.d.ts`
 
 **Renderer:**
+
 - `src/renderer/src/App.tsx`
 - `src/renderer/src/layouts/AppShell.tsx`, `Sidebar.tsx`, `RightInspector.tsx` (header), `SettingsLayout.tsx`
 - `src/renderer/src/pages/ChatWorkspace.tsx`, `CoworkPage.tsx`
@@ -741,16 +820,18 @@ Performed by: Antigravity/Gemini (Claude Sonnet 4.6 Thinking)
 - `src/renderer/src/theme/tokens.css`, `typography.css`
 
 **Shared:**
+
 - `src/shared/constants.ts` (10 providers)
 - `src/shared/types/` — all 9 type files (directory listing)
 
 **Docs (pre-existing):**
+
 - `docs/IMPLEMENTATION_LOG.md`, `docs/UX_DECISIONS.md`
 
 ### Commands Run
 
 | Command | Result |
-|---------|--------|
+| --------- | -------- |
 | `git status` | `main`, clean + `.gitignore` modified + `docs/IMPLEMENTATION_LOG.md` untracked |
 | `git branch -a -vv` | `main` at `44323f3`, `master` behind 8 commits |
 | `git remote -v` | `origin → github.com/mertgoevse-wq/aureon-desk.git` |
@@ -766,7 +847,7 @@ Performed by: Antigravity/Gemini (Claude Sonnet 4.6 Thinking)
 ### Docs Created / Updated
 
 | File | Action |
-|------|--------|
+| ------ | -------- |
 | `docs/PROJECT_INDEX.md` | ✅ Created (full repo map) |
 | `docs/CURRENT_STATE.md` | ✅ Created (feature status + architecture) |
 | `docs/VISUAL_AUDIT.md` | ✅ Created (14-screen code-based audit) |
@@ -818,16 +899,19 @@ Performed by: Antigravity/Gemini (Claude Sonnet 4.6 Thinking)
 Branch: `main`
 
 Previous state:
+
 - Working tree was clean at `44323f3 Enforce provider model routing consistency`.
 - `main` was synced with `origin/main`.
 - `origin/master` was stale behind `origin/main`.
 
 Session changes recorded:
+
 - Added this implementation log for handoff and audit continuity.
 - Updated ignore rules for generated output, local app data, logs, SQLite databases, Playwright output, and temporary screenshots.
 - Reconfirmed documentation coverage in `CHANGELOG.md`, `AI_QA_REPORT.md`, and `docs/UX_DECISIONS.md`.
 
 Recent bugs fixed:
+
 - Chat sends now reject stale renderer model selections before any provider request.
 - Assistant responses now persist provider/model metadata so the UI can show the actual adapter used.
 - OpenRouter-routed Claude/Gemini-style models display as OpenRouter-routed instead of implying direct Anthropic or Google calls.
@@ -835,6 +919,7 @@ Recent bugs fixed:
 - Settings provider tests were updated to open the new `Providers & Models` category explicitly.
 
 UI changes:
+
 - Added global `Chat / Cowork / Code` mode switch.
 - Reworked the empty chat surface around a central composer and quick controls.
 - Rebuilt Settings with category navigation and a detail panel.
@@ -842,6 +927,7 @@ UI changes:
 - Removed extra top-header `Aureon Desk` text and simplified the sidebar.
 
 Tests run before this final recording:
+
 - `npm run typecheck` - PASS
 - `npx vitest run tests/unit/chat-completion.test.ts` - PASS, 40 tests
 - `npm test` - PASS, 283 tests
@@ -850,6 +936,7 @@ Tests run before this final recording:
 - `npm run test:e2e` - PASS, 84 tests
 
 Remaining limitations:
+
 - Cowork workflow features are explicit placeholders, not real background automation.
 - Computer/browser-use permissions remain inactive placeholders.
 - The full Electron E2E suite is slow on Windows because each test launches Electron sequentially.
