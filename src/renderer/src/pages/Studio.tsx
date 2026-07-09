@@ -10,6 +10,7 @@ import { useIpc } from '../hooks/useIpc'
 import { TASK_CATEGORIES, AUTONOMY_LEVELS } from '@shared/types/studio-core'
 import type { TaskCategoryInfo, StudioOrchestrationResult, AutonomyLevel } from '@shared/types/studio-core'
 import { SafetyNotice } from '../components/vibe/SafetyNotice'
+import { Drawer } from '../components/shared/Drawer'
 
 const TASK_ICONS: Record<string, React.ReactElement> = {
   LayoutDashboard: <LayoutDashboard size={22} />,
@@ -44,6 +45,7 @@ export function Studio(): React.ReactElement {
   const [orchestration, setOrchestration] = useState<StudioOrchestrationResult | null>(null)
   const [autonomyLevel, setAutonomyLevel] = useState<AutonomyLevel>(2)
   const [showConfirm, setShowConfirm] = useState(false)
+  const activeCard = TASK_CATEGORIES.find(c => c.id === selectedCard)
 
   const handleCardClick = useCallback((card: TaskCategoryInfo) => {
     setSelectedCard(card.id)
@@ -230,6 +232,104 @@ export function Studio(): React.ReactElement {
           </div>
         </div>
       </div>
+
+      <Drawer
+        isOpen={!!selectedCard}
+        onClose={() => {
+          setSelectedCard(null)
+          setOrchestration(null)
+          setShowConfirm(false)
+        }}
+        title={activeCard ? `Studio Task: ${activeCard.label}` : 'Task Details'}
+      >
+        {activeCard && (
+          <div className="space-y-5" data-testid="studio-drawer">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Recommended Mode</span>
+              <div className="text-[13px] font-semibold text-[var(--ivory-text)] mt-1 capitalize">
+                {activeCard.recommendedMode} Mode
+              </div>
+            </div>
+
+            {activeCard.id === 'build_app' && (
+              <div className="space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Target Platform</span>
+                <div className="grid grid-cols-2 gap-2">
+                  {['Web app', 'Desktop app', 'PWA', 'Android'].map(target => (
+                    <button
+                      key={target}
+                      type="button"
+                      className="py-2 px-3 text-[11px] font-medium border border-[var(--ivory-border)] rounded-xl bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-colors"
+                    >
+                      {target}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Starter Prompt</span>
+              <textarea
+                data-testid="studio-prompt-input"
+                className="w-full h-24 p-3 text-[12px] border border-[var(--ivory-border)] rounded-xl bg-[var(--ivory-bg)] text-[var(--ivory-text)] focus:outline-none focus:ring-1 focus:ring-[var(--ivory-accent)]/50 resize-none font-body"
+                defaultValue={activeCard.starterPrompt}
+              />
+            </div>
+
+            {orchestration ? (
+              <div className="space-y-4 pt-3 border-t border-[var(--ivory-border)]">
+                {orchestration.plannedSteps && orchestration.plannedSteps.length > 0 && (
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Execution Plan</span>
+                    <ul className="list-disc pl-4 text-[11px] text-[var(--ivory-text-2)] mt-1.5 space-y-1">
+                      {orchestration.plannedSteps.map((step, idx) => (
+                        <li key={idx}>{step}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {orchestration.safetyWarnings && orchestration.safetyWarnings.length > 0 && (
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/25 rounded-xl text-amber-900 text-[11px] leading-relaxed">
+                    <span className="font-semibold block mb-1">Safety Warnings:</span>
+                    <ul className="list-disc pl-4 space-y-0.5">
+                      {orchestration.safetyWarnings.map((warn, idx) => (
+                        <li key={idx}>{warn}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {orchestration.missingCapabilities && orchestration.missingCapabilities.length > 0 && (
+                  <div className="p-3 bg-red-500/10 border border-red-500/25 rounded-xl text-red-900 text-[11px] leading-relaxed">
+                    <span className="font-semibold block mb-1">Missing Capabilities:</span>
+                    <p className="text-[11px]">
+                      Needs setup for: {orchestration.missingCapabilities.join(', ')}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-[12px] text-[var(--ivory-text-3)] animate-pulse py-4 flex items-center justify-center">
+                Orchestrating flow parameters...
+              </div>
+            )}
+
+            <div className="pt-4 border-t border-[var(--ivory-border)]">
+              <button
+                type="button"
+                onClick={handleStartTask}
+                disabled={!orchestration}
+                data-testid="studio-start-flow-btn"
+                className="w-full h-10 bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-white text-[12px] font-bold rounded-xl shadow-sm transition-colors cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Start Task Flow <ArrowRight size={13} />
+              </button>
+            </div>
+          </div>
+        )}
+      </Drawer>
     </div>
   )
 }

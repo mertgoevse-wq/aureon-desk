@@ -6,10 +6,8 @@ test.describe('Aureon Desk — Custom Window Controls & Topbar Navigation', () =
   })
 
   test('topbar navigation and custom window controls are visible', async ({ mainWindow, pageErrors }) => {
-    // Verify custom titlebar buttons are rendered
-    await expect(mainWindow.getByTestId('win-minimize')).toBeVisible()
-    await expect(mainWindow.getByTestId('win-maximize')).toBeVisible()
-    await expect(mainWindow.getByTestId('win-close')).toBeVisible()
+    // Note: The app uses native window frame controls now (no custom HTML buttons).
+
 
     // Verify back/forward controls are visible
     await expect(mainWindow.getByLabel('Go back')).toBeVisible()

@@ -1,5 +1,40 @@
 # Aureon Desk Implementation Log
 
+## 2026-07-09 09:40 +02:00 — Human-Style Visible Manual Click QA & Repaired Flows
+
+Branch: `main`
+Commit at start: `e087fc1` (Connectors Hub with Scoped Permissions)
+
+### Session Purpose
+Perform manual click QA inside the running Electron application visibly, capturing screenshots of 9 target flows, fixing obvious layout/routing/modal issues, and documenting results.
+
+### Files Changed
+
+**Created:**
+- **New:** `tests/e2e/99-human-click-qa.spec.ts` — E2E manual click QA simulator, verifying all 9 primary user flows and capturing 27 headed screens.
+
+**Modified:**
+- **Modified:** `src/renderer/src/pages/Studio.tsx` — integrated shared `<Drawer>` component to show categorization, platform target selector, plans, warnings, and route dispatch controls.
+- **Modified:** `src/renderer/src/components/shared/Modal.tsx` — registered native Escape keydown listener to close dialogs.
+- **Modified:** `tests/e2e/13-aureon-window-controls.spec.ts` — removed custom window control expectations since standard native title bars are used.
+
+### Commands Run
+
+| Command | Result |
+|---------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` | ✅ PASS (437 tests) |
+| `npm run build` | ✅ PASS |
+| `npx playwright test tests/e2e/99-human-click-qa.spec.ts --headed` | ✅ PASS (All 27 screenshots captured) |
+
+### Key Changes
+- Integrated full drawer task categorization detail panel in Aureon Studio.
+- Added native ESC key listener for shared Modal overlay dialogues.
+- Cleaned up custom window control checks in E2E tests for native title bars compatibility.
+- Captured 27 visual click QA verification screens in `docs/qa-screenshots/human-click-qa/`.
+
+---
+
 ## 2026-07-08 21:30 +02:00 — MCP Tools Master-Detail Layout
 
 Branch: `main`

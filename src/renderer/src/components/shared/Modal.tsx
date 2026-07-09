@@ -74,16 +74,21 @@ export function Modal({
       first?.focus()
     }, 80)
 
-    document.addEventListener('keydown', handleTab)
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Tab') handleTab(e)
+      if (e.key === 'Escape') onClose()
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
     document.body.style.overflow = 'hidden'
 
     return () => {
       clearTimeout(timer)
-      document.removeEventListener('keydown', handleTab)
+      document.removeEventListener('keydown', handleKeyDown)
       document.body.style.overflow = ''
       prevFocused?.focus()
     }
-  }, [isOpen])
+  }, [isOpen, onClose, mounted])
 
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === overlayRef.current) onClose()

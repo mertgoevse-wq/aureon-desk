@@ -4,6 +4,22 @@
 
 ---
 
+## Human-Style Visible Manual Click QA — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (437 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| `npx playwright test tests/e2e/99-human-click-qa.spec.ts --headed` | ✅ PASS (27 screenshots captured) |
+
+### Changes
+- Integrated details slide-out `Drawer` in `Studio.tsx` to handle category card orchestration.
+- Added native Escape key listener inside the shared `Modal` component.
+- Removed custom window controls expectations from E2E test specs (since native OS titlebar frame is now standard).
+
+---
+
 ## Product Structure Polish — Reduced Clutter — 2026-07-08
 
 | Check | Result |

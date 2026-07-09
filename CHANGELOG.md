@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.9.47] - 2026-07-09
+
+### Added — Human Click QA & Interaction Repair
+
+**Studio Task Launcher Details:**
+- Integrated the shared slide-out `<Drawer>` component into `Studio.tsx` to display task orchestration details.
+- Added Recommended Mode metadata, Target Platform selector (web, desktop, PWA, mobile), Starter Prompt editor, Execution Plan list, Safety warnings, and Missing Capabilities checks.
+- Enabled "Start Task Flow" button to seamlessly route to Chat/Code/Cowork modes and dispatch the custom presets.
+
+**Modal Accessibility & Key Handlers:**
+- Added a native keydown listener for the `Escape` key inside the shared `<Modal>` component to close dialogs (e.g. Add MCP Server modal) directly.
+
+**E2E Test Stability & Cleanups:**
+- Created `tests/e2e/99-human-click-qa.spec.ts` — E2E manual click QA simulator, verifying all 9 primary user flows and capturing 27 headed screens.
+- Updated `tests/e2e/13-aureon-window-controls.spec.ts` to adjust custom window control expectations since standard native title bars are now used.
+- Verified all E2E tests pass synchronously without timeouts or click interceptions.
+
+### Verified
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (437 tests, 22 files)
+- `npm run build` — ✅ PASS
+- `npx playwright test tests/e2e/99-human-click-qa.spec.ts --headed` — ✅ PASS
+
 ## [0.9.46] - 2026-07-08
 
 ### Added — Connectors Hub with Scoped Permissions

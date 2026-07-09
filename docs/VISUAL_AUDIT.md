@@ -1,10 +1,22 @@
 # Aureon Desk — Visual Audit
 
-> **Latest audit:** 2026-07-08 — Provider Layout Repair (commit `9f25099` → new)
-> **Previous audit:** 2026-07-08 — Desktop Shell Simplification
+> **Latest audit:** 2026-07-09 — Human-Style Visible Manual Click QA (commit `e087fc1` → new)
+> **Previous audit:** 2026-07-08 — Provider Layout Repair (commit `9f25099`)
+> **Previous auditor:** Antigravity (Google DeepMind) — manual visible QA & baseline repair
 > **Previous auditor:** DeepSeek V4 Pro (Buffy) — manual QA + app launch (commit `56b8cd9`)
-> **Previous auditor:** DeepSeek V4 Pro — source-aware manual QA baseline (commit `c4cea6d`)
 > **Branch:** main
+
+---
+
+## Human Click QA Audit (2026-07-09)
+
+### Studio Orchestration Drawer — RESOLVED ✅
+- **Before:** Category cards did not render any UI details, execution steps, or confirmation modals upon selection.
+- **After:** Integrated shared `<Drawer>` component. Selects show recommended mode, targets, starter prompt, and plans/warnings before starting the flow.
+
+### Modal keydown controls — RESOLVED ✅
+- **Before:** Shared `<Modal>` could not be closed using the standard Escape key, leading to click interceptions and trapping the UI.
+- **After:** escape listener calls onClose, modal closes seamlessly.
 
 ---
 
