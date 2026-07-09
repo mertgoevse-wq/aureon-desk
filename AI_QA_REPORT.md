@@ -4,6 +4,33 @@
 
 ---
 
+## Private Beta Release Build — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` | ✅ PASS |
+| `npm test` (491 unit tests) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| `npm run pack` (no-install) | ✅ PASS |
+| `npm run dist:win` (installer + portable) | ✅ PASS |
+| Secret scan | ✅ PASS — zero real keys |
+| Commit | `63beec9` |
+
+### Release Artifacts
+
+| File | Size |
+|------|------|
+| `AureonDesk-Setup-0.9.0-x64.exe` | 124 MB |
+| `AureonDesk-Portable-0.9.0-x64.exe` | 124 MB |
+| `Aureon-Desk-Beta-No-Install.zip` | 174 MB |
+
+### Created
+
+- `docs/BETA_RELEASE_NOTES.md` — version, what works matrix (21 features ✅), known limitations (9 items), provider config guide, Studio/LivePreview guides, data reset, security warning
+- Release folder: `C:\Users\mertg\Desktop\Aureon-Desk-Beta` — installer + portable + ZIP + 6 docs
+
+---
+
 ## Beta Security Cleanup — 2026-07-09
 
 | Check | Result |
