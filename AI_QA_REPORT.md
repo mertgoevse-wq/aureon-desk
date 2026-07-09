@@ -4,6 +4,35 @@
 
 ---
 
+## Real AI Provider Code Generation — 2026-07-09
+
+| Check | Result |
+|-------|--------|
+| Critical issue review | ✅ PASS — no open Critical Issues |
+| `npm run typecheck` (post-change) | ✅ PASS |
+| `npm test` (post-change, 597 tests) | ✅ PASS |
+| `npm run build` (post-change) | ✅ PASS |
+| Code review | ✅ PASS — isDemo const bug found and fixed |
+
+### Changes
+
+| Area | Change |
+|------|--------|
+| AI generation | Added `generateWithAI()` — resolves provider/model, calls adapter-specific endpoints |
+| Adapter calls | 4 new functions: OpenAI-compatible, Anthropic, Google Gemini, Ollama |
+| Response parsing | `parseCodeResponse()` — JSON-first with markdown code block fallback |
+| Theme colors | Extracted `THEME_COLORS` constant shared by demo and AI paths |
+| Fallback | Graceful demo fallback on any AI error, `isDemo` dynamically updated |
+
+### Safety
+
+- API keys retrieved from encrypted vault via `providerService.getApiKey()`
+- No secrets sent in logs (uses `redactSecrets`)
+- User prompt sent to remote provider only when explicitly configured
+- Falls back to local demo — never blocks the pipeline
+
+---
+
 ## Post-Run Consolidation — 2026-07-09
 
 | Check | Result |

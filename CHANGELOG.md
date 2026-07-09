@@ -1,3 +1,22 @@
+## [0.9.69] - 2026-07-09
+
+### Added — Real AI Provider Code Generation in Build Pipeline
+
+- Wired `providerModelRoute` from `BuildRequest` to call AI providers for code generation instead of always using the deterministic demo
+- Added `generateWithAI()` function: resolves provider/model via `providerService.resolveCanonicalModelReference()`, gets API key, constructs code-gen system prompt with theme colors, calls provider-specific endpoints
+- Added 4 adapter-specific call functions: `callOpenAICompatibleForCode`, `callAnthropicForCode`, `callGoogleForCode`, `callOllamaForCode`
+- Added `parseCodeResponse()` to extract files from AI output — tries JSON first, then markdown code block fallback
+- Graceful fallback: if AI generation fails (no provider, no API key, network error, bad response), pipeline automatically falls back to the deterministic local demo
+- Extracted `THEME_COLORS` to module-level constant shared by both demo and AI code generation paths
+- Fixed `isDemo` to dynamically update when falling back from AI to demo (was `const`, now `let`)
+
+### Verified
+
+- `npm run typecheck` — ✅ PASS
+- `npm test` — ✅ PASS (597 tests)
+- `npm run build` — ✅ PASS
+- Code review — ✅ PASS (critical isDemo bug found and fixed)
+
 ## [0.9.68] - 2026-07-09
 
 ### Post-Run Consolidation
