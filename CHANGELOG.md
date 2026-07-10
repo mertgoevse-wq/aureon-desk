@@ -1,3 +1,35 @@
+## [0.9.76] - 2026-07-10
+
+### Added — Artifact & Output Renderer System
+
+**Artifact Types (16):**
+- Created `src/shared/artifacts.ts` — typed artifact system with prompt, code, text, markdown, file-tree, diff, preview, build-plan, search-results, image-gallery, tutorial, checklist, command, error-diagnostic, provider-setup, skill-result
+- Each artifact: id, type, title, subtitle, content, actions, createdAt, risk level
+- Factory helpers: `codeArtifactFromFileOp`, `promptArtifactFromTemplate`, `diffArtifactFromDiff`, `buildPlanArtifact`, `createArtifactId`
+- Content parser: `parseArtifactsFromContent()` — extracts fenced code blocks from markdown, supports filename hints (`# src/file.ts`), CRLF + LF line endings, whitespace normalization
+
+**Artifact Renderer Components (14 files):**
+- Created `src/renderer/src/components/artifacts/` with 14 component files + barrel export
+- `ArtifactCard` — universal router mapping type → view with copy/collapse actions
+- Per-type views: `CodeArtifactView`, `PromptArtifactView`, `DiffArtifactView`, `BuildPlanArtifactView`, `CommandArtifactView`, `FileTreeArtifactView`, `TextArtifactView`, `MarkdownArtifactView`, `TutorialArtifactView`, `ChecklistArtifactView`, `PreviewArtifactView`, `ErrorDiagnosticArtifactView`, `ProviderSetupArtifactView`
+- Each supports copy, expand/collapse, send-to-composer (where applicable)
+
+**Chat Integration:**
+- `MessageBubble.tsx` now parses AI assistant messages for code blocks and renders `ArtifactCard` components below the markdown content
+- Cleaned markdown (code blocks removed) still renders first; artifacts appear below
+
+**LivePreview Integration:**
+- Added 6th "Cards" tab in build pipeline panel — renders build plan, code files, and diffs as ArtifactCards
+- Uses shared helper functions for consistent artifact creation from pipeline data
+
+**Tests:**
+- Created `tests/unit/artifacts.test.ts` — 19 tests covering: creation helpers, CRLF parsing, multi-block extraction, filename hints, whitespace normalization, artifact ID uniqueness, action integrity
+
+### Verified
+- `npm run typecheck` — ✅ PASS (node + web)
+- `npm test` — ✅ PASS (787 tests, 31 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.75] - 2026-07-10
 
 ### Added — UI Simplification Pass

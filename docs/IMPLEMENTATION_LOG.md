@@ -4,6 +4,49 @@
 
 ---
 
+## 2026-07-10 — Artifact & Output Renderer System
+
+### Goal
+Add a structured output renderer system: copyable prompt boxes, code blocks with filename and copy button, diff artifacts with green/red lines, build plans, tutorials, checklists, and error diagnostics — making AI results easier to understand and reuse.
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `src/shared/artifacts.ts` | 16 artifact types, factory helpers, `parseArtifactsFromContent()` parser |
+| `src/renderer/src/components/artifacts/ArtifactCard.tsx` | Universal router: maps artifact type → view component |
+| `src/renderer/src/components/artifacts/CodeArtifactView.tsx` | Syntax-highlighted code with filename + copy |
+| `src/renderer/src/components/artifacts/PromptArtifactView.tsx` | Copyable prompt with send-to-composer |
+| `src/renderer/src/components/artifacts/DiffArtifactView.tsx` | Green/red line-by-line diff |
+| `src/renderer/src/components/artifacts/BuildPlanArtifactView.tsx` | Step-by-step build plan |
+| `src/renderer/src/components/artifacts/CommandArtifactView.tsx` | Terminal command with copy |
+| `src/renderer/src/components/artifacts/FileTreeArtifactView.tsx` | Hierarchical file tree |
+| `src/renderer/src/components/artifacts/TextArtifactView.tsx` | Freeform text document |
+| `src/renderer/src/components/artifacts/MarkdownArtifactView.tsx` | Rendered Markdown |
+| `src/renderer/src/components/artifacts/TutorialArtifactView.tsx` | Expandable Q&A cards |
+| `src/renderer/src/components/artifacts/ChecklistArtifactView.tsx` | Checkbox items with toggle |
+| `src/renderer/src/components/artifacts/PreviewArtifactView.tsx` | Embedded iframe preview |
+| `src/renderer/src/components/artifacts/ErrorDiagnosticArtifactView.tsx` | Error message + suggestions |
+| `src/renderer/src/components/artifacts/ProviderSetupArtifactView.tsx` | Provider config with API key hint |
+| `src/renderer/src/components/artifacts/index.ts` | Barrel export |
+| `tests/unit/artifacts.test.ts` | 19 unit tests |
+| `docs/ARTIFACT_RENDERER_SYSTEM.md` | Full documentation |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `MessageBubble.tsx` | Parses assistant messages for code blocks, renders ArtifactCards below markdown |
+| `LivePreview.tsx` | Added 6th "Cards" tab rendering pipeline artifacts |
+| `ChatPanel.tsx` | Removed dead imports (artifact rendering handled by MessageBubble) |
+
+### Verification
+- Typecheck ✅ (node + web)
+- Tests ✅ (787/787, 31 files)
+- Build ✅
+
+---
+
 ## 2026-07-10 — UI Simplification Pass
 
 ### Goal

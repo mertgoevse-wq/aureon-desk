@@ -1,8 +1,10 @@
-import React, { memo, useCallback, useState } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import { Sparkles, Copy, Check, Server } from 'lucide-react'
 import type { MessageRow } from '@shared/types/chat'
+import { parseArtifactsFromContent } from '@shared/artifacts'
+import { ArtifactCard } from '../artifacts/ArtifactCard'
 
 interface MessageBubbleProps {
   message: MessageRow
@@ -32,6 +34,14 @@ export const MessageBubble = memo(function MessageBubble({ message }: MessageBub
   const isAssistant = message.role === 'assistant'
   const isSystem = message.role === 'system'
   const isTool = message.role === 'tool'
+
+  // Parse code blocks into artifacts for assistant messages
+  const { artifacts, cleanedContent } = useMemo(() => {
+    if (isAssistant) {
+      return parseArtifactsFromContent(message.content)
+    }
+    return { artifacts: [], cleanedContent: message.content }
+  }, [message.content, isAssistant])
   const providerModelLabel = message.provider_name && message.model_label
     ? `${message.provider_name} · ${message.model_label}`
     : message.model_label || message.provider_name || null
@@ -107,10 +117,31 @@ export const MessageBubble = memo(function MessageBubble({ message }: MessageBub
           </div>
 
           <div className={`text-sm leading-relaxed break-words overflow-hidden ${isAssistant ? 'prose max-w-full' : 'whitespace-pre-wrap'}`}>
-            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-              {message.content}
-            </ReactMarkdown>
+            {cleanedContent ? (
+              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                {cleanedContent}
+              </ReactMarkdown>
+            ) : artifacts.length > 0 ? null : (
+              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                {message.content}
+              </ReactMarkdown>
+            )}
           </div>
+
+          {/* Rendered Artifacts (code blocks, prompts, etc.) */}
+          {artifacts.length > 0 && (
+            <div className="mt-2 space-y-2">
+              {artifacts.map((artifact) => (
+                <ArtifactCard
+                  key={artifact.id}
+                  artifact={artifact}
+                  handlers={{
+                    onCopy: () => {},
+                  }}
+                />
+              ))}
+            </div>
+          )}
 
           {isAssistant && (
             <div className="flex items-center justify-start mt-2">

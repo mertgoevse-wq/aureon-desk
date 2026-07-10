@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react'
+import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react'
 import {
   Play,
   Square,
@@ -27,6 +27,7 @@ import {
   GitCompare,
   ListChecks,
   Lightbulb,
+  Layers3,
   X
 } from 'lucide-react'
 import { Button } from '../components/shared/Button'
@@ -37,6 +38,9 @@ import { useNavigate } from 'react-router-dom'
 import { Sparkles } from 'lucide-react'
 import { AUTO_PREVIEW_KEYS, clearAutoPreview, getAndClearBuildPipeline, setAutoBuildPipeline } from '@shared/preview-helpers'
 import { ModelSelector } from '../components/chat/ModelSelector'
+import { ArtifactCard } from '../components/artifacts/ArtifactCard'
+import type { ArtifactActionHandlers } from '../components/artifacts/ArtifactCard'
+import { codeArtifactFromFileOp, buildPlanArtifact, diffArtifactFromDiff } from '@shared/artifacts'
 import type { BuildPipelineStatus, FileOperation, BuildStep, FollowUpSuggestion } from '@shared/types/build-pipeline'
 
 interface PreviewStatus {
@@ -50,7 +54,7 @@ interface PreviewStatus {
   error: string | null
 }
 
-type ArtifactTab = 'preview' | 'code' | 'files' | 'diff' | 'plan'
+type ArtifactTab = 'preview' | 'code' | 'files' | 'diff' | 'plan' | 'cards'
 
 export function LivePreview(): React.ReactElement {
   const api = useIpc()
@@ -396,6 +400,11 @@ export function LivePreview(): React.ReactElement {
   const isRunning = status.status === 'running' || status.status === 'starting'
   const hasSandbox = !!status.sandboxPath
 
+  // Artifact action handlers
+  const artifactHandlers: ArtifactActionHandlers = useMemo(() => ({
+    onCopy: () => {},
+  }), [])
+
   return (
     <div className="flex flex-col h-full bg-[var(--ivory-bg)]" data-testid="live-preview-panel">
       
@@ -645,6 +654,7 @@ export function LivePreview(): React.ReactElement {
                   { id: 'files' as const, label: 'Files', icon: <FolderOpen size={13} /> },
                   { id: 'diff' as const, label: 'Diff', icon: <GitCompare size={13} /> },
                   { id: 'plan' as const, label: 'Plan', icon: <ListChecks size={13} /> },
+                  { id: 'cards' as const, label: 'Cards', icon: <Layers3 size={13} /> },
                 ].map(tab => (
                   <button
                     key={tab.id}
@@ -950,6 +960,43 @@ export function LivePreview(): React.ReactElement {
                   <p className="text-[12px] text-[var(--ivory-text-3)] italic text-center py-6">
                     Preview renders in the iframe below.
                   </p>
+                )}
+
+                {/* === CARDS TAB — artifact card view === */}
+                {activeTab === 'cards' && (
+                  <div className="space-y-3" data-testid="build-cards-tab">
+                    {/* Prompt artifact */}
+                    {pipelinePrompt && (
+                      <ArtifactCard
+                        artifact={buildPlanArtifact(pipelinePrompt, pipelinePlan.length > 0 ? pipelinePlan : pipelineSteps.filter(s => s.label).map(s => s.label))}
+                        handlers={artifactHandlers}
+                      />
+                    )}
+
+                    {/* File operation artifacts */}
+                    {pipelineFileOps.map((op) => (
+                      <ArtifactCard
+                        key={op.id}
+                        artifact={codeArtifactFromFileOp(op)}
+                        handlers={artifactHandlers}
+                      />
+                    ))}
+
+                    {/* Diff artifacts */}
+                    {pipelineFileOps.filter(op => op.diff && op.diff.length > 0).map((op) => (
+                      <ArtifactCard
+                        key={`diff-${op.id}`}
+                        artifact={diffArtifactFromDiff(op.path, op.language, op.diff!)}
+                        handlers={artifactHandlers}
+                      />
+                    ))}
+
+                    {pipelineFileOps.length === 0 && (
+                      <p className="text-[12px] text-[var(--ivory-text-3)] italic text-center py-6">
+                        No artifacts generated yet. Start a build to see structured cards.
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
 

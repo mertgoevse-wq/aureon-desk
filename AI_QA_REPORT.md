@@ -4,6 +4,36 @@
 
 ---
 
+## Artifact Renderer System — 2026-07-10
+
+> ✅ **Status: Complete — 16 artifact types, 14 renderer components, chat + LivePreview integration, 19 unit tests.**
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` (node + web) | ✅ PASS |
+| `npm test` (787 tests, 31 files) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| `src/shared/artifacts.ts` — 16 types + parser | ✅ PASS |
+| 14 artifact renderer components | ✅ PASS |
+| ArtifactCard routes all 16 types correctly | ✅ PASS |
+| MessageBubble renders code blocks as artifacts | ✅ PASS |
+| LivePreview "Cards" tab shows pipeline artifacts | ✅ PASS |
+| CRLF + LF line ending support | ✅ PASS |
+| 19 new artifact unit tests | ✅ PASS |
+
+### Key Changes
+
+| Area | Change |
+|------|--------|
+| `src/shared/artifacts.ts` | 16 artifact types, 5 factory helpers, `parseArtifactsFromContent()` parser |
+| `ArtifactCard` | Universal router: type → component view with copy/collapse actions |
+| `MessageBubble` | Parses assistant messages for code blocks, renders ArtifactCards below markdown |
+| `LivePreview` | New "Cards" tab — pipeline data as structured artifact cards |
+| `ChatPanel` | Removed dead imports (artifact rendering handled by MessageBubble) |
+| Tests | 19 tests: creation, parsing, integrity, CRLF, filename hints |
+
+---
+
 ## UI Simplification Pass — 2026-07-10
 
 > ✅ **Status: Complete — simple/advanced mode toggle, providers cleanup, sidebar simplification.**
