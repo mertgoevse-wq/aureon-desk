@@ -172,6 +172,19 @@ export function LivePreview(): React.ReactElement {
     }
   }, [])
 
+  // Escape key closes project selector dropdown
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setProjectDropdownOpen(false)
+      }
+    }
+    document.addEventListener('keydown', handleEsc)
+    return () => {
+      document.removeEventListener('keydown', handleEsc)
+    }
+  }, [])
+
   // Subscribe to build pipeline step events
   useEffect(() => {
     const unsubscribeStep = api.onBuildStep((s: BuildPipelineStatus) => {
@@ -228,11 +241,15 @@ export function LivePreview(): React.ReactElement {
     setCreating(true)
     setError(null)
     try {
-      const result = await api.previewCreateSandbox({ templateType })
-      if (result.success) {
-        await handleStart(result.sandboxPath)
+      if (templateType === 'demo') {
+        await handleRunDemo('Calming Ivory')
       } else {
-        setError(result.error || 'Failed to create sandbox')
+        const result = await api.previewCreateSandbox({ templateType })
+        if (result.success) {
+          await handleStart(result.sandboxPath)
+        } else {
+          setError(result.error || 'Failed to create sandbox')
+        }
       }
     } catch (e) {
       setError(String(e))
@@ -420,6 +437,12 @@ export function LivePreview(): React.ReactElement {
         {/* Left Column: Project Explorer & Task composer */}
         <div className="border-r border-[var(--ivory-border)] flex flex-col min-h-0 bg-[var(--ivory-bg)]">
           
+          {/* Beginner guidance explaining LivePreview */}
+          <div className="p-4 border-b border-[var(--ivory-border)]/40 bg-[var(--ivory-elevated)]/30 text-[10.5px] leading-relaxed text-[var(--ivory-text-2)] font-body">
+            <span className="font-bold text-[var(--ivory-text)] block mb-0.5">LivePreview Workspace Guide</span>
+            Select a project configuration template (HTML, React, or Demo) and click <b>Build with Preview</b> to compile and host your files. You can edit codes and monitor logs in real-time in the preview window tabs.
+          </div>
+          
           {/* Project & Explorer Selector Header */}
           <div className="p-4 border-b border-[var(--ivory-border)] flex items-center justify-between gap-2.5">
             <span
@@ -534,11 +557,11 @@ export function LivePreview(): React.ReactElement {
               </select>
               <Button
                 onClick={handleCreateSandbox}
-                disabled={creating || !briefText.trim()}
+                disabled={creating || (templateType !== 'demo' && !briefText.trim())}
                 size="sm"
                 className="cursor-pointer font-semibold rounded-xl flex-1 justify-center gap-1"
               >
-                <Play size={12} /> Create & Build
+                <Play size={12} /> Build with Preview
               </Button>
             </div>
             

@@ -148,6 +148,19 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps): React.Re
 
   useEffect(() => {
     if (!isOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!isOpen) return
     setActiveProvider(selectedModel?.provider_name ?? providerGroups[0]?.name ?? null)
     setQuery('')
     window.setTimeout(() => searchRef.current?.focus(), 0)

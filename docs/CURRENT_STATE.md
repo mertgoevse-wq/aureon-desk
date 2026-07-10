@@ -1,9 +1,7 @@
-# Aureon Desk — Current State
+# Vibeforge — Current State
 
-> **Last updated:** 2026-07-09
+> **Last updated:** 2026-07-10
 > **Branch:** main
-> **Latest verified baseline:** `3b6e162 feat: real MCP execution MVP with safety gates, presets, and discovery`
-> **MCP safety hardening:** documented in CHANGELOG 0.9.73
 
 ---
 

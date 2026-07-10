@@ -97,6 +97,20 @@ export function ChatWorkspace(): React.ReactElement {
   }, [activeChat?.system_prompt_id, activeChatId])
 
   useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setPromptsOpen(false)
+        setHomePromptsOpen(false)
+        setHomeProjectsOpen(false)
+      }
+    }
+    document.addEventListener('keydown', handleEsc)
+    return () => {
+      document.removeEventListener('keydown', handleEsc)
+    }
+  }, [])
+
+  useEffect(() => {
     api.modelAllEnabled().then((models: ModelOption[]) => setEnabledModels(models || [])).catch(console.error)
   }, [api, activeChat?.model_id])
 
@@ -228,9 +242,18 @@ export function ChatWorkspace(): React.ReactElement {
         <div className="min-h-full flex items-center justify-center px-6 py-10">
           <div className="w-full max-w-3xl text-center flex flex-col items-center">
             {/* Greeting */}
-            <h1 className="text-4xl font-semibold text-[var(--ivory-text)] tracking-tight font-display mb-7 select-none">
+            <h1 className="text-4xl font-semibold text-[var(--ivory-text)] tracking-tight font-display mb-5 select-none">
               {getTimeAwareGreeting()}, Mert
             </h1>
+
+            {/* Beginner Guidance banner */}
+            <div className="w-full max-w-2xl mb-6 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/50 rounded-2xl p-4 text-left text-[11px] text-[var(--ivory-text-2)] leading-relaxed shadow-sm font-body animate-scale-in">
+              <div className="font-bold text-[var(--ivory-text)] mb-1 flex items-center gap-1.5">
+                <MessageSquare size={13} className="text-[var(--ivory-accent)]" />
+                Vibeforge Chat Workspace
+              </div>
+              Ask general questions, request code reviews, or design architectures. You can select your AI provider model, target project contexts, and system profile settings directly inside the toolbar options. Type a prompt and press <b>Enter</b> to spawn a dedicated conversation.
+            </div>
 
             {/* Large Centered Composer Card */}
             <div className="w-full rounded-[28px] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-lg)] ring-1 ring-white/60 overflow-hidden mb-6">

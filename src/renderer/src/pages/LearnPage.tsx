@@ -5,7 +5,8 @@
  * Includes search, category filters, agent/skill cards, and auto-selection exploration.
  */
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   Search, GraduationCap, Bot, Wrench, Plug, FileText,
   BookOpen, Lightbulb, ArrowRight, X, Zap,
@@ -75,7 +76,28 @@ const AGENT_CATEGORIES: { id: AgentCategory | 'all'; label: string; icon: React.
 ]
 
 export function LearnPage(): React.ReactElement {
-  const [activeTab, setActiveTab] = useState<ViewTab>('concepts')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const tabParam = searchParams.get('tab') as ViewTab | null
+  const [activeTab, setActiveTab] = useState<ViewTab>(() => {
+    if (tabParam && ['concepts', 'agents', 'skills', 'auto-select'].includes(tabParam)) {
+      return tabParam
+    }
+    return 'concepts'
+  })
+
+  useEffect(() => {
+    if (tabParam && ['concepts', 'agents', 'skills', 'auto-select'].includes(tabParam) && tabParam !== activeTab) {
+      setActiveTab(tabParam)
+    }
+  }, [tabParam])
+
+  useEffect(() => {
+    const currentTab = searchParams.get('tab')
+    if (currentTab !== activeTab) {
+      setSearchParams({ tab: activeTab }, { replace: true })
+    }
+  }, [activeTab, searchParams, setSearchParams])
+
   const [searchQuery, setSearchQuery] = useState('')
   const [agentCategory, setAgentCategory] = useState<AgentCategory | 'all'>('all')
   const [selectedAgent, setSelectedAgent] = useState<AgentEducation | null>(null)

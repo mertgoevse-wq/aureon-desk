@@ -263,3 +263,34 @@ specified (hero → Studio → Code → LivePreview → Provider → MCP).
 - Consider extending the existing `screenshot()` helper in
   `tests/e2e/helpers/electronApp.ts` with a target-dir parameter so the
   inline `shot()` helper can be removed.
+
+---
+
+## 2026-07-10 — Vibeforge Codex-like Simplification Pass
+
+### Goal
+Make Vibeforge feel more like a clean Codex-style coding workspace: simple, focused, sorted, beginner-friendly, and less visually complicated. Hide advanced settings and sidebar items behind toggles, consolidate duplicate buttons to "Build with Preview", add beginner guides across screens, and ensure ESC closes all drawers, dropdowns, and modals.
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `docs/CODEX_UI_SIMPLIFICATION_AUDIT.md` | Audit of Home, Chat, Preview, VibeCoding, and Settings screens mapping duplicates and recommendations. |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/renderer/src/layouts/Sidebar.tsx` | Vertical navigation grouping Primary/Secondary/Advanced links, collapsible Advanced drawer using persistent localStorage `vb_show_advanced_nav`. |
+| `src/renderer/src/layouts/SettingsLayout.tsx` | Vertical category grouping Basic/Advanced settings, collapsible Advanced section with local state and localStorage `vb_show_advanced_settings`. |
+| `src/renderer/src/pages/LearnPage.tsx` | Synchronize tab parameter on mount and state changes using `useSearchParams`. |
+| `src/renderer/src/pages/Studio.tsx` | Updated hero composer primary CTA to "Build with Preview" (preserving test ID). Updated build drawer CTA to conditionally say "Build with Preview". Added VibeForgeMark logo and beginner's guide card. |
+| `src/renderer/src/pages/LivePreview.tsx` | Updated primary CTA button text to "Build with Preview" and enabled it on demo templates without brief text. Triggers Coding Demo directly when selected template is "demo". Added beginner guide card and ESC key dropdown dismiss. |
+| `src/renderer/src/components/chat/ModelSelector.tsx` | Added Escape key handler `useEffect` to dismiss model selection popover. |
+| `src/renderer/src/pages/ChatWorkspace.tsx` | Added beginner guide banner on empty home chat view. Added global keydown listener to close system profile and project dropdowns on Escape. |
+
+### Verification
+- Typecheck ✅ (node + web, compiled cleanly via local tsc binary)
+- Tests ✅ (845 / 845 tests pass, 33 test files)
+- Build ✅ (Vite production bundle compiled cleanly in under 4 seconds)
+

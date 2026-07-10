@@ -1,17 +1,24 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 import {
-  Archive,
-  ChevronLeft,
+  MessageSquare,
+  Sparkles,
+  Monitor,
   Code2,
   FolderOpen,
-  Library,
-  MessageSquare,
+  Bot,
+  Wrench,
+  KeyRound,
+  Settings,
+  Plug,
+  Boxes,
+  FileText,
+  Package,
   Plus,
   Search,
-  Settings,
-  Sparkles,
-  UserCircle,
-  Wrench
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  UserCircle
 } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useUIStore } from '../stores/uiStore'
@@ -19,16 +26,26 @@ import { useChatStore } from '../stores/chatStore'
 import { ChatList } from '../components/sidebar/ChatList'
 import { useIpc } from '../hooks/useIpc'
 import { BrandLockup, BrandLockupCompact } from '../components/shared/BrandLockup'
-
 import type { ChatListItem } from '@shared/types/chat'
 
 export const Sidebar = memo(function Sidebar(): React.ReactElement {
   const navigate = useNavigate()
   const location = useLocation()
-  const { sidebarCollapsed, toggleSidebar, sidebarWidth, setSidebarWidth, simpleMode } = useUIStore()
+  const { sidebarCollapsed, toggleSidebar, sidebarWidth, setSidebarWidth } = useUIStore()
   const { setChats, setLoadingChats, setActiveChatId, setActiveChat } = useChatStore()
   const api = useIpc()
   const resizeRef = useRef<{ startX: number; startWidth: number } | null>(null)
+
+  const [showAdvancedNav, setShowAdvancedNav] = useState(() => {
+    return localStorage.getItem('vb_show_advanced_nav') === 'true'
+  })
+
+  const toggleAdvancedNav = useCallback(() => {
+    const nextVal = !showAdvancedNav
+    setShowAdvancedNav(nextVal)
+    localStorage.setItem('vb_show_advanced_nav', String(nextVal))
+  }, [showAdvancedNav])
+
   useEffect(() => {
     loadChats()
   }, [])
@@ -97,34 +114,62 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
     }
   }, [api, navigate, setActiveChatId, setActiveChat])
 
-
   const isActive = (path: string) => {
-    if (path === '/studio') return location.pathname === '/' || location.pathname === '/studio'
-    return location.pathname === path
+    if (path === '/') {
+      return location.pathname === '/' || location.pathname === '/studio'
+    }
+    if (path.startsWith('/learn')) {
+      return location.pathname.startsWith('/learn')
+    }
+    return location.pathname.startsWith(path)
   }
+
+  // Navigation definition lists
+  const primaryLinks = [
+    { label: 'Chat', icon: <MessageSquare size={13} />, path: '/chat', testId: 'nav-chats' },
+    { label: 'Build', icon: <Sparkles size={13} />, path: '/', testId: 'nav-studio' },
+    { label: 'Code', icon: <Monitor size={13} />, path: '/vibe', testId: 'nav-vibe' },
+    { label: 'Preview', icon: <Code2 size={13} />, path: '/preview', testId: 'nav-preview' },
+    { label: 'Projects', icon: <FolderOpen size={13} />, path: '/projects', testId: 'nav-projects' },
+  ]
+
+  const secondaryLinks = [
+    { label: 'Agents', icon: <Bot size={13} />, path: '/learn?tab=agents', testId: 'nav-agents' },
+    { label: 'Skills', icon: <Wrench size={13} />, path: '/skills', testId: 'nav-skills' },
+    { label: 'Providers', icon: <KeyRound size={13} />, path: '/settings/providers', testId: 'nav-providers' },
+    { label: 'Settings', icon: <Settings size={13} />, path: '/settings/general', testId: 'nav-settings' },
+  ]
+
+  const advancedLinks = [
+    { label: 'MCP', icon: <Plug size={13} />, path: '/settings/tools', testId: 'nav-mcp' },
+    { label: 'Connectors', icon: <Boxes size={13} />, path: '/settings/connectors', testId: 'nav-connectors' },
+    { label: 'Logs', icon: <FileText size={13} />, path: '/settings/logs', testId: 'nav-logs' },
+    { label: 'Developer Setup', icon: <Package size={13} />, path: '/settings/developer-setup', testId: 'nav-devsetup' },
+    { label: 'Beta/Release', icon: <Code2 size={13} />, path: '/settings/developer', testId: 'nav-beta' },
+  ]
 
   if (sidebarCollapsed) {
     return (
       <div
-        className="flex flex-col items-center w-14 h-full border-r border-[var(--ivory-border)] bg-[var(--ivory-surface)] py-3 gap-1.5 shrink-0"
+        className="flex flex-col items-center w-14 h-full border-r border-[var(--ivory-border)] bg-[var(--ivory-surface)] py-3 gap-1.5 shrink-0 select-none"
         role="navigation"
         aria-label="Sidebar navigation"
         data-testid="sidebar"
       >
-        {/* Compact brand mark at top of collapsed sidebar */}
         <BrandLockupCompact size={28} className="mb-1" />
         <button
           type="button"
           onClick={toggleSidebar}
-          className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors duration-[var(--transition-fast)] mb-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+          className="p-1.5 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors duration-[var(--transition-fast)] mb-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer"
           aria-label="Expand sidebar"
         >
           <ChevronLeft size={16} className="rotate-180" />
         </button>
+
         <button
           type="button"
           onClick={handleNewChat}
-          className="p-2 rounded-[var(--radius-md)] text-[var(--ivory-accent)] hover:text-[var(--ivory-accent-hover)] hover:bg-[var(--ivory-surface-2)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+          className="p-2 rounded-[var(--radius-md)] text-[var(--ivory-accent)] hover:text-[var(--ivory-accent-hover)] hover:bg-[var(--ivory-surface-2)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer"
           aria-label="New chat"
           data-testid="new-chat-button"
         >
@@ -133,76 +178,84 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
         <button
           type="button"
           onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
-          className="p-2 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+          className="p-2 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer"
           aria-label="Search"
           data-testid="sidebar-search"
         >
           <Search size={17} />
         </button>
+
         <div className="w-5 border-t border-[var(--ivory-border)] my-1" />
+
+        {/* Collapsed Primary Icons */}
+        <div className="flex flex-col gap-1 w-full items-center">
+          {primaryLinks.map((link) => (
+            <button
+              key={link.path}
+              type="button"
+              onClick={() => navigate(link.path)}
+              title={link.label}
+              className={`p-2 rounded-xl transition cursor-pointer ${isActive(link.path) ? 'text-[var(--ivory-accent)] bg-[var(--ivory-active-bg)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              data-testid={link.testId}
+            >
+              {link.icon}
+            </button>
+          ))}
+        </div>
+
+        <div className="w-5 border-t border-[var(--ivory-border)] my-1" />
+
+        {/* Collapsed Secondary Icons */}
+        <div className="flex flex-col gap-1 w-full items-center">
+          {secondaryLinks.map((link) => (
+            <button
+              key={link.path}
+              type="button"
+              onClick={() => navigate(link.path)}
+              title={link.label}
+              className={`p-2 rounded-xl transition cursor-pointer ${isActive(link.path) ? 'text-[var(--ivory-accent)] bg-[var(--ivory-active-bg)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+              data-testid={link.testId}
+            >
+              {link.icon}
+            </button>
+          ))}
+        </div>
+
+        <div className="w-5 border-t border-[var(--ivory-border)] my-1" />
+
+        {/* Collapsed Advanced Toggle */}
         <button
           type="button"
-          onClick={() => navigate('/')}
-          className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/studio') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-          aria-label="Studio"
-          data-testid="nav-studio"
+          onClick={toggleAdvancedNav}
+          title="Toggle Advanced Links"
+          className="p-2 rounded-xl text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition cursor-pointer"
         >
-          <Sparkles size={18} />
+          {showAdvancedNav ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
         </button>
-        <button
-          type="button"
-          onClick={() => navigate('/chat')}
-          className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/chat') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-          aria-label="Chat"
-          data-testid="nav-chats"
-        >
-          <MessageSquare size={18} />
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate('/prompts')}
-          className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/prompts') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-          aria-label="Prompts"
-          data-testid="nav-prompts"
-        >
-          <Library size={18} />
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate('/preview')}
-          className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/preview') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-          aria-label="Preview"
-          data-testid="nav-preview"
-        >
-          <Code2 size={18} />
-        </button>
-        {/* Cowork — hidden in simple mode */}
-        {!simpleMode && (
-          <button
-            type="button"
-            onClick={() => navigate('/cowork')}
-            className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/cowork') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-            aria-label="Cowork"
-            data-testid="nav-cowork"
-          >
-            <Archive size={18} />
-          </button>
+
+        {/* Collapsed Advanced Icons */}
+        {showAdvancedNav && (
+          <div className="flex flex-col gap-1 w-full items-center mt-1">
+            {advancedLinks.map((link) => (
+              <button
+                key={link.path}
+                type="button"
+                onClick={() => navigate(link.path)}
+                title={link.label}
+                className={`p-2 rounded-xl transition cursor-pointer ${isActive(link.path) ? 'text-[var(--ivory-accent)] bg-[var(--ivory-active-bg)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+                data-testid={link.testId}
+              >
+                {link.icon}
+              </button>
+            ))}
+          </div>
         )}
-        <button
-          type="button"
-          onClick={() => navigate('/settings')}
-          className="mt-auto p-2 rounded-[var(--radius-md)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
-          aria-label="Settings"
-          data-testid="nav-settings"
-        >
-          <Settings size={18} />
-        </button>
       </div>
     )
   }
 
   return (
-    <div className="flex h-full shrink-0 relative">
+    <div className="flex h-full shrink-0 relative select-none">
       <div
         className="flex flex-col h-full border-r border-[var(--ivory-border)] bg-[var(--ivory-surface)]"
         style={{ width: sidebarWidth }}
@@ -226,7 +279,7 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
           <button
             type="button"
             onClick={handleNewChat}
-            className="h-8 w-full inline-flex items-center justify-center gap-1.5 rounded-lg text-[11px] font-semibold text-[var(--ivory-bronze)] bg-[var(--ivory-bronze-light)] hover:bg-[var(--ivory-bronze-light)]/80 border border-[var(--ivory-bronze)]/10 hover:border-[var(--ivory-bronze)]/20 transition shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+            className="h-8 w-full inline-flex items-center justify-center gap-1.5 rounded-lg text-[11px] font-semibold text-[var(--ivory-bronze)] bg-[var(--ivory-bronze-light)] hover:bg-[var(--ivory-bronze-light)]/80 border border-[var(--ivory-bronze)]/10 hover:border-[var(--ivory-bronze)]/20 transition shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer"
             aria-label="Create new chat"
             data-testid="new-chat-button"
           >
@@ -236,108 +289,128 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
           <button
             type="button"
             onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
-            className="w-full h-7 px-3 inline-flex items-center gap-2 rounded-lg bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/30 text-[10px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
+            className="w-full h-7 px-3 inline-flex items-center gap-2 rounded-lg bg-[var(--ivory-bg)] border border-[var(--ivory-border)]/30 text-[10px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer"
             data-testid="sidebar-search"
           >
             <Search size={12} />
             <span className="truncate">Search...</span>
           </button>
-          <div className="grid grid-cols-4 gap-1 pt-0.5" aria-label="Workspace shortcuts">
-            <button
-              type="button"
-              onClick={() => navigate('/')}
-              className={`h-8 inline-flex items-center justify-center rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer ${isActive('/studio') ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-              aria-label="Studio"
-              title="Studio"
-              data-testid="nav-studio"
-            >
-              <Sparkles size={13} />
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/chat')}
-              className={`h-8 inline-flex items-center justify-center rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer ${isActive('/chat') ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-              aria-label="Chat"
-              title="Chat"
-              data-testid="nav-chats"
-            >
-              <MessageSquare size={13} />
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/prompts')}
-              className={`h-8 inline-flex items-center justify-center rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer ${isActive('/prompts') ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-              aria-label="Prompts"
-              title="Prompts"
-              data-testid="nav-prompts"
-            >
-              <Library size={13} />
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/preview')}
-              className={`h-8 inline-flex items-center justify-center rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer ${isActive('/preview') ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-              aria-label="Code"
-              title="Code"
-              data-testid="nav-preview"
-            >
-              <Code2 size={13} />
-            </button>
-          </div>
         </div>
 
-        <div className="px-3 py-1 border-b border-[var(--ivory-border)]/30">
-          <div className="flex items-center justify-between px-1.5 mb-0.5">
-            <p className="text-ui-caption uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)] font-body">Projects</p>
-            <button
-              type="button"
-              onClick={() => navigate('/projects')}
-              className="p-1 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer"
-              aria-label="Open projects"
-            >
-              <Plus size={12} />
-            </button>
+        {/* Scrollable Navigation List */}
+        <div className="flex-1 overflow-y-auto py-3 px-3 space-y-4">
+          
+          {/* Primary Links */}
+          <div className="space-y-1">
+            <p className="px-3 text-[10px] uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)] font-body">Workspace</p>
+            {primaryLinks.map((link) => {
+              const active = isActive(link.path)
+              return (
+                <button
+                  key={link.path}
+                  type="button"
+                  onClick={() => navigate(link.path)}
+                  className={`w-full h-8 px-3 rounded-lg text-[11px] font-semibold transition cursor-pointer flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${
+                    active
+                      ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]'
+                      : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'
+                  }`}
+                  data-testid={link.testId}
+                >
+                  <span className={active ? 'text-[var(--ivory-accent)]' : 'text-[var(--ivory-text-3)]'}>
+                    {link.icon}
+                  </span>
+                  <span>{link.label}</span>
+                </button>
+              )
+            })}
           </div>
-          <div className={`grid ${simpleMode ? 'grid-cols-1' : 'grid-cols-2'} gap-1 font-body`}>
+
+          {/* Secondary Links */}
+          <div className="space-y-1">
+            <p className="px-3 text-[10px] uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)] font-body">Library & Setup</p>
+            {secondaryLinks.map((link) => {
+              const active = isActive(link.path)
+              return (
+                <button
+                  key={link.path}
+                  type="button"
+                  onClick={() => navigate(link.path)}
+                  className={`w-full h-8 px-3 rounded-lg text-[11px] font-semibold transition cursor-pointer flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${
+                    active
+                      ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]'
+                      : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'
+                  }`}
+                  data-testid={link.testId}
+                >
+                  <span className={active ? 'text-[var(--ivory-accent)]' : 'text-[var(--ivory-text-3)]'}>
+                    {link.icon}
+                  </span>
+                  <span>{link.label}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Advanced Section Header Toggle */}
+          <div className="border-t border-[var(--ivory-border)]/20 pt-3">
             <button
               type="button"
-              onClick={() => navigate('/projects')}
-              className={`h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer
-                ${isActive('/projects') ? 'bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] border border-transparent'}`}
-              data-testid="nav-projects"
+              onClick={toggleAdvancedNav}
+              className="w-full flex items-center justify-between px-3 py-1 rounded-lg text-[10px] uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition duration-150 cursor-pointer focus:outline-none focus-visible:ring-2"
             >
-              <FolderOpen size={13} className="text-[var(--ivory-accent)]" />
-              Projects
+              <span>Advanced</span>
+              {showAdvancedNav ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
             </button>
-            {!simpleMode && (
-              <button
-                type="button"
-                onClick={() => navigate('/tools')}
-                className={`h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer
-                  ${isActive('/tools') ? 'bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] border border-transparent'}`}
-                data-testid="nav-tools"
-              >
-                <Wrench size={13} className="text-[var(--ivory-accent)]" />
-                Tools
-              </button>
+
+            {/* Advanced Links (Conditional rendering) */}
+            {showAdvancedNav && (
+              <div className="space-y-1 mt-1.5">
+                {advancedLinks.map((link) => {
+                  const active = isActive(link.path)
+                  return (
+                    <button
+                      key={link.path}
+                      type="button"
+                      onClick={() => navigate(link.path)}
+                      className={`w-full h-8 px-3 rounded-lg text-[11px] font-semibold transition cursor-pointer flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${
+                        active
+                          ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]'
+                          : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'
+                      }`}
+                      data-testid={link.testId}
+                    >
+                      <span className={active ? 'text-[var(--ivory-accent)]' : 'text-[var(--ivory-text-3)]'}>
+                        {link.icon}
+                      </span>
+                      <span>{link.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
             )}
           </div>
-        </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto">
-          <div className="flex items-center justify-between px-5 pt-2.5 pb-1">
-            <p className="text-ui-caption uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)] font-body">Recents</p>
-            <button
-              type="button"
-              onClick={() => navigate('/chat')}
-              className="text-ui-caption font-semibold text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 rounded-md cursor-pointer"
-            >
-              View
-            </button>
+          {/* Recents Chat List */}
+          <div className="border-t border-[var(--ivory-border)]/20 pt-3">
+            <div className="flex items-center justify-between px-3 pb-1">
+              <p className="text-[10px] uppercase tracking-[0.06em] font-bold text-[var(--ivory-text-3)] font-body">Recents</p>
+              <button
+                type="button"
+                onClick={() => navigate('/chat')}
+                className="text-[10px] font-semibold text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 rounded-md cursor-pointer"
+              >
+                View
+              </button>
+            </div>
+            <div className="max-h-48 overflow-y-auto">
+              <ChatList onSelectChat={handleSelectChat} />
+            </div>
           </div>
-          <ChatList onSelectChat={handleSelectChat} />
+
         </div>
 
+        {/* Footer Profile Block */}
         <div className="border-t border-[var(--ivory-border)]/25 p-2.5 bg-[var(--ivory-surface)] flex items-center justify-between gap-2 shrink-0">
           <div className="flex items-center gap-1.5 min-w-0">
             <UserCircle size={13} className="text-[var(--ivory-text-3)] shrink-0" />
@@ -345,7 +418,7 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
           </div>
           <button
             type="button"
-            onClick={() => navigate('/settings')}
+            onClick={() => navigate('/settings/general')}
             className="p-1 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
             aria-label="Open settings"
             data-testid="nav-settings"

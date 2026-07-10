@@ -4,7 +4,8 @@ import {
   LayoutDashboard, Code2, FileText, Image, Video, Music,
   FileSearch, MonitorPlay, Plug, Workflow, ChevronRight,
   Sparkles, ShieldCheck, ArrowRight, MessageSquare,
-  Eye, Lightbulb, Zap, FolderCheck, ChevronDown, MoreHorizontal
+  Eye, Lightbulb, Zap, FolderCheck, ChevronDown, MoreHorizontal,
+  GraduationCap
 } from 'lucide-react'
 import { useIpc } from '../hooks/useIpc'
 import { TASK_CATEGORIES, AUTONOMY_LEVELS } from '@shared/types/studio-core'
@@ -12,7 +13,7 @@ import type { TaskCategoryInfo, StudioOrchestrationResult, AutonomyLevel } from 
 import { SafetyNotice } from '../components/vibe/SafetyNotice'
 import { setAutoBuildPreview, setAutoBuildSandboxOnly, setAutoBuildPipeline } from '@shared/preview-helpers'
 import { Drawer } from '../components/shared/Drawer'
-import { AureonMark } from '../components/shared/AureonMark'
+import { VibeForgeMark } from '../components/shared/VibeForgeMark'
 import { DropZone } from '../components/shared/DropZone'
 import { AttachmentChip } from '../components/shared/AttachmentChip'
 import { useAttachmentStore } from '../stores/attachmentStore'
@@ -358,7 +359,7 @@ export function Studio(): React.ReactElement {
 
         {/* === HERO MARK === */}
         <div className="mb-7" data-testid="hero-mark">
-          <AureonMark size={56} className="animate-scale-in" />
+          <VibeForgeMark size={56} className="animate-scale-in" />
         </div>
 
         {/* === HERO HEADING === */}
@@ -368,6 +369,15 @@ export function Studio(): React.ReactElement {
         <p className="text-[14px] text-[var(--ivory-text-3)] font-body max-w-md leading-relaxed text-center mb-8" data-testid="hero-subtitle">
           A guided AI workspace for chat, code, projects, tools, and live preview.
         </p>
+
+        {/* === BEGINNER GUIDE === */}
+        <div className="w-full max-w-xl mb-6 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/50 rounded-2xl p-4 text-left text-[11px] text-[var(--ivory-text-2)] leading-relaxed shadow-sm font-body animate-scale-in">
+          <div className="font-bold text-[var(--ivory-text)] mb-1 flex items-center gap-1.5">
+            <GraduationCap size={13} className="text-[var(--ivory-accent)]" />
+            Beginner's Guide — How to Build
+          </div>
+          Type your app ideas (e.g. <i>"Build a simple calculator"</i> or <i>"Create a pomodoro timer"</i>) in the input below, then click <b>Build with Preview</b>. We will automatically select the best model, start an isolated sandboxed server, and open the LivePreview panel.
+        </div>
 
         {/* === CENTRAL COMPOSER === */}
         <div className="w-full max-w-xl mb-6">
@@ -421,7 +431,7 @@ export function Studio(): React.ReactElement {
             >
               <MessageSquare size={13} /> Open chat
             </button>
-            {/* Primary CTA: Start building */}
+            {/* Primary CTA: Build with Preview */}
             <button
               type="button"
               onClick={handleStartBuilding}
@@ -432,7 +442,7 @@ export function Studio(): React.ReactElement {
               {resolvingModel ? (
                 <>Resolving model<ArrowRight size={13} className="animate-pulse" /></>
               ) : (
-                <>Start building <ArrowRight size={13} /></>
+                <>Build with Preview <ArrowRight size={13} /></>
               )}
             </button>
           </div>
@@ -1069,7 +1079,7 @@ export function Studio(): React.ReactElement {
                 data-testid="studio-start-flow-btn"
                 className="w-full h-10 bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-white text-[13px] font-bold rounded-xl shadow-sm transition-colors cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Start Task Flow <ArrowRight size={13} />
+                {selectedCard === 'build_app' ? 'Build with Preview' : 'Start Task Flow'} <ArrowRight size={13} />
               </button>
             </div>
           </div>

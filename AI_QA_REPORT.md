@@ -4,6 +4,22 @@
 
 ---
 
+## Vibeforge Codex-like Simplification Pass — 2026-07-10
+
+> ✅ **Status: Complete — UI consolidated, advanced views hidden behind toggles, and all 845 unit tests pass.**
+
+| Check | Result |
+|-------|--------|
+| `node scripts/verify-native.js` | ✅ PASS |
+| `./node_modules/.bin/tsc` (node + web) | ✅ PASS |
+| `./node_modules/.bin/vitest run` (845 unit tests, 33 files) | ✅ PASS |
+| `./node_modules/.bin/electron-vite build` (production build) | ✅ PASS |
+
+### Summary
+The UI simplification pass has been successfully integrated. Navigation items in the main sidebar and settings layouts have been split into Primary/Core and Advanced blocks, hiding the latter behind user toggles with local storage state preservation. Redundant actions like "Start Building" and "Create & Build" have been unified into "Build with Preview", which triggers sandboxes or demo flows directly. Prompts and dropdown selectors now gracefully dismiss via keyboard Escape keys, and beginner guidance cards have been injected into empty workspace views.
+
+---
+
 ## Vibeforge Rebrand Pass — 2026-07-10
 
 > ✅ **Status: Complete — Rebrand executed successfully, all E2E & unit tests pass green.**

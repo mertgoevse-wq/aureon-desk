@@ -1,3 +1,15 @@
+## [0.9.81] - 2026-07-10 — Vibeforge Codex-like Simplification Pass
+
+### Added
+- **Beginner Guidance Banners:** Added prominent info banners on empty home views and sidebars for Studio (`Studio.tsx`), Chat (`ChatWorkspace.tsx`), and LivePreview (`LivePreview.tsx`) to explain page purpose, next steps, and template execution.
+- **ESC Key Handlers:** Integrated Escape key event listeners on model selectors, chat dropdowns (system prompt, projects), and preview controls to dismiss open drawers and overlays instantly.
+
+### Changed
+- **Main Sidebar Layout:** Regrouped navigation to vertical Primary, Secondary, and Advanced list, hiding Advanced options behind a toggle that synchronizes to local storage (`vb_show_advanced_nav`).
+- **Settings Categories Layout:** Grouped settings into Core and Advanced menus, collapsing Advanced categories under an expandable toggle header synced with local storage (`vb_show_advanced_settings`).
+- **Tab Synchronization:** Configured `LearnPage.tsx` to read the `tab` URL query parameters on mount and keep internal active tab state in sync via `useSearchParams`.
+- **Button Consolidation:** Renamed primary building actions in the composer and task drawers to a single consistent **"Build with Preview"** CTA. Clicking "Build with Preview" with the "Coding Demo" template selected now launches the coding demo directly without requiring prompt inputs.
+
 ## [0.9.80] - 2026-07-10 — Rebrand Vibeforge Pass
 
 ### Rebranded
