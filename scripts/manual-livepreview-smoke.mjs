@@ -21,10 +21,10 @@ const DEMO_COUNTER_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Aureon Counter Demo</title>
+  <title>Vibeforge Counter Demo</title>
 </head>
 <body>
-  <h1>Aureon Counter Demo</h1>
+  <h1>Vibeforge Counter Demo</h1>
   <div id="counter">0</div>
   <button id="btn-increment" onclick="increment()">Increment</button>
   <button id="btn-reset" onclick="reset()">Reset</button>
@@ -38,7 +38,7 @@ const DEMO_COUNTER_HTML = `<!DOCTYPE html>
 </html>`
 
 const sandboxId = randomUUID()
-const sandboxPath = join(tmpdir(), 'aureon-smoke-' + sandboxId)
+const sandboxPath = join(tmpdir(), 'vibeforge-smoke-' + sandboxId)
 const PORT = 19191
 
 function cleanup() {
@@ -50,13 +50,13 @@ function cleanup() {
 process.on('exit', cleanup)
 process.on('SIGINT', () => { cleanup(); process.exit(0) })
 
-console.log('\n🧪 Aureon LivePreview Smoke Test\n')
+console.log('\n🧪 Vibeforge LivePreview Smoke Test\n')
 
 // Step 1: Create sandbox
 console.log('1. Creating sandbox at', sandboxPath)
 mkdirSync(sandboxPath, { recursive: true })
 writeFileSync(join(sandboxPath, 'index.html'), DEMO_COUNTER_HTML, 'utf-8')
-writeFileSync(join(sandboxPath, '.aureon-demo'), 'demo', 'utf-8')
+writeFileSync(join(sandboxPath, '.vibeforge-demo'), 'demo', 'utf-8')
 console.log('   ✓ Sandbox created')
 
 // Step 2: Start in-process HTTP server
@@ -94,7 +94,7 @@ await new Promise((resolve, reject) => {
       // Step 4: Verify content
       console.log('4. Verifying content...')
       const checks = [
-        { label: 'Contains <h1>Aureon Counter Demo</h1>', pass: html.includes('Aureon Counter Demo') },
+        { label: 'Contains <h1>Vibeforge Counter Demo</h1>', pass: html.includes('Vibeforge Counter Demo') },
         { label: 'Contains counter div', pass: html.includes('id="counter"') },
         { label: 'Contains Increment button', pass: html.includes('btn-increment') },
         { label: 'Contains Reset button', pass: html.includes('btn-reset') },

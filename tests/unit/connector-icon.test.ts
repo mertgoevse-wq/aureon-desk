@@ -75,15 +75,14 @@ describe('Brand Asset Existence', () => {
 
   const requiredAssets = [
     // SVG source assets
-    { file: 'assets/brand/aureon-mark.svg', description: 'Aureon mark SVG' },
-    { file: 'assets/brand/aureon-logo.svg', description: 'Aureon logo SVG' },
-    { file: 'assets/brand/aureon-wordmark.svg', description: 'Aureon wordmark SVG' },
-    { file: 'assets/brand/aureon-icon.svg', description: 'Aureon app icon SVG' },
+    { file: 'assets/brand/vibeforge-mark.svg', description: 'Vibeforge mark SVG' },
+    { file: 'assets/brand/vibeforge-logo-lockup.svg', description: 'Vibeforge logo lockup SVG' },
+    { file: 'assets/brand/vibeforge-github-banner.svg', description: 'Vibeforge GitHub banner SVG' },
     // Public PNG assets (renderer-accessible)
-    { file: 'public/brand/aureon-mark-64.png', description: 'Aureon mark 64px' },
-    { file: 'public/brand/aureon-mark-128.png', description: 'Aureon mark 128px' },
-    { file: 'public/brand/aureon-mark-256.png', description: 'Aureon mark 256px' },
-    { file: 'public/brand/aureon-logo-512.png', description: 'Aureon logo 512px' },
+    { file: 'public/brand/vibeforge-mark-64.png', description: 'Vibeforge mark 64px' },
+    { file: 'public/brand/vibeforge-mark-128.png', description: 'Vibeforge mark 128px' },
+    { file: 'public/brand/vibeforge-mark-256.png', description: 'Vibeforge mark 256px' },
+    { file: 'public/brand/vibeforge-logo-512.png', description: 'Vibeforge logo 512px' },
     // Build assets
     { file: 'build/icon.ico', description: 'Windows app icon ICO' },
     { file: 'build/icon.png', description: 'App icon PNG' },

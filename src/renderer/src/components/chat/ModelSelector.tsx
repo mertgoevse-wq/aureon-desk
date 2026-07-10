@@ -1,7 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { ChevronDown, Zap, Monitor, Globe } from 'lucide-react'
-import { useIpc } from '../../hooks/useIpc'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Globe,
+  Monitor,
+  Search,
+  Settings2,
+  Zap
+} from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useIpc } from '../../hooks/useIpc'
 
 interface ModelSelectorProps {
   value: string | null
@@ -18,192 +27,272 @@ interface ModelOption {
   is_local?: boolean
 }
 
-/** Provider-level smoke test status for connection indicator dots */
+interface ProviderGroup {
+  name: string
+  slug: string
+  isLocal: boolean
+  models: ModelOption[]
+}
+
 type SmokeStatus = 'untested' | 'pass' | 'fail' | 'testing'
+
+const SMOKE_CACHE_KEY = 'vibeforge-smoke-statuses'
 
 function smokeTestDot(status: SmokeStatus): React.ReactElement {
   const colors: Record<SmokeStatus, string> = {
     pass: 'bg-emerald-500',
     fail: 'bg-amber-500',
     untested: 'bg-gray-300',
-    testing: 'bg-gray-400 animate-pulse',
+    testing: 'bg-gray-400 animate-pulse'
   }
   const titles: Record<SmokeStatus, string> = {
     pass: 'Provider connection verified',
-    fail: 'Provider connection failed — check Settings',
-    untested: 'Not tested yet — run smoke test in Settings',
-    testing: 'Testing connection…',
+    fail: 'Provider connection failed - check Settings',
+    untested: 'Provider has not been tested in this session',
+    testing: 'Testing provider connection'
   }
   return (
     <span
-      className={`inline-block w-2 h-2 rounded-full shrink-0 ${colors[status]}`}
+      className={`inline-block h-2 w-2 shrink-0 rounded-full ${colors[status]}`}
       title={titles[status]}
       aria-label={titles[status]}
     />
   )
 }
 
+function isLocalProvider(model: ModelOption): boolean {
+  return Boolean(model.is_local || model.provider_slug === 'ollama' || model.provider_slug === 'lmstudio')
+}
+
 export function ModelSelector({ value, onChange }: ModelSelectorProps): React.ReactElement {
   const api = useIpc()
   const navigate = useNavigate()
+  const searchRef = useRef<HTMLInputElement>(null)
   const [models, setModels] = useState<ModelOption[]>([])
   const [isOpen, setIsOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const [activeProvider, setActiveProvider] = useState<string | null>(null)
   const [smokeStatuses, setSmokeStatuses] = useState<Record<string, SmokeStatus>>({})
   const [smokeTesting, setSmokeTesting] = useState(false)
 
-  const SMOKE_CACHE_KEY = 'aureon-smoke-statuses'
-
-  // Fetch enabled models
   useEffect(() => {
     api.modelAllEnabled().then((data: ModelOption[]) => {
-      // Sort: local providers first, then remote, then by display name
-      const sorted = [...(data || [])].sort((a: ModelOption, b: ModelOption) => {
-        const aLocal = a.provider_slug === 'ollama' || a.provider_slug === 'lmstudio' ? 0 : 1
-        const bLocal = b.provider_slug === 'ollama' || b.provider_slug === 'lmstudio' ? 0 : 1
-        if (aLocal !== bLocal) return aLocal - bLocal
-        return a.display_name.localeCompare(b.display_name)
-      })
-      setModels(sorted)
+      setModels([...(data || [])].sort((a, b) => {
+        const localDelta = Number(isLocalProvider(b)) - Number(isLocalProvider(a))
+        if (localDelta !== 0) return localDelta
+        const providerDelta = a.provider_name.localeCompare(b.provider_name)
+        return providerDelta || a.display_name.localeCompare(b.display_name)
+      }))
     }).catch(console.error)
   }, [api])
 
-  // Load smoke test results once per session (cached in sessionStorage).
-  // Uses provider_name for cross-referencing since providerSmokeTestAll returns
-  // results keyed by display name, not DB UUID or adapter slug.
   useEffect(() => {
-    // Try cached results first
     const cached = sessionStorage.getItem(SMOKE_CACHE_KEY)
     if (cached) {
       try {
         setSmokeStatuses(JSON.parse(cached))
         return
-      } catch { /* corrupted cache — re-run */ }
+      } catch {
+        sessionStorage.removeItem(SMOKE_CACHE_KEY)
+      }
     }
 
-    // No cache — run smoke tests once
     setSmokeTesting(true)
-    api.providerSmokeTestAll().then((result: { results: Array<{ providerId: string; providerName: string; success: boolean }>; total: number; passed: number; failed: number; skipped: number }) => {
+    api.providerSmokeTestAll().then((result: {
+      results: Array<{ providerName: string; success: boolean }>
+    }) => {
       const statuses: Record<string, SmokeStatus> = {}
-      for (const r of result.results) {
-        // Key by provider name — models expose provider_name, smoke results expose providerName.
-        // Note: if two providers share the same display name, the last result wins.
-        statuses[r.providerName] = r.success ? 'pass' : 'fail'
-      }
+      for (const item of result.results) statuses[item.providerName] = item.success ? 'pass' : 'fail'
       setSmokeStatuses(statuses)
-      // Cache for this session
-      try { sessionStorage.setItem(SMOKE_CACHE_KEY, JSON.stringify(statuses)) } catch { /* ignore */ }
+      try { sessionStorage.setItem(SMOKE_CACHE_KEY, JSON.stringify(statuses)) } catch { /* optional cache */ }
     }).catch(() => {
-      // Smoke test unavailable — all dots remain 'untested'
-    }).finally(() => {
-      setSmokeTesting(false)
-    })
+      // Settings remains the source of truth when a smoke test is unavailable.
+    }).finally(() => setSmokeTesting(false))
   }, [api])
 
-  const selectedModel = models.find(m => m.id === value)
-  const selectedLabel = selectedModel ? `${selectedModel.provider_name} · ${selectedModel.display_name}` : 'Select model'
-  const hasModels = models.length > 0
-  // Smoke status for selected model's provider (main button dot)
-  // Key by provider_name to match smoke test results
-  const selectedSmoke: SmokeStatus = selectedModel
-    ? (smokeStatuses[selectedModel.provider_name] || (smokeTesting ? 'testing' : 'untested'))
-    : smokeTesting ? 'testing' : 'untested'
+  const providerGroups = useMemo<ProviderGroup[]>(() => {
+    const grouped = new Map<string, ProviderGroup>()
+    for (const model of models) {
+      const existing = grouped.get(model.provider_name)
+      if (existing) existing.models.push(model)
+      else grouped.set(model.provider_name, {
+        name: model.provider_name,
+        slug: model.provider_slug,
+        isLocal: isLocalProvider(model),
+        models: [model]
+      })
+    }
+    return [...grouped.values()].sort((a, b) => {
+      const localDelta = Number(b.isLocal) - Number(a.isLocal)
+      return localDelta || a.name.localeCompare(b.name)
+    })
+  }, [models])
+
+  const filteredGroups = useMemo(() => {
+    const needle = query.trim().toLocaleLowerCase()
+    if (!needle) return providerGroups
+    return providerGroups
+      .map(group => ({
+        ...group,
+        models: group.models.filter(model =>
+          group.name.toLocaleLowerCase().includes(needle)
+          || model.display_name.toLocaleLowerCase().includes(needle)
+          || model.name.toLocaleLowerCase().includes(needle)
+        )
+      }))
+      .filter(group => group.models.length > 0)
+  }, [providerGroups, query])
+
+  const selectedModel = models.find(model => model.id === value)
+  const visibleProvider = filteredGroups.find(group => group.name === activeProvider) ?? filteredGroups[0]
+
+  useEffect(() => {
+    if (!isOpen) return
+    setActiveProvider(selectedModel?.provider_name ?? providerGroups[0]?.name ?? null)
+    setQuery('')
+    window.setTimeout(() => searchRef.current?.focus(), 0)
+  }, [isOpen, providerGroups, selectedModel?.provider_name])
+
+  useEffect(() => {
+    if (visibleProvider && visibleProvider.name !== activeProvider) setActiveProvider(visibleProvider.name)
+  }, [activeProvider, visibleProvider])
 
   const handleSelect = useCallback((modelId: string | null) => {
     onChange(modelId)
     setIsOpen(false)
+    setQuery('')
   }, [onChange])
+
+  const selectedSmoke: SmokeStatus = selectedModel
+    ? smokeStatuses[selectedModel.provider_name] || (smokeTesting ? 'testing' : 'untested')
+    : smokeTesting ? 'testing' : 'untested'
 
   return (
     <div className="relative" data-testid="model-selector">
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full
-          bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[var(--ivory-text-2)]
-          hover:bg-[var(--ivory-surface)] hover:border-[var(--ivory-border-2)] transition cursor-pointer"
-        aria-label={isOpen ? 'Close model selector' : `Select model${selectedModel ? ` (current: ${selectedModel.display_name})` : ''}`}
+        type="button"
+        onClick={() => setIsOpen(open => !open)}
+        className="flex items-center gap-2 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] px-3 py-2 text-xs text-[var(--ivory-text-2)] shadow-[var(--shadow-xs)] transition hover:border-[var(--ivory-border-2)] hover:bg-[var(--ivory-surface)] cursor-pointer"
+        aria-label={isOpen ? 'Close provider and model selector' : 'Choose provider and model'}
         aria-expanded={isOpen}
-        aria-haspopup="listbox"
+        aria-haspopup="dialog"
       >
         {smokeTestDot(selectedSmoke)}
-        <Zap size={12} className="text-[var(--ivory-accent)]" />
-        <span className="max-w-[180px] truncate font-medium">
-          {selectedLabel}
+        <Zap size={13} className="text-[var(--ivory-accent)]" />
+        <span className="max-w-[220px] truncate font-semibold">
+          {selectedModel ? `${selectedModel.provider_name} / ${selectedModel.display_name}` : 'Choose provider and model'}
         </span>
-        {selectedModel && (
-          <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${
-            selectedModel.provider_slug === 'ollama' || selectedModel.provider_slug === 'lmstudio'
-              ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)]'
-              : 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)]'
-          }`}>
-            {selectedModel.provider_slug === 'ollama' || selectedModel.provider_slug === 'lmstudio' ? 'Local' : 'Cloud'}
-          </span>
-        )}
-        <ChevronDown size={12} />
+        <ChevronDown size={13} className="text-[var(--ivory-text-3)]" />
       </button>
 
       {isOpen && (
         <>
-          <div
-            className="fixed inset-0 z-10"
+          <button
+            type="button"
+            className="fixed inset-0 z-30 cursor-default"
+            aria-label="Close model menu"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full right-0 mt-2 w-72 z-20 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] rounded-[18px] shadow-[var(--shadow-xl)] py-1.5 max-h-72 overflow-y-auto p-1">
-            <button
-              onClick={() => handleSelect(null)}
-              className="w-[calc(100%-8px)] mx-1 text-left px-3 py-2 text-xs text-[var(--ivory-text-3)] hover:bg-[var(--ivory-surface)] rounded-xl border-b border-[var(--ivory-border)]/50 transition-colors cursor-pointer"
-            >
-              No model selected
-            </button>
-            {!hasModels && (
-              <div className="px-3 py-4 text-center">
-                <p className="text-xs text-[var(--ivory-text-3)] mb-2">No models available</p>
-                <button
-                  onClick={() => { navigate('/settings/providers'); setIsOpen(false) }}
-                  className="text-xs text-[var(--ivory-accent)] hover:underline cursor-pointer"
-                >
-                  Configure providers →
-                </button>
+          <div
+            className="absolute right-0 top-full z-40 mt-2 w-[560px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[20px] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-xl)]"
+            role="dialog"
+            aria-label="Provider and model selection"
+            data-testid="provider-model-menu"
+          >
+            <div className="border-b border-[var(--ivory-border)] p-3">
+              <label className="flex items-center gap-2 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] px-3 py-2">
+                <Search size={14} className="shrink-0 text-[var(--ivory-text-3)]" />
+                <input
+                  ref={searchRef}
+                  value={query}
+                  onChange={event => setQuery(event.target.value)}
+                  placeholder="Search providers and models"
+                  className="min-w-0 flex-1 bg-transparent text-xs text-[var(--ivory-text)] outline-none placeholder:text-[var(--ivory-text-3)]"
+                  data-testid="model-search"
+                />
+              </label>
+            </div>
+
+            {filteredGroups.length === 0 ? (
+              <div className="p-8 text-center">
+                <p className="text-sm font-semibold text-[var(--ivory-text)]">No matching model</p>
+                <p className="mt-1 text-xs text-[var(--ivory-text-3)]">Try another search or configure a provider.</p>
+              </div>
+            ) : (
+              <div className="grid min-h-[260px] grid-cols-[190px_minmax(0,1fr)]">
+                <div className="border-r border-[var(--ivory-border)] bg-[var(--ivory-surface)]/55 p-2">
+                  <p className="px-2 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)]">Provider</p>
+                  <div className="max-h-[330px] space-y-1 overflow-y-auto">
+                    {filteredGroups.map(group => {
+                      const active = group.name === visibleProvider?.name
+                      const smoke = smokeStatuses[group.name] || (smokeTesting ? 'testing' : 'untested')
+                      return (
+                        <button
+                          type="button"
+                          key={group.name}
+                          onMouseEnter={() => setActiveProvider(group.name)}
+                          onFocus={() => setActiveProvider(group.name)}
+                          onClick={() => setActiveProvider(group.name)}
+                          className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-xs transition cursor-pointer ${active ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-elevated)]/70'}`}
+                          data-testid={`provider-option-${group.slug}`}
+                        >
+                          {smokeTestDot(smoke)}
+                          {group.isLocal ? <Monitor size={13} /> : <Globe size={13} />}
+                          <span className="min-w-0 flex-1 truncate font-semibold">{group.name}</span>
+                          <ChevronRight size={12} className="text-[var(--ivory-text-3)]" />
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                <div className="p-2">
+                  <div className="flex items-center justify-between px-2 pb-2 pt-1">
+                    <div>
+                      <p className="text-xs font-bold text-[var(--ivory-text)]">{visibleProvider?.name}</p>
+                      <p className="text-[10px] text-[var(--ivory-text-3)]">Choose a model</p>
+                    </div>
+                    <span className="rounded-full bg-[var(--ivory-surface)] px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-[var(--ivory-text-3)]">
+                      {visibleProvider?.isLocal ? 'Local' : 'Cloud'}
+                    </span>
+                  </div>
+                  <div className="max-h-[290px] space-y-1 overflow-y-auto">
+                    {visibleProvider?.models.map(model => {
+                      const selected = model.id === value
+                      return (
+                        <button
+                          type="button"
+                          key={model.id}
+                          onClick={() => handleSelect(model.id)}
+                          className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition cursor-pointer ${selected ? 'bg-[var(--ivory-accent-light)] text-[var(--ivory-text)]' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
+                          data-testid={`model-option-${model.id}`}
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-xs font-semibold">{model.display_name}</p>
+                            <p className="mt-0.5 truncate text-[10px] text-[var(--ivory-text-3)]">
+                              {model.context_window ? `${Math.round(model.context_window / 1000)}k context` : model.name}
+                            </p>
+                          </div>
+                          {selected && <Check size={14} className="shrink-0 text-[var(--ivory-accent)]" />}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
               </div>
             )}
-            <div className="space-y-0.5 mt-1">
-              {models.map((model) => {
-                const isLocal = model.provider_slug === 'ollama' || model.provider_slug === 'lmstudio'
-                const isSelected = model.id === value
-                const smoke: SmokeStatus = smokeStatuses[model.provider_name] || (smokeTesting ? 'testing' : 'untested')
-                return (
-                  <button
-                    key={model.id}
-                    onClick={() => handleSelect(model.id)}
-                    className={`w-[calc(100%-8px)] mx-1 text-left px-3 py-2 text-xs rounded-xl transition-colors cursor-pointer
-                      ${isSelected ? 'bg-[var(--ivory-surface)] text-[var(--ivory-text)] font-semibold' : 'text-[var(--ivory-text-2)] hover:bg-[var(--ivory-surface)]'}`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5">
-                          {smokeTestDot(smoke)}
-                          <span className="truncate font-medium">{model.display_name}</span>
-                          {isLocal ? (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--ivory-success-bg)] text-[var(--ivory-success)] font-medium shrink-0">
-                              Local
-                            </span>
-                          ) : (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] font-medium shrink-0">
-                              Cloud
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-[10px] text-[var(--ivory-text-3)] mt-0.5 truncate">
-                          {model.provider_name}
-                          {model.context_window ? ` · ${(model.context_window / 1000).toFixed(0)}k ctx` : ''}
-                        </div>
-                      </div>
-                      {isSelected && (
-                        <Zap size={12} className="text-[var(--ivory-accent)] shrink-0" />
-                      )}
-                    </div>
-                  </button>
-                )
-              })}
+
+            <div className="flex items-center justify-between border-t border-[var(--ivory-border)] bg-[var(--ivory-surface)]/45 px-3 py-2">
+              <button type="button" onClick={() => handleSelect(null)} className="text-[11px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] cursor-pointer">
+                Clear selection
+              </button>
+              <button
+                type="button"
+                onClick={() => { setIsOpen(false); navigate('/settings/providers') }}
+                className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[var(--ivory-accent)] hover:underline cursor-pointer"
+              >
+                <Settings2 size={12} /> Manage providers
+              </button>
             </div>
           </div>
         </>

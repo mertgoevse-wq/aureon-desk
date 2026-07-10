@@ -1,6 +1,6 @@
 appId: com.aureon.desk
-productName: Aureon Desk
-copyright: "Copyright © 2026 Aureon Desk"
+productName: VibeForge
+copyright: "Copyright © 2026 VibeForge"
 asar: true
 asarUnpack:
   - "**/*.node"
@@ -32,20 +32,20 @@ win:
     - target: portable
       arch: [x64]
   icon: build/icon.ico
-  artifactName: "AureonDesk-${version}-${arch}.${ext}"
+  artifactName: "VibeForge-${version}-${arch}.${ext}"
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: Aureon Desk
+  shortcutName: VibeForge
   installerIcon: build/icon.ico
   uninstallerIcon: build/icon.ico
   installerHeaderIcon: build/icon.ico
   deleteAppDataOnUninstall: false
-  artifactName: "AureonDesk-Setup-${version}-${arch}.${ext}"
+  artifactName: "VibeForge-Setup-${version}-${arch}.${ext}"
 portable:
-  artifactName: "AureonDesk-Portable-${version}-${arch}.${ext}"
+  artifactName: "VibeForge-Portable-${version}-${arch}.${ext}"
 extraResources:
   - from: node_modules/better-sqlite3/build
     to: better-sqlite3/build

@@ -1,6 +1,6 @@
-# Aureon Desk — Issues Register
+# Vibeforge — Issues Register
 
-> **Last updated:** 2026-07-09 — MCP safety regression pass
+> **Last updated:** 2026-07-10 — Rebrand to Vibeforge complete
 > **Branch:** `main`
 
 ---

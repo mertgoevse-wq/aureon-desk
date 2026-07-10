@@ -50,3 +50,12 @@ credentials.json
 
 # Large source assets (not distributed)
 assets/brand/source/
+
+# Vendor installers (never commit third-party binaries)
+vendor/installers/*.exe
+vendor/installers/*.msi
+!vendor/installers/README.md
+
+# Root installer files
+/*.exe
+/*.zip

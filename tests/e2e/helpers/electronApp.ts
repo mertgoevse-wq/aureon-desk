@@ -4,6 +4,23 @@ import { existsSync } from 'fs'
 
 const MAIN_ENTRY = resolve(__dirname, '../../../out/main/index.js')
 
+/**
+ * Optional slow-motion delay for the Electron launch.
+ * Accepts either of:
+ *   VIBEFORGE_HUMAN_QA_SLOWMO / AUREON_HUMAN_QA_SLOWMO  (used by serious spec)
+ *   VIBEFORGE_SLOW_MO_MS / AUREON_SLOW_MO_MS            (used by visible spec)
+ * Left unset by default — every other test runs at full speed.
+ */
+const SLOW_MO_MS = (() => {
+  const raw = process.env.VIBEFORGE_HUMAN_QA_SLOWMO ??
+    process.env.AUREON_HUMAN_QA_SLOWMO ??
+    process.env.VIBEFORGE_SLOW_MO_MS ??
+    process.env.AUREON_SLOW_MO_MS
+  if (!raw) return undefined
+  const parsed = Number.parseInt(raw, 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined
+})()
+
 interface ElectronFixture {
   electronApp: ElectronApplication
   mainWindow: Page
@@ -38,7 +55,8 @@ export const test = base.extend<ElectronFixture>({
       try {
         app = await electron.launch({
           args: [MAIN_ENTRY],
-          timeout: 60_000
+          timeout: 90_000,
+          ...(SLOW_MO_MS ? { slowMo: SLOW_MO_MS } : {})
         })
         break
       } catch (err) {
@@ -101,10 +119,18 @@ export { expect } from '@playwright/test'
 
 /**
  * Helper: Take a screenshot with a descriptive name.
+ *
+ * @param page   The Playwright Page
+ * @param name   The screenshot's logical name (file-safe transform applied)
+ * @param dir    Optional target directory. Defaults to tests/e2e/artifacts
  */
-export async function screenshot(page: Page, name: string): Promise<void> {
+export async function screenshot(
+  page: Page,
+  name: string,
+  dir: string = 'tests/e2e/artifacts'
+): Promise<void> {
   await page.screenshot({
-    path: `tests/e2e/artifacts/${name.replace(/[^a-z0-9_-]/gi, '_')}.png`,
+    path: `${dir.replace(/\/+$/, '')}/${name.replace(/[^a-z0-9_-]/gi, '_')}.png`,
     fullPage: false
   })
 }

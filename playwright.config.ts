@@ -30,7 +30,11 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         // Electron window size
-        viewport: { width: 1400, height: 900 }
+        viewport: { width: 1400, height: 900 },
+        // Record video on failure (debugging aid for headed runs).
+        // Headed tests still produce the full screenshot set in
+        // tests/e2e/artifacts/human-visible/ for the human-visible harness.
+        video: 'retain-on-failure'
       }
     }
   ]

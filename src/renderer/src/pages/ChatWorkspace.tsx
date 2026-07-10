@@ -41,7 +41,7 @@ const STARTER_PROMPTS = [
   {
     label: 'Connect OpenRouter',
     icon: <KeyRound size={14} />,
-    prompt: 'Help me set up OpenRouter as my AI provider. Guide me through getting an API key and configuring it in Aureon Desk settings.'
+    prompt: 'Help me set up OpenRouter as my AI provider. Guide me through getting an API key and configuring it in Vibeforge settings.'
   },
   {
     label: 'Create a preview',
@@ -347,7 +347,7 @@ export function ChatWorkspace(): React.ReactElement {
               </div>
               <MessageInput
                 onSend={handleHomeSend}
-                placeholder="How can Aureon help you today?"
+                placeholder="How can Vibeforge help you today?"
               />
             </div>
 

@@ -102,18 +102,13 @@ function iconSvg(size) {
 
 /** Ensure SVG string has explicit width/height attributes for canvas */
 function ensureSvgDimensions(svgString, fallbackW, fallbackH) {
-  // If width/height already present, return as-is
-  if (/\bwidth\s*=\s*["']/.test(svgString) && /\bheight\s*=\s*["']/.test(svgString)) {
-    return svgString
-  }
-  // Add width/height from fallback or parse from viewBox
-  const vbMatch = svgString.match(/viewBox\s*=\s*["']([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)["']/)
-  const w = fallbackW || (vbMatch ? parseInt(vbMatch[3]) : 256)
-  const h = fallbackH || (vbMatch ? parseInt(vbMatch[4]) : 256)
-  return svgString.replace(
-    /<svg\s/,
-    `<svg width="${w}" height="${h}" `
-  )
+  // Strip existing width and height to prevent duplicates or mismatches
+  const cleaned = svgString
+    .replace(/\s+width\s*=\s*["'][\d%]+["']/gi, '')
+    .replace(/\s+height\s*=\s*["'][\d%]+["']/gi, '')
+  
+  // Inject explicit width and height attributes
+  return cleaned.replace(/<svg\b/, `<svg width="${fallbackW}" height="${fallbackH}"`)
 }
 
 async function svgToPng(svgString, width, height) {
@@ -124,10 +119,16 @@ async function svgToPng(svgString, width, height) {
   const fixedSvg = ensureSvgDimensions(svgString, width, height)
 
   // Render SVG to canvas
-  const img = await loadImage(Buffer.from(fixedSvg))
-  ctx.drawImage(img, 0, 0, width, height)
-
-  return canvas.toBuffer('image/png')
+  try {
+    const img = await loadImage(Buffer.from(fixedSvg))
+    ctx.drawImage(img, 0, 0, width, height)
+    return canvas.toBuffer('image/png')
+  } catch (err) {
+    console.error('--- FAILURE SVG START ---')
+    console.error(fixedSvg)
+    console.error('--- FAILURE SVG END ---')
+    throw err
+  }
 }
 
 function writePng(path, buffer) {
@@ -197,37 +198,40 @@ function createIco(pngBuffers) {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  console.log('🎨 Aureon Desk — Brand Asset Generator\n')
+  console.log('🎨 Vibeforge — Brand Asset Generator\n')
+
+  const markSvgPath = join(BRAND_SVG, 'vibeforge-mark.svg')
+  const lockupPath = join(BRAND_SVG, 'vibeforge-logo-lockup.svg')
+  const bannerSvgPath = join(BRAND_SVG, 'vibeforge-github-banner.svg')
+
+  if (!existsSync(markSvgPath)) {
+    throw new Error(`Missing source SVG: ${markSvgPath}`)
+  }
+
+  const markSvgContent = readFileSync(markSvgPath, 'utf-8')
 
   // --- Generate mark PNGs ---
   console.log('Mark PNGs (public/brand/):')
   for (const size of MARK_SIZES) {
-    const svg = markSvg(size)
-    const png = await svgToPng(svg, size, size)
-    writePng(join(PUBLIC_BRAND, `aureon-mark-${size}.png`), png)
+    const png = await svgToPng(markSvgContent, size, size)
+    writePng(join(PUBLIC_BRAND, `vibeforge-mark-${size}.png`), png)
+    writePng(join(PUBLIC_BRAND, `aureon-mark-${size}.png`), png) // Legacy alias
   }
 
   // --- Generate logo PNG (512px) ---
   console.log('\nLogo PNG (public/brand/):')
-  // Read the lockup SVG file for the full logo
-  const lockupPath = join(BRAND_SVG, 'aureon-logo-lockup.svg')
   if (existsSync(lockupPath)) {
     const lockupSvg = readFileSync(lockupPath, 'utf-8')
-    const logo512 = await svgToPng(lockupSvg, 512, 128)
-    writePng(join(PUBLIC_BRAND, 'aureon-logo-512.png'), logo512)
-  } else {
-    // Fallback: generate from iconSvg at 512px
-    const fallbackSvg = iconSvg(512)
-    const logo512 = await svgToPng(fallbackSvg, 512, 512)
-    writePng(join(PUBLIC_BRAND, 'aureon-logo-512.png'), logo512)
+    const logo512 = await svgToPng(lockupSvg, 512, 148)
+    writePng(join(PUBLIC_BRAND, 'vibeforge-logo-512.png'), logo512)
+    writePng(join(PUBLIC_BRAND, 'aureon-logo-512.png'), logo512) // Legacy alias
   }
 
   // --- Generate icon PNGs for ICO ---
   console.log('\nIcon PNGs (build/):')
   const icoPngs = []
   for (const size of ICO_SIZES) {
-    const svg = iconSvg(size)
-    const png = await svgToPng(svg, size, size)
+    const png = await svgToPng(markSvgContent, size, size)
     const outPath = join(BUILD_DIR, `icon-${size}.png`)
     writePng(outPath, png)
     icoPngs.push({ size, buffer: png })
@@ -251,12 +255,13 @@ async function main() {
 
   // --- GitHub banner PNG ---
   console.log('\nGitHub Banner:')
-  const bannerSvgPath = join(BRAND_SVG, 'aureon-github-banner.svg')
   if (existsSync(bannerSvgPath)) {
     const bannerSvg = readFileSync(bannerSvgPath, 'utf-8')
     const bannerPng = await svgToPng(bannerSvg, 1280, 640)
-    const bannerPath = join(BRAND_SVG, '..', 'aureon-github-banner-1200.png')
+    const bannerPath = join(BRAND_SVG, '..', 'vibeforge-github-banner-1200.png')
     writePng(bannerPath, bannerPng)
+    const legacyBannerPath = join(BRAND_SVG, '..', 'aureon-github-banner-1200.png')
+    writePng(legacyBannerPath, bannerPng) // Legacy alias
   }
 
   console.log('\n✅ All brand assets generated successfully!')

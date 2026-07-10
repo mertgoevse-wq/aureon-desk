@@ -12,7 +12,7 @@ export function createMainWindow(): BrowserWindow {
     minWidth: 900,
     minHeight: 600,
     show: false,
-    title: 'Aureon Desk',
+    title: 'Vibeforge',
     icon: getAppIcon(),
     backgroundColor: '#FAF8F5',
 

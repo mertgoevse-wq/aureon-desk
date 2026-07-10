@@ -1,3 +1,20 @@
+## [0.9.80] - 2026-07-10 — Rebrand Vibeforge Pass
+
+### Rebranded
+- **Product Name:** Changed from "Aureon Desk" to "Vibeforge" globally across the app code, E2E tests, build paths, and scripts.
+- **Migration & App Data Safety:** Implemented dynamic `%APPDATA%\aureon-desk` path fallback override in the Electron entrypoint to prevent user configurations or API keys from resetting.
+- **Brand Assets:** Compiled updated Vibeforge brand SVG vector marks to individual sizes (32, 64, 128, 256) and generated the main `icon.ico` and `icon.png` application icons. Added legacy Aureon duplicates to public assets to prevent broken file paths.
+- **Playwright E2E Specs:** Renamed E2E test files under `tests/e2e/` from `*-aureon-*` to `*-vibeforge-*` and updated package script pathways.
+- **Diagnostics:** verify:native (pass), typecheck (pass), npm test (pass), npm run build (pass).
+
+## [0.9.79] - 2026-07-10 — Handoff Verification & Diagnostics
+
+### Checked
+- **App Health:** Baseline validation run complete with 0 critical issues.
+- **Node Environment:** Documented compatibility details for Node v20.19.5 vs system-default Node v26.4.0.
+- **Diagnostics:** verify:native (pass), typecheck (pass), npm test (pass), npm run build (pass).
+- **Handoff:** Created `docs/VS_CODE_AGENT_HANDOFF.md` detailing uncommitted Codex changes.
+
 ## [0.9.78] - 2026-07-10 — Beta Gate Passed & Packaged
 
 ### Beta Release Artifacts

@@ -10,6 +10,7 @@ import {
   GraduationCap,
   KeyRound,
   LockKeyhole,
+  Package,
   Palette,
   ScanLine,
   ScrollText,
@@ -57,7 +58,8 @@ const navItems: SettingsNavItem[] = [
   { icon: <ScanLine size={16} />, label: 'Self Audit', description: 'Inspect & improve', path: '/settings/self-audit' },
   { icon: <Camera size={16} />, label: 'Device Inputs', description: 'Cam, mic, screen', path: '/settings/device-inputs' },
   { icon: <Sparkles size={16} />, label: 'Skills & Agents', description: 'Browse and adapt', path: '/settings/skills' },
-  { icon: <GraduationCap size={16} />, label: 'Learn', description: 'Concepts explained', path: '/settings/learn' }
+  { icon: <GraduationCap size={16} />, label: 'Learn', description: 'Concepts explained', path: '/settings/learn' },
+  { icon: <Package size={16} />, label: 'Developer Setup', description: 'Tools & dependencies', path: '/settings/developer-setup' }
 ]
 
 function isActivePath(currentPath: string, itemPath: string): boolean {
@@ -84,7 +86,7 @@ export function SettingsLayout(): React.ReactElement {
               <AureonMark size={32} />
               <div className="min-w-0">
                 <h2 className="text-[15px] font-semibold text-[var(--ivory-text)]">Settings</h2>
-                <p className="text-[10px] text-[var(--ivory-text-3)] truncate">Aureon workspace controls</p>
+                <p className="text-[10px] text-[var(--ivory-text-3)] truncate">Vibeforge workspace controls</p>
               </div>
             </div>
           </div>

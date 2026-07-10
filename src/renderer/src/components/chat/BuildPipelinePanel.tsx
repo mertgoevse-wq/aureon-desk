@@ -2,10 +2,10 @@
  * BuildPipelinePanel — Extracted from LivePreview.tsx
  *
  * Renders the build pipeline activity tabs: Preview, Code, Files, Diff, Plan, Cards.
- * Includes cancel button, model selector, streaming preview, follow-up suggestions.
+ * Includes cancel button, streaming preview, and follow-up suggestions.
  */
 
-import React, { useMemo } from 'react'
+import React from 'react'
 import {
   Monitor,
   FolderOpen,
@@ -28,7 +28,6 @@ import {
   X,
   Sparkles
 } from 'lucide-react'
-import { ModelSelector } from './ModelSelector'
 import { ArtifactCard } from '../artifacts/ArtifactCard'
 import type { ArtifactActionHandlers } from '../artifacts/ArtifactCard'
 import { codeArtifactFromFileOp, buildPlanArtifact, diffArtifactFromDiff } from '@shared/artifacts'
@@ -46,29 +45,27 @@ export interface BuildPipelinePanelProps {
   streamingText: string | null
   isStreaming: boolean
   generatingModelLabel: string | null
-  selectedModelId: string | null
   followUpSuggestions: FollowUpSuggestion[]
   activeTab: ArtifactTab
   selectedFile: FileOperation | null
   onTabChange: (tab: ArtifactTab) => void
   onFileSelect: (file: FileOperation) => void
   onCancel: () => void
-  onModelChange: (id: string | null) => void
   onFollowUp: (suggestion: FollowUpSuggestion) => void
 }
+
+const ARTIFACT_HANDLERS: ArtifactActionHandlers = { onCopy: () => {} }
 
 export function BuildPipelinePanel(props: BuildPipelinePanelProps): React.ReactElement {
   const {
     pipelineRunning, pipelineStatus, pipelineSteps, pipelineFileOps, pipelinePlan,
-    pipelinePrompt, streamingText, isStreaming, generatingModelLabel, selectedModelId,
+    pipelinePrompt, streamingText, isStreaming, generatingModelLabel,
     followUpSuggestions, activeTab, selectedFile,
-    onTabChange, onFileSelect, onCancel, onModelChange, onFollowUp
+    onTabChange, onFileSelect, onCancel, onFollowUp
   } = props
 
   const show = pipelineRunning || pipelineStatus || pipelineFileOps.length > 0
   if (!show) return <></>
-
-  const artifactHandlers: ArtifactActionHandlers = useMemo(() => ({ onCopy: () => {} }), [])
 
   return (
     <div className="border-b border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shrink-0" data-testid="build-pipeline-panel">
@@ -109,14 +106,8 @@ export function BuildPipelinePanel(props: BuildPipelinePanelProps): React.ReactE
           </button>
         )}
 
-        {!pipelineRunning && (
-          <div className="ml-auto mr-2">
-            <ModelSelector value={selectedModelId} onChange={onModelChange} />
-          </div>
-        )}
-
         {pipelineStatus && pipelineStatus.isDeterministicDemo && (
-          <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium text-[var(--ivory-text-3)] bg-[var(--ivory-surface)] border border-[var(--ivory-border)]">
+          <span className={`${pipelineRunning ? '' : 'ml-auto'} inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium text-[var(--ivory-text-3)] bg-[var(--ivory-surface)] border border-[var(--ivory-border)]`}>
             <Zap size={10} className="text-[var(--ivory-accent)]" />
             Local Demo
           </span>
@@ -140,7 +131,7 @@ export function BuildPipelinePanel(props: BuildPipelinePanelProps): React.ReactE
         {/* CARDS tab */}
         {activeTab === 'cards' && (
           <CardsTab pipelinePrompt={pipelinePrompt} pipelinePlan={pipelinePlan} pipelineSteps={pipelineSteps}
-            pipelineFileOps={pipelineFileOps} handlers={artifactHandlers} />
+            pipelineFileOps={pipelineFileOps} handlers={ARTIFACT_HANDLERS} />
         )}
       </div>
 

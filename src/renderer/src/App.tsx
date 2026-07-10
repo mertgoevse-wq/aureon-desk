@@ -9,6 +9,7 @@ import { PromptLibrary } from './pages/PromptLibrary'
 import { ProvidersPage } from './pages/settings/ProvidersPage'
 import { GeneralSettingsPage } from './pages/settings/GeneralSettingsPage'
 import { DeveloperSettingsPage } from './pages/settings/DeveloperSettingsPage'
+import { DeveloperSetupPage } from './pages/settings/DeveloperSetupPage'
 import { SettingsPlaceholderPage } from './pages/settings/SettingsPlaceholderPage'
 import { PromptsPage } from './pages/settings/PromptsPage'
 import { GitHubImportsPage } from './pages/settings/GitHubImportsPage'
@@ -60,6 +61,7 @@ const router = createHashRouter([
           { path: 'imports', element: <GitHubImportsPage /> },
           { path: 'logs', element: <LogsPage /> },
           { path: 'developer', element: <DeveloperSettingsPage /> },
+          { path: 'developer-setup', element: <DeveloperSetupPage /> },
           { path: 'extensions', element: <SettingsPlaceholderPage /> },
           { path: 'security', element: <SettingsPlaceholderPage /> },
           { path: 'capabilities', element: <CapabilitiesPage /> },

@@ -39,7 +39,7 @@ export function GeneralSettingsPage(): React.ReactElement {
       <div>
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[11px] font-semibold text-[var(--ivory-text-3)] mb-3 select-none">
           <ShieldCheck size={13} className="text-[var(--ivory-accent)]" />
-          Aureon Workspace Defaults
+          Vibeforge Workspace Defaults
         </div>
         <h1 className="text-[28px] font-semibold tracking-tight text-[var(--ivory-text)] display-text">General</h1>
         <p className="mt-2 max-w-2xl text-xs leading-relaxed text-[var(--ivory-text-3)]">
@@ -51,7 +51,7 @@ export function GeneralSettingsPage(): React.ReactElement {
       <SettingsSection title="App Startup & Mode" description="Configure when the app launches and which workspace mode is active by default.">
         <SettingsRow
           label="Launch on System Startup"
-          description="Automatically launch Aureon Desk when your computer starts so it is always ready."
+          description="Automatically launch Vibeforge when your computer starts so it is always ready."
           dataTestId="row-startup"
         >
           <Toggle checked={startOnBoot} onChange={setStartOnBoot} dataTestId="toggle-startup" />
@@ -59,7 +59,7 @@ export function GeneralSettingsPage(): React.ReactElement {
         
         <SettingsRow
           label="Default Mode Workspace"
-          description="Choose which view is shown when Aureon Desk starts."
+          description="Choose which view is shown when Vibeforge starts."
           dataTestId="row-default-mode"
         >
           <Select
@@ -87,7 +87,7 @@ export function GeneralSettingsPage(): React.ReactElement {
 
         <SettingsRow
           label="Color Palette Theme"
-          description="Select between sleek dark options and Aureon's premium custom ivory workspace theme."
+          description="Select between sleek dark options and Vibeforge's premium custom ivory workspace theme."
           dataTestId="row-theme"
         >
           <Select
@@ -137,7 +137,7 @@ export function GeneralSettingsPage(): React.ReactElement {
 
         <SettingsRow
           label="Restore Window Focus"
-          description="Restore Aureon window visibility when agent triggers safety approvals or warnings."
+          description="Restore Vibeforge window visibility when agent triggers safety approvals or warnings."
           dataTestId="row-restore-focus"
         >
           <Toggle checked={unhideApps} onChange={setUnhideApps} dataTestId="toggle-restore-focus" />

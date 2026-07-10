@@ -391,7 +391,7 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
             <div className="hidden md:flex items-center gap-2 shrink-0">
               <BrandLockupCompact size={22} />
               <span className="text-[13px] font-semibold text-[var(--ivory-text)] display-text">
-                Aureon Desk
+                Vibeforge
               </span>
             </div>
           </div>

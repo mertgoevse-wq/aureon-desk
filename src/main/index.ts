@@ -6,6 +6,20 @@ import { createMainWindow, getMainWindow } from './windows'
 import { logger } from './utils/logger'
 import { vault } from './security/vault'
 
+// Redirect userData path to preserve database, settings, and credentials if they exist under the legacy name
+try {
+  const fs = require('fs')
+  const defaultPath = app.getPath('userData')
+  if (defaultPath.endsWith('vibeforge') || defaultPath.endsWith('Vibeforge')) {
+    const legacyPath = defaultPath.replace(/vibeforge$/i, 'aureon-desk')
+    if (fs.existsSync(legacyPath)) {
+      app.setPath('userData', legacyPath)
+    }
+  }
+} catch (e) {
+  // Ignore filesystem check errors on boot
+}
+
 // Handle creating/removing shortcuts on Windows
 if (process.platform === 'win32') {
   app.setAppUserModelId('com.aureon.desk')
@@ -27,7 +41,7 @@ if (!gotTheLock) {
 
 app.whenReady().then(async () => {
   logger.init()
-  logger.info('Aureon Desk starting...')
+  logger.info('Vibeforge starting...')
 
   // Set up the application menu with Edit roles for native copy/paste support
   const isMac = process.platform === 'darwin'
@@ -105,16 +119,16 @@ app.whenReady().then(async () => {
       }
     })
 
-    logger.info('Aureon Desk ready')
+    logger.info('Vibeforge ready')
   } catch (err) {
     const msg = String(err)
-    logger.error('Failed to start Aureon Desk', err instanceof Error ? err : undefined)
+    logger.error('Failed to start Vibeforge', err instanceof Error ? err : undefined)
 
     // Check if this is a native module issue
     if (msg.includes('better-sqlite3') || msg.includes('NODE_MODULE_VERSION') || msg.includes('Could not locate')) {
       dialog.showErrorBox(
         'Native Module Missing',
-        'Aureon Desk cannot start because the SQLite native module is missing or incompatible.\n\n' +
+        'Vibeforge cannot start because the SQLite native module is missing or incompatible.\n\n' +
         'To fix this on Windows:\n' +
         '  1. Install Visual Studio Build Tools\n' +
         '     (select "Desktop development with C++" during install)\n' +
@@ -126,7 +140,7 @@ app.whenReady().then(async () => {
         `Error details: ${msg}`
       )
     } else {
-      dialog.showErrorBox('Startup Error', `Aureon Desk encountered an error during startup:\n\n${msg}`)
+      dialog.showErrorBox('Startup Error', `Vibeforge encountered an error during startup:\n\n${msg}`)
     }
   }
 })
@@ -138,5 +152,5 @@ app.on('window-all-closed', () => {
 })
 
 app.on('before-quit', () => {
-  logger.info('Aureon Desk shutting down...')
+  logger.info('Vibeforge shutting down...')
 })

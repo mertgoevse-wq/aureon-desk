@@ -85,7 +85,6 @@ export function LivePreview(): React.ReactElement {
   const [streamingText, setStreamingText] = useState<string | null>(null)
   const [isStreaming, setIsStreaming] = useState(false)
   const [generatingModelLabel, setGeneratingModelLabel] = useState<string | null>(null)
-  const [selectedModelId, setSelectedModelId] = useState<string | null>(null)
 
   const activeProject = projects.find(p => p.id === selectedProjectId)
 
@@ -331,15 +330,14 @@ export function LivePreview(): React.ReactElement {
     setActiveTab('code')
     setPipelinePrompt(suggestion.prompt)
 
-    // Use user-selected model if available, otherwise auto-resolve
-    let modelRoute: string | null = selectedModelId
-    if (!modelRoute) {
-      try {
-        const selection = await api.modelRouterResolveBestForBuild(suggestion.prompt)
-        modelRoute = selection.modelDbId
-      } catch {
-        // Fallback to demo
-      }
+    // Code/Preview has no independent model selector. Follow-up builds use the
+    // configured build router so Chat remains the single manual model control.
+    let modelRoute: string | null = null
+    try {
+      const selection = await api.modelRouterResolveBestForBuild(suggestion.prompt)
+      modelRoute = selection.modelDbId
+    } catch {
+      // Fallback to the deterministic local demo.
     }
 
     api.buildRun({
@@ -391,14 +389,12 @@ export function LivePreview(): React.ReactElement {
     streamingText,
     isStreaming,
     generatingModelLabel,
-    selectedModelId,
     followUpSuggestions,
     activeTab,
     selectedFile,
     onTabChange: setActiveTab,
     onFileSelect: setSelectedFile,
     onCancel: handleCancelPipeline,
-    onModelChange: setSelectedModelId,
     onFollowUp: handleFollowUp,
   }
 
@@ -705,8 +701,10 @@ export function LivePreview(): React.ReactElement {
                 <div className="rounded-[24px] border border-[var(--ivory-border)] overflow-hidden bg-white shadow-[var(--shadow-md)] h-[360px]">
                   <iframe
                     src={status.url}
-                    title="Aureon Live Sandbox Preview"
+                    title="Vibeforge Live Sandbox Preview"
                     className="w-full h-full border-none bg-white"
+                    sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin"
+                    referrerPolicy="no-referrer"
                   />
                 </div>
               </div>

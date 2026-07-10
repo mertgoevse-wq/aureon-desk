@@ -363,7 +363,7 @@ export function Studio(): React.ReactElement {
 
         {/* === HERO HEADING === */}
         <h1 className="text-[2.5rem] font-semibold tracking-[-0.02em] text-[var(--ivory-text)] font-display mb-3 leading-tight text-center" data-testid="hero-heading">
-          Build calmly with Aureon
+          Build calmly with Vibeforge
         </h1>
         <p className="text-[14px] text-[var(--ivory-text-3)] font-body max-w-md leading-relaxed text-center mb-8" data-testid="hero-subtitle">
           A guided AI workspace for chat, code, projects, tools, and live preview.

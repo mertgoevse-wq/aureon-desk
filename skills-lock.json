@@ -1,0 +1,401 @@
+{
+  "version": 1,
+  "skills": {
+    "agent-orchestration": {
+      "source": "yonatangross/skillforge-claude-plugin",
+      "sourceType": "github",
+      "skillPath": "plugins/ork/skills/agent-orchestration/SKILL.md",
+      "computedHash": "12bb3eb8df4602ec6d5fd62b56cef8ec65c777fedd7c82af2aae804e5ec2178a"
+    },
+    "algorithmic-art": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/algorithmic-art/SKILL.md",
+      "computedHash": "987b24aa98171a0d3690420173b2cdb6eaafd57981ed716b5d50371affa82ea3"
+    },
+    "appium-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "appium-skill/SKILL.md",
+      "computedHash": "84073f5dfa16a478ce873bf1a9af1155eec445cbb7f7b4fd2958d5580db3dea0"
+    },
+    "behat-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "behat-skill/SKILL.md",
+      "computedHash": "6a200897983bdf58a2940fcdea07cbe95a48b724cd2b6c890d0ad8a1aff171ee"
+    },
+    "behave-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "behave-skill/SKILL.md",
+      "computedHash": "76d1411495894d19965bc85d630c7e45292c2d1b3d8664bedbe5b108d90cd8f5"
+    },
+    "bmad-review-edge-case-hunter": {
+      "source": "bmad-code-org/bmad-method",
+      "sourceType": "github",
+      "skillPath": "src/core-skills/bmad-review-edge-case-hunter/SKILL.md",
+      "computedHash": "e10c2b648df11543be6c496712286483894db8dc455e2c6b3261f4ab37df1a32"
+    },
+    "brand-guidelines": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-guidelines/SKILL.md",
+      "computedHash": "c82f0b24cdcc7e2693a963d30c810558b7bb89ed84508b2328228d21256ef865"
+    },
+    "capybara-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "capybara-skill/SKILL.md",
+      "computedHash": "c6ac93491485b11f5fd2c76dc1bbfc4fd24ce8534f2050eb8d724106103a49da"
+    },
+    "cicd-pipeline-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "cicd-pipeline-skill/SKILL.md",
+      "computedHash": "58e53dd4fac77a08479dfd744effa5d91a977807df798552ff79bada4897d36c"
+    },
+    "code-review": {
+      "source": "llama-farm/llamafarm",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/code-review/SKILL.md",
+      "computedHash": "7b022e5018989a1538278cc0574dc206744f6aee952f9335b755de74b5064ff9"
+    },
+    "codeception-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "codeception-skill/SKILL.md",
+      "computedHash": "4502b7b7317225468de7f704ed7f3724df9f5c0d7a4018eb04fcfe1a8f66f206"
+    },
+    "cucumber-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "cucumber-skill/SKILL.md",
+      "computedHash": "881d0c693236632a8ceeb402a4a5c616f52b90ce3caa4ca3dda019e374d41bf3"
+    },
+    "cypress-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "cypress-skill/SKILL.md",
+      "computedHash": "4f1c383150d690680dbad7a9f3f9fd76f785ac985621777de9ef3c272bc5b29c"
+    },
+    "detox-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "detox-skill/SKILL.md",
+      "computedHash": "23078ec8c7d963318a08b3e9ea28815f0b2093723132eaaf996f749b48636237"
+    },
+    "doc-coauthoring": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/doc-coauthoring/SKILL.md",
+      "computedHash": "62cd7744438ee2aecc986c520bb603988a78ff6aaaf70a471bf4584fe0b78dae"
+    },
+    "docs-updater": {
+      "source": "giuseppe-trisciuoglio/developer-kit",
+      "sourceType": "github",
+      "skillPath": "plugins/developer-kit-core/skills/docs-updater/SKILL.md",
+      "computedHash": "b0ccdc58a904225e740ae5c6194edd1adc4a739a3f3967693062fd60bc5129e2"
+    },
+    "e2e-testing-automation": {
+      "source": "aj-geddes/useful-ai-prompts",
+      "sourceType": "github",
+      "skillPath": "skills/e2e-testing-automation/SKILL.md",
+      "computedHash": "c1636f15e36ae147b377db3e53924cc84cc86482400c92830322a28c65299dac"
+    },
+    "espresso-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "espresso-skill/SKILL.md",
+      "computedHash": "4d881d48dd455f141ae133ab4da7d1a8b47930cbb902a14387118154fae9ee68"
+    },
+    "flutter-testing-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "flutter-testing-skill/SKILL.md",
+      "computedHash": "52870313b80dd1925f0259e69a5289f3bc4de52cce0601c125f678456965df52"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "93f53fd1c0352d3d7ec17b8f73d7351bf76f4821e55d123c9d2abc2c53ba48e4"
+    },
+    "gauge-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "gauge-skill/SKILL.md",
+      "computedHash": "4b406812fa222897a3e9af08be08ed1dac1a613a38342040736ad7f3c3b0fbf4"
+    },
+    "geb-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "geb-skill/SKILL.md",
+      "computedHash": "5df0a4a657237e53cbd7721e2e6d60d84232c6f0a03cba64037b9face720aff1"
+    },
+    "generating-changelog": {
+      "source": "joaquimscosta/arkhe-claude-plugins",
+      "sourceType": "github",
+      "skillPath": "plugins/git/skills/generating-changelog/SKILL.md",
+      "computedHash": "51fed8b2867c9d1c1fec14aa17cbe37a7b547b2532d7c72b359b51443b5c98c2"
+    },
+    "hyperexecute-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "hyperexecute-skill/SKILL.md",
+      "computedHash": "54ea7e786b781da8ce2d3bdafa510f1942ee9c7785f448f83174215bd629e498"
+    },
+    "internal-comms": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/internal-comms/SKILL.md",
+      "computedHash": "cf3dba93fd569d7380505db211f89a467869c1a2ef301941148d06f33ed17332"
+    },
+    "jasmine-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "jasmine-skill/SKILL.md",
+      "computedHash": "3466fa499fc02ca2830010cb0d30af7c396b816c08418c9dd8078649158d4cb7"
+    },
+    "jest-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "jest-skill/SKILL.md",
+      "computedHash": "a91e7c7361388b3070c7d6a6ca829c30ce64dd19568e0bd0491ec0775446b987"
+    },
+    "junit-5-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "junit-5-skill/SKILL.md",
+      "computedHash": "3cd00b7f3dfa542df66ec6c10937839608de7b8d13eb6c7ce52a7ac5429d7be9"
+    },
+    "karma-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "karma-skill/SKILL.md",
+      "computedHash": "133a40cfdfd236d392ef783004e126049bd18f048ffa8c6f8c5e8698c6891a52"
+    },
+    "laravel-dusk-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "laravel-dusk-skill/SKILL.md",
+      "computedHash": "fceebb6640c9177323f9e186f1566d686a533ba00086bce28071a2a0aa7ccdeb"
+    },
+    "lettuce-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "lettuce-skill/SKILL.md",
+      "computedHash": "89e0ec16dd91f7e61c45e62bfea0f1cdcfad4c02e1f5a7c93edd31cd265c0f5d"
+    },
+    "mcp-builder": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/mcp-builder/SKILL.md",
+      "computedHash": "6498a736a8dc5c645047c8a875b8ea7417e2ad97146f005200e50d20a9337ada"
+    },
+    "mocha-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "mocha-skill/SKILL.md",
+      "computedHash": "ff7600c418fe759b6500b39a5c5d0b9308cd6d9081bf566c2a1e96a1cb7cf07a"
+    },
+    "mstest-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "mstest-skill/SKILL.md",
+      "computedHash": "90cd3978f16d50767dcfdb3d6c32b2898bfe4fee9e58bc6d5673cd384953f807"
+    },
+    "nemojs-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "nemojs-skill/SKILL.md",
+      "computedHash": "b122811a0fbe7f4d087a3fd8e5c1fd4b837628b637bf9492515892575359c323"
+    },
+    "nightwatchjs-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "nightwatchjs-skill/SKILL.md",
+      "computedHash": "e655646320b689dc0e2507c87324397a07fab52e5ae3c639d8d4715cb382d5ca"
+    },
+    "nunit-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "nunit-skill/SKILL.md",
+      "computedHash": "e7591b34557fc0e48f78be7d223ec93936b4b7eb1bc161570bec5461da35019d"
+    },
+    "phpunit-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "phpunit-skill/SKILL.md",
+      "computedHash": "01f0385e44c746f9f791189920bf961c2bc4493ad01868414b83118dd319848d"
+    },
+    "playwright": {
+      "source": "secondsky/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/playwright/skills/playwright/SKILL.md",
+      "computedHash": "0f2a0fe8f42f6ed6e0c39778414e372d086e7cfea2ca7887b96989bc00b19ad9"
+    },
+    "playwright-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "playwright-skill/SKILL.md",
+      "computedHash": "43eb4470d055aae6e909b71b00452bce9b5da65cd3650eaf5337f1a8105f5b73"
+    },
+    "protractor-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "protractor-skill/SKILL.md",
+      "computedHash": "d3a029b16406d16e884e86f1fabf8aafce224ed97830993bccc8567202e8e738"
+    },
+    "puppeteer-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "puppeteer-skill/SKILL.md",
+      "computedHash": "dd170d09e89f9cbf10a1dd98a47c019adc50bbf01e3e41bba07a1cbfc378aac6"
+    },
+    "pytest-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "pytest-skill/SKILL.md",
+      "computedHash": "69e4a43bf5a049aae3f387b4f03a08a457c0225b159cb01e91cfbbea2d90e28f"
+    },
+    "reqnroll-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "reqnroll-skill/SKILL.md",
+      "computedHash": "09a8990234e4bb43927abd89191a9a481f1f2b649eeb7ebb637d5b49eae9c617"
+    },
+    "robot-framework-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "robot-framework-skill/SKILL.md",
+      "computedHash": "f1a0e11ae8810dd9a40ae8facd528d3d6ce513ae0eeb1e3a92ec91cb49fd9748"
+    },
+    "rspec-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "rspec-skill/SKILL.md",
+      "computedHash": "6d663724e0eb9bc0ad505f2dcc01051e559c891345f5c4687ae94d0c1b3d39a8"
+    },
+    "selenide-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "selenide-skill/SKILL.md",
+      "computedHash": "25edb8b8fc79f55c863c7818e2c5de04459922a12ca768287c138ee68e8c78a0"
+    },
+    "selenium-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "selenium-skill/SKILL.md",
+      "computedHash": "8e3c24a158ceee8694043b47805637e355988e383417e483fee813b3f174bffb"
+    },
+    "serenity-bdd-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "serenity-bdd-skill/SKILL.md",
+      "computedHash": "f07bc2be0ff79ebc346c10441ad671317cc535e19ddf68ab50aa46099c97dee2"
+    },
+    "skill-creator": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/skill-creator/SKILL.md",
+      "computedHash": "7e3c9cd74e9e2b4828527a857170e86310f2dab5ea8030a9043df2c7e6c88857"
+    },
+    "slack-gif-creator": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/slack-gif-creator/SKILL.md",
+      "computedHash": "a36e1ceb3f07eb37bdc259f1bfb18e48cc0e809b2e1651cb2369286cd66b2107"
+    },
+    "smartui-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "smartui-skill/SKILL.md",
+      "computedHash": "4d9dbcf190d88ca4e44cbe411aad71c643a2b4fc4a71266b6f93473054a87ef5"
+    },
+    "specflow-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "specflow-skill/SKILL.md",
+      "computedHash": "fd54df895ffe4765ad389d6dcb59c75587017b28fe0d7ecbfbc99b55d6d51dc8"
+    },
+    "team-agent-orchestration": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "skillPath": "skills/team-agent-orchestration/SKILL.md",
+      "computedHash": "6ae08cb2a6d0b396609f22c815167990cdc4c7c1bfd2701c603e6201e19fed3e"
+    },
+    "test-framework-migration-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "test-framework-migration-skill/SKILL.md",
+      "computedHash": "217f7456faa8c646978a9e541ca5a98c5fddc3c1808a756ec3d6f7ecebdd2bba"
+    },
+    "testcafe-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "testcafe-skill/SKILL.md",
+      "computedHash": "9f7aa22b1d536e46ec0f3c36a18f3ef42587086848ca8151492cee6cbf7ab34a"
+    },
+    "testng-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "testng-skill/SKILL.md",
+      "computedHash": "efb0e1814423c569d3ffd01a476c8253abcb3d73b27694ac660f21fae8d68993"
+    },
+    "testunit-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "testunit-skill/SKILL.md",
+      "computedHash": "43aa18fbbf8977c2cb71df06f72a8a0446d6e2e231368e6a421c7eefd8e61047"
+    },
+    "theme-factory": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/theme-factory/SKILL.md",
+      "computedHash": "e9ec1fe85faa729e9f3d1731cd7e4e485f98c099ccc7c1c0d198f473aa4b654a"
+    },
+    "unittest-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "unittest-skill/SKILL.md",
+      "computedHash": "dc53804b0302465440884233a4214ce16fe56048fabf7821af7950458e2dc0bc"
+    },
+    "vitest-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "vitest-skill/SKILL.md",
+      "computedHash": "d5f72d18aaa20eb9d91f395a308ad76825554b9fbe5477cb67ad6f030780dd7a"
+    },
+    "web-artifacts-builder": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-artifacts-builder/SKILL.md",
+      "computedHash": "fdddbe9bb720ea1aea9292ee513ec10b2a8f4912e2c343bdc246ab3febd7c9b3"
+    },
+    "webapp-testing": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/webapp-testing/SKILL.md",
+      "computedHash": "3f14af7f5690695209c22fbf8c8d133769a86d64892602c09bb13f135e14e857"
+    },
+    "webdriverio-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "webdriverio-skill/SKILL.md",
+      "computedHash": "57e9efbe99db8edea85e15fcbbc5ed316d533bc329a530520c9ff440e3bca098"
+    },
+    "xcuitest-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "xcuitest-skill/SKILL.md",
+      "computedHash": "6220683f0c0ba6776b75f37b5cf206e79a767520a79a17de5dcb1c8263fbc16f"
+    },
+    "xunit-skill": {
+      "source": "LambdaTest/agent-skills",
+      "sourceType": "github",
+      "skillPath": "xunit-skill/SKILL.md",
+      "computedHash": "4a573d905679e6eb897beeb6241c3398bde0cc124a9e771e05e7f04e5121bb82"
+    }
+  }
+}

@@ -1,7 +1,9 @@
-# Aureon Desk
+# Vibeforge
+
+> **Vibeforge** (formerly Aureon Desk)
 
 <p align="center">
-  <img src="assets/brand/aureon-github-banner-1200.png" alt="Aureon Desk" width="800" style="max-width:100%;" />
+  <img src="assets/vibeforge-github-banner-1200.png" alt="Vibeforge" width="800" style="max-width:100%;" />
 </p>
 
 <p align="center">
@@ -297,14 +299,14 @@ The LivePreview workspace lets you generate and preview small apps (HTML, Vite+R
 
 ### Coding Agent Demo
 
-Prove that Aureon Desk can generate and verify code autonomously:
+Prove that Vibeforge can generate and verify code autonomously:
 
 ```bash
 npm run demo:coding
 ```
 
 This self-test:
-1. Generates the "Aureon Counter Demo" app (ivory theme, counter, increment/reset buttons)
+1. Generates the "Vibeforge Counter Demo" app (ivory theme, counter, increment/reset buttons)
 2. Starts a local server on a detected free port
 3. Verifies all 9 requirements (title, counter, buttons, footer, no secrets)
 4. Cleans up the sandbox after verification

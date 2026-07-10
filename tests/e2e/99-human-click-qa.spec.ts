@@ -14,7 +14,7 @@ async function captureScreenshot(page: any, name: string) {
   console.log(`[QA] Captured screenshot: ${name}.png`)
 }
 
-test.describe('Aureon Desk — Human-Style Visible Manual Click QA', () => {
+test.describe('Vibeforge — Human-Style Visible Manual Click QA', () => {
   test.beforeEach(async ({ mainWindow }) => {
     await waitForAppReady(mainWindow)
   })

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" width="760" height="220">
+  <rect width="760" height="220" rx="40" fill="#FAF7F2"/>
+  <g transform="translate(28 18) scale(.72)">
+    <defs><linearGradient id="forge" x1="52" y1="46" x2="208" y2="210" gradientUnits="userSpaceOnUse"><stop stop-color="#E9A15B"/><stop offset=".48" stop-color="#B8683A"/><stop offset="1" stop-color="#96502F"/></linearGradient></defs>
+    <rect x="14" y="14" width="228" height="228" rx="58" fill="#F7F0E5" stroke="#B8683A" stroke-opacity=".2" stroke-width="2"/>
+    <path d="M52 68H79L112 165L145 68H172L125 190H98L52 68Z" fill="url(#forge)"/><path d="M145 68H204V91H171V119H200V142H171V190H145V68Z" fill="#302820"/><path d="M207 39L213 51L225 57L213 63L207 75L201 63L189 57L201 51L207 39Z" fill="#E9A15B"/>
+  </g>
+  <text x="240" y="112" fill="#302820" font-family="Georgia,serif" font-size="72" font-weight="700">VibeForge</text>
+  <text x="244" y="153" fill="#7E7264" font-family="Arial,sans-serif" font-size="22" letter-spacing="2">BUILD IDEAS INTO WORKING SOFTWARE</text>
+</svg>
