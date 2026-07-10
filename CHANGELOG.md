@@ -1,3 +1,36 @@
+## [0.9.78] - 2026-07-10 — Beta Gate Passed & Packaged
+
+### Beta Release Artifacts
+- **Installer:** `AureonDesk-Setup-0.9.0-x64.exe` (131 MB, NSIS)
+- **Portable:** `AureonDesk-Portable-0.9.0-x64.exe` (131 MB, self-extracting)
+- **No-Install ZIP:** `Aureon-Desk-Beta-No-Install.zip` (185 MB)
+- **Desktop Folder:** `C:\Users\mertg\Desktop\Aureon-Desk-Beta\`
+
+### Beta Gate Checklist
+| Gate | Status |
+|------|--------|
+| App starts | ✅ |
+| Sidebar logo visible | ✅ |
+| Desktop/taskbar icon configured | ✅ |
+| Hero landing works | ✅ |
+| Studio Build App works | ✅ |
+| LivePreview auto-renders | ✅ |
+| Artifact cards render | ✅ |
+| Vibe Coding template works | ✅ |
+| Skills page opens and searches | ✅ |
+| Learn page renders | ✅ |
+| Providers page works | ✅ |
+| MCP safe gates work | ✅ |
+| No dead core buttons | ✅ |
+| No broken image references | ✅ |
+| No critical issue open | ✅ |
+| Secret scan clean | ✅ |
+
+### Verified
+- `npm run typecheck` — ✅ PASS (node + web)
+- `npm test` — ✅ PASS (845 tests, 33 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.78] - 2026-07-10
 
 ### Changed — Full Codebase Cleanup & LivePreview Performance

@@ -1,8 +1,8 @@
 # Aureon Desk — Private Beta Release Notes
 
-**Version:** 0.9.73  
-**Commit:** `0295c4f`  
-**Date:** 2026-07-09  
+**Version:** 0.9.78  
+**Commit:** `d1403cf`  
+**Date:** 2026-07-10  
 **Status:** Private Beta — Not for public distribution
 
 ---
@@ -58,7 +58,13 @@
 | Keyboard shortcuts | ✅ |
 | Collapsible sidebar + right inspector | ✅ |
 | Resizable panels | ✅ |
-| Ivory calm premium theme | ✅ |
+| Skills & Agents browser (1,179 skills from VoltAgent) | ✅ |
+| Agent & Skill Education Center (Learn page) | ✅ |
+| Artifact Renderer System (16 types, 14 views) | ✅ |
+| UI Simplification (Simple/Advanced mode toggle) | ✅ |
+| Brand logo wired in sidebar, settings, topbar | ✅ |
+| BuildPipeline panel extraction & performance cleanup | ✅ |
+| Full codebase audit — 0 duplicates, 0 circular deps | ✅ |
 
 ## Known Limitations ⚠️
 
