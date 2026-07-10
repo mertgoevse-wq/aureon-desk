@@ -1,5 +1,5 @@
 /**
- * Aureon Desk — Artifact Renderer System
+ * Vibeforge — Artifact Renderer System
  *
  * Structured output artifacts that make AI results easier to understand, copy, and reuse.
  * Each artifact has a consistent shape: id, type, title, content, optional metadata, and actions.

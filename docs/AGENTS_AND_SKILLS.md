@@ -1,22 +1,22 @@
-# Aureon Desk — Agents & Skills
+# Vibeforge — Agents & Skills
 
-> How Aureon Desk manages skills, agents, and external skill catalog metadata.
+> How Vibeforge manages skills, agents, and external skill catalog metadata.
 
 ## System Overview
 
 ### Internal Skills (Built-in)
 28 built-in skills defined in `src/main/services/skill-registry.ts` — code generation, testing, security, design, documentation, and more. Always available and fully integrated.
 
-### Curated Skills (Aureon Original)
-12 curated skills in `src/shared/curated-skills.ts` — inspired by popular external skill categories but implemented as original Aureon content. Each has defined capabilities, status (active/planned/placeholder), and attribution.
+### Curated Skills (Vibeforge Original)
+12 curated skills in `src/shared/curated-skills.ts` — inspired by popular external skill categories but implemented as original Vibeforge content. Each has defined capabilities, status (active/planned/placeholder), and attribution.
 
 ### External Skill Catalog
-Metadata from [VoltAgent/awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills) — 1,179+ skills from 189+ providers. Imported as metadata only; no source code is copied. Users browse external skills and adapt them into original Aureon implementations.
+Metadata from [VoltAgent/awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills) — 1,179+ skills from 189+ providers. Imported as metadata only; no source code is copied. Users browse external skills and adapt them into original Vibeforge implementations.
 
 ## Skill Lifecycle
 
 ```
-External Source → Import Metadata → Browse/Filter → Adapt → Aureon Skill
+External Source → Import Metadata → Browse/Filter → Adapt → Vibeforge Skill
                                                          ↑
                                             (original implementation,
                                              not a copy of source)
@@ -38,7 +38,7 @@ A beginner-friendly education page at `/learn` that explains:
 - **Concepts:** What is an Agent, Skill, Tool, MCP, and Prompt Profile — with simple analogies and examples
 - **Agents:** 16 agent profiles with beginner explanations, example prompts, and permissions
 - **Skills:** 19 skill profiles with descriptions, inputs/outputs, and examples
-- **Auto-Selection:** Interactive demo showing how Aureon picks the right agent + skill for a prompt
+- **Auto-Selection:** Interactive demo showing how Vibeforge picks the right agent + skill for a prompt
 
 ## Safety
 

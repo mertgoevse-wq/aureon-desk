@@ -1,7 +1,7 @@
 /**
- * AUREON DESK — Visible Human-Like QA Harness
+ * Vibeforge — Visible Human-Like QA Harness
  * ----------------------------------------------------------------------------
- * Launches the real Aureon Desk Electron app visibly (headed mode), then
+ * Launches the real Vibeforge Electron app visibly (headed mode), then
  * exercises 20 user-facing steps end-to-end with screenshots saved to
  * tests/e2e/artifacts/human-visible/.
  *
@@ -10,7 +10,7 @@
  *   npm run test:human:ui              # Playwright UI mode for manual watch
  *
  * Notes
- * - slowMo is opt-in via the AUREON_SLOW_MO_MS env var so GLOBAL E2E tests
+ * - slowMo is opt-in via the Vibeforge_SLOW_MO_MS env var so GLOBAL E2E tests
  *   remain fast. The npm scripts set it to 500ms; CI / QA runs leave it off.
  * - Uses stable data-testids + ARIA labels already present in the renderer
  *   (mode-studio, hero-prompt-input, build-pipeline-panel, etc.).
@@ -51,7 +51,7 @@ async function focusOpenRouterCard(
 // E2E tests fast; this spec is the slow, debugging-friendly one.
 test.use({ trace: 'retain-on-failure' })
 
-test.describe('Aureon Desk — Human-Visible QA Harness', () => {
+test.describe('Vibeforge — Human-Visible QA Harness', () => {
   // 20 screenshot-laden steps + Electron boot easily exceeds the 60s default.
   test.setTimeout(180_000)
 

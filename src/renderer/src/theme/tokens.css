@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @source "../**/*.{ts,tsx}";
 @source "../../shared/**/*.{ts,tsx}";
-/* Aureon Desk — Design Tokens */
+/* Vibeforge — Design Tokens */
 /* Warm ivory professional desktop theme */
 
 :root {

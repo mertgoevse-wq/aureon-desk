@@ -1,6 +1,6 @@
 import { test, expect, waitForAppReady, checkForErrorPage, screenshot } from './helpers/electronApp'
 
-test.describe('Aureon Desk — Chat', () => {
+test.describe('Vibeforge — Chat', () => {
   test.beforeEach(async ({ mainWindow }) => {
     await waitForAppReady(mainWindow)
   })

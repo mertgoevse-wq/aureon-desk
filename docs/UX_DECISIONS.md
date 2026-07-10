@@ -1,4 +1,4 @@
-# Aureon Desk UX Decisions
+# Vibeforge UX Decisions
 
 Last updated: 2026-07-09
 
@@ -8,8 +8,8 @@ Decision: Make Studio the default landing page with a real hero experience, and 
 
 ### Hero Landing Page
 - Studio is now the index route (`/`), ChatWorkspace moved to `/chat`
-- Large AureonMark (56px) with scale-in animation as the hero mark
-- Heading: "Build calmly with Aureon" in serif display font (Crimson Text)
+- Large VibeforgeMark (56px) with scale-in animation as the hero mark
+- Heading: "Build calmly with Vibeforge" in serif display font (Crimson Text)
 - Subtitle: "A guided AI workspace for chat, code, projects, tools, and live preview."
 - Central composer with two CTAs: "Start building" (opens Build wizard drawer) and "Open chat" (routes to /chat)
 - 4 compact suggestion pills below composer for quick prompt ideas
@@ -233,7 +233,7 @@ Decision to defer:
 Decision: Conducted a full code-based visual audit without running E2E tests or making code changes. Documented 8 visual issues, 5 duplicate/dead code suspects, and inventoried 5 untracked Nano Banana brand assets.
 
 Key findings for future UX work:
-- The inline Aureon SVG mark is too small and repeated in 3+ files — should be a shared component with proper sizing
+- The inline Vibeforge SVG mark is too small and repeated in 3+ files — should be a shared component with proper sizing
 - Sidebar at 280px is visually dominant — reduce to 220-240px
 - Typography scale needs normalization — too many custom pixel sizes (10px, 11px, 12px)
 - Two Toggle components exist — deduplicate into one canonical implementation
@@ -242,17 +242,17 @@ Key findings for future UX work:
 
 ### Brand Asset Integration Plan
 Nano Banana provided 5 brand assets. Integration order:
-1. `aureon-mark-monochrome.png` → Replace inline SVG marks in sidebar/topbar/home page
-2. `aureon-app-icon.png` → Generate new `icon.ico` and update `windows.ts` icon path
-3. `aureon-logo-light.png` → Use for README and documentation
-4. `aureon-github-banner.png` → Use as GitHub social preview
-5. `aureon-dark-logo-presentation.png` → Reserve for dark mode implementation
+1. `Vibeforge-mark-monochrome.png` → Replace inline SVG marks in sidebar/topbar/home page
+2. `Vibeforge-app-icon.png` → Generate new `icon.ico` and update `windows.ts` icon path
+3. `Vibeforge-logo-light.png` → Use for README and documentation
+4. `Vibeforge-github-banner.png` → Use as GitHub social preview
+5. `Vibeforge-dark-logo-presentation.png` → Reserve for dark mode implementation
 
 ---
 
 ## Calm Desktop Direction
 
-Decision: Continue moving Aureon Desk toward a calm, premium desktop AI workspace with ivory/light-mode surfaces, rounded but restrained controls, sans-serif UI text, and serif only for brand/display moments.
+Decision: Continue moving Vibeforge toward a calm, premium desktop AI workspace with ivory/light-mode surfaces, rounded but restrained controls, sans-serif UI text, and serif only for brand/display moments.
 
 Why: The exported ChatGPT plan and user feedback ask for an experience closer to Claude Desktop and Codex/Cowork workflows without copying Anthropic/OpenAI assets, exact layouts, logos, fonts, colors, or private behavior.
 
@@ -273,12 +273,12 @@ Validation:
 
 ## Screenshot-Inspired Workspace Shell
 
-Decision: Implement an original Aureon interpretation of the requested Claude/Codex-style workspace: global `Chat / Cowork / Code` modes, a centered chat home composer, a category-based Settings view, and a less crowded left sidebar.
+Decision: Implement an original Vibeforge interpretation of the requested Claude/Codex-style workspace: global `Chat / Cowork / Code` modes, a centered chat home composer, a category-based Settings view, and a less crowded left sidebar.
 
 Why: The app needed the premium spacing and workflow clarity of modern desktop AI tools while staying visually and structurally original.
 
 Refinement after user review:
-- Removed the extra `Aureon Desk` text from the bright top header.
+- Removed the extra `Vibeforge` text from the bright top header.
 - Kept the mode switch as the primary top focal point.
 - Simplified the sidebar to one primary `New Chat` button, one compact `New Task` icon, one search row, compact shortcut icons, collapsed workflow placeholders, and a tighter Projects/Tools row.
 - Kept unsupported Cowork actions as explicit placeholders instead of broken controls.
@@ -302,7 +302,7 @@ UI rule:
 
 Decision: Use an Electron main-process in-process HTTP server for static HTML and Coding Demo previews, while keeping Vite+React on the npm/Vite path.
 
-Why: Static templates do not need a subprocess. Running them in-process makes Windows startup more reliable, keeps logs and lifecycle under Aureon control, and reduces "server exited" noise. Vite+React still needs its normal toolchain.
+Why: Static templates do not need a subprocess. Running them in-process makes Windows startup more reliable, keeps logs and lifecycle under Vibeforge control, and reduces "server exited" noise. Vite+React still needs its normal toolchain.
 
 Safety:
 - Server binds to `127.0.0.1`.
@@ -328,7 +328,7 @@ Why: Native Windows title bars look generic and do not fit the premium warm ivor
 
 ## Empty Chat Home Composer
 
-Decision: Replace the default empty chat welcome layout with a high-fidelity, polished desktop-assistant start screen. This screen includes a time-aware greeting ("Good morning, Mert" / "Good afternoon..."), Aureon's custom vector mark/logo, a large card containing the main message composer, and configuration dropdown selectors for active models, system styles, active projects, and active tools.
+Decision: Replace the default empty chat welcome layout with a high-fidelity, polished desktop-assistant start screen. This screen includes a time-aware greeting ("Good morning, Mert" / "Good afternoon..."), Vibeforge's custom vector mark/logo, a large card containing the main message composer, and configuration dropdown selectors for active models, system styles, active projects, and active tools.
 
 Why: A premium desktop assistant needs to feel welcoming and give the user direct options to change configurations before writing their prompt. The large composer card serves as the focal point. To help the user get started quickly, 8 suggestion chips are provided to prepopulate the composer with well-designed instructions (e.g. Plan a feature, Review code, Build a preview, etc.).
 

@@ -198,9 +198,9 @@ const srv = http.createServer((req, res) => {
 });
 
 srv.listen(${port}, '127.0.0.1', () => {
-  console.log('AUREON_PREVIEW_READY:' + ${port});
+  console.log('Vibeforge_PREVIEW_READY:' + ${port});
 });
-srv.on('error', (e) => { console.error('AUREON_PREVIEW_ERROR:' + e.message); process.exit(1); });
+srv.on('error', (e) => { console.error('Vibeforge_PREVIEW_ERROR:' + e.message); process.exit(1); });
 `
 
     const proc = spawn(process.execPath, ['-e', serverScript], {
@@ -212,7 +212,7 @@ srv.on('error', (e) => { console.error('AUREON_PREVIEW_ERROR:' + e.message); pro
       const timeout = setTimeout(() => reject(new Error('Server start timeout (10s)')), 10000)
       proc.stdout.on('data', (d) => {
         const t = d.toString()
-        if (t.includes('AUREON_PREVIEW_READY')) {
+        if (t.includes('Vibeforge_PREVIEW_READY')) {
           clearTimeout(timeout)
           resolve(parseInt(t.split(':')[1]))
         }

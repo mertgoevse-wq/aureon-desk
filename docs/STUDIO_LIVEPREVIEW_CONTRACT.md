@@ -1,4 +1,4 @@
-# Aureon Desk — Studio → LivePreview Canonical Flow Contract
+# Vibeforge — Studio → LivePreview Canonical Flow Contract
 
 > **Version:** 2.0  
 > **Date:** 2026-07-09  
@@ -156,7 +156,7 @@ onPreviewStatusChange()  ←  'preview:status-change' (push)
 4. **Never skip the `emitStep()` push** — it's the only way renderer receives pipeline state
 5. **Always add a regression test** when modifying any step of this pipeline
 6. **Always run `npm run demo:coding`** (the standalone smoke test) after changes
-7. **Always run `npm run test:e2e -- tests/e2e/19-aureon-studio-pipeline-e2e.spec.ts`** to verify the full UI pipeline
+7. **Always run `npm run test:e2e -- tests/e2e/19-Vibeforge-studio-pipeline-e2e.spec.ts`** to verify the full UI pipeline
 
 ## Verified Button Contract
 
@@ -208,9 +208,9 @@ onPreviewStatusChange()  ←  'preview:status-change' (push)
 
 | E2E Tests | File | Count |
 |-----------|------|-------|
-| Studio → LivePreview flow | `18-aureon-studio-vibe-flow.spec.ts` | 4 |
-| Coding demo counter | `10-aureon-coding-demo.spec.ts` | 7 |
-| LivePreview navigation | `09-aureon-live-preview.spec.ts` | 10 |
+| Studio → LivePreview flow | `18-Vibeforge-studio-vibe-flow.spec.ts` | 4 |
+| Coding demo counter | `10-Vibeforge-coding-demo.spec.ts` | 7 |
+| LivePreview navigation | `09-Vibeforge-live-preview.spec.ts` | 10 |
 
 ---
 

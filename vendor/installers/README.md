@@ -1,13 +1,13 @@
 # vendor/installers — Offline Dependency Installers
 
 This folder holds **manually downloaded** installer files for developer tools
-needed to build, test, and develop Aureon Desk from source.
+needed to build, test, and develop Vibeforge from source.
 
 ## ⚠️ Important
 
 - **These installers are NEVER committed to Git.**
 - You must download them yourself from the official sources.
-- Aureon Desk never silently installs anything from this folder.
+- Vibeforge never silently installs anything from this folder.
 
 ## Expected Files
 
@@ -23,7 +23,7 @@ needed to build, test, and develop Aureon Desk from source.
 
 1. Download each installer from the official source listed above
 2. Place the downloaded file in this folder with the exact filename shown
-3. Aureon Desk's Developer Setup page will auto-detect them
+3. Vibeforge's Developer Setup page will auto-detect them
 
 ## Redistribution
 
@@ -33,5 +33,5 @@ requires acceptance of the Microsoft EULA during installation.
 
 ## Normal Users
 
-If you're just using Aureon Desk (not developing it), you don't need any of
+If you're just using Vibeforge (not developing it), you don't need any of
 these. The app runs standalone with its bundled Electron runtime.

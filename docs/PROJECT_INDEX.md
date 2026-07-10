@@ -1,4 +1,4 @@
-# Aureon Desk — Project Index
+# Vibeforge — Project Index
 
 > **Last updated:** 2026-07-08  
 > **Branch:** main  
@@ -9,7 +9,7 @@
 ## Folder Structure
 
 ```
-aureon-desk/
+Vibeforge-desk/
 ├── src/
 │   ├── main/                    # Electron main process
 │   │   ├── index.ts             # App entry: migrations, seed, IPC, window

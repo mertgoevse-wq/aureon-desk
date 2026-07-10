@@ -16,7 +16,7 @@ interface ToggleProps {
 }
 
 /**
- * Canonical Toggle component for Aureon Desk.
+ * Canonical Toggle component for Vibeforge.
  *
  * Used by settings pages, Cowork permissions, provider management,
  * and anywhere a boolean switch is needed.

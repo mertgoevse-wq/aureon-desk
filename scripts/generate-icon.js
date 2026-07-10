@@ -1,12 +1,12 @@
-// Aureon Desk — Icon Generator
-// Generates multi-size .ico with the Aureon "A" mark on warm ivory background
+// Vibeforge — Icon Generator
+// Generates multi-size .ico with the Vibeforge "A" mark on warm ivory background
 const fs = require('fs')
 const sizes = [16, 32, 48, 256]
 const HEADER_SIZE = 40
 const ICO_HEADER = 22
 const ENTRY_SIZE = 16
 
-// Aureon brand colors (BGR order for BMP)
+// Vibeforge brand colors (BGR order for BMP)
 const IVORY = { b: 0xF5, g: 0xF8, r: 0xFA }
 const TERRACOTTA = { r: 0xC7, g: 0x5B, b: 0x39 }
 const AMBER = { r: 0xE8, g: 0xA4, b: 0x5C }
@@ -144,7 +144,7 @@ sizes.forEach((s, i) => {
 
 fs.mkdirSync('build', { recursive: true })
 fs.writeFileSync('build/icon.ico', buf)
-console.log(`Aureon Desk icon created: build/icon.ico (${buf.length} bytes, ${sizes.length} sizes: ${sizes.join(', ')})`)
+console.log(`Vibeforge icon created: build/icon.ico (${buf.length} bytes, ${sizes.length} sizes: ${sizes.join(', ')})`)
 
 // Also extract the 256px BMP as icon.png for general use
 const lastEntry = entries[sizes.length - 1]

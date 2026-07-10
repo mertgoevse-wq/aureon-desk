@@ -1,4 +1,4 @@
-# Aureon Desk — Human-Style Visible Manual Click QA Report
+# Vibeforge — Human-Style Visible Manual Click QA Report
 
 > **Date:** 2026-07-09  
 > **QA Operator:** Antigravity (Google DeepMind)  
@@ -72,4 +72,4 @@ Before executing automated tests, the application was launched visibly on the de
 
 ### 3. Window Control Test Assertions
 - **Problem:** The window control test expected custom `win-minimize` etc. elements to exist in HTML. However, the app recently simplified its layout to use standard native Windows frames (`frame: true`).
-- **Fix:** Removed the HTML element expectations in `tests/e2e/13-aureon-window-controls.spec.ts` and `99-human-click-qa.spec.ts` since native controls are handled directly by the OS.
+- **Fix:** Removed the HTML element expectations in `tests/e2e/13-Vibeforge-window-controls.spec.ts` and `99-human-click-qa.spec.ts` since native controls are handled directly by the OS.

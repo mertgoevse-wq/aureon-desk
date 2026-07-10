@@ -477,7 +477,7 @@ export function ToolsPage(): React.ReactElement {
             <EmptyState
               icon={<Wrench size={40} strokeWidth={1.5} />}
               title="No MCP servers connected"
-              description="Add an MCP server to extend Aureon's capabilities. Choose a preset for quick setup or configure a custom server."
+              description="Add an MCP server to extend Vibeforge's capabilities. Choose a preset for quick setup or configure a custom server."
               action={<Button size="sm" onClick={() => setShowAddModal(true)}><Plus size={14} /> Add MCP Server</Button>}
             />
           </Card>

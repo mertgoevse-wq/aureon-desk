@@ -1,6 +1,6 @@
-# Aureon Desk — Brand Assets
+# Vibeforge — Brand Assets
 
-Original brand identity for Aureon Desk. All assets are proprietary and designed specifically for this project.
+Original brand identity for Vibeforge. All assets are proprietary and designed specifically for this project.
 
 ## Usage
 
@@ -8,10 +8,10 @@ Original brand identity for Aureon Desk. All assets are proprietary and designed
 
 | File | Description | Usage |
 |------|-------------|-------|
-| `aureon-icon.svg` | Square app icon with rounded corners | App icon source, `.ico` generation |
-| `aureon-mark.svg` | Just the abstract "A" mark | Favicon, small badges, tray icon |
-| `aureon-wordmark.svg` | Mark + "Aureon Desk" text | Sidebar header, inline branding |
-| `aureon-logo.svg` | Full logo with mark + wordmark + tagline | README header, documentation, splash |
+| `Vibeforge-icon.svg` | Square app icon with rounded corners | App icon source, `.ico` generation |
+| `Vibeforge-mark.svg` | Just the abstract "A" mark | Favicon, small badges, tray icon |
+| `Vibeforge-wordmark.svg` | Mark + "Vibeforge" text | Sidebar header, inline branding |
+| `Vibeforge-logo.svg` | Full logo with mark + wordmark + tagline | README header, documentation, splash |
 
 ### Raster Icons (Generated)
 
@@ -33,7 +33,7 @@ Run `node scripts/generate-icons.mjs` to generate PNG and ICO files from the mar
 - **Text Secondary**: `#6B5E4A` (Warm Muted)
 
 ### Mark
-The Aureon mark is an abstract "A" with subtle neural node dots and a circular aureole. Do not:
+The Vibeforge mark is an abstract "A" with subtle neural node dots and a circular aureole. Do not:
 - Rotate or stretch the mark
 - Change the mark colors
 - Add effects (shadows, glows, gradients)
@@ -46,4 +46,4 @@ The Aureon mark is an abstract "A" with subtle neural node dots and a circular a
 
 ---
 
-*These assets were designed for Aureon Desk. No proprietary AI company branding was referenced or copied.*
+*These assets were designed for Vibeforge. No proprietary AI company branding was referenced or copied.*

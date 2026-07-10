@@ -94,7 +94,7 @@ export const MessageBubble = memo(function MessageBubble({ message }: MessageBub
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold text-[var(--ivory-text-2)]">Aureon</span>
+            <span className="text-xs font-semibold text-[var(--ivory-text-2)]">Vibeforge</span>
             <span className="text-[10px] text-[var(--ivory-text-3)]">
               {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>

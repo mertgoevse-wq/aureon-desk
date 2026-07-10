@@ -1,10 +1,10 @@
-# Aureon Desk — Human-Visible QA Harness
+# Vibeforge — Human-Visible QA Harness
 
 > **Last updated:** 2026-07-09
-> **Spec:** `tests/e2e/aureon-human-visible.spec.ts`
+> **Spec:** `tests/e2e/Vibeforge-human-visible.spec.ts`
 > **Artifacts:** `tests/e2e/artifacts/human-visible/`
 
-The human-visible QA harness launches the real **Aureon Desk** Electron app
+The human-visible QA harness launches the real **Vibeforge** Electron app
 in headed mode (visible window) and walks through 20 user-facing steps,
 saving a numbered PNG screenshot at every major step. It is intended for
 manual watch, demo recordings, and human-style regression review.
@@ -18,7 +18,7 @@ manual watch, demo recordings, and human-style regression review.
 npm run test:human:headed
 
 # Optional slow-motion variant for recordings (bash; uses inline env var)
-# On Windows PowerShell: $env:AUREON_SLOW_MO_MS='500'; npm run test:human:headed
+# On Windows PowerShell: $env:Vibeforge_SLOW_MO_MS='500'; npm run test:human:headed
 npm run test:human:headed:slow
 
 # Playwright UI mode for interactive re-running of individual steps
@@ -32,7 +32,7 @@ also tolerates Electron launch flakes via the existing retry logic in
 
 ### Slow-motion env var
 
-The `AUREON_SLOW_MO_MS` env var (read by `tests/e2e/helpers/electronApp.ts`)
+The `Vibeforge_SLOW_MO_MS` env var (read by `tests/e2e/helpers/electronApp.ts`)
 adds an inter-keystroke delay to `electron.launch({ slowMo })`. **It is
 opt-in** — when the env var is unset, every other E2E spec runs at full
 speed and there is no global impact.
@@ -45,7 +45,7 @@ speed and there is no global impact.
 |----|---------------------------------------------------------------------|-------------------|
 | 1  | App launches (headed)                                               | (handled by `electron.launch`) |
 | 2  | Main window shell mounted                                           | `data-testid="app-shell"` |
-| 3  | Hero / Studio home visible with "Build calmly with Aureon" heading  | `data-testid="studio-page"`, `data-testid="hero-heading"` |
+| 3  | Hero / Studio home visible with "Build calmly with Vibeforge" heading  | `data-testid="studio-page"`, `data-testid="hero-heading"` |
 | 4  | Start Building button reachable                                     | `data-testid="hero-start-building-btn"` |
 | 5  | Types the exact prompt: *"Build a tiny counter app with ivory theme, increment button, reset button, and live preview."* | `data-testid="hero-prompt-input"` |
 | 6  | Press Enter triggers the build pipeline                             | (native `Enter` keyboard event) |
@@ -151,12 +151,12 @@ No select-by-text-not-aria strategies are used — they fail in headed i18n runs
   are not yet versioned. Files that need stable in-iframe selectors
   should add `data-testid` to the demo counter app.
 
-- **The bash `AUREON_SLOW_MO_MS=500` script only works in bash.** PowerShell
-  users should run `$env:AUREON_SLOW_MO_MS='500'; npm run test:human:headed:slow`.
+- **The bash `Vibeforge_SLOW_MO_MS=500` script only works in bash.** PowerShell
+  users should run `$env:Vibeforge_SLOW_MO_MS='500'; npm run test:human:headed:slow`.
 
 - **PowerShell / cmd users** can set the env var via:
   ```powershell
-  $env:AUREON_SLOW_MO_MS = '500'
+  $env:Vibeforge_SLOW_MO_MS = '500'
   npm run test:human:headed
   ```
 
@@ -176,7 +176,7 @@ No select-by-text-not-aria strategies are used — they fail in headed i18n runs
 
 ## Related files
 
-- `tests/e2e/aureon-human-visible.spec.ts` — the spec
-- `tests/e2e/helpers/electronApp.ts` — extended with `AUREON_SLOW_MO_MS`
+- `tests/e2e/Vibeforge-human-visible.spec.ts` — the spec
+- `tests/e2e/helpers/electronApp.ts` — extended with `Vibeforge_SLOW_MO_MS`
 - `playwright.config.ts` — `workers=1`, `timeout=60s` (overridden per-test)
 - `package.json` — `test:human:headed` / `test:human:headed:slow` / `test:human:ui`

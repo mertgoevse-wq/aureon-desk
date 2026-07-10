@@ -18,14 +18,16 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  UserCircle
+  UserCircle,
+  Lightbulb,
+  X
 } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useUIStore } from '../stores/uiStore'
 import { useChatStore } from '../stores/chatStore'
 import { ChatList } from '../components/sidebar/ChatList'
 import { useIpc } from '../hooks/useIpc'
-import { BrandLockup, BrandLockupCompact } from '../components/shared/BrandLockup'
+import { VibeForgeBrandLockup, VibeForgeBrandLockupCompact } from '../components/shared/VibeForgeBrandLockup'
 import type { ChatListItem } from '@shared/types/chat'
 
 export const Sidebar = memo(function Sidebar(): React.ReactElement {
@@ -40,11 +42,20 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
     return localStorage.getItem('vb_show_advanced_nav') === 'true'
   })
 
+  const [helpCardDismissed, setHelpCardDismissed] = useState(() => {
+    return localStorage.getItem('vb_sidebar_help_dismissed') === 'true'
+  })
+
   const toggleAdvancedNav = useCallback(() => {
     const nextVal = !showAdvancedNav
     setShowAdvancedNav(nextVal)
     localStorage.setItem('vb_show_advanced_nav', String(nextVal))
   }, [showAdvancedNav])
+
+  const dismissHelpCard = useCallback(() => {
+    setHelpCardDismissed(true)
+    localStorage.setItem('vb_sidebar_help_dismissed', 'true')
+  }, [])
 
   useEffect(() => {
     loadChats()
@@ -156,7 +167,7 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
         aria-label="Sidebar navigation"
         data-testid="sidebar"
       >
-        <BrandLockupCompact size={28} className="mb-1" />
+        <VibeForgeBrandLockupCompact size={28} className="mb-1" />
         <button
           type="button"
           onClick={toggleSidebar}
@@ -264,7 +275,7 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
         data-testid="sidebar"
       >
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-[var(--ivory-border)]/30 bg-[var(--ivory-surface)]">
-          <BrandLockup size={36} />
+          <VibeForgeBrandLockup size={36} />
           <button
             type="button"
             onClick={toggleSidebar}
@@ -409,6 +420,36 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
           </div>
 
         </div>
+
+        {/* Contextual Help Card */}
+        {!helpCardDismissed && (
+          <div className="mx-3 mb-3 p-3 rounded-2xl bg-[var(--ivory-accent-light)]/40 border border-[var(--ivory-accent)]/15 shrink-0" data-testid="sidebar-help-card">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="flex items-center gap-1.5">
+                <Lightbulb size={13} className="text-[var(--ivory-accent)] shrink-0" />
+                <span className="text-[11px] font-semibold text-[var(--ivory-text)]">New here?</span>
+              </div>
+              <button
+                type="button"
+                onClick={dismissHelpCard}
+                className="p-0.5 text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] cursor-pointer shrink-0"
+                aria-label="Dismiss help"
+              >
+                <X size={12} />
+              </button>
+            </div>
+            <p className="text-[10px] text-[var(--ivory-text-2)] leading-relaxed mb-2">
+              Start with the Beginner guide in Skills & Agents, or run the first-build wizard from Settings → General.
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate('/skills')}
+              className="w-full py-1.5 rounded-lg bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-hover)] text-[10px] font-semibold transition-colors cursor-pointer"
+            >
+              Open Skills & Agents
+            </button>
+          </div>
+        )}
 
         {/* Footer Profile Block */}
         <div className="border-t border-[var(--ivory-border)]/25 p-2.5 bg-[var(--ivory-surface)] flex items-center justify-between gap-2 shrink-0">

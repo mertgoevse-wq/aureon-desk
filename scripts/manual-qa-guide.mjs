@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Aureon Desk — Manual QA Guide
+ * Vibeforge — Manual QA Guide
  *
  * Usage: node scripts/manual-qa-guide.mjs
  *
@@ -33,7 +33,7 @@ const SECTIONS = [
     steps: [
       'Run: npm run dev',
       'Wait for Electron window to open (~10-15 seconds)',
-      'Verify window title shows "Aureon Desk"',
+      'Verify window title shows "Vibeforge"',
       'Resize window to 1920×1080 for initial testing',
     ]
   },
@@ -41,7 +41,7 @@ const SECTIONS = [
     title: '3. Window Basics (7 checks)',
     steps: [
       '✓ App launches without crash',
-      '✓ Window title is "Aureon Desk"',
+      '✓ Window title is "Vibeforge"',
       '✓ Native window controls work (min/max/close)',
       '✓ Taskbar icon shows correctly',
       '✓ Window resizes without breaking layout',
@@ -56,7 +56,7 @@ const SECTIONS = [
       '✓ No fake vendor logos in Connectors page',
       '✓ Studio hero icon renders correctly',
       '✓ No broken image icons anywhere',
-      '✓ BrandLockup shows "Aureon Desk" text',
+      '✓ BrandLockup shows "Vibeforge" text',
     ]
   },
   {
@@ -237,7 +237,7 @@ const SECTIONS = [
 // ---- Main ----
 
 console.log('\n╔════════════════════════════════════════════════╗')
-console.log('║   Aureon Desk — Manual QA Guide               ║')
+console.log('║   Vibeforge — Manual QA Guide               ║')
 console.log('╚════════════════════════════════════════════════╝')
 console.log('')
 console.log('📋 Total checks: 127 across 16 sections')

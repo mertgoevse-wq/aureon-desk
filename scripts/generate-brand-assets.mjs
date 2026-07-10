@@ -1,5 +1,5 @@
 /**
- * Aureon Desk — Brand Asset Generator
+ * Vibeforge — Brand Asset Generator
  *
  * Generates all runtime PNG and ICO assets from SVG sources.
  * Uses the `canvas` package (already in devDependencies) for rendering.
@@ -7,11 +7,11 @@
  * Usage: node scripts/generate-brand-assets.mjs
  *
  * Outputs:
- *   public/brand/aureon-mark-32.png
- *   public/brand/aureon-mark-64.png
- *   public/brand/aureon-mark-128.png
- *   public/brand/aureon-mark-256.png
- *   public/brand/aureon-logo-512.png
+ *   public/brand/Vibeforge-mark-32.png
+ *   public/brand/Vibeforge-mark-64.png
+ *   public/brand/Vibeforge-mark-128.png
+ *   public/brand/Vibeforge-mark-256.png
+ *   public/brand/Vibeforge-logo-512.png
  *   build/icon.ico (multi-size: 16, 24, 32, 48, 64, 128, 256)
  *   build/icon.png (256px)
  *   build/icon-{size}.png (individual sizes)
@@ -29,7 +29,7 @@ const BRAND_SVG = join(ROOT, 'assets', 'brand')
 const PUBLIC_BRAND = join(ROOT, 'public', 'brand')
 const BUILD_DIR = join(ROOT, 'build')
 
-// Brand colors (must match tokens.css and AureonMark.tsx)
+// Brand colors (must match tokens.css and VibeforgeMark.tsx)
 const COLORS = {
   accent: '#B8683A',
   accentHover: '#A45A30',
@@ -215,7 +215,7 @@ async function main() {
   for (const size of MARK_SIZES) {
     const png = await svgToPng(markSvgContent, size, size)
     writePng(join(PUBLIC_BRAND, `vibeforge-mark-${size}.png`), png)
-    writePng(join(PUBLIC_BRAND, `aureon-mark-${size}.png`), png) // Legacy alias
+    writePng(join(PUBLIC_BRAND, `Vibeforge-mark-${size}.png`), png) // Legacy alias
   }
 
   // --- Generate logo PNG (512px) ---
@@ -224,7 +224,7 @@ async function main() {
     const lockupSvg = readFileSync(lockupPath, 'utf-8')
     const logo512 = await svgToPng(lockupSvg, 512, 148)
     writePng(join(PUBLIC_BRAND, 'vibeforge-logo-512.png'), logo512)
-    writePng(join(PUBLIC_BRAND, 'aureon-logo-512.png'), logo512) // Legacy alias
+    writePng(join(PUBLIC_BRAND, 'Vibeforge-logo-512.png'), logo512) // Legacy alias
   }
 
   // --- Generate icon PNGs for ICO ---
@@ -260,7 +260,7 @@ async function main() {
     const bannerPng = await svgToPng(bannerSvg, 1280, 640)
     const bannerPath = join(BRAND_SVG, '..', 'vibeforge-github-banner-1200.png')
     writePng(bannerPath, bannerPng)
-    const legacyBannerPath = join(BRAND_SVG, '..', 'aureon-github-banner-1200.png')
+    const legacyBannerPath = join(BRAND_SVG, '..', 'Vibeforge-github-banner-1200.png')
     writePng(legacyBannerPath, bannerPng) // Legacy alias
   }
 

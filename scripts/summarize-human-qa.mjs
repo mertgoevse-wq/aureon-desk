@@ -25,7 +25,7 @@ const pass = result.flows.filter((f) => f.status === 'pass').length
 const fail = result.flows.filter((f) => f.status === 'fail').length
 const skipped = result.flows.filter((f) => f.status === 'skipped').length
 
-console.log('\n=== Aureon Desk — Serious Human QA Summary ===\n')
+console.log('\n=== Vibeforge — Serious Human QA Summary ===\n')
 console.log(`Commit:        ${result.commit} on ${result.branch}`)
 console.log(`Date:          ${result.startedAt} → ${result.endedAt}`)
 console.log(`Duration:      ${Math.round(result.durationMs / 1000)}s`)

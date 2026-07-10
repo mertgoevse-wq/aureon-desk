@@ -1,4 +1,4 @@
-# Aureon Desk — UI Simplification Audit
+# Vibeforge — UI Simplification Audit
 
 > Generated: 2026-07-10
 > Branch: main
@@ -93,7 +93,7 @@ Per-screen analysis of clutter, unfinished UX, dead controls, and recommended si
 
 | Aspect | Finding | Recommendation |
 |--------|---------|----------------|
-| Brand | BrandLockupCompact + "Aureon Desk" — clean. | ✅ Good. |
+| Brand | BrandLockupCompact + "Vibeforge" — clean. | ✅ Good. |
 | Mode switch | 4 tabs (Studio/Chat/Cowork/Code) — functional. | Reduce to 3: hide Cowork in simple mode? |
 | Search | Only on md+ screens. | ✅ Good. |
 | Status | ✅ Clean. | — |

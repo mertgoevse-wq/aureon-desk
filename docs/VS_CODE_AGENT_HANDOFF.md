@@ -1,6 +1,6 @@
-# VS Code Agent Handoff — Aureon Desk
+# VS Code Agent Handoff — Vibeforge
 
-This handoff document catalogs the active state of the **Aureon Desk** workspace for subsequent AI coding sessions.
+This handoff document catalogs the active state of the **Vibeforge** workspace for subsequent AI coding sessions.
 
 ---
 
@@ -19,7 +19,7 @@ This handoff document catalogs the active state of the **Aureon Desk** workspace
 4. `6f749e8` `feat: add VoltAgent awesome skills metadata importer`
 5. `d939dd4` `feat: add artifact and output renderer system`
 6. `14d58e9` `feat: UI simplification pass — simple/advanced mode, cleaner providers, sidebar cleanup`
-7. `6320ac7` `feat: finalize Aureon brand logo and app icon system`
+7. `6320ac7` `feat: finalize Vibeforge brand logo and app icon system`
 8. `c7ab4b0` `fix: harden MCP connection confirmations`
 9. `3b6e162` `feat: real MCP execution MVP with safety gates, presets, and discovery`
 10. `47ffd11` `feat: add safe drag-and-drop file attachments to Chat and Studio`
@@ -46,12 +46,12 @@ The local working directory has uncommitted files implementing specific **Codex*
   * Rebuilt the chat model selector into an advanced 2-column drawer (left: searchable provider sidebar with connection test dots; right: model selection list). Added search and shortcut features.
 * **`src/renderer/src/components/chat/BuildPipelinePanel.tsx`** & **`src/renderer/src/pages/LivePreview.tsx`**
   * Removed independent model selection dropdown from the preview activity panel to funnel all generation through the smart main-process model router. Added standard iframe sandbox permissions (`sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin"`).
-* **`src/renderer/src/components/shared/AureonMark.tsx`** & **`src/renderer/src/components/shared/BrandLockup.tsx`**
+* **`src/renderer/src/components/shared/VibeforgeMark.tsx`** & **`src/renderer/src/components/shared/BrandLockup.tsx`**
   * Hooked to dynamic re-export scripts matching the `VibeForge` visual theme files.
 * **`src/renderer/src/layouts/SettingsLayout.tsx`**
   * Added a `Developer Setup` sidebar entry pointing to the new developer setup tab.
 * **`tests/e2e/helpers/electronApp.ts`**
-  * Injected environment-sensitive slow-motion delay supports (`AUREON_HUMAN_QA_SLOWMO` and `AUREON_SLOW_MO_MS`) for visual and headed Playwright QA.
+  * Injected environment-sensitive slow-motion delay supports (`Vibeforge_HUMAN_QA_SLOWMO` and `Vibeforge_SLOW_MO_MS`) for visual and headed Playwright QA.
 
 ### Untracked Files Detected
 
@@ -64,8 +64,8 @@ The local working directory has uncommitted files implementing specific **Codex*
 * **New Settings UI:**
   * `src/renderer/src/pages/settings/DeveloperSetupPage.tsx`
 * **New QA Spec Files:**
-  * `tests/e2e/aureon-human-visible.spec.ts` (headed E2E test)
-  * `tests/e2e/aureon-human-serious.spec.ts` (extended interaction checks)
+  * `tests/e2e/Vibeforge-human-visible.spec.ts` (headed E2E test)
+  * `tests/e2e/Vibeforge-human-serious.spec.ts` (extended interaction checks)
   * `docs/HUMAN_VISIBLE_QA_HARNESS.md`
   * `docs/qa/EXHAUSTIVE_QA_SPEC.md`
   * `docs/FULL_AUTONOMOUS_QA_SPEC.md`
@@ -75,7 +75,7 @@ The local working directory has uncommitted files implementing specific **Codex*
   * `scripts/check-prerequisites.mjs`
   * `scripts/summarize-human-qa.mjs`
 * **Prepackaged Installers:**
-  * `AureonDesk-Setup-0.9.0-x64.exe`, `AureonDesk-Portable-0.9.0-x64.exe`, `Aureon-Desk-Beta-No-Install.zip`
+  * `VibeforgeDesk-Setup-0.9.0-x64.exe`, `VibeforgeDesk-Portable-0.9.0-x64.exe`, `Vibeforge-Desk-Beta-No-Install.zip`
 
 ---
 

@@ -4,6 +4,94 @@
 
 ---
 
+## 2026-07-10 — Aureon → Vibeforge Rename + Android Port Preparation
+
+### Goal
+Finish the global rebrand from "Aureon Desk" / "Aureon" to "Vibeforge", clean up legacy brand assets and QA docs, and prepare the project for a future Android app version without breaking the desktop Electron build.
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `docs/ANDROID_PORT_AUDIT.md` | Mobile-compatibility audit: routes, Electron APIs, file system, IPC, LivePreview, storage, window controls, drag/drop, MCP, shell commands. |
+| `docs/CAPACITOR_ANDROID_PLAN.md` | Capacitor Android rollout plan: package strategy, plugins, limitations, security, storage, build steps, Galaxy A56 checklist. |
+| `src/shared/platform/platform-adapter.ts` | TypeScript interface for platform adapters. |
+| `src/shared/platform/desktop-adapter.ts` | Desktop adapter wrapping Electron/Node APIs. |
+| `src/shared/platform/mobile-adapter.ts` | Mobile placeholder adapter with graceful fallbacks. |
+| `src/shared/platform/index.ts` | Factory that selects desktop or mobile adapter at runtime. |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/renderer/src/layouts/AppShell.tsx` | Updated import from `BrandLockup` to `VibeForgeBrandLockup`. |
+| `src/renderer/src/layouts/Sidebar.tsx` | Updated import from `BrandLockup`/`BrandLockupCompact` to `VibeForgeBrandLockup`/`VibeForgeBrandLockupCompact`. |
+| `docs/qa/*.md` | Renamed all "Aureon Desk" references to "Vibeforge". |
+| `CHANGELOG.md` | Added Unreleased entry for rename + Android prep. |
+| `AI_QA_REPORT.md` | Added current session summary. |
+
+### Files Deleted
+
+| File | Reason |
+|------|--------|
+| `src/renderer/src/components/shared/AureonMark.tsx` | Legacy brand component. |
+| `src/renderer/src/components/shared/BrandLockup.tsx` | Legacy brand component. |
+| `assets/brand/aureon-*` | Legacy brand assets. |
+| `public/brand/aureon-*` | Legacy brand assets. |
+
+### Verification
+- Global search for "Aureon" in source/docs: ✅ 0 matches
+- `npm run verify:native`: ✅ PASS
+- `npm run typecheck`: ✅ PASS
+- `npm test`: ✅ PASS (845 tests, 33 files)
+- `npm run build`: ✅ PASS
+
+### Notes
+- The platform adapters are currently scaffolding; they are not yet wired into the renderer.
+- Desktop behavior is unchanged; the desktop adapter is a thin wrapper around existing Electron/Node APIs.
+
+---
+
+## 2026-07-10 — Agent & Skill Cleanup + Beginner Onboarding + Android Companion
+
+### Goal
+Complete the three-pass feature set that was interrupted in the previous session: clean up agents/skills, add beginner onboarding, and scaffold the Android/Phone Companion feature.
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `src/renderer/src/pages/settings/CompanionPage.tsx` | Desktop settings UI for phone companion pairing, allowed commands, and security rules. |
+| `src/renderer/src/pages/CompanionMobileView.tsx` | Mobile-first web UI for the companion at `/companion`. |
+| `docs/ANDROID_COMPANION_ARCHITECTURE.md` | Architecture, data model, security rules, and future network layer plan. |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/renderer/src/layouts/AppShell.tsx` | Renders `<FirstRunWizard />`. |
+| `src/renderer/src/pages/settings/GeneralSettingsPage.tsx` | Added "Restart onboarding" button in Interface Mode section. |
+| `src/renderer/src/layouts/Sidebar.tsx` | Added dismissible contextual help card for beginners. |
+| `src/renderer/src/App.tsx` | Added `/companion` and `/settings/companion` routes. |
+| `src/renderer/src/layouts/SettingsLayout.tsx` | Added Android Companion nav item under Advanced settings. |
+| `src/shared/curated-skills.ts` | Already contained `tier` + `examplePrompt` + 10 canonical skills. |
+| `src/shared/agent-education.ts` | Already contained `tier` field. |
+| `src/renderer/src/pages/SkillsPage.tsx` | Already contained Beginner/Advanced tabs, concept strip, action buttons. |
+| `src/renderer/src/components/shared/FirstRunWizard.tsx` | Already contained 5-step onboarding modal. |
+| `src/renderer/src/stores/uiStore.ts` | Already contained `showFirstRun`, `dismissFirstRun()`, `resetFirstRun()`. |
+| `src/shared/companion.ts` | Already contained types, helpers, and default config. |
+
+### Verification
+- Code review (kimi) ✅ — minor `import type` and tab-state suggestions applied.
+- Typecheck / tests / build ⏸ — blocked by local npm installation corruption (`npm-prefix.js` missing).
+
+### Notes
+- The companion feature is UI + types only in this release; no real TCP/network layer is active yet.
+- The first-run wizard reads/writes `vb_first_run_done` in `localStorage`.
+- The sidebar help card reads/writes `vb_sidebar_help_dismissed` in `localStorage`.
+
+---
+
 ## 2026-07-10 — LivePreview Reliability Pass
 
 ### Goal
@@ -37,16 +125,16 @@ Stabilise Vibeforge LivePreview: eliminate blank preview frames, port-checking r
 
 
 ### Goal
-Rename the product from "Aureon Desk" to "Vibeforge" across the entire codebase (visible user-facing views, package settings, installers, documents, and testing suites) in a safe, consistent way.
+Rename the product from "Vibeforge" to "Vibeforge" across the entire codebase (visible user-facing views, package settings, installers, documents, and testing suites) in a safe, consistent way.
 
 ### Files Created / Renamed
-* Renamed 19 Playwright E2E spec files under `tests/e2e/` from `*-aureon-*` to `*-vibeforge-*`
-* Renamed `tests/e2e/aureon-human-serious.spec.ts` -> `tests/e2e/vibeforge-human-serious.spec.ts`
-* Renamed `tests/e2e/aureon-human-visible.spec.ts` -> `tests/e2e/vibeforge-human-visible.spec.ts`
+* Renamed 19 Playwright E2E spec files under `tests/e2e/` from `*-Vibeforge-*` to `*-vibeforge-*`
+* Renamed `tests/e2e/Vibeforge-human-serious.spec.ts` -> `tests/e2e/vibeforge-human-serious.spec.ts`
+* Renamed `tests/e2e/Vibeforge-human-visible.spec.ts` -> `tests/e2e/vibeforge-human-visible.spec.ts`
 
 ### Files Modified
 * `package.json`: Updated package name, description, and E2E scripts to Vibeforge
-* `src/main/index.ts`: Prepend dynamic `userData` path redirect (migrates legacy `%APPDATA%/aureon-desk` paths to prevent config loss), updated boot logs/error dialogs
+* `src/main/index.ts`: Prepend dynamic `userData` path redirect (migrates legacy `%APPDATA%/Vibeforge-desk` paths to prevent config loss), updated boot logs/error dialogs
 * `src/main/windows.ts`: Updated native window title to "Vibeforge"
 * `src/renderer/index.html`: Updated HTML title to "Vibeforge"
 * `src/renderer/src/layouts/AppShell.tsx`: Updated header topbar display text to "Vibeforge"
@@ -54,7 +142,7 @@ Rename the product from "Aureon Desk" to "Vibeforge" across the entire codebase 
 * `src/renderer/src/pages/ChatWorkspace.tsx`: Updated composer greetings, starter prompts, and help placeholders to Vibeforge
 * `src/renderer/src/pages/Studio.tsx`: Updated hero greeting header to "Vibeforge"
 * `src/renderer/src/pages/LivePreview.tsx`: Updated sandbox preview iframe title to "Vibeforge"
-* `scripts/generate-brand-assets.mjs`: Rewrote script to read SVGs from disk, outputs new assets as well as legacy aureon aliases
+* `scripts/generate-brand-assets.mjs`: Rewrote script to read SVGs from disk, outputs new assets as well as legacy Vibeforge aliases
 * `tests/e2e/01-vibeforge-smoke.spec.ts`, `tests/e2e/10-vibeforge-coding-demo.spec.ts`, `tests/e2e/99-human-click-qa.spec.ts`, `tests/e2e/vibeforge-human-serious.spec.ts`, `tests/e2e/vibeforge-human-visible.spec.ts`: Updated test assertions and selectors to Vibeforge
 * `tests/unit/live-preview.test.ts`, `tests/unit/connector-icon.test.ts`: Updated mock endpoints and required asset assertions to Vibeforge
 
@@ -83,7 +171,7 @@ Inspect and verify the merged codebase containing custom Codex components and te
 ## 2026-07-10 — Agent & Skill Education Center
 
 ### Goal
-Make agents and skills understandable for beginners. Add a clean education center and expand Aureon's internal agent/skill system with beginner-friendly explanations, interactive auto-selection demo, and 16+ agent profiles.
+Make agents and skills understandable for beginners. Add a clean education center and expand Vibeforge's internal agent/skill system with beginner-friendly explanations, interactive auto-selection demo, and 16+ agent profiles.
 
 ### Files Created
 
@@ -155,7 +243,7 @@ Add a structured output renderer system: copyable prompt boxes, code blocks with
 ## 2026-07-10 — UI Simplification Pass
 
 ### Goal
-Simplify the Aureon Desk UI — make it calmer, cleaner, and more premium. Add a Simple/Advanced mode toggle so first-time users see only essential controls.
+Simplify the Vibeforge UI — make it calmer, cleaner, and more premium. Add a Simple/Advanced mode toggle so first-time users see only essential controls.
 
 ### Changes
 
@@ -179,13 +267,13 @@ Simplify the Aureon Desk UI — make it calmer, cleaner, and more premium. Add a
 ## 2026-07-10 — Brand Identity Finalization
 
 ### Goal
-Fix the long-standing issue where the Aureon Desk logo was not visible in the app (sidebar top-left, Windows taskbar). Generate, wire, test, and verify a complete original Aureon Desk logo system.
+Fix the long-standing issue where the Vibeforge logo was not visible in the app (sidebar top-left, Windows taskbar). Generate, wire, test, and verify a complete original Vibeforge logo system.
 
 ### Root Cause Found
-CSS variables (`var(--ivory-accent)`) used in SVG presentation attributes (`fill`, `stroke`, `stopColor`) were failing to resolve in some Electron/Chromium rendering paths. The AureonMark inline SVG was rendering at 0×0 or with fully transparent colors.
+CSS variables (`var(--ivory-accent)`) used in SVG presentation attributes (`fill`, `stroke`, `stopColor`) were failing to resolve in some Electron/Chromium rendering paths. The VibeforgeMark inline SVG was rendering at 0×0 or with fully transparent colors.
 
 ### Fix Applied
-- Replaced all CSS variable references in `AureonMark.tsx` with hardcoded brand hex colors matching `tokens.css` exactly
+- Replaced all CSS variable references in `VibeforgeMark.tsx` with hardcoded brand hex colors matching `tokens.css` exactly
 - Added `useId()` for unique gradient IDs (prevents collisions when multiple marks render)
 - Increased ring stroke opacity (0.25→0.30) and neural node dot sizes for better visibility
 - Added neural node connection lines for a more complete mark
@@ -195,13 +283,13 @@ CSS variables (`var(--ivory-accent)`) used in SVG presentation attributes (`fill
 
 | File | Change |
 |------|--------|
-| `AureonMark.tsx` | Hardcoded colors, useId(), increased opacity, connection lines |
+| `VibeforgeMark.tsx` | Hardcoded colors, useId(), increased opacity, connection lines |
 | `BrandLockup.tsx` | Added `compact` prop + `BrandLockupCompact` export |
 | `AppShell.tsx` | Added BrandLockupCompact + text to topbar left column |
 | `Sidebar.tsx` | Added BrandLockupCompact to collapsed sidebar state |
-| `SettingsLayout.tsx` | Replaced Settings icon with AureonMark |
-| `assets/brand/aureon-logo-lockup.svg` | NEW — mark + wordmark + tagline |
-| `assets/brand/aureon-github-banner.svg` | NEW — 1280×640 social preview banner |
+| `SettingsLayout.tsx` | Replaced Settings icon with VibeforgeMark |
+| `assets/brand/Vibeforge-logo-lockup.svg` | NEW — mark + wordmark + tagline |
+| `assets/brand/Vibeforge-github-banner.svg` | NEW — 1280×640 social preview banner |
 | `scripts/generate-brand-assets.mjs` | NEW — generates all PNGs + ICO from SVGs |
 | `docs/brand/BRAND_ASSET_AUDIT.md` | Updated with new assets and wiring |
 | `AI_QA_REPORT.md` | Added brand finalization section |
@@ -238,8 +326,8 @@ specified (hero → Studio → Code → LivePreview → Provider → MCP).
 
 | File | Change |
 |------|--------|
-| `tests/e2e/aureon-human-visible.spec.ts` | NEW. ~330 lines, 20 steps, screenshots numbered 00–22. |
-| `tests/e2e/helpers/electronApp.ts` | Added opt-in `AUREON_SLOW_MO_MS` env → `electron.launch({ slowMo })`. |
+| `tests/e2e/Vibeforge-human-visible.spec.ts` | NEW. ~330 lines, 20 steps, screenshots numbered 00–22. |
+| `tests/e2e/helpers/electronApp.ts` | Added opt-in `Vibeforge_SLOW_MO_MS` env → `electron.launch({ slowMo })`. |
 | `package.json` | Added `test:human:headed`, `test:human:headed:slow`, `test:human:ui`. |
 | `docs/HUMAN_VISIBLE_QA_HARNESS.md` | NEW. Runbook + screenshot map + known limitations. |
 | `CHANGELOG.md` | New `[Unreleased]` entry documenting the harness. |
@@ -281,7 +369,7 @@ specified (hero → Studio → Code → LivePreview → Provider → MCP).
 - Console errors are logged but non-fatal.
 - Video on failure is not configured (Playwright project-level opt would
   apply globally; we deliver 28+ screenshots instead).
-- Bash-only `AUREON_SLOW_MO_MS=500` script — PowerShell/cmd users set the
+- Bash-only `Vibeforge_SLOW_MO_MS=500` script — PowerShell/cmd users set the
   env var manually as documented in `docs/HUMAN_VISIBLE_QA_HARNESS.md`.
 
 ### Follow-ups (not in this commit)

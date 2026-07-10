@@ -1,4 +1,4 @@
-// === Aureon Studio Core — IPC Handlers ===
+// === Vibeforge Studio Core — IPC Handlers ===
 
 import { ipcMain } from 'electron'
 import { orchestrate, getTaskCategories, getAutonomyLevels } from '../services/studio-core.service'

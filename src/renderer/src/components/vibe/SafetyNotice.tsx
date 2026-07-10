@@ -71,7 +71,7 @@ export function SafetyNotice({ type, targetPath, description }: SafetyNoticeProp
       color: 'emerald',
       body: (
         <p className="text-[11px] text-emerald-800 leading-relaxed">
-          Aureon Desk is designed with safety in mind. No actions run automatically —
+          Vibeforge is designed with safety in mind. No actions run automatically —
           you always confirm file writes, commands, and remote uploads.
         </p>
       )

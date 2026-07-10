@@ -7,8 +7,8 @@
  * and optionally keeps the app window open at the end.
  *
  * Environment:
- *   AUREON_HUMAN_QA_SLOWMO     Optional slow-motion (ms) for the Electron launch.
- *   AUREON_HUMAN_QA_KEEP_OPEN  When "1", keep the window open at the end.
+ *   Vibeforge_HUMAN_QA_SLOWMO     Optional slow-motion (ms) for the Electron launch.
+ *   Vibeforge_HUMAN_QA_KEEP_OPEN  When "1", keep the window open at the end.
  *
  * Run:
  *   npm run test:human:interactive   (normal, slowMo 500ms)
@@ -32,8 +32,8 @@ const TRACE_DIR = join(ARTIFACT_DIR, 'trace')
 const RESULT_FILE = join(ARTIFACT_DIR, 'human-qa-results.json')
 const REPORT_FILE = join(ARTIFACT_DIR, 'human-qa-report.md')
 
-const SLOW_MO = process.env.AUREON_HUMAN_QA_SLOWMO ? Number(process.env.AUREON_HUMAN_QA_SLOWMO) : 0
-const KEEP_OPEN = process.env.AUREON_HUMAN_QA_KEEP_OPEN === '1'
+const SLOW_MO = process.env.Vibeforge_HUMAN_QA_SLOWMO ? Number(process.env.Vibeforge_HUMAN_QA_SLOWMO) : 0
+const KEEP_OPEN = process.env.Vibeforge_HUMAN_QA_KEEP_OPEN === '1'
 const KEEP_OPEN_DURATION_MS = 5 * 60 * 1000
 
 const startedAt = new Date()

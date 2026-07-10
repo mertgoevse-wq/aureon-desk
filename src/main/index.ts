@@ -11,7 +11,7 @@ try {
   const fs = require('fs')
   const defaultPath = app.getPath('userData')
   if (defaultPath.endsWith('vibeforge') || defaultPath.endsWith('Vibeforge')) {
-    const legacyPath = defaultPath.replace(/vibeforge$/i, 'aureon-desk')
+    const legacyPath = defaultPath.replace(/vibeforge$/i, 'Vibeforge-desk')
     if (fs.existsSync(legacyPath)) {
       app.setPath('userData', legacyPath)
     }
@@ -22,7 +22,7 @@ try {
 
 // Handle creating/removing shortcuts on Windows
 if (process.platform === 'win32') {
-  app.setAppUserModelId('com.aureon.desk')
+  app.setAppUserModelId('com.Vibeforge.desk')
 }
 
 // Prevent multiple instances

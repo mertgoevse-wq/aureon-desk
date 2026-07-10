@@ -1,6 +1,6 @@
 import { test, expect, waitForAppReady, checkForErrorPage, screenshot } from './helpers/electronApp'
 
-test.describe('Aureon Desk — Studio → Build Pipeline E2E (with mock API key)', () => {
+test.describe('Vibeforge — Studio → Build Pipeline E2E (with mock API key)', () => {
   test.beforeEach(async ({ mainWindow }) => {
     await waitForAppReady(mainWindow)
   })

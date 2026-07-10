@@ -44,15 +44,15 @@ jobs:
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
-          name: aureon-desk-windows-installer
-          path: dist/AureonDesk-Setup-*.exe
+          name: Vibeforge-desk-windows-installer
+          path: dist/VibeforgeDesk-Setup-*.exe
           if-no-files-found: warn
 
       - name: Upload portable
         uses: actions/upload-artifact@v4
         with:
-          name: aureon-desk-windows-portable
-          path: dist/AureonDesk-Portable-*.exe
+          name: Vibeforge-desk-windows-portable
+          path: dist/VibeforgeDesk-Portable-*.exe
           if-no-files-found: warn
 
       - name: Create GitHub Release (tags only)
@@ -60,7 +60,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/AureonDesk-Setup-*.exe
-            dist/AureonDesk-Portable-*.exe
+            dist/VibeforgeDesk-Setup-*.exe
+            dist/VibeforgeDesk-Portable-*.exe
           draft: true
           generate_release_notes: true

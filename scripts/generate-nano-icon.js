@@ -10,7 +10,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const SOURCE_PNG = path.join(__dirname, '..', 'assets', 'brand', 'nano-banana', 'aureon-app-icon.png')
+const SOURCE_PNG = path.join(__dirname, '..', 'assets', 'brand', 'nano-banana', 'Vibeforge-app-icon.png')
 const BUILD_DIR = path.join(__dirname, '..', 'build')
 const ICO_PATH = path.join(BUILD_DIR, 'icon.ico')
 const PNG_PATH = path.join(BUILD_DIR, 'icon.png')

@@ -1,8 +1,8 @@
-# Aureon Studio Core — Architecture & Plan
+# Vibeforge Studio Core — Architecture & Plan
 
 ## Overview
 
-Aureon Studio Core is the central orchestrator layer for the Aureon Desk application. It replaces the earlier "Jarvis Core" concept with a safer, product-like task launcher and orchestrator that follows strict permission-based principles.
+Vibeforge Studio Core is the central orchestrator layer for the Vibeforge application. It replaces the earlier "Jarvis Core" concept with a safer, product-like task launcher and orchestrator that follows strict permission-based principles.
 
 ## Architecture
 

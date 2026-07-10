@@ -1,4 +1,4 @@
-// === Aureon Studio Core — Orchestrator Service ===
+// === Vibeforge Studio Core — Orchestrator Service ===
 // Central orchestrator: accepts user intent, classifies tasks, routes to best model,
 // recommends workspace mode, and generates guided prompts.
 

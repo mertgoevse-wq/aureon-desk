@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 const pageCopy: Record<string, { title: string; description: string; icon: React.ReactNode }> = {
   '/settings/extensions': {
     title: 'Extensions',
-    description: 'Plugin and connector management will live here once Aureon has a dedicated extension registry.',
+    description: 'Plugin and connector management will live here once Vibeforge has a dedicated extension registry.',
     icon: <Boxes size={18} />
   },
   '/settings/security': {
@@ -25,7 +25,7 @@ export function SettingsPlaceholderPage(): React.ReactElement {
   const location = useLocation()
   const copy = pageCopy[location.pathname] || {
     title: 'Settings',
-    description: 'This settings section is reserved for a future Aureon feature.',
+    description: 'This settings section is reserved for a future Vibeforge feature.',
     icon: <Sparkles size={18} />
   }
 

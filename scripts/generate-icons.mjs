@@ -1,5 +1,5 @@
 /**
- * Aureon Desk — Icon Generation Script (Canvas-based)
+ * Vibeforge — Icon Generation Script (Canvas-based)
  * Generates high-quality PNG icons using the `canvas` package.
  * 
  * Usage: npm install canvas && node scripts/generate-icons.mjs
@@ -26,7 +26,7 @@ try {
 const OUTPUT_DIR = 'build'
 const SIZES = [16, 32, 48, 64, 128, 256, 512]
 
-// Aureon brand colors
+// Vibeforge brand colors
 const COLORS = {
   bg: '#FAF8F5',
   accent: '#C75B39',
@@ -36,7 +36,7 @@ const COLORS = {
   borderLight: '#E5DED3',
 }
 
-function drawAureonMark(ctx, cx, cy, scale) {
+function drawVibeforgeMark(ctx, cx, cy, scale) {
   // Outer aureole rings
   ctx.strokeStyle = COLORS.borderLight
   ctx.lineWidth = 1
@@ -127,7 +127,7 @@ function generatePng(size) {
 
   // Draw mark centered
   const markScale = size / 96
-  drawAureonMark(ctx, size / 2, size * 0.48, markScale)
+  drawVibeforgeMark(ctx, size / 2, size * 0.48, markScale)
 
   return canvas.toBuffer('image/png')
 }
@@ -143,7 +143,7 @@ function writeIco(pngBuffers) {
 // Main
 mkdirSync(OUTPUT_DIR, { recursive: true })
 
-console.log('Aureon Desk — Icon Generator')
+console.log('Vibeforge — Icon Generator')
 console.log(`Output directory: ${OUTPUT_DIR}`)
 console.log(`Sizes: ${SIZES.join(', ')}\n`)
 

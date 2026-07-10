@@ -1,7 +1,7 @@
 /**
- * Aureon Desk — Skill Education Center
+ * Vibeforge — Skill Education Center
  *
- * Beginner-friendly explanations for Aureon skills.
+ * Beginner-friendly explanations for Vibeforge skills.
  * Each skill has a simple description, inputs, outputs, permissions, and examples.
  */
 
@@ -24,7 +24,7 @@ export const SKILL_EDUCATION: SkillEducation[] = [
     id: 'create-landing-page',
     name: 'Create Landing Page',
     icon: 'Layout',
-    simpleDescription: 'Builds a beautiful, responsive landing page with hero section, features, and call-to-action buttons. Uses the Aureon calm ivory theme by default.',
+    simpleDescription: 'Builds a beautiful, responsive landing page with hero section, features, and call-to-action buttons. Uses the Vibeforge calm ivory theme by default.',
     inputFields: ['Page topic', 'Target audience', 'Sections needed', 'Color preferences'],
     outputArtifactType: 'code',
     requiredPermissions: ['file_write'],
@@ -128,11 +128,11 @@ export const SKILL_EDUCATION: SkillEducation[] = [
     id: 'improve-ui-theme',
     name: 'Improve UI Theme',
     icon: 'Palette',
-    simpleDescription: 'Enhances your app with the Aureon calm ivory design system. Applies consistent colors, typography, spacing, and rounded corners.',
+    simpleDescription: 'Enhances your app with the Vibeforge calm ivory design system. Applies consistent colors, typography, spacing, and rounded corners.',
     inputFields: ['Current theme', 'Desired style', 'Color preferences'],
     outputArtifactType: 'code',
     requiredPermissions: ['file_write'],
-    examples: ['Apply the Aureon ivory theme to my app', 'Create a dark mode version of my design'],
+    examples: ['Apply the Vibeforge ivory theme to my app', 'Create a dark mode version of my design'],
     relatedTemplates: ['generate-brand-assets', 'create-landing-page'],
     testStatus: 'tested',
     category: 'design',

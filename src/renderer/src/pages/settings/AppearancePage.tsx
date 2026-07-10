@@ -87,7 +87,7 @@ export function AppearancePage(): React.ReactElement {
             </div>
             <div className="pt-3 border-t border-[var(--ivory-border)]">
               <p className="text-[10px] text-[var(--ivory-text-3)] mb-0.5">Monospace — JetBrains Mono</p>
-              <code className="text-xs">const greeting = &quot;Hello, Aureon&quot;</code>
+              <code className="text-xs">const greeting = &quot;Hello, Vibeforge&quot;</code>
             </div>
           </div>
         </Card>

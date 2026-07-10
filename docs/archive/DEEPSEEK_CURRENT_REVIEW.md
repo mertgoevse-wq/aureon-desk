@@ -1,4 +1,4 @@
-# Aureon Desk — DeepSeek Current Review
+# Vibeforge — DeepSeek Current Review
 
 > **Review date:** 2026-07-08
 > **Branch:** `main`
@@ -65,7 +65,7 @@ Package: electron-builder → NSIS installer + portable
 ### Minor
 8. **Brand assets duplicated** — `assets/brand/` has SVGs (programmatic) + Nano Banana PNGs. `public/brand/` has copies for renderer access. `assets/brand/nano-banana/` has originals. Three locations for essentially the same mark.
 
-9. **Inline Aureon SVG still exists in code** — Despite the `AureonMark` component, the SVG path data is rendered inline in the component. If the brand mark changes, the SVG paths must be updated in code rather than swapping an image file.
+9. **Inline Vibeforge SVG still exists in code** — Despite the `VibeforgeMark` component, the SVG path data is rendered inline in the component. If the brand mark changes, the SVG paths must be updated in code rather than swapping an image file.
 
 10. **ChatWorkspace has 500+ lines** — The home page + active chat logic is in one monolithic component. Should be split into `ChatHome.tsx` and `ChatActive.tsx`.
 
@@ -84,11 +84,11 @@ Package: electron-builder → NSIS installer + portable
 
 | File | Size | Concern |
 |------|------|---------|
-| `aureon-logo.png` (Nano Banana) | ~4.8 MB | Way too large for renderer use. Should be optimized to <200KB. |
-| `aureon-app-icon.png` | Included in build | Used for icon.ico generation only, fine. |
-| `aureon-github-banner.png` | In README | GitHub-hosted, size less critical. |
-| `aureon-dark-logo-presentation.png` | ~4.8 MB | Not currently used anywhere — dead weight. |
-| `aureon-mark-monochrome.png` | TBD | Used by AureonMark PNG variant. Should be optimized. |
+| `Vibeforge-logo.png` (Nano Banana) | ~4.8 MB | Way too large for renderer use. Should be optimized to <200KB. |
+| `Vibeforge-app-icon.png` | Included in build | Used for icon.ico generation only, fine. |
+| `Vibeforge-github-banner.png` | In README | GitHub-hosted, size less critical. |
+| `Vibeforge-dark-logo-presentation.png` | ~4.8 MB | Not currently used anywhere — dead weight. |
+| `Vibeforge-mark-monochrome.png` | TBD | Used by VibeforgeMark PNG variant. Should be optimized. |
 
 ## 6. Provider Layout Issues (from source inspection)
 
@@ -109,8 +109,8 @@ Package: electron-builder → NSIS installer + portable
 
 ## 8. Sidebar/Header Issues (from source)
 
-- **Sidebar brand**: 34px AureonMark (SVG) — adequate after v0.9.28 but could be larger for premium feel
-- **Collapsed topbar brand**: 22px AureonMark — adequate
+- **Sidebar brand**: 34px VibeforgeMark (SVG) — adequate after v0.9.28 but could be larger for premium feel
+- **Collapsed topbar brand**: 22px VibeforgeMark — adequate
 - **Mode switch pills**: 76px min-width, 8px height — functional but could be more polished
 - **Window controls**: Custom min/max/close buttons — well-implemented
 - **Search button**: Hidden on mobile (`hidden md:inline-flex`) — fine for desktop

@@ -266,7 +266,7 @@ export async function extractAttachmentZip(zipPath: string, destDir?: string): P
     const entries = zip.getEntries()
 
     // Use a safe temp directory if no destination provided
-    const safeDest = path.resolve(destDir || path.join(os.tmpdir(), 'aureon-zip-extract', uuid()))
+    const safeDest = path.resolve(destDir || path.join(os.tmpdir(), 'Vibeforge-zip-extract', uuid()))
 
     // Ensure the destination directory exists
     if (!fs.existsSync(safeDest)) {

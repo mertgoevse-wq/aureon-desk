@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Aureon Desk — Prerequisite Checker
+ * Vibeforge — Prerequisite Checker
  *
  * Detects developer tools, system info, and optional dependencies.
  * Outputs a console table and writes a JSON report.
@@ -203,7 +203,7 @@ function printTable(report) {
   const { dependencies, system, offline, summary } = report
 
   console.log('\n╔══════════════════════════════════════════════════════╗')
-  console.log('║       Aureon Desk — Prerequisite Checker            ║')
+  console.log('║       Vibeforge — Prerequisite Checker            ║')
   console.log('╚══════════════════════════════════════════════════════╝\n')
 
   console.log('System:')

@@ -1,6 +1,6 @@
 # Vibeforge
 
-> **Vibeforge** (formerly Aureon Desk)
+> **Vibeforge** (formerly Vibeforge)
 
 <p align="center">
   <img src="assets/vibeforge-github-banner-1200.png" alt="Vibeforge" width="800" style="max-width:100%;" />
@@ -76,8 +76,8 @@ npm start
 - **CI:** GitHub Actions builds automatically on push to main/master and tags (`v*`)
 
 Output files in `dist/`:
-- `AureonDesk-Setup-0.9.0-x64.exe` (NSIS installer)
-- `AureonDesk-Portable-0.9.0-x64.exe` (standalone portable)
+- `VibeforgeDesk-Setup-0.9.0-x64.exe` (NSIS installer)
+- `VibeforgeDesk-Portable-0.9.0-x64.exe` (standalone portable)
 
 ## Current Status (Phase 2)
 
@@ -121,34 +121,34 @@ Output files in `dist/`:
    ```bash
    ollama pull llama3.2
    ```
-3. In Aureon Desk, go to **Settings → Providers** and enable the Ollama provider
+3. In Vibeforge, go to **Settings → Providers** and enable the Ollama provider
 4. Models are auto-detected from Ollama on startup. You can also manually sync via the "Test" button
 
 ### LM Studio
 1. [Install LM Studio](https://lmstudio.ai)
 2. Load a model and start the local server (default port 1234)
-3. In Aureon Desk, enable the LM Studio provider in Settings
+3. In Vibeforge, enable the LM Studio provider in Settings
 
 ### Custom OpenAI-Compatible
 1. Start any OpenAI-compatible server (e.g., vLLM, text-generation-webui)
-2. In Aureon Desk, click **Add Custom** in Settings → Providers
+2. In Vibeforge, click **Add Custom** in Settings → Providers
 3. Enter the server URL and optional API key
 
 ## Remote Provider Setup
 
 ### Anthropic (Claude)
 1. Get an API key from [console.anthropic.com](https://console.anthropic.com)
-2. In Aureon Desk, go to **Settings → Providers** and enter your key
+2. In Vibeforge, go to **Settings → Providers** and enter your key
 3. Select a Claude model (Sonnet 4, Opus 4, Haiku 3.5) from the model list
 
 ### OpenRouter
 1. Get an API key from [openrouter.ai/keys](https://openrouter.ai/keys)
-2. In Aureon Desk, enter the key in Settings → Providers → OpenRouter
+2. In Vibeforge, enter the key in Settings → Providers → OpenRouter
 3. OpenRouter provides access to 200+ models — use "Auto" for best results
 
 ### Google Gemini
 1. Get an API key from [aistudio.google.com](https://aistudio.google.com)
-2. In Aureon Desk, enter the key in Settings → Providers → Google Gemini
+2. In Vibeforge, enter the key in Settings → Providers → Google Gemini
 3. Gemini offers a generous free tier for testing
 
 ### Security
@@ -215,10 +215,10 @@ The test uses the `openrouter/free` model (free tier, no cost) and never prints 
 ## GitHub Repository Setup
 
 To update the repo description and topics manually:
-1. Go to https://github.com/mertgoevse-wq/aureon-desk/settings
+1. Go to https://github.com/mertgoevse-wq/Vibeforge-desk/settings
 2. Set description: **"A calm desktop AI workspace for chat, code, projects, tools, and live preview."**
 3. Add topics: `electron`, `react`, `typescript`, `tailwindcss`, `desktop-app`, `ai-workspace`, `ai-chat`, `openrouter`, `ollama`, `lm-studio`, `live-preview`, `local-first`, `windows`, `sqlite`
-4. Set social preview image to `assets/brand/aureon-github-banner.png`
+4. Set social preview image to `assets/brand/Vibeforge-github-banner.png`
 
 ## Keyboard Shortcuts
 
@@ -276,7 +276,7 @@ Open **Settings → Self Audit** to inspect this project, detect issues, and gen
 - **Improvement plans**: Generate prioritized task lists with risk estimates, file lists, and test plans
 - **Patch proposals**: View file lists, risk estimates, and test plans — must be explicitly approved before any changes are applied
 - **Agent prompts**: Export prompts for use in Chat or Code mode
-- **No auto-modification**: Aureon will never modify itself without your explicit approval
+- **No auto-modification**: Vibeforge will never modify itself without your explicit approval
 
 Full docs:
 - [`docs/CONNECTOR_PRESETS.md`](./docs/CONNECTOR_PRESETS.md)
@@ -285,7 +285,7 @@ Full docs:
 
 ## LivePreview Workspace
 
-The LivePreview workspace lets you generate and preview small apps (HTML, Vite+React) safely within Aureon Desk.
+The LivePreview workspace lets you generate and preview small apps (HTML, Vite+React) safely within Vibeforge.
 
 ### Features
 - **Sandboxed preview**: Creates isolated project folders under your user data directory

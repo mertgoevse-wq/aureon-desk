@@ -1,6 +1,6 @@
 import { test, expect, waitForAppReady, checkForErrorPage, screenshot } from './helpers/electronApp'
 
-test.describe('Aureon Desk — Studio, Vibe Coding & Provider Flow', () => {
+test.describe('Vibeforge — Studio, Vibe Coding & Provider Flow', () => {
   test.beforeEach(async ({ mainWindow }) => {
     await waitForAppReady(mainWindow)
   })

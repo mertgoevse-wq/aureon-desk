@@ -1,4 +1,4 @@
-# Aureon Desk — QA Checklist
+# Vibeforge — QA Checklist
 
 > Use this checklist before every commit and before starting each major prompt.
 

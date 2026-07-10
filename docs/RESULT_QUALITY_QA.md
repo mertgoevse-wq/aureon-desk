@@ -1,8 +1,8 @@
-# Aureon Desk — Result Quality QA
+# Vibeforge — Result Quality QA
 
 > **Date:** 2026-07-09
 > **Branch:** main
-> **Purpose:** Verify that Aureon Desk produces useful results, not just clickable buttons.
+> **Purpose:** Verify that Vibeforge produces useful results, not just clickable buttons.
 
 ---
 
@@ -30,7 +30,7 @@
 ### Scenario A: Build App from Idea
 - **Prompt:** "Build a tiny counter app with increment, reset, ivory theme, and clear heading."
 - **Flow:** Studio → Build App card → wizard drawer opens → prompt editor accepts text → Start Task Flow → routes to `/preview` → sessionStorage sets `auto-build-app-preview` → LivePreview creates demo sandbox
-- **Output:** Counter demo app (increment/reset buttons, ivory #FAF8F5 bg, "Aureon Counter Demo" heading)
+- **Output:** Counter demo app (increment/reset buttons, ivory #FAF8F5 bg, "Vibeforge Counter Demo" heading)
 - **Quality:** ✅ Beginner-readable. Generated prompt includes platform/style/output selectors.
 - **Gap:** When no provider is configured, the demo uses the deterministic DEMO_COUNTER_HTML template — works offline.
 

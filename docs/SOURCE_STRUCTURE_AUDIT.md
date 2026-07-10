@@ -1,4 +1,4 @@
-# Aureon Desk — Source Structure Audit
+# Vibeforge — Source Structure Audit
 
 > **Generated:** 2026-07-09
 > **Branch:** main
@@ -8,7 +8,7 @@
 
 ## Overview
 
-Aureon Desk is an Electron 43 + React 19 + TypeScript + Tailwind CSS v4 + drizzle-orm + better-sqlite3 desktop application.
+Vibeforge is an Electron 43 + React 19 + TypeScript + Tailwind CSS v4 + drizzle-orm + better-sqlite3 desktop application.
 
 | Layer | Path | Files | Purpose |
 |-------|------|-------|---------|
@@ -147,7 +147,7 @@ Aureon Desk is an Electron 43 + React 19 + TypeScript + Tailwind CSS v4 + drizzl
 | `prompts/TagInput.tsx` | Tag input with autocomplete |
 | `prompts/VariableFiller.tsx` | Variable fill modal for templates |
 | `settings/SettingsComponents.tsx` | SettingsSection, SettingsRow, DangerZone, StatusPill, Toggle re-export |
-| `shared/AureonMark.tsx` | Brand mark SVG/PNG component |
+| `shared/VibeforgeMark.tsx` | Brand mark SVG/PNG component |
 | `shared/Badge.tsx` | Color-coded badge |
 | `shared/BrandLockup.tsx` | Brand lockup (mark + text) |
 | `shared/Button.tsx` | Button with variants |
@@ -256,10 +256,10 @@ All under `tests/e2e/` — see individual files for coverage.
 | Modal vs Drawer vs Popover | ✅ Distinct | Modal = dialog, Drawer = slide-in panel, Popover = anchored dropdown |
 | Select vs SelectMenu | ✅ Distinct | Select = native wrapper, SelectMenu = custom rich select |
 | StatusPill vs Badge | ✅ Distinct | StatusPill = status indicator, Badge = general label |
-| BrandLockup vs AureonMark | ✅ Complementary | BrandLockup uses AureonMark internally |
+| BrandLockup vs VibeforgeMark | ✅ Complementary | BrandLockup uses VibeforgeMark internally |
 | SettingsSection vs Card | ✅ Distinct | SettingsSection is a specialized settings layout, Card is generic |
 
-**No true duplicates found.** Previous duplicates (two Toggle implementations, inline AureonMark SVGs, large duplicate PNGs) were resolved in earlier cleanup sessions.
+**No true duplicates found.** Previous duplicates (two Toggle implementations, inline VibeforgeMark SVGs, large duplicate PNGs) were resolved in earlier cleanup sessions.
 
 ---
 

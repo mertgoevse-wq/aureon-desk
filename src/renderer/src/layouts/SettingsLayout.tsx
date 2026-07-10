@@ -16,6 +16,7 @@ import {
   ScrollText,
   Settings,
   Shield,
+  Smartphone,
   Sparkles,
   Wrench,
   ChevronDown,
@@ -41,6 +42,7 @@ const basicItems: SettingsNavItem[] = [
 ]
 
 const advancedItems: SettingsNavItem[] = [
+  { icon: <Smartphone size={16} />, label: 'Android Companion', description: 'Phone companion', path: '/settings/companion' },
   { icon: <Wrench size={16} />, label: 'Tools & MCP', description: 'Tool registry', path: '/settings/tools' },
   { icon: <Boxes size={16} />, label: 'Connectors', description: 'Third-party links', path: '/settings/connectors' },
   { icon: <FileText size={16} />, label: 'Logs', description: 'Runtime events', path: '/settings/logs' },

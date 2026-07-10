@@ -1,5 +1,5 @@
 /**
- * Aureon Desk Brand Asset Optimizer
+ * Vibeforge Brand Asset Optimizer
  *
  * Reads source originals from assets/brand/source/nano-banana/
  * and creates optimized runtime copies in public/brand/ and assets/brand/.
@@ -52,12 +52,12 @@ async function resizeImage(inputPath, outputPath, targetWidth) {
 }
 
 async function main() {
-  console.log('Aureon Desk — Brand Asset Optimizer\n')
+  console.log('Vibeforge — Brand Asset Optimizer\n')
 
   const sourceFiles = {
-    'aureon-mark-monochrome.png': { basename: 'aureon-mark', targets: [128, 256] },
-    'aureon-logo-light.png': { basename: 'aureon-logo', targets: [512] },
-    'aureon-github-banner.png': { basename: 'aureon-github-banner', targets: [1200] },
+    'Vibeforge-mark-monochrome.png': { basename: 'Vibeforge-mark', targets: [128, 256] },
+    'Vibeforge-logo-light.png': { basename: 'Vibeforge-logo', targets: [512] },
+    'Vibeforge-github-banner.png': { basename: 'Vibeforge-github-banner', targets: [1200] },
   }
 
   let totalBefore = 0
@@ -75,7 +75,7 @@ async function main() {
 
     for (const width of config.targets) {
       let outputDir
-      if (sourceFile === 'aureon-github-banner.png') {
+      if (sourceFile === 'Vibeforge-github-banner.png') {
         outputDir = ASSETS_DIR
       } else {
         outputDir = PUBLIC_DIR
@@ -91,9 +91,9 @@ async function main() {
   }
 
   // Also create icon-sized mark (64px) for in-app use
-  const markSource = join(SOURCE_DIR, 'aureon-mark-monochrome.png')
+  const markSource = join(SOURCE_DIR, 'Vibeforge-mark-monochrome.png')
   if (existsSync(markSource)) {
-    const iconPath = join(PUBLIC_DIR, 'aureon-mark-64.png')
+    const iconPath = join(PUBLIC_DIR, 'Vibeforge-mark-64.png')
     await resizeImage(markSource, iconPath, 64)
     if (existsSync(iconPath)) {
       totalAfter += readFileSync(iconPath).length
@@ -101,9 +101,9 @@ async function main() {
   }
 
   // Create a reasonable-sized app icon in assets for potential use
-  const appIconSource = join(SOURCE_DIR, 'aureon-app-icon.png')
+  const appIconSource = join(SOURCE_DIR, 'Vibeforge-app-icon.png')
   if (existsSync(appIconSource)) {
-    const appIconPath = join(ASSETS_DIR, 'aureon-app-icon-256.png')
+    const appIconPath = join(ASSETS_DIR, 'Vibeforge-app-icon-256.png')
     await resizeImage(appIconSource, appIconPath, 256)
     if (existsSync(appIconPath)) {
       totalAfter += readFileSync(appIconPath).length

@@ -177,7 +177,7 @@ export function VibeCoding(): React.ReactElement {
             What do you want to build?
           </h1>
           <p className="text-[14px] text-[var(--ivory-text-3)] max-w-lg mx-auto leading-relaxed">
-            Describe your idea and Aureon helps you build it — no coding experience needed.
+            Describe your idea and Vibeforge helps you build it — no coding experience needed.
             Click any card below to start.
           </p>
 

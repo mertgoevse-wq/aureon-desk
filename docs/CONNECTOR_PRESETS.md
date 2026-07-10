@@ -4,7 +4,7 @@ Last updated: 2026-07-09
 
 ## Purpose
 
-Aureon Desk now has a safe connector preset catalog for future integrations. Presets define setup fields, auth type, scopes, permissions, risk, supported actions, test behavior, and limitations.
+Vibeforge now has a safe connector preset catalog for future integrations. Presets define setup fields, auth type, scopes, permissions, risk, supported actions, test behavior, and limitations.
 
 The catalog is intentionally conservative: setup drawers preview configuration contracts but do not persist tokens. Live secrets must use encrypted provider storage or a future connector vault.
 
@@ -72,4 +72,4 @@ Settings -> Connectors includes:
 
 - `tests/unit/connector-presets.test.ts`
 - `tests/unit/social-connectors.test.ts`
-- `tests/e2e/18-aureon-studio-vibe-flow.spec.ts`
+- `tests/e2e/18-Vibeforge-studio-vibe-flow.spec.ts`

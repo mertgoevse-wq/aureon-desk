@@ -201,7 +201,7 @@ export interface AuditResult {
 // ---- Agent Prompt Generator ----
 
 export function generateAgentPrompt(report: AuditReport, plan: ImprovementPlan): string {
-  const header = `## Aureon Desk Self-Audit — Improvement Plan
+  const header = `## Vibeforge Self-Audit — Improvement Plan
 
 **Report ID:** ${report.reportId}
 **Generated:** ${report.generatedAt}

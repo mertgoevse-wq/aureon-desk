@@ -1,4 +1,4 @@
-// === Aureon Build Pipeline — Shared Types ===
+// === Vibeforge Build Pipeline — Shared Types ===
 // Bolt-like prompt → code → diff → live preview pipeline
 
 export type BuildMode = 'plan-only' | 'generate' | 'generate-and-preview'

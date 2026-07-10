@@ -1,4 +1,4 @@
-# Aureon Desk — Keyboard Accessibility Audit
+# Vibeforge — Keyboard Accessibility Audit
 
 > **Audit date:** 2026-07-09
 > **Branch:** main
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This audit evaluates Aureon Desk's keyboard accessibility, focus management, and screen reader support. The goal is to ensure the app is fully usable without a mouse and meets WCAG 2.1 AA standards for keyboard operation.
+This audit evaluates Vibeforge's keyboard accessibility, focus management, and screen reader support. The goal is to ensure the app is fully usable without a mouse and meets WCAG 2.1 AA standards for keyboard operation.
 
 ---
 

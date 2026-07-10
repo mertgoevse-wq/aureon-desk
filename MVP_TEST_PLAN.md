@@ -1,4 +1,4 @@
-# MVP Test Plan — Aureon Desk v0.9.0
+# MVP Test Plan — Vibeforge v0.9.0
 
 > **⚠️ HISTORICAL DOCUMENT — Updated 2026-07-08**
 > This is an original test plan from v0.9.0. The app has evolved significantly since then.
@@ -126,7 +126,7 @@
 | # | Feature | Test Steps | Expected Result | Pass/Fail | Notes |
 |---|---------|-----------|-----------------|-----------|-------|
 | 50 | Close & reopen | Close app, relaunch | Previous state restored (chats, settings, keys) | | |
-| 51 | DB location | Check `%APPDATA%/aureon-desk/ivory.db` | Database file exists with correct tables | | |
+| 51 | DB location | Check `%APPDATA%/Vibeforge-desk/ivory.db` | Database file exists with correct tables | | |
 
 ### Security
 

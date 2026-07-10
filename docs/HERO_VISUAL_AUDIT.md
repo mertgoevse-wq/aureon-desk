@@ -1,4 +1,4 @@
-# Aureon Desk — Hero Visual Audit
+# Vibeforge — Hero Visual Audit
 
 > Pre-polish baseline for the hero visual polish pass (v0.9.53).
 

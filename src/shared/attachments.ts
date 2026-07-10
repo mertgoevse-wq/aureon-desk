@@ -1,5 +1,5 @@
 /**
- * Aureon Desk — Safe Drag & Drop Attachments
+ * Vibeforge — Safe Drag & Drop Attachments
  * Shared types and safety constants for the attachment pipeline.
  */
 

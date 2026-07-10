@@ -118,7 +118,7 @@ export function LogsPage(): React.ReactElement {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `aureon-debug-${new Date().toISOString().slice(0, 10)}.json`
+      a.download = `Vibeforge-debug-${new Date().toISOString().slice(0, 10)}.json`
       a.click()
       URL.revokeObjectURL(url)
     } catch (err) { console.error(err) }

@@ -270,7 +270,7 @@ export const SOCIAL_CONNECTOR_PRESETS: SocialConnectorPreset[] = [
     capabilities: ['template message planning', 'draft reply placeholder', 'conversation summary placeholder'],
     limitations: ['Official WhatsApp Business API only.', 'No WhatsApp Web, phone-screen, or personal-account automation.', 'No live messaging in this build.'],
     riskLevel: 'high',
-    setupSteps: ['Use the official WhatsApp Business Platform.', 'Verify business and phone number permissions outside Aureon.', 'Show exact recipient/template/content before any future send action.'],
+    setupSteps: ['Use the official WhatsApp Business Platform.', 'Verify business and phone number permissions outside Vibeforge.', 'Show exact recipient/template/content before any future send action.'],
     testConnectionAction: 'Mock-only Business API readiness check.',
     safeActions: SAFE_SOCIAL_ACTIONS,
     destructiveActions: DESTRUCTIVE_SOCIAL_ACTIONS,

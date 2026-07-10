@@ -116,7 +116,7 @@ export function PromptLibrary(): React.ReactElement {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `aureon-prompts-${new Date().toISOString().slice(0, 10)}.json`
+      a.download = `Vibeforge-prompts-${new Date().toISOString().slice(0, 10)}.json`
       a.click()
       URL.revokeObjectURL(url)
     } catch (err) {

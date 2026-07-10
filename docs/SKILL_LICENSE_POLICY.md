@@ -1,6 +1,6 @@
-# Aureon Desk — Skill License Policy
+# Vibeforge — Skill License Policy
 
-> How Aureon Desk handles licenses for external skill sources and adaptations.
+> How Vibeforge handles licenses for external skill sources and adaptations.
 
 ## Core Principle
 
@@ -21,11 +21,11 @@ Every imported skill is tracked with one of four statuses:
 
 ## Adaptation Policy
 
-When a user clicks "Adapt into Aureon Skill":
-1. An **original prompt** is generated describing the desired Aureon implementation
+When a user clicks "Adapt into Vibeforge Skill":
+1. An **original prompt** is generated describing the desired Vibeforge implementation
 2. The prompt explicitly states: "Do NOT copy content from the external source"
 3. Attribution is included via an "Inspired by" section with source URL
-4. The resulting Aureon skill is **100% original content** — not a derivative work
+4. The resulting Vibeforge skill is **100% original content** — not a derivative work
 
 ## Source Attribution
 
@@ -35,4 +35,4 @@ When a user clicks "Adapt into Aureon Skill":
 
 ## User Responsibility
 
-Users are responsible for verifying license terms before adapting external skills for production use. Aureon Desk provides metadata and tools — the user makes the final decision about adaptation and usage.
+Users are responsible for verifying license terms before adapting external skills for production use. Vibeforge provides metadata and tools — the user makes the final decision about adaptation and usage.

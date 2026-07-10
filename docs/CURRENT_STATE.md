@@ -17,7 +17,7 @@
 - **Error Boundary**: catches React errors gracefully
 
 ### Chat Mode
-- **Empty state**: Aureon Desk greeting with Sparkles icon, "Start a new chat" CTA, 4 feature cards
+- **Empty state**: Vibeforge greeting with Sparkles icon, "Start a new chat" CTA, 4 feature cards
 - **Active chat header**: title, system profile badge, model label (provider · model)
 - **System profile selector**: dropdown with all non-archived system prompts
 - **Model selector**: dropdown with all enabled models (grouped by provider)
@@ -149,13 +149,13 @@ npm run verify:native # Native binary check — PASS
 
 ## Next Prompt to Run
 
-**Prompt 5:** `AUREON DESK DESKTOP SHELL POLISH — WINDOW TOPBAR NAVIGATION PREMIUM FEEL`
+**Prompt 5:** `Vibeforge DESKTOP SHELL POLISH — WINDOW TOPBAR NAVIGATION PREMIUM FEEL`
 
 This prompt should implement:
 - Custom frameless or semi-custom window shell (traffic lights / window controls)
 - Premium topbar with drag region
 - Possibly integrated mode switch + search into a unified topbar
-- Window min/max/close controls with Aureon style
+- Window min/max/close controls with Vibeforge style
 - Verified at 1366×768 and maximized
 
 **Status before Prompt 5:** ✅ Ready — baseline is clean, all tests pass, no secrets, docs updated.

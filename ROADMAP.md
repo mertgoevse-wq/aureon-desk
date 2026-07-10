@@ -1,4 +1,4 @@
-# Roadmap — Aureon Desk
+# Roadmap — Vibeforge
 
 > **⚠️ HISTORICAL DOCUMENT — Updated 2026-07-08**
 > This roadmap was written for v0.9.0. Most v0.9.0 items are now complete.

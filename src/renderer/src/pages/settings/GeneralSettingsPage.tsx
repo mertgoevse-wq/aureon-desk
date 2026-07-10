@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Settings as SettingsIcon, ShieldCheck, Eye, EyeOff } from 'lucide-react'
+import { Settings as SettingsIcon, ShieldCheck, Eye, EyeOff, RotateCcw } from 'lucide-react'
 import { SettingsSection, SettingsRow, Toggle } from '../../components/settings/SettingsComponents'
 import { Select } from '../../components/shared/Select'
 import { useUIStore } from '../../stores/uiStore'
@@ -12,7 +12,7 @@ export function GeneralSettingsPage(): React.ReactElement {
   const [themeMode, setThemeMode] = useState('ivory')
   const [unhideApps, setUnhideApps] = useState(false)
   const [notifications, setNotifications] = useState(true)
-  const { simpleMode, toggleSimpleMode } = useUIStore()
+  const { simpleMode, toggleSimpleMode, resetFirstRun } = useUIStore()
 
   // Load persisted theme on mount
   useEffect(() => {
@@ -123,6 +123,20 @@ export function GeneralSettingsPage(): React.ReactElement {
             <span>Advanced mode is active. All technical settings and developer tools are visible.</span>
           </div>
         )}
+
+        <div className="mt-4 pt-4 border-t border-[var(--ivory-border)]/40">
+          <button
+            type="button"
+            onClick={resetFirstRun}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors cursor-pointer"
+            data-testid="restart-onboarding-btn"
+          >
+            <RotateCcw size={13} /> Restart onboarding
+          </button>
+          <p className="mt-2 text-[10px] text-[var(--ivory-text-3)] leading-relaxed">
+            Re-opens the first-run wizard the next time the app loads. Useful for new team members or after a major update.
+          </p>
+        </div>
       </SettingsSection>
 
       {/* Safety & Notifications */}

@@ -1,9 +1,14 @@
 /**
- * Aureon Desk — Agent Education Center
+ * Vibeforge — Agent Education Center
  *
- * Beginner-friendly explanations for all Aureon agents.
- * Maps to agent IDs in src/main/services/agent-registry.ts.
- * Each agent has a simple explanation, icon, example prompt, and "when to use" guide.
+ * Concept Definitions:
+ *   Agent = Role — a focused AI persona with a specific job.
+ *   Maps to agent IDs used in routing. Each agent has a beginner-friendly
+ *   explanation, icon, example prompt, "when to use" guide, and tier.
+ *
+ * Tier system:
+ *   'beginner' — shown by default in the Beginner tab of Skills & Agents page.
+ *   'advanced' — hidden behind the Advanced tab.
  */
 
 import type { SkillEducation } from './skill-education'
@@ -28,6 +33,8 @@ export interface AgentEducation {
   name: string
   icon: string // Lucide icon name
   category: AgentCategory[]
+  /** 'beginner' = shown in Beginner tab; 'advanced' = shown in Advanced tab only */
+  tier: 'beginner' | 'advanced'
   beginnerExplanation: string
   whenToUse: string
   skillsUsed: string[]
@@ -37,23 +44,13 @@ export interface AgentEducation {
 }
 
 export const AGENT_EDUCATION: AgentEducation[] = [
-  {
-    id: 'general-assistant',
-    name: 'General Assistant',
-    icon: 'MessageSquare',
-    category: ['general'],
-    beginnerExplanation: 'Your friendly helper for everyday questions, explanations, and conversations. Think of it as a knowledgeable friend who can read files and answer questions about anything in your project.',
-    whenToUse: 'When you have a general question, need something explained, or want help with files and folders.',
-    skillsUsed: ['communication', 'explanation'],
-    permissions: ['file_read'],
-    examplePrompt: 'Explain what this project does and how the files are organized.',
-    isDestructive: false,
-  },
+  // ── Beginner Agents ────────────────────────────────────────────────────────
   {
     id: 'code-architect',
     name: 'Builder Agent',
     icon: 'Hammer',
     category: ['builder'],
+    tier: 'beginner',
     beginnerExplanation: 'Your code builder. Designs and writes complete software features — from planning the architecture to writing every file. Like having a senior developer who can build anything.',
     whenToUse: 'When you want to create a new feature, app, component, or API. Tell it what you want to build and it plans + writes the code.',
     skillsUsed: ['code-generation', 'architecture', 'typescript', 'react', 'nodejs'],
@@ -62,10 +59,37 @@ export const AGENT_EDUCATION: AgentEducation[] = [
     isDestructive: false,
   },
   {
+    id: 'live-preview',
+    name: 'LivePreview Engineer',
+    icon: 'Monitor',
+    category: ['preview'],
+    tier: 'beginner',
+    beginnerExplanation: 'Your live preview runner. Starts a local server and shows your app running in real-time. See your changes instantly without switching windows.',
+    whenToUse: 'When you build something and want to see it working in a live browser preview. Also use when preview is blank or broken.',
+    skillsUsed: ['code-generation', 'design'],
+    permissions: ['file_read', 'file_write', 'terminal_write'],
+    examplePrompt: 'Start a live preview of my React app and show it running.',
+    isDestructive: false,
+  },
+  {
+    id: 'ux-product-designer',
+    name: 'UI Designer',
+    icon: 'Palette',
+    category: ['design'],
+    tier: 'beginner',
+    beginnerExplanation: 'Your designer. Creates beautiful interfaces, layouts, and visual styles. Knows the Vibeforge calm ivory design system inside out.',
+    whenToUse: 'When you want to improve the look of your app, design a new page, or create a consistent visual style.',
+    skillsUsed: ['design', 'ui-ux', 'css', 'accessibility'],
+    permissions: ['file_write'],
+    examplePrompt: 'Design a beautiful landing page with the Vibeforge calm ivory theme.',
+    isDestructive: false,
+  },
+  {
     id: 'debugger',
-    name: 'Debugger Agent',
+    name: 'Debugger',
     icon: 'Bug',
     category: ['debugging'],
+    tier: 'beginner',
     beginnerExplanation: 'Your bug hunter. Reads error messages, stack traces, and log files to find and fix problems in your code. Explains what went wrong in plain English.',
     whenToUse: 'When you see an error, crash, or unexpected behavior. Paste the error message and it finds the root cause.',
     skillsUsed: ['debugging', 'code-analysis', 'logging'],
@@ -74,10 +98,52 @@ export const AGENT_EDUCATION: AgentEducation[] = [
     isDestructive: false,
   },
   {
+    id: 'provider-doctor',
+    name: 'Provider Doctor',
+    icon: 'Stethoscope',
+    category: ['providers'],
+    tier: 'beginner',
+    beginnerExplanation: 'Your AI provider troubleshooter. Tests connections to AI providers, diagnoses API key issues, and helps you set up new models.',
+    whenToUse: 'When your AI provider is not working, you get API errors, or you want to add a new provider like OpenRouter or Anthropic.',
+    skillsUsed: ['debugging', 'code-analysis'],
+    permissions: ['network_outbound'],
+    examplePrompt: 'OpenRouter is giving me an error. Help me fix the API connection.',
+    isDestructive: false,
+  },
+  {
+    id: 'documentation-writer',
+    name: 'Docs Writer',
+    icon: 'BookOpen',
+    category: ['docs'],
+    tier: 'beginner',
+    beginnerExplanation: 'Your documentation writer. Creates clear READMEs, API docs, changelogs, and guides. Makes your project understandable for others.',
+    whenToUse: 'When you need documentation — a README, API reference, or user guide. Explains things clearly.',
+    skillsUsed: ['writing', 'explanation', 'markdown'],
+    permissions: ['file_write'],
+    examplePrompt: 'Write a professional README for this project with setup instructions and API docs.',
+    isDestructive: false,
+  },
+  {
+    id: 'general-assistant',
+    name: 'General Assistant',
+    icon: 'MessageSquare',
+    category: ['general'],
+    tier: 'beginner',
+    beginnerExplanation: 'Your friendly helper for everyday questions, explanations, and conversations. Think of it as a knowledgeable friend who can read files and answer questions about anything in your project.',
+    whenToUse: 'When you have a general question, need something explained, or want help with files and folders.',
+    skillsUsed: ['communication', 'explanation'],
+    permissions: ['file_read'],
+    examplePrompt: 'Explain what this project does and how the files are organized.',
+    isDestructive: false,
+  },
+
+  // ── Advanced Agents ────────────────────────────────────────────────────────
+  {
     id: 'refactor-engineer',
     name: 'Cleanup Agent',
     icon: 'Paintbrush',
     category: ['cleanup'],
+    tier: 'advanced',
     beginnerExplanation: 'Your code tidier. Improves code structure without changing what it does. Makes messy code readable, removes dead code, and optimizes performance.',
     whenToUse: 'When your code works but looks messy, or when you want to remove unused files and old code.',
     skillsUsed: ['refactoring', 'code-quality', 'testing'],
@@ -90,6 +156,7 @@ export const AGENT_EDUCATION: AgentEducation[] = [
     name: 'Test Engineer',
     icon: 'TestTube',
     category: ['builder'],
+    tier: 'advanced',
     beginnerExplanation: 'Your quality checker. Writes tests to make sure your code works correctly — unit tests, integration tests, and end-to-end tests.',
     whenToUse: 'When you want to add tests to existing code or write test-first code. Ensures nothing breaks when you make changes.',
     skillsUsed: ['testing', 'code-analysis'],
@@ -98,22 +165,11 @@ export const AGENT_EDUCATION: AgentEducation[] = [
     isDestructive: false,
   },
   {
-    id: 'documentation-writer',
-    name: 'Docs Writer Agent',
-    icon: 'BookOpen',
-    category: ['docs'],
-    beginnerExplanation: 'Your documentation writer. Creates clear READMEs, API docs, changelogs, and guides. Makes your project understandable for others.',
-    whenToUse: 'When you need documentation — a README, API reference, or user guide. Explains things clearly.',
-    skillsUsed: ['writing', 'explanation', 'markdown'],
-    permissions: ['file_write'],
-    examplePrompt: 'Write a professional README for this project with setup instructions and API docs.',
-    isDestructive: false,
-  },
-  {
     id: 'git-assistant',
     name: 'Git Assistant',
     icon: 'GitBranch',
     category: ['builder', 'cleanup'],
+    tier: 'advanced',
     beginnerExplanation: 'Your version control helper. Manages git commits, branches, merges, and pull requests. Helps you keep your code history organized.',
     whenToUse: 'When you need to commit changes, create branches, merge code, or understand git status.',
     skillsUsed: ['git', 'version-control'],
@@ -126,6 +182,7 @@ export const AGENT_EDUCATION: AgentEducation[] = [
     name: 'Prompt Engineer',
     icon: 'Wand',
     category: ['general'],
+    tier: 'advanced',
     beginnerExplanation: 'Your AI instruction crafter. Creates effective system prompts and templates. Helps you get better results from AI providers.',
     whenToUse: 'When you want to create or improve a system prompt, or need help phrasing your request for better AI results.',
     skillsUsed: ['prompt-engineering', 'writing'],
@@ -138,6 +195,7 @@ export const AGENT_EDUCATION: AgentEducation[] = [
     name: 'Research Agent',
     icon: 'Search',
     category: ['research'],
+    tier: 'advanced',
     beginnerExplanation: 'Your researcher. Finds information online, reads documentation, and combines findings into clear summaries with sources.',
     whenToUse: 'When you need to research a topic, understand a new technology, or find answers from multiple sources.',
     skillsUsed: ['research', 'synthesis', 'writing'],
@@ -150,6 +208,7 @@ export const AGENT_EDUCATION: AgentEducation[] = [
     name: 'Data Analyst',
     icon: 'BarChart',
     category: ['research'],
+    tier: 'advanced',
     beginnerExplanation: 'Your data expert. Analyzes datasets, writes database queries, and creates visualizations to help you understand your data.',
     whenToUse: 'When you have data to analyze — CSV files, databases, or JSON — and want insights or charts.',
     skillsUsed: ['data-analysis', 'sql', 'visualization'],
@@ -162,6 +221,7 @@ export const AGENT_EDUCATION: AgentEducation[] = [
     name: 'Security Reviewer',
     icon: 'Shield',
     category: ['security'],
+    tier: 'advanced',
     beginnerExplanation: 'Your security guard. Scans your code for vulnerabilities, checks for exposed secrets, and recommends security improvements.',
     whenToUse: 'When you want to make sure your app is secure — no exposed API keys, safe authentication, and protected data.',
     skillsUsed: ['security', 'code-analysis', 'auditing'],
@@ -170,46 +230,11 @@ export const AGENT_EDUCATION: AgentEducation[] = [
     isDestructive: false,
   },
   {
-    id: 'ux-product-designer',
-    name: 'UI Designer Agent',
-    icon: 'Palette',
-    category: ['design'],
-    beginnerExplanation: 'Your designer. Creates beautiful interfaces, layouts, and visual styles. Knows the Aureon calm ivory design system inside out.',
-    whenToUse: 'When you want to improve the look of your app, design a new page, or create a consistent visual style.',
-    skillsUsed: ['design', 'ui-ux', 'css', 'accessibility'],
-    permissions: ['file_write'],
-    examplePrompt: 'Design a beautiful landing page with the Aureon calm ivory theme.',
-    isDestructive: false,
-  },
-  {
-    id: 'live-preview',
-    name: 'LivePreview Agent',
-    icon: 'Monitor',
-    category: ['preview'],
-    beginnerExplanation: 'Your live preview runner. Starts a local server and shows your app running in real-time. See your changes instantly.',
-    whenToUse: 'When you build something and want to see it working in a live browser preview.',
-    skillsUsed: ['code-generation', 'design'],
-    permissions: ['file_read', 'file_write', 'terminal_write'],
-    examplePrompt: 'Start a live preview of my React app and show it running.',
-    isDestructive: false,
-  },
-  {
-    id: 'provider-doctor',
-    name: 'Provider Doctor',
-    icon: 'Stethoscope',
-    category: ['providers'],
-    beginnerExplanation: 'Your AI provider troubleshooter. Tests connections to AI providers, diagnoses API key issues, and helps you set up new models.',
-    whenToUse: 'When your AI provider is not working, you get API errors, or you want to add a new provider.',
-    skillsUsed: ['debugging', 'code-analysis'],
-    permissions: ['network_outbound'],
-    examplePrompt: 'OpenRouter is giving me an error. Help me fix the API connection.',
-    isDestructive: false,
-  },
-  {
     id: 'social-draft',
     name: 'Social Draft Agent',
     icon: 'Share2',
     category: ['social'],
+    tier: 'advanced',
     beginnerExplanation: 'Your social media helper. Drafts posts, descriptions, and content for social platforms. Creates content that fits each platform.',
     whenToUse: 'When you need to create social media content — posts, video descriptions, or announcements.',
     skillsUsed: ['writing', 'prompt-engineering'],
@@ -222,6 +247,7 @@ export const AGENT_EDUCATION: AgentEducation[] = [
     name: 'Tutorial Agent',
     icon: 'GraduationCap',
     category: ['tutorial'],
+    tier: 'advanced',
     beginnerExplanation: 'Your teacher. Creates step-by-step tutorials, guides, and learning materials. Breaks down complex topics into simple lessons.',
     whenToUse: 'When you want to learn something new or create educational content for others.',
     skillsUsed: ['writing', 'explanation', 'markdown'],

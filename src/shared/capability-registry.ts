@@ -1,4 +1,4 @@
-// === Aureon Studio Core — Capability Registry ===
+// === Vibeforge Studio Core — Capability Registry ===
 // Defines every capability the system can offer, its requirements, and risk profile.
 
 import type { CapabilityDefinition, CapabilityId, RiskTier, TaskCategory } from './types/studio-core'
@@ -205,7 +205,7 @@ export const CAPABILITY_REGISTRY: Record<CapabilityId, CapabilityDefinition> = {
   live_preview: {
     id: 'live_preview',
     displayName: 'Live Preview',
-    description: 'Preview web apps and HTML content in real-time within Aureon Desk.',
+    description: 'Preview web apps and HTML content in real-time within Vibeforge.',
     icon: 'Play',
     requiredConnector: null,
     riskTier: 'safe',

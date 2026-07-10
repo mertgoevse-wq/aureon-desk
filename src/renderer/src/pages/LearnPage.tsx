@@ -1,5 +1,5 @@
 /**
- * Aureon Desk — Education Center (Learn Page)
+ * Vibeforge — Education Center (Learn Page)
  *
  * Beginner-friendly explanations of Agents, Skills, Tools, MCP, and Prompt Profiles.
  * Includes search, category filters, agent/skill cards, and auto-selection exploration.
@@ -139,7 +139,7 @@ export function LearnPage(): React.ReactElement {
           Agent & Skill Education Center
         </h2>
         <p className="text-xs text-[var(--ivory-text-3)] mt-0.5">
-          Learn how Aureon uses Agents, Skills, Tools, MCP, and Prompt Profiles to help you build.
+          Learn how Vibeforge uses Agents, Skills, Tools, MCP, and Prompt Profiles to help you build.
         </p>
       </div>
 
@@ -301,7 +301,7 @@ function ConceptsTab(): React.ReactElement {
     {
       title: 'What is an Agent?',
       icon: <Bot size={20} className="text-[var(--ivory-accent)]" />,
-      description: 'An Agent is like a role or team member. Each agent specializes in a type of work — building code, debugging errors, designing UIs, or writing docs. When you ask Aureon to do something, it picks the right agent for the job.',
+      description: 'An Agent is like a role or team member. Each agent specializes in a type of work — building code, debugging errors, designing UIs, or writing docs. When you ask Vibeforge to do something, it picks the right agent for the job.',
       example: 'Builder Agent = your developer. Debugger Agent = your bug fixer. UI Designer Agent = your visual designer.',
     },
     {
@@ -319,8 +319,8 @@ function ConceptsTab(): React.ReactElement {
     {
       title: 'What is MCP?',
       icon: <Server size={20} className="text-[var(--ivory-accent)]" />,
-      description: 'MCP (Model Context Protocol) is a way to connect Aureon to external tools and services. It is like a universal adapter — it lets Aureon talk to databases, file systems, and other apps using a standard protocol.',
-      example: 'An MCP server for your file system lets Aureon read and write files. An MCP server for a database lets Aureon run SQL queries.',
+      description: 'MCP (Model Context Protocol) is a way to connect Vibeforge to external tools and services. It is like a universal adapter — it lets Vibeforge talk to databases, file systems, and other apps using a standard protocol.',
+      example: 'An MCP server for your file system lets Vibeforge read and write files. An MCP server for a database lets Vibeforge run SQL queries.',
     },
     {
       title: 'What is a Prompt Profile?',
@@ -329,9 +329,9 @@ function ConceptsTab(): React.ReactElement {
       example: '"Expert developer" profile = detailed code with explanations. "Creative writer" profile = engaging prose. "Security auditor" profile = thorough vulnerability checks.',
     },
     {
-      title: 'When does Aureon choose which one?',
+      title: 'When does Vibeforge choose which one?',
       icon: <Lightbulb size={20} className="text-[var(--ivory-accent)]" />,
-      description: 'When you type a prompt, Aureon analyzes it to understand what you want (intent), then automatically picks the right Agent, Skills, and Tools. It shows you what was selected and why. You can always change the selection.',
+      description: 'When you type a prompt, Vibeforge analyzes it to understand what you want (intent), then automatically picks the right Agent, Skills, and Tools. It shows you what was selected and why. You can always change the selection.',
       example: 'Typing "Create a todo app" → intent=coding → Agent=Builder → Skills=create-todo-app, generate-file-operations → Tools=file_read, file_write.',
     },
     {
@@ -519,7 +519,7 @@ function AutoSelectTab(): React.ReactElement {
   return (
     <div className="max-w-2xl" data-testid="auto-select-tab">
       <p className="text-[12px] text-[var(--ivory-text-2)] leading-relaxed mb-4">
-        Aureon automatically selects the best Agent and Skill for your prompt. Type an example below or click one of the suggestions to see how auto-selection works.
+        Vibeforge automatically selects the best Agent and Skill for your prompt. Type an example below or click one of the suggestions to see how auto-selection works.
       </p>
 
       {/* Example prompt input */}
@@ -528,7 +528,7 @@ function AutoSelectTab(): React.ReactElement {
           value={examplePrompt}
           onChange={e => { setExamplePrompt(e.target.value); setShowResult(true) }}
           className="w-full p-3 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] text-[12px] text-[var(--ivory-text)] placeholder-[var(--ivory-text-3)]/60 focus:outline-none focus:border-[var(--ivory-accent)]/40 resize-none h-20"
-          placeholder="Type anything — Aureon will show which agent and skill it picks..."
+          placeholder="Type anything — Vibeforge will show which agent and skill it picks..."
         />
       </div>
 
@@ -584,7 +584,7 @@ function AutoSelectTab(): React.ReactElement {
             <div className="flex gap-2 items-start">
               <Lightbulb size={13} className="text-amber-600/70 shrink-0 mt-0.5" />
               <div className="text-[10px] leading-relaxed text-amber-800/80">
-                <span className="font-semibold">Auto-selection logic:</span> Aureon analyzed your prompt for keywords, matched them to the "{simulatedRoute.agent.name}" agent, and selected the "{simulatedRoute.skill.name}" skill. {simulatedRoute.agent.isDestructive ? '⚠️ This agent has destructive capabilities — confirm before proceeding.' : '✅ Safe to run — no destructive operations.'}
+                <span className="font-semibold">Auto-selection logic:</span> Vibeforge analyzed your prompt for keywords, matched them to the "{simulatedRoute.agent.name}" agent, and selected the "{simulatedRoute.skill.name}" skill. {simulatedRoute.agent.isDestructive ? '⚠️ This agent has destructive capabilities — confirm before proceeding.' : '✅ Safe to run — no destructive operations.'}
               </div>
             </div>
           </div>

@@ -1,9 +1,9 @@
 /**
- * Aureon Desk — External Skill Source Catalog
+ * Vibeforge — External Skill Source Catalog
  *
  * Types for importing and tracking metadata from external skill repositories
  * like VoltAgent/awesome-agent-skills. Skills are imported as metadata only —
- * original source content is NEVER copied. Adaptations create original Aureon skills.
+ * original source content is NEVER copied. Adaptations create original Vibeforge skills.
  */
 
 // ---- Enums ----
@@ -82,7 +82,7 @@ export interface ExternalSkillEntry {
   riskLevel: SkillRiskLevel
   /** Import status */
   importStatus: ImportStatus
-  /** Whether and how this skill has been adapted into an Aureon skill */
+  /** Whether and how this skill has been adapted into an Vibeforge skill */
   adaptationStatus: AdaptationStatus
   /** Free-form notes about the skill */
   notes?: string

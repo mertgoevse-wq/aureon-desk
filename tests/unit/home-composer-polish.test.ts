@@ -111,9 +111,9 @@ describe('Studio Primary CTA — Fallback Prompt', () => {
 })
 
 describe('Hero Landing Page', () => {
-  it('should have hero heading text "Build calmly with Aureon"', () => {
-    const heading = 'Build calmly with Aureon'
-    expect(heading).toContain('Aureon')
+  it('should have hero heading text "Build calmly with Vibeforge"', () => {
+    const heading = 'Build calmly with Vibeforge'
+    expect(heading).toContain('Vibeforge')
     expect(heading).toContain('calmly')
   })
 

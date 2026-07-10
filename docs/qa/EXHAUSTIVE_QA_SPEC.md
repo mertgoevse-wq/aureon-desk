@@ -1,4 +1,4 @@
-# Aureon Desk — Exhaustive QA Testing Spec
+# Vibeforge — Exhaustive QA Testing Spec
 
 > **Created:** 2026-07-09
 > **Purpose:** Comprehensive manual + automated QA pass covering every feature, every clickable element, every edge case, and real AI code generation with multiple providers. Fix everything found.
@@ -126,9 +126,9 @@ npm run dev                         # App launches visibly
 | # | Check | How to test | Expected result |
 |---|-------|-------------|-----------------|
 | A.1 | App launches without crash | `npm run dev` → Electron window appears | Window visible, no white screen, no crash dialog |
-| A.2 | Window title "Aureon Desk" | Check title bar text | Displays "Aureon Desk" |
+| A.2 | Window title "Vibeforge" | Check title bar text | Displays "Vibeforge" |
 | A.3 | Native window controls work | Click minimize, maximize, restore, close | Each control responds correctly |
-| A.4 | Taskbar icon shows correctly | Check Windows taskbar | Aureon Desk icon visible (not generic Electron icon) |
+| A.4 | Taskbar icon shows correctly | Check Windows taskbar | Vibeforge icon visible (not generic Electron icon) |
 | A.5 | Window resize without breaking layout | Drag window edges to various sizes | Layout adapts, no elements cut off or overlapping |
 | A.6 | 1366×768 — no overlapping panels | Resize to 1366×768, navigate all pages | No horizontal scroll, no overlapping elements |
 | A.7 | 1920×1080 — layout uses space well | Resize to 1920×1080, navigate all pages | Content centered, not stretched awkwardly |
@@ -141,11 +141,11 @@ npm run dev                         # App launches visibly
 
 | # | Check | How to test | Expected result |
 |---|-------|-------------|-----------------|
-| B.1 | Sidebar logo renders (SVG, no blur) | Look at sidebar top | AureonMark SVG crisp, no pixelation |
+| B.1 | Sidebar logo renders (SVG, no blur) | Look at sidebar top | VibeforgeMark SVG crisp, no pixelation |
 | B.2 | No fake vendor logos in Connectors page | Settings → Connectors | All icons are neutral Lucide icons (no brand logos) |
-| B.3 | Studio hero icon renders correctly | Navigate to Studio | AureonMark visible at top of hero |
+| B.3 | Studio hero icon renders correctly | Navigate to Studio | VibeforgeMark visible at top of hero |
 | B.4 | No broken image icons anywhere | Quick scan all pages | No [broken image] placeholders |
-| B.5 | BrandLockup shows "Aureon Desk" text | Check sidebar header | Text "Aureon Desk" visible next to mark |
+| B.5 | BrandLockup shows "Vibeforge" text | Check sidebar header | Text "Vibeforge" visible next to mark |
 
 ---
 
@@ -179,7 +179,7 @@ npm run dev                         # App launches visibly
 | D.3 | Composer accepts text input | Type into composer | Text appears, no lag |
 | D.4 | Send button visible and clickable | Look for send button | Button visible, enabled when text present |
 | D.5 | Recent chats list shows (if any) | Create a chat then go home | Recent chats appear below composer |
-| D.6 | No branding mark in greeting | Check greeting area | No AureonMark in greeting (removed in cleanup) |
+| D.6 | No branding mark in greeting | Check greeting area | No VibeforgeMark in greeting (removed in cleanup) |
 | D.7 | No "Try asking" suggestion box | Check below composer | No suggestion box (removed in cleanup) |
 
 ---
@@ -215,8 +215,8 @@ npm run dev                         # App launches visibly
 | # | Check | How to test | Expected result |
 |---|-------|-------------|-----------------|
 | F.1 | Studio page loads at / | Navigate to Studio | Page renders with hero, composer, cards |
-| F.2 | Hero mark renders | Look at top of page | AureonMark visible, properly sized |
-| F.3 | Hero heading and subtitle | Read hero text | "Build calmly with Aureon" + subtitle |
+| F.2 | Hero mark renders | Look at top of page | VibeforgeMark visible, properly sized |
+| F.3 | Hero heading and subtitle | Read hero text | "Build calmly with Vibeforge" + subtitle |
 | F.4 | Hero composer accepts text | Type into central composer | Text appears, placeholder disappears |
 | F.5 | Suggestion chips populate composer | Click "A pomodoro timer" chip | Composer fills with "A pomodoro timer" |
 | F.6 | All 4 primary cards visible | Look at grid below composer | Build, Code, Create, Connect cards |
@@ -502,9 +502,9 @@ npm run dev                         # App launches visibly
 | # | Check | How to test | Expected result |
 |---|-------|-------------|-----------------|
 | S.1 | Unit tests all pass | `npm test` | All 660+ tests pass |
-| S.2 | E2E smoke test passes | `npx playwright test tests/e2e/01-aureon-smoke.spec.ts` | All tests pass |
-| S.3 | E2E studio-vibe-flow passes | `npx playwright test tests/e2e/18-aureon-studio-vibe-flow.spec.ts` | All 12 tests pass |
-| S.4 | E2E pipeline test passes | `npx playwright test tests/e2e/19-aureon-studio-pipeline-e2e.spec.ts` | All 6 tests pass |
+| S.2 | E2E smoke test passes | `npx playwright test tests/e2e/01-Vibeforge-smoke.spec.ts` | All tests pass |
+| S.3 | E2E studio-vibe-flow passes | `npx playwright test tests/e2e/18-Vibeforge-studio-vibe-flow.spec.ts` | All 12 tests pass |
+| S.4 | E2E pipeline test passes | `npx playwright test tests/e2e/19-Vibeforge-studio-pipeline-e2e.spec.ts` | All 6 tests pass |
 | S.5 | Full E2E suite | `npx playwright test` | No new failures beyond known flakes |
 | S.6 | No regression in unit tests | `npm test` after all fixes | Same or higher test count, all pass |
 
@@ -545,7 +545,7 @@ When a bug is found during testing:
 Report will be created at `docs/qa/HUMAN_QA_REPORT_v2.md` with this structure:
 
 ```
-# Aureon Desk — Human QA Report v2
+# Vibeforge — Human QA Report v2
 
 ## Session Info
 - Date

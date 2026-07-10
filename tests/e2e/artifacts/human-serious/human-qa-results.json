@@ -1,0 +1,204 @@
+{
+  "commit": "0212078",
+  "branch": "main",
+  "startedAt": "2026-07-10T17:41:37.420Z",
+  "endedAt": "2026-07-10T17:44:38.539Z",
+  "durationMs": 181119,
+  "environment": {
+    "slowMo": 800,
+    "keepOpen": true,
+    "pageErrors": 0,
+    "consoleErrors": 3,
+    "consoleErrorSamples": [
+      "Error: Error invoking remote method 'tool:list': SqliteError: no such column: \"trust_level\" - should this be a string literal in single-quotes?",
+      "Error: Error invoking remote method 'tool:list': SqliteError: no such column: \"trust_level\" - should this be a string literal in single-quotes?",
+      "Error: Error invoking remote method 'tool:list': SqliteError: no such column: \"trust_level\" - should this be a string literal in single-quotes?"
+    ],
+    "pageErrorSamples": []
+  },
+  "flows": [
+    {
+      "name": "Startup",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/00_startup.png"
+      ],
+      "durationMs": 0,
+      "startedAt": "2026-07-10T17:41:43.397Z",
+      "endedAt": "2026-07-10T17:41:43.399Z",
+      "pageErrorDelta": 0
+    },
+    {
+      "name": "UI sweep — sidebar + major pages",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/01_studio.png",
+        "screenshots/01_chat.png",
+        "screenshots/01_cowork.png",
+        "screenshots/01_projects.png",
+        "screenshots/01_prompts.png"
+      ],
+      "durationMs": 5333,
+      "startedAt": "2026-07-10T17:41:43.399Z",
+      "endedAt": "2026-07-10T17:41:48.732Z",
+      "pageErrorDelta": 0,
+      "notes": "sidebar items clicked + major pages rendered"
+    },
+    {
+      "name": "Studio home — hero + composer visible",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/02_studio_home.png"
+      ],
+      "durationMs": 662,
+      "startedAt": "2026-07-10T17:41:48.732Z",
+      "endedAt": "2026-07-10T17:41:49.394Z",
+      "pageErrorDelta": 0,
+      "notes": "hero + composer + Start building all visible"
+    },
+    {
+      "name": "Studio Build App — counter app + LivePreview",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/03_studio_prompt_typed.png",
+        "screenshots/03_studio_livepreview_loading.png",
+        "screenshots/03_studio_livepreview_pipeline.png",
+        "screenshots/03_studio_livepreview_demo_badge.png",
+        "screenshots/03_studio_livepreview_preview_tab.png",
+        "screenshots/03_counter_increment_clicked.png",
+        "screenshots/03_counter_reset_clicked.png"
+      ],
+      "durationMs": 5485,
+      "startedAt": "2026-07-10T17:41:49.395Z",
+      "endedAt": "2026-07-10T17:41:54.880Z",
+      "pageErrorDelta": 0,
+      "prompt": "Build a tiny counter app with ivory Claude-like theme, increment button, reset button, and live preview.",
+      "responseSummary": "pipelineVisible=true, demoBadge=true, iframeVisible=true, iframeInteraction=increment+reset clicked",
+      "qualityScore": 70,
+      "notes": "pipeline panel: true; demo badge: true; iframe: true; increment+reset clicked"
+    },
+    {
+      "name": "Vibe Coding — Guided Builder + prompt generation",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/04_vibe_coding_home.png",
+        "screenshots/04_vibe_guided_builder.png",
+        "screenshots/04_vibe_step_1.png",
+        "screenshots/04_vibe_step_2.png",
+        "screenshots/04_vibe_step_3.png",
+        "screenshots/04_vibe_prompt_built.png",
+        "screenshots/04_vibe_code_mode.png"
+      ],
+      "durationMs": 5370,
+      "startedAt": "2026-07-10T17:41:54.880Z",
+      "endedAt": "2026-07-10T17:42:00.250Z",
+      "pageErrorDelta": 0,
+      "responseSummary": "steps=3, promptBuilt=true",
+      "qualityScore": 80,
+      "notes": "guided steps completed=3, promptBuilt=true, routed to file:///C:/Users/mertg/Desktop/code/out/renderer/index.html#/preview"
+    },
+    {
+      "name": "Chat — real prompt response",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/05_chat_loaded.png",
+        "screenshots/05_chat_typed.png",
+        "screenshots/05_chat_after_send.png"
+      ],
+      "durationMs": 151612,
+      "startedAt": "2026-07-10T17:42:00.250Z",
+      "endedAt": "2026-07-10T17:44:31.862Z",
+      "pageErrorDelta": 0,
+      "prompt": "Explain what Vibeforge can do in 5 bullet points and suggest one thing I should build first.",
+      "responseSummary": "bullets=0 words=0 providerMissingCopy=false hasHeading=false hasList=false",
+      "qualityScore": 30,
+      "notes": "chat response observed via .prose assistant body"
+    },
+    {
+      "name": "Studio Build App — landing page",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/06_landing_typed.png",
+        "screenshots/06_landing_livepreview.png"
+      ],
+      "durationMs": 1788,
+      "startedAt": "2026-07-10T17:44:31.863Z",
+      "endedAt": "2026-07-10T17:44:33.651Z",
+      "pageErrorDelta": 0,
+      "prompt": "Build a premium hero landing page for Vibeforge with calm ivory background, graphite text, bronze accent, a central composer, 4 feature cards, and no neon.",
+      "responseSummary": "demoBadge=true",
+      "qualityScore": 70,
+      "notes": "landing page prompt — checked for Local Demo badge"
+    },
+    {
+      "name": "LivePreview — follow-up suggestion + repair",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/07_livepreview_status.png",
+        "screenshots/07_followup_suggestions.png",
+        "screenshots/07_code_tab.png"
+      ],
+      "durationMs": 1634,
+      "startedAt": "2026-07-10T17:44:33.651Z",
+      "endedAt": "2026-07-10T17:44:35.285Z",
+      "pageErrorDelta": 0,
+      "responseSummary": "followUpSuggestions=false",
+      "qualityScore": 40,
+      "notes": "followUpSuggestions=false"
+    },
+    {
+      "name": "Settings — providers + fake key",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/08_settings_providers.png"
+      ],
+      "durationMs": 599,
+      "startedAt": "2026-07-10T17:44:35.286Z",
+      "endedAt": "2026-07-10T17:44:35.885Z",
+      "pageErrorDelta": 0,
+      "qualityScore": 30,
+      "notes": "key input not found via placeholder"
+    },
+    {
+      "name": "Settings — Tools + MCP safety",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/09_tools_home.png",
+        "screenshots/09_tools_add_mcp_modal.png"
+      ],
+      "durationMs": 1928,
+      "startedAt": "2026-07-10T17:44:35.885Z",
+      "endedAt": "2026-07-10T17:44:37.813Z",
+      "pageErrorDelta": 0,
+      "qualityScore": 80,
+      "notes": "modal opened=true, safety copy=true"
+    },
+    {
+      "name": "Maximize window — 1920x1080",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/10_maximized.png"
+      ],
+      "durationMs": 628,
+      "startedAt": "2026-07-10T17:44:37.813Z",
+      "endedAt": "2026-07-10T17:44:38.441Z",
+      "pageErrorDelta": 0,
+      "notes": "window set to 1920x1080"
+    },
+    {
+      "name": "Final summary",
+      "status": "pass",
+      "screenshots": [
+        "screenshots/99_final.png"
+      ],
+      "durationMs": 0,
+      "startedAt": "2026-07-10T17:44:38.539Z",
+      "endedAt": "2026-07-10T17:44:38.539Z",
+      "pageErrorDelta": 0
+    }
+  ],
+  "criticalIssues": [],
+  "majorIssues": [],
+  "fixedIssues": [],
+  "remainingBlockers": []
+}

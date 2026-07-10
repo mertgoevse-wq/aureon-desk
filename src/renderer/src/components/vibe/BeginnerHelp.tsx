@@ -11,7 +11,7 @@ const HELP_BLOCKS: HelpBlock[] = [
   {
     icon: <KeyRound size={15} />,
     question: 'What is a provider?',
-    answer: 'A provider is the company or service that runs the AI model. Examples: OpenAI (ChatGPT), Anthropic (Claude), Google (Gemini), or OpenRouter (access to many models). You need an API key from a provider to use Aureon Desk.'
+    answer: 'A provider is the company or service that runs the AI model. Examples: OpenAI (ChatGPT), Anthropic (Claude), Google (Gemini), or OpenRouter (access to many models). You need an API key from a provider to use Vibeforge.'
   },
   {
     icon: <Cpu size={15} />,
@@ -21,37 +21,37 @@ const HELP_BLOCKS: HelpBlock[] = [
   {
     icon: <FolderOpen size={15} />,
     question: 'What is a project?',
-    answer: 'A project is a folder on your computer that contains your code. Aureon can read files from your project to understand context and help you better. Your files are only sent to the AI when you explicitly use them in a chat.'
+    answer: 'A project is a folder on your computer that contains your code. Vibeforge can read files from your project to understand context and help you better. Your files are only sent to the AI when you explicitly use them in a chat.'
   },
   {
     icon: <Monitor size={15} />,
     question: 'What is LivePreview?',
-    answer: 'LivePreview lets you see your app running in real time inside Aureon Desk. You can build HTML pages, React apps, or run the Coding Demo. It runs on your computer only — not accessible from the internet.'
+    answer: 'LivePreview lets you see your app running in real time inside Vibeforge. You can build HTML pages, React apps, or run the Coding Demo. It runs on your computer only — not accessible from the internet.'
   },
   {
     icon: <ShieldCheck size={15} />,
     question: 'What is a safe local folder?',
-    answer: 'A safe local folder is a project folder on your computer that Aureon can read from. Sensitive files like .env (API keys), .git folders, and node_modules are automatically excluded. Never put passwords or real API keys in project files — use the secure credential vault in Settings instead.'
+    answer: 'A safe local folder is a project folder on your computer that Vibeforge can read from. Sensitive files like .env (API keys), .git folders, and node_modules are automatically excluded. Never put passwords or real API keys in project files — use the secure credential vault in Settings instead.'
   },
   {
     icon: <Shield size={15} />,
     question: 'What should I never paste into chat?',
-    answer: 'Never paste real passwords, API keys, credit card numbers, or private credentials into chat. These are sent to the AI provider. Use the secure credential vault in Settings > Providers for API keys. Aureon automatically redacts detected secrets, but you should still be careful.'
+    answer: 'Never paste real passwords, API keys, credit card numbers, or private credentials into chat. These are sent to the AI provider. Use the secure credential vault in Settings > Providers for API keys. Vibeforge automatically redacts detected secrets, but you should still be careful.'
   },
   {
     icon: <CheckCircle size={15} />,
     question: 'How do I test before pushing to GitHub?',
-    answer: 'Before pushing code: (1) run typecheck to catch errors, (2) run tests to verify nothing is broken, (3) run build to make sure the app compiles, (4) check for secrets with git grep. Aureon can help you with all of these — just ask!'
+    answer: 'Before pushing code: (1) run typecheck to catch errors, (2) run tests to verify nothing is broken, (3) run build to make sure the app compiles, (4) check for secrets with git grep. Vibeforge can help you with all of these — just ask!'
   },
   {
     icon: <Package size={15} />,
     question: 'What does "build" mean?',
-    answer: 'Building turns your code into a runnable app. For web apps, it means creating the HTML/CSS/JS files. For desktop apps, it means packaging them into an installer (.exe). Aureon can help generate and preview code instantly.'
+    answer: 'Building turns your code into a runnable app. For web apps, it means creating the HTML/CSS/JS files. For desktop apps, it means packaging them into an installer (.exe). Vibeforge can help generate and preview code instantly.'
   },
   {
     icon: <ShieldCheck size={15} />,
     question: 'Is it safe to send my code to AI?',
-    answer: 'Your chat text and any files you reference are sent to the AI provider. Aureon automatically excludes sensitive files like .env (API keys), .git folders, and node_modules. Never paste passwords or real API keys into chat. Use the secure credential vault in Settings instead.'
+    answer: 'Your chat text and any files you reference are sent to the AI provider. Vibeforge automatically excludes sensitive files like .env (API keys), .git folders, and node_modules. Never paste passwords or real API keys into chat. Use the secure credential vault in Settings instead.'
   }
 ]
 

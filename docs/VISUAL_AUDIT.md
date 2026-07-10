@@ -1,4 +1,4 @@
-# Aureon Desk — Visual Audit
+# Vibeforge — Visual Audit
 
 > **Latest audit:** 2026-07-09 — Final UI Beauty & Declutter Pass
 > **Previous audit:** 2026-07-09 — Settings, Providers & MCP Polish
@@ -9,8 +9,8 @@
 ## Hero Landing Page & Calm Theme Audit (2026-07-09)
 
 ### Hero Landing Page — NEW ✅
-- AureonMark (56px) with scale-in animation as hero mark
-- Heading "Build calmly with Aureon" in serif display font, centered
+- VibeforgeMark (56px) with scale-in animation as hero mark
+- Heading "Build calmly with Vibeforge" in serif display font, centered
 - Subtitle: "A guided AI workspace for chat, code, projects, tools, and live preview."
 - Central composer with Start building + Open chat CTAs
 - 4 compact suggestion pills (pomodoro, markdown editor, weather, contact form)
@@ -180,7 +180,7 @@
 
 #### Minor
 8. **Brand assets duplicated**: Same mark/logo in 3 locations (`assets/brand/`, `public/brand/`, `assets/brand/nano-banana/`).
-9. **Inline SVG in AureonMark**: SVG paths hardcoded in component — can't swap brand image without code change.
+9. **Inline SVG in VibeforgeMark**: SVG paths hardcoded in component — can't swap brand image without code change.
 10. **ChatWorkspace monolithic**: 500+ lines — home page + active chat logic in one component.
 
 ### Duplicate/Dead-Code Suspects
@@ -196,9 +196,9 @@
 ### Asset Size Issues
 | File | Size | Concern |
 |------|------|---------|
-| `aureon-logo.png` (Nano Banana) | ~4.8 MB | Too large for renderer use |
-| `aureon-dark-logo-presentation.png` | ~4.8 MB | Unused — dead weight |
-| `aureon-mark-monochrome.png` | TBD | Used by AureonMark PNG variant |
+| `Vibeforge-logo.png` (Nano Banana) | ~4.8 MB | Too large for renderer use |
+| `Vibeforge-dark-logo-presentation.png` | ~4.8 MB | Unused — dead weight |
+| `Vibeforge-mark-monochrome.png` | TBD | Used by VibeforgeMark PNG variant |
 
 ### 14-Step Implementation Order
 
@@ -228,7 +228,7 @@
 
 ### Code-Level Issues Identified
 
-1. **Aureon Logo Too Small**: The inline SVG Aureon "A" mark is rendered at 24px in a 48px container in the sidebar header. When the sidebar is collapsed, it's only 14px in a 24px container. The logo feels weak and HTML-like rather than a premium desktop brand mark.
+1. **Vibeforge Logo Too Small**: The inline SVG Vibeforge "A" mark is rendered at 24px in a 48px container in the sidebar header. When the sidebar is collapsed, it's only 14px in a 24px container. The logo feels weak and HTML-like rather than a premium desktop brand mark.
    - *Files:* `Sidebar.tsx` (lines with SVG), `AppShell.tsx` (collapsed state SVG)
 
 2. **Sidebar Too Wide**: Default width is 280px, making it visually dominant. Most premium desktop apps use 220-240px sidebars.
@@ -245,11 +245,11 @@
 5. **Provider Page Button Layout**: The provider cards in `ProvidersPage.tsx` have multiple action buttons (Test, Toggle, Delete, Save Key) that may overlap at narrow widths due to fixed positioning and flex-wrap gaps.
    - *File:* ProvidersPage.tsx
 
-6. **Inline SVG Duplication**: The Aureon "A" mark SVG is repeated inline in at least 3 files:
+6. **Inline SVG Duplication**: The Vibeforge "A" mark SVG is repeated inline in at least 3 files:
    - `Sidebar.tsx` (sidebar header)
    - `AppShell.tsx` (collapsed sidebar state)
    - `ChatWorkspace.tsx` (home page greeting)
-   - Should be extracted into a shared `AureonMark` component.
+   - Should be extracted into a shared `VibeforgeMark` component.
 
 7. **Native Checkbox in CoworkPage**: The permissions section uses raw `<input type="checkbox">` instead of the custom `Toggle` component, creating visual inconsistency with the rest of the app.
 
@@ -260,11 +260,11 @@
 5 Nano Banana brand assets found untracked at `assets/brand/source/nano-banana/`:
 | File | Description |
 |------|-------------|
-| `aureon-app-icon.png` | App icon |
-| `aureon-dark-logo-presentation.png` | Dark logo presentation |
-| `aureon-github-banner.png` | GitHub banner |
-| `aureon-logo-light.png` | Light logo |
-| `aureon-mark-monochrome.png` | Monochrome mark |
+| `Vibeforge-app-icon.png` | App icon |
+| `Vibeforge-dark-logo-presentation.png` | Dark logo presentation |
+| `Vibeforge-github-banner.png` | GitHub banner |
+| `Vibeforge-logo-light.png` | Light logo |
+| `Vibeforge-mark-monochrome.png` | Monochrome mark |
 
 ---
 
@@ -280,9 +280,9 @@
 |-----------|--------|-------|
 | App launches without crash | ✅ PASS | Verified by last E2E run (84/84) |
 | No raw React error screen | ✅ PASS | ErrorBoundary wraps entire app |
-| Title "Aureon Desk" shown | ✅ PASS | In sidebar header (h1) |
+| Title "Vibeforge" shown | ✅ PASS | In sidebar header (h1) |
 | Centered greeting | ✅ PASS | ChatPanel shows time-aware greeting, centered layout |
-| Sparkles icon + "Aureon Desk" h1 | ✅ PASS | ChatWorkspace empty state |
+| Sparkles icon + "Vibeforge" h1 | ✅ PASS | ChatWorkspace empty state |
 | "Start a new chat" CTA button | ✅ PASS | data-testid="empty-home-new-chat" |
 | 4 feature cards below | ✅ PASS | Multi-provider, Profiles, Projects, Tools |
 | Premium spacing / ivory feel | ✅ PASS | tokens.css warm ivory palette confirmed |
@@ -301,7 +301,7 @@
 | Criterion | Result | Notes |
 |-----------|--------|-------|
 | Strong left sidebar | ✅ PASS | 280px default, resizable, collapsible |
-| Logo / brand area | ✅ PASS | SVG Aureon "A" icon + "Aureon Desk" title |
+| Logo / brand area | ✅ PASS | SVG Vibeforge "A" icon + "Vibeforge" title |
 | New Chat button | ✅ PASS | Primary CTA, accent-light background |
 | New Task icon | ✅ PASS | Archive icon, 40×40 secondary button |
 | Search / command palette trigger | ✅ PASS | "Search chats, prompts, commands" row |
@@ -511,7 +511,7 @@
 
 | Criterion | Result | Notes |
 |-----------|--------|-------|
-| 1366×768 no horizontal overflow | ✅ PASS | Verified by E2E (12-aureon-workspace-ui.spec.ts) |
+| 1366×768 no horizontal overflow | ✅ PASS | Verified by E2E (12-Vibeforge-workspace-ui.spec.ts) |
 | Maximized window | ✅ PASS | flex layout scales |
 | No overlapping buttons | ✅ PASS | Based on test coverage |
 | No raw React error screen | ✅ PASS | ErrorBoundary + tests |

@@ -1,4 +1,4 @@
-# Aureon Desk — Private Beta Release Notes
+# Vibeforge — Private Beta Release Notes
 
 **Version:** 0.9.78  
 **Commit:** `d1403cf`  
@@ -10,17 +10,17 @@
 ## What's Included
 
 ### Installer
-- **File:** `AureonDesk-Setup-0.9.0-x64.exe` (~124 MB)
-- **Type:** NSIS installer — installs to `%LOCALAPPDATA%\Aureon Desk`
+- **File:** `VibeforgeDesk-Setup-0.9.0-x64.exe` (~124 MB)
+- **Type:** NSIS installer — installs to `%LOCALAPPDATA%\Vibeforge`
 - **SmartScreen:** Will show a warning (not code-signed yet). Click "More info" → "Run anyway".
 
 ### Portable (No-Install)
-- **File:** `AureonDesk-Portable-0.9.0-x64.exe` (~124 MB)
+- **File:** `VibeforgeDesk-Portable-0.9.0-x64.exe` (~124 MB)
 - **Type:** Self-extracting portable — run from any folder, no installation needed
 
 ### No-Install ZIP
-- **File:** `Aureon-Desk-Beta-No-Install.zip` (~174 MB)
-- **How to use:** Extract anywhere, run `Aureon Desk.exe`
+- **File:** `Vibeforge-Desk-Beta-No-Install.zip` (~174 MB)
+- **How to use:** Extract anywhere, run `Vibeforge.exe`
 
 ---
 
@@ -85,20 +85,20 @@
 ## How to Start
 
 ### Option 1: Installer (recommended)
-1. Run `AureonDesk-Setup-0.9.0-x64.exe`
+1. Run `VibeforgeDesk-Setup-0.9.0-x64.exe`
 2. If SmartScreen warns: click "More info" → "Run anyway"
 3. Follow the installer prompts
-4. Launch "Aureon Desk" from the Start Menu or desktop shortcut
+4. Launch "Vibeforge" from the Start Menu or desktop shortcut
 
 ### Option 2: Portable
-1. Run `AureonDesk-Portable-0.9.0-x64.exe`
+1. Run `VibeforgeDesk-Portable-0.9.0-x64.exe`
 2. If SmartScreen warns: click "More info" → "Run anyway"
 3. Choose an extraction folder
-4. Run `Aureon Desk.exe` from the extracted folder
+4. Run `Vibeforge.exe` from the extracted folder
 
 ### Option 3: No-Install ZIP
-1. Extract `Aureon-Desk-Beta-No-Install.zip` to any folder
-2. Run `Aureon Desk.exe` from the extracted folder
+1. Extract `Vibeforge-Desk-Beta-No-Install.zip` to any folder
+2. Run `Vibeforge.exe` from the extracted folder
 
 ---
 
@@ -150,10 +150,10 @@ If you need to wipe all data and start fresh:
 
 ```powershell
 # Close the app first, then run in PowerShell:
-Remove-Item -Recurse -Force "$env:APPDATA\aureon-desk"
-Remove-Item -Recurse -Force "$env:LOCALAPPDATA\aureon-desk"
-Remove-Item -Recurse -Force "$env:APPDATA\Aureon Desk"
-Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Aureon Desk"
+Remove-Item -Recurse -Force "$env:APPDATA\Vibeforge-desk"
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Vibeforge-desk"
+Remove-Item -Recurse -Force "$env:APPDATA\Vibeforge"
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Vibeforge"
 ```
 
 This removes all chats, API keys, projects, and settings.
@@ -198,7 +198,7 @@ This removes all chats, API keys, projects, and settings.
 
 ## Feedback
 
-Report issues at: [github.com/mertgoevse-wq/aureon-desk](https://github.com/mertgoevse-wq/aureon-desk)
+Report issues at: [github.com/mertgoevse-wq/Vibeforge-desk](https://github.com/mertgoevse-wq/Vibeforge-desk)
 
 Include:
 - Your version (0.9.62 beta)

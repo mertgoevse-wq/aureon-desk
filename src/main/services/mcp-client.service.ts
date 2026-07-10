@@ -97,7 +97,7 @@ export const mcpClientService = {
     }
 
     const client = new Client(
-      { name: 'aureon-desk', version: '1.0.0' },
+      { name: 'Vibeforge-desk', version: '1.0.0' },
       { capabilities: {} as Record<string, unknown> }
     )
 
@@ -152,7 +152,7 @@ export const mcpClientService = {
     const transport = new SSEClientTransport(validateMcpServerUrl(url))
 
     const client = new Client(
-      { name: 'aureon-desk', version: '1.0.0' },
+      { name: 'Vibeforge-desk', version: '1.0.0' },
       { capabilities: {} as Record<string, unknown> }
     )
 

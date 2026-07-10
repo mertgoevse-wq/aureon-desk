@@ -1,4 +1,4 @@
-// === Aureon Desk — Connector Registry ===
+// === Vibeforge — Connector Registry ===
 // Formal registry of all connectors, their actions, scopes, and safety contracts.
 // This is the source of truth for the Connectors Hub UI.
 
@@ -424,9 +424,9 @@ export const CONNECTOR_REGISTRY: Record<ConnectorType, ConnectorDefinition> = {
     actions: [
       { id: 'phone.notify', label: 'Notifications', description: 'Receive desktop notifications on your phone', risk: 'safe', requiresConfirmation: false },
       { id: 'phone.camera', label: 'Camera upload', description: 'Upload photos from phone camera', risk: 'read', requiresConfirmation: true },
-      { id: 'phone.remote', label: 'Remote actions', description: 'Trigger actions on Aureon from your phone', risk: 'write', requiresConfirmation: true },
+      { id: 'phone.remote', label: 'Remote actions', description: 'Trigger actions on Vibeforge from your phone', risk: 'write', requiresConfirmation: true },
     ],
-    riskNotes: 'Currently in planning stage. Local network pairing only — no cloud relay. All data stays on your local network. Pairing code displayed in Aureon Desk.',
+    riskNotes: 'Currently in planning stage. Local network pairing only — no cloud relay. All data stays on your local network. Pairing code displayed in Vibeforge.',
     setupPath: '/settings/connectors',
   },
 }

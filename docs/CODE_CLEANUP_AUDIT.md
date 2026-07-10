@@ -54,7 +54,7 @@
 | File | Export Removed | Reason |
 |------|---------------|--------|
 | `src/renderer/src/components/settings/SettingsComponents.tsx` | `DangerZone` | Exported, never imported by any consumer (4 files import other exports from this file) |
-| `src/renderer/src/components/shared/AureonMark.tsx` | `AureonLogo` | Exported, 0 imports anywhere |
+| `src/renderer/src/components/shared/VibeforgeMark.tsx` | `VibeforgeLogo` | Exported, 0 imports anywhere |
 | `src/renderer/src/components/shared/BrandLockup.tsx` | `BrandLockupCompact` | Exported, 0 imports anywhere |
 | `src/renderer/src/components/connectors/ConnectorIcon.tsx` | `ConnectorIconSmall` | Exported, 0 imports anywhere (barrel exports CONNECTOR_LABELS/ICONS/INITIALS kept — used in tests) |
 | `src/shared/constants.ts` | `APP_NAME` | Exported, 0 imports anywhere |

@@ -11,7 +11,7 @@ import * as os from 'os'
 
 // Create a temp directory with known content for testing
 function createTempProject(): string {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'aureon-project-test-'))
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'Vibeforge-project-test-'))
 
   // Create directories
   const srcDir = path.join(root, 'src')

@@ -1,4 +1,4 @@
-# Clickable UI Elements Audit — Aureon Desk
+# Clickable UI Elements Audit — Vibeforge
 
 This document compiles the visual audit of all clickable controls, button handlers, dynamic list cards, forms, and triggers across the codebase to ensure zero no-op/silent buttons.
 
@@ -16,7 +16,7 @@ This document compiles the visual audit of all clickable controls, button handle
 
 ---
 
-## 2. Aureon Studio
+## 2. Vibeforge Studio
 
 | Component | Clickable Label / Control | Current Behavior | Fix/Repairs Needed | Status |
 | :--- | :--- | :--- | :--- | :---: |

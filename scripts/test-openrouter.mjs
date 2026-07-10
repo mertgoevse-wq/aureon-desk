@@ -1,5 +1,5 @@
 /**
- * Aureon Desk — OpenRouter Free Model Smoke Test
+ * Vibeforge — OpenRouter Free Model Smoke Test
  * 
  * Usage: node scripts/test-openrouter.mjs
  * 
@@ -18,7 +18,7 @@ const TIMEOUT_MS = 30000
 
 async function main() {
   // Header
-  console.log('Aureon Desk — OpenRouter Smoke Test')
+  console.log('Vibeforge — OpenRouter Smoke Test')
   console.log('='.repeat(50))
 
   // Check for API key
@@ -44,7 +44,7 @@ async function main() {
   const body = JSON.stringify({
     model: MODEL,
     messages: [
-      { role: 'user', content: 'Reply with exactly: AUREON_OK' }
+      { role: 'user', content: 'Reply with exactly: Vibeforge_OK' }
     ],
     max_tokens: 10,
     temperature: 0,
@@ -53,8 +53,8 @@ async function main() {
   const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${API_KEY}`,
-    'HTTP-Referer': 'aureon-desk',
-    'X-Title': 'Aureon Desk Smoke Test',
+    'HTTP-Referer': 'Vibeforge-desk',
+    'X-Title': 'Vibeforge Smoke Test',
   }
 
   // Send request
@@ -128,13 +128,13 @@ async function main() {
     console.log(`Latency:   ${latency}ms`)
     console.log(`Response:  "${content.trim()}"`)
 
-    if (content.trim() === 'AUREON_OK') {
+    if (content.trim() === 'Vibeforge_OK') {
       console.log('')
       console.log('✓  OpenRouter smoke test passed!')
       process.exit(0)
     } else {
       console.log('')
-      console.log('?  Response received but didn\'t match expected "AUREON_OK".')
+      console.log('?  Response received but didn\'t match expected "Vibeforge_OK".')
       console.log('   This may be normal — free models can produce varied output.')
       process.exit(0) // Still exit 0 — the API works even if response varies
     }

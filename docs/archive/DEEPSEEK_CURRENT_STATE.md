@@ -1,4 +1,4 @@
-# Aureon Desk — DeepSeek Current State Audit
+# Vibeforge — DeepSeek Current State Audit
 
 > **Audit date:** 2026-07-08
 > **Auditor:** DeepSeek V4 Pro (Codebuff / Buffy)
@@ -189,7 +189,7 @@ Package: electron-builder → NSIS installer + portable
 ### v0.9.34 — Cleanup (current commit)
 - Removed 3 old ~5MB PNGs from `public/brand/` → reduced from ~16MB to ~0.15MB
 - Marked 4 docs as HISTORICAL/ARCHIVED
-- Updated `AureonMark.tsx` to use optimized size variants
+- Updated `VibeforgeMark.tsx` to use optimized size variants
 
 ### v0.9.33 — Vibe Coding Expansion
 - Dashboard rewrite: hero + project types + quick actions
@@ -254,7 +254,7 @@ Package: electron-builder → NSIS installer + portable
 | Toggle component | SettingsComponents re-exports from shared — 4 callers use settings path, 3 use shared | Minor inconsistency |
 | ~~Duplicate Toggle components~~ | Merged in v0.9.30 | ✅ RESOLVED |
 | ~~Large logo PNGs (4.8MB)~~ | Removed in v0.9.34 | ✅ RESOLVED |
-| ~~Inline SVG duplication (AureonMark)~~ | Extracted to shared component in v0.9.28 | ✅ RESOLVED |
+| ~~Inline SVG duplication (VibeforgeMark)~~ | Extracted to shared component in v0.9.28 | ✅ RESOLVED |
 | ~~Native HTML `<details>` in BeginnerHelp~~ | Custom accordion in v0.9.32 | ✅ RESOLVED |
 | ~~Native checkboxes in CoworkPage~~ | Toggle component in v0.9.28 | ✅ RESOLVED |
 
@@ -264,14 +264,14 @@ Package: electron-builder → NSIS installer + portable
 
 | File | Location | Size | Concern |
 |------|----------|------|---------|
-| `aureon-mark.png` (opt) | `public/brand/` | ~36KB | ✅ Fine |
-| `aureon-logo.png` (opt) | `public/brand/` | ~92KB | ✅ Fine |
-| `aureon-github-banner.png` (opt) | `public/brand/` | ~24KB | ✅ Fine |
+| `Vibeforge-mark.png` (opt) | `public/brand/` | ~36KB | ✅ Fine |
+| `Vibeforge-logo.png` (opt) | `public/brand/` | ~92KB | ✅ Fine |
+| `Vibeforge-github-banner.png` (opt) | `public/brand/` | ~24KB | ✅ Fine |
 | `icon.ico` | `build/` | 66KB | ✅ Fine |
 | `icon.png` | `build/` | 61KB | ✅ Fine |
-| ~~aureon-mark.png (old)~~ | ~4.8MB | ❌ REMOVED in v0.9.34 |
-| ~~aureon-logo.png (old)~~ | ~4.8MB | ❌ REMOVED in v0.9.34 |
-| ~~aureon-github-banner.png (old)~~ | ~6.1MB | ❌ REMOVED in v0.9.34 |
+| ~~Vibeforge-mark.png (old)~~ | ~4.8MB | ❌ REMOVED in v0.9.34 |
+| ~~Vibeforge-logo.png (old)~~ | ~4.8MB | ❌ REMOVED in v0.9.34 |
+| ~~Vibeforge-github-banner.png (old)~~ | ~6.1MB | ❌ REMOVED in v0.9.34 |
 
 ---
 
@@ -307,7 +307,7 @@ Package: electron-builder → NSIS installer + portable
 `chat-completion.test.ts`, `code-workspace.test.ts`, `cowork-composer.test.ts`, `github-import.test.ts`, `hierarchy-resolver.test.ts`, `home-composer-polish.test.ts`, `input-handling.test.ts`, `live-preview.test.ts`, `log-manager.test.ts`, `model-selection-and-provider-polish.test.ts`, `project-manager.test.ts`, `prompt-analyzer.test.ts`, `provider-security.test.ts`, `settings-layout.test.ts`, `tool-manager.test.ts`, `ui-desktop-polish.test.ts`, `vibe-coding.test.ts`, `visual-regression.test.ts`, `window-ipc.test.ts`
 
 ### E2E Test Files (17):
-`01-aureon-smoke.spec.ts` through `17-aureon-settings-redesign.spec.ts`
+`01-Vibeforge-smoke.spec.ts` through `17-Vibeforge-settings-redesign.spec.ts`
 
 ---
 

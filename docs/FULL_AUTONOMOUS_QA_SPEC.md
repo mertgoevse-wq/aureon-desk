@@ -1,4 +1,4 @@
-# Aureon Desk — Full Autonomous QA & Production Overhaul Spec
+# Vibeforge — Full Autonomous QA & Production Overhaul Spec
 
 > **Created:** 2026-07-09
 > **Based on:** Multi-round user interview (6 rounds, 18 questions)
@@ -22,7 +22,7 @@
 ## 2. User Requirements Summary
 
 ### Core Mandate
-The user wants Aureon Desk to be a **fully autonomous, production-grade AI workspace** that:
+The user wants Vibeforge to be a **fully autonomous, production-grade AI workspace** that:
 1. Works end-to-end with no broken flows or dead ends
 2. Visibly tests itself on the desktop in real-time
 3. Uses real AI agents (not simulations) via OpenRouter
@@ -283,7 +283,7 @@ Settings → QA & Testing Page
 | `src/main/ipc/qa-runner.ipc.ts` | IPC handlers for QA testing |
 | `tests/unit/agent-orchestrator.test.ts` | Unit tests for agent orchestration |
 | `tests/unit/qa-runner.test.ts` | Unit tests for QA runner |
-| `tests/e2e/19-aureon-full-qa.spec.ts` | Comprehensive E2E test suite |
+| `tests/e2e/19-Vibeforge-full-qa.spec.ts` | Comprehensive E2E test suite |
 
 ## 8. Files That Will Be Modified
 

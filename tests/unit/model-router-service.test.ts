@@ -715,8 +715,8 @@ describe('modelRouterService._callSmokeTest', () => {
 
       const options = (global.fetch as any).mock.calls[0][1] as Record<string, unknown>
       const headers = options.headers as Record<string, string>
-      expect(headers['HTTP-Referer']).toBe('aureon-desk')
-      expect(headers['X-Title']).toBe('Aureon Desk')
+      expect(headers['HTTP-Referer']).toBe('Vibeforge-desk')
+      expect(headers['X-Title']).toBe('Vibeforge')
     })
 
     it('should work for NVIDIA NIM adapter', async () => {

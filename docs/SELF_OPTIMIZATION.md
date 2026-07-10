@@ -1,4 +1,4 @@
-# Aureon Desk — Self-Audit & Optimization System
+# Vibeforge — Self-Audit & Optimization System
 
 > **Version:** 0.9.66  
 > **Created:** 2026-07-09  
@@ -8,7 +8,7 @@
 
 ## Overview
 
-The Self-Audit system allows Aureon Desk to inspect its own project repository, detect issues across 12 categories, generate prioritized improvement plans, and propose patches — **without ever silently modifying itself**.
+The Self-Audit system allows Vibeforge to inspect its own project repository, detect issues across 12 categories, generate prioritized improvement plans, and propose patches — **without ever silently modifying itself**.
 
 All analysis is performed **locally** on the user's machine. No data is ever sent to remote providers. Sensitive files (`.env`, `*.db`, `logs/`, `node_modules/`, etc.) are **always excluded** from audit scans.
 
@@ -23,7 +23,7 @@ All analysis is performed **locally** on the user's machine. No data is ever sen
 | **Secret redaction** | Sensitive files (`.env`, `*.db`, `*.sqlite`, `node_modules/`, `logs/`, `app-data/`, `test-results/`, etc.) are always excluded regardless of mode. |
 | **Mode-gated file reading** | `local_only` mode only reads `package.json`. `docs_only` mode only reads markdown docs. `full` mode reads source but never transmits. |
 | **Approval required** | Patch proposals start in `pending` state. They must be explicitly approved by the user before any changes can be applied. |
-| **No autonomous self-modification** | Aureon will never modify itself without explicit consent. The `approvalState` field must be set to `approved` explicitly. |
+| **No autonomous self-modification** | Vibeforge will never modify itself without explicit consent. The `approvalState` field must be set to `approved` explicitly. |
 
 ---
 
@@ -59,7 +59,7 @@ All analysis is performed **locally** on the user's machine. No data is ever sen
 
 ## Usage
 
-1. Open **Settings → Self Audit** in Aureon Desk
+1. Open **Settings → Self Audit** in Vibeforge
 2. Select an audit mode (default: Local Only)
 3. Click **Run Audit**
 4. Review results across 12 categories (expandable)

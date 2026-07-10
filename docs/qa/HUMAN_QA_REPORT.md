@@ -1,4 +1,4 @@
-# Aureon Desk — Human QA Report
+# Vibeforge — Human QA Report
 
 > Generated: 2026-07-08
 > Tester: Manual QA agent
@@ -31,7 +31,7 @@
 | # | Check | Result |
 |---|-------|--------|
 | 1.1 | App launches without crash | |
-| 1.2 | Window title "Aureon Desk" | |
+| 1.2 | Window title "Vibeforge" | |
 | 1.3 | Native window controls | |
 | 1.4 | Taskbar icon | |
 | 1.5 | Window resize | |

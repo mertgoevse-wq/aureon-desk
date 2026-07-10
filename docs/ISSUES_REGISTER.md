@@ -109,7 +109,7 @@
 
 ## Protocol Adoption
 
-This file was created as part of adopting the **Aureon Desk Global Run Protocol** (2026-07-09).
+This file was created as part of adopting the **Vibeforge Global Run Protocol** (2026-07-09).
 
 Every future run must:
 1. Read this file along with AI_QA_REPORT.md and CHANGELOG.md

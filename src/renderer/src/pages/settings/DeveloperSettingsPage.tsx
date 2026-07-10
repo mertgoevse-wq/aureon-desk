@@ -23,8 +23,8 @@ export function DeveloperSettingsPage(): React.ReactElement {
   const [exportStatus, setExportStatus] = useState<string | null>(null)
 
   // Paths list for Windows/cross-platform debug reference
-  const appDataPath = 'C:\\Users\\mertg\\AppData\\Roaming\\AureonDesk'
-  const databasePath = 'C:\\Users\\mertg\\AppData\\Roaming\\AureonDesk\\databases\\aureon.db'
+  const appDataPath = 'C:\\Users\\mertg\\AppData\\Roaming\\VibeforgeDesk'
+  const databasePath = 'C:\\Users\\mertg\\AppData\\Roaming\\VibeforgeDesk\\databases\\Vibeforge.db'
   const playwrightReportLink = 'playwright-report/index.html'
 
   const handleExportBundle = useCallback(async () => {
@@ -36,7 +36,7 @@ export function DeveloperSettingsPage(): React.ReactElement {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `aureon-debug-bundle-${Date.now()}.json`
+      a.download = `Vibeforge-debug-bundle-${Date.now()}.json`
       a.click()
       URL.revokeObjectURL(url)
       setExportStatus('Export successful!')

@@ -1,4 +1,4 @@
-# Aureon Desk — AGENTS.md
+# Vibeforge — AGENTS.md
 
 > Agent handoff instructions for AI sessions working on this repo.
 
@@ -6,11 +6,11 @@
 
 ## Project Identity
 
-- **Name:** Aureon Desk
+- **Name:** Vibeforge
 - **Type:** Electron desktop app (Windows-first)
 - **Stack:** Electron 43 + React 19 + TypeScript + Tailwind CSS v4 + drizzle-orm + better-sqlite3
 - **Version:** 0.9.0
-- **Repository:** https://github.com/mertgoevse-wq/aureon-desk
+- **Repository:** https://github.com/mertgoevse-wq/Vibeforge-desk
 - **Local path:** `C:\Users\mertg\Desktop\code`
 
 ---

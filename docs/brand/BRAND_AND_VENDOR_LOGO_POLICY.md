@@ -2,11 +2,11 @@
 
 ## Purpose
 
-This document defines how Aureon Desk handles third-party brand assets, vendor logos, and trademarks.
+This document defines how Vibeforge handles third-party brand assets, vendor logos, and trademarks.
 
 ## Core Principle
 
-**Aureon Desk uses neutral, open-source Lucide icons with descriptive text labels for all third-party services and connectors.**
+**Vibeforge uses neutral, open-source Lucide icons with descriptive text labels for all third-party services and connectors.**
 
 ## Rules
 
@@ -46,9 +46,9 @@ Official vendor assets (logos, icons, wordmarks) may be used **only** if ALL of 
 | LM Studio | NOT used | Using Cpu icon |
 | MCP | NOT used | Using Wrench icon |
 
-### 5. Aureon's Own Brand
+### 5. Vibeforge's Own Brand
 
-Aureon's own logo, wordmark, and brand assets are original works. They are:
+Vibeforge's own logo, wordmark, and brand assets are original works. They are:
 - Stored in `assets/brand/`
 - Generated using `scripts/generate-icon.js` and `scripts/generate-nano-icon.js`
 - Not derived from any third-party brand

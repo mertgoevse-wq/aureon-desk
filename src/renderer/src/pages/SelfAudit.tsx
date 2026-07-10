@@ -220,7 +220,7 @@ export function SelfAudit(): React.ReactElement {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `aureon-self-audit-${report.reportId.slice(0, 8)}.json`
+    a.download = `Vibeforge-self-audit-${report.reportId.slice(0, 8)}.json`
     a.click()
     URL.revokeObjectURL(url)
   }, [report, plan, patchProposal])
@@ -677,7 +677,7 @@ export function SelfAudit(): React.ReactElement {
                   <AlertTriangle size={14} className="shrink-0 mt-0.5" />
                   <span>
                     <strong>No automatic patch application.</strong> This plan must be explicitly approved and applied
-                    by you or a future agent session. Aureon will never modify itself without your consent.
+                    by you or a future agent session. Vibeforge will never modify itself without your consent.
                   </span>
                 </div>
               </>

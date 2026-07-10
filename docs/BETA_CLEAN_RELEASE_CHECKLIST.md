@@ -1,6 +1,6 @@
-# Aureon Desk — Beta Clean Release Checklist
+# Vibeforge — Beta Clean Release Checklist
 
-> **Purpose:** Prepare Aureon Desk for a private beta release by cleaning secrets, local app data, caches, logs, and ensuring zero private data in release builds.
+> **Purpose:** Prepare Vibeforge for a private beta release by cleaning secrets, local app data, caches, logs, and ensuring zero private data in release builds.
 
 ---
 
@@ -81,24 +81,24 @@ Before distributing to beta testers, ensure your local machine is clean:
 ```powershell
 # Stop the app first, then run in PowerShell as the current user:
 
-# Delete Aureon Desk data (Electron userData)
-Remove-Item -Recurse -Force "$env:APPDATA\aureon-desk" -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force "$env:APPDATA\Aureon Desk" -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force "$env:LOCALAPPDATA\aureon-desk" -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Aureon Desk" -ErrorAction SilentlyContinue
+# Delete Vibeforge data (Electron userData)
+Remove-Item -Recurse -Force "$env:APPDATA\Vibeforge-desk" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:APPDATA\Vibeforge" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Vibeforge-desk" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Vibeforge" -ErrorAction SilentlyContinue
 
 # Also check these alternate locations
-Remove-Item -Recurse -Force "$env:USERPROFILE\.aureon-desk" -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force "$env:USERPROFILE\AppData\Roaming\aureon-desk" -ErrorAction SilentlyContinue
-Remove-Item -Recurse -Force "$env:USERPROFILE\AppData\Local\aureon-desk" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.Vibeforge-desk" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\AppData\Roaming\Vibeforge-desk" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\AppData\Local\Vibeforge-desk" -ErrorAction SilentlyContinue
 ```
 
 ### Verify Cleanup
 
 ```powershell
 # Confirm nothing remains
-Test-Path "$env:APPDATA\aureon-desk"   # Should return False
-Test-Path "$env:LOCALAPPDATA\aureon-desk"  # Should return False
+Test-Path "$env:APPDATA\Vibeforge-desk"   # Should return False
+Test-Path "$env:LOCALAPPDATA\Vibeforge-desk"  # Should return False
 ```
 
 ### What This Removes
@@ -159,7 +159,7 @@ Redaction points:
 
 ```powershell
 # After running the app, check logs have no secrets
-Select-String -Path "$env:APPDATA\aureon-desk\logs\*" -Pattern "sk-or-v1|AIza|sk-proj|sk-ant" -SimpleMatch
+Select-String -Path "$env:APPDATA\Vibeforge-desk\logs\*" -Pattern "sk-or-v1|AIza|sk-proj|sk-ant" -SimpleMatch
 # Should return NO matches
 
 # Or check the debug bundle
@@ -207,8 +207,8 @@ If a tester accidentally exposes credentials, instruct them to:
 
 ```powershell
 # Delete ALL local data immediately
-Remove-Item -Recurse -Force "$env:APPDATA\aureon-desk"
-Remove-Item -Recurse -Force "$env:LOCALAPPDATA\aureon-desk"
+Remove-Item -Recurse -Force "$env:APPDATA\Vibeforge-desk"
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\Vibeforge-desk"
 
 # Then rotate any API keys that may have been used
 # Visit: openrouter.ai/keys, console.anthropic.com, platform.openai.com, etc.

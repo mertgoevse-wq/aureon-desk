@@ -506,7 +506,7 @@ function runMockTool(name: string, input: Record<string, unknown>): string {
     case 'project_summary_mock':
       return JSON.stringify({
         mock: true,
-        projectName: 'Aureon Desk',
+        projectName: 'Vibeforge',
         language: 'TypeScript',
         framework: 'Electron + React',
         totalFiles: 85,

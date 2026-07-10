@@ -414,10 +414,10 @@ export const ChatPanel = memo(function ChatPanel(): React.ReactElement {
               </div>
               <p className="text-[13px] font-semibold text-[var(--ivory-accent)] mb-2">{getTimeAwareGreeting()}</p>
               <h2 className="text-[30px] lg:text-[34px] font-semibold tracking-tight mb-3 text-[var(--ivory-text)] display-text">
-                What should Aureon work on?
+                What should Vibeforge work on?
               </h2>
               <p className="text-[14px] text-[var(--ivory-text-3)] leading-relaxed max-w-2xl mx-auto">
-                Start with a question, a coding task, or a project plan. Aureon keeps providers, prompts, tools, and local previews within reach.
+                Start with a question, a coding task, or a project plan. Vibeforge keeps providers, prompts, tools, and local previews within reach.
               </p>
             </div>
 
@@ -465,7 +465,7 @@ export const ChatPanel = memo(function ChatPanel(): React.ReactElement {
               <MessageInput
                 onSend={handleSend}
                 disabled={isStreaming}
-                placeholder="Ask Aureon to build, review, explain, plan, or continue work..."
+                placeholder="Ask Vibeforge to build, review, explain, plan, or continue work..."
               />
             </div>
 

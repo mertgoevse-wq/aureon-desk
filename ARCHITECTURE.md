@@ -4,7 +4,7 @@
 > Ivory background, Anthropic-inspired bold serif display typography, warm neutral surfaces.
 > Local-first, secure, modular, daily-driver grade.
 
-> Current product name: **Aureon Desk**. Older `Ivory` references in this document describe the original scaffold naming and should be treated as historical.
+> Current product name: **Vibeforge**. Older `Ivory` references in this document describe the original scaffold naming and should be treated as historical.
 
 ## Current Implementation Notes - 2026-07-08
 

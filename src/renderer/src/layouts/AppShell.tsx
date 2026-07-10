@@ -5,7 +5,8 @@ import { RightInspector } from './RightInspector'
 import { ToastContainer } from '../components/shared/Toast'
 import { CommandPalette } from '../components/shared/CommandPalette'
 import { ShortcutsHelp } from '../components/shared/ShortcutsHelp'
-import { BrandLockupCompact } from '../components/shared/BrandLockup'
+import { FirstRunWizard } from '../components/shared/FirstRunWizard'
+import { VibeForgeBrandLockupCompact } from '../components/shared/VibeForgeBrandLockup'
 import type { CommandItem } from '../components/shared/CommandPalette'
 import { useUIStore, loadPanelSizes } from '../stores/uiStore'
 import { loadPersistedTheme } from '../utils/theme'
@@ -16,7 +17,8 @@ import {
   MessageSquare, Library, FolderOpen, Wrench, Settings,
   ScrollText, Server, FileText, Github, Eye, Plus, PanelLeft,
   PanelRight, RotateCcw, Keyboard, Sun, Code2, Users,
-  ChevronLeft, ChevronRight, Search, Sparkles, Plug, Archive
+  ChevronLeft, ChevronRight, Search, Sparkles, Plug, Archive,
+  Home, Bot, Wrench as WrenchIcon
 } from 'lucide-react'
 import type { ChatListItem } from '@shared/types/chat'
 
@@ -389,7 +391,7 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
 
             {/* Brand lockup in topbar */}
             <div className="hidden md:flex items-center gap-2 shrink-0">
-              <BrandLockupCompact size={22} />
+              <VibeForgeBrandLockupCompact size={22} />
               <span className="text-[13px] font-semibold text-[var(--ivory-text)] display-text">
                 Vibeforge
               </span>
@@ -463,6 +465,43 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
 
       {/* Toast notifications */}
       <ToastContainer />
+
+      {/* First-run onboarding wizard */}
+      <FirstRunWizard />
+
+      {/* Mobile bottom navigation */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--ivory-border)] bg-[var(--ivory-elevated)]/95 backdrop-blur-xl pb-safe"
+        aria-label="Mobile navigation"
+      >
+        <div className="grid grid-cols-5 h-14">
+          {[
+            { id: 'studio', label: 'Studio', path: '/', icon: Sparkles },
+            { id: 'chat', label: 'Chat', path: '/chat', icon: MessageSquare },
+            { id: 'code', label: 'Code', path: '/preview', icon: Code2 },
+            { id: 'skills', label: 'Skills', path: '/skills', icon: WrenchIcon },
+            { id: 'settings', label: 'Settings', path: '/settings/general', icon: Settings },
+          ].map((item) => {
+            const selected = activeMode === item.id || (item.id === 'studio' && activeMode === 'studio')
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => navigate(item.path)}
+                className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-semibold transition-colors ${
+                  selected
+                    ? 'text-[var(--ivory-accent)]'
+                    : 'text-[var(--ivory-text-3)]'
+                }`}
+                aria-label={item.label}
+              >
+                <item.icon size={18} />
+                <span>{item.label}</span>
+              </button>
+            )
+          })}
+        </div>
+      </nav>
     </div>
   )
 })

@@ -1,4 +1,4 @@
-# Aureon Bolt-Like Build Pipeline
+# Vibeforge Bolt-Like Build Pipeline
 
 > Prompt → Plan → Code → Diff → LivePreview → Iterate
 
@@ -167,7 +167,7 @@ All tests pass. Run with `npm test`.
 
 ## Usage Example
 
-1. User opens Aureon Desk, lands on Studio hero page
+1. User opens Vibeforge, lands on Studio hero page
 2. Types "Build a small counter app with ivory hero theme and live preview" in the composer
 3. Presses Enter
 4. App navigates to `/code` (LivePreview page)

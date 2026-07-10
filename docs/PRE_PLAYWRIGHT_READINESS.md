@@ -1,4 +1,4 @@
-# Aureon Desk — Pre-Playwright Readiness Audit
+# Vibeforge — Pre-Playwright Readiness Audit
 
 > **Audit date:** 2026-07-09
 > **Branch:** main

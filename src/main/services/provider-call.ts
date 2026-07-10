@@ -112,8 +112,8 @@ async function _callOpenAICompatibleStreaming(
     headers['Authorization'] = `Bearer ${apiKey}`
   }
   if (adapter === 'openrouter') {
-    headers['HTTP-Referer'] = extraHeaders?.['HTTP-Referer'] || 'aureon-desk'
-    headers['X-Title'] = extraHeaders?.['X-Title'] || 'Aureon Desk'
+    headers['HTTP-Referer'] = extraHeaders?.['HTTP-Referer'] || 'Vibeforge-desk'
+    headers['X-Title'] = extraHeaders?.['X-Title'] || 'Vibeforge'
   }
 
   const fullMessages: ChatMessage[] = []
@@ -427,8 +427,8 @@ async function _callOpenAICompatible(params: ProviderApiParams): Promise<string>
     headers['Authorization'] = `Bearer ${apiKey}`
   }
   if (adapter === 'openrouter') {
-    headers['HTTP-Referer'] = extraHeaders?.['HTTP-Referer'] || 'aureon-desk'
-    headers['X-Title'] = extraHeaders?.['X-Title'] || 'Aureon Desk'
+    headers['HTTP-Referer'] = extraHeaders?.['HTTP-Referer'] || 'Vibeforge-desk'
+    headers['X-Title'] = extraHeaders?.['X-Title'] || 'Vibeforge'
   }
 
   // Build full messages array with system prompt if provided

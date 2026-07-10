@@ -1,4 +1,4 @@
-# Security Notes — Aureon Desk
+# Security Notes — Vibeforge
 
 ## Credential Storage
 
@@ -165,7 +165,7 @@ All log entries pass through `redactSecrets()` before DB storage. Debug bundle e
 
 LivePreview creates isolated sandbox directories for previewing generated code:
 
-- **Location**: Sandboxes are created under the app's `userData` directory (e.g., `%APPDATA%/aureon-desk/preview-sandboxes/`)
+- **Location**: Sandboxes are created under the app's `userData` directory (e.g., `%APPDATA%/Vibeforge-desk/preview-sandboxes/`)
 - **Isolation**: Each preview has its own subfolder with a unique ID — no shared state between previews
 - **Path traversal protection**: All file paths are validated against escaping the sandbox directory (no `../`, no absolute paths outside sandbox)
 - **Template generation**: Templates are hardcoded in the service — no user-provided templates to prevent injection
@@ -232,7 +232,7 @@ Connector presets are setup contracts, not blanket authorization.
 
 - Gmail, Google Drive, Google Calendar, SMTP/IMAP, Browser Search MCP, Phone Companion, WhatsApp Business API, and Social platform connectors remain placeholders unless a live OAuth/API flow is explicitly implemented.
 - Gmail send/modify flows require OAuth scopes and explicit user approval.
-- WhatsApp is limited to official WhatsApp Business API placeholders. Aureon Desk does not automate WhatsApp Web, phone screens, or personal accounts in this build.
+- WhatsApp is limited to official WhatsApp Business API placeholders. Vibeforge does not automate WhatsApp Web, phone screens, or personal accounts in this build.
 - Phone Companion is planned only until a companion app, local pairing, and explicit device permissions exist.
 - Facebook, Instagram, YouTube, TikTok, X/Twitter, LinkedIn, and WhatsApp Business API social presets use official API/OAuth setup guidance only.
 - Posting, replying, deleting, and uploading must show exact content, recipient/account/channel, and action details before execution, and must support cancel.
@@ -247,7 +247,7 @@ The Self-Audit system (`src/main/services/self-audit.service.ts`, Settings → S
 - **No remote calls**: All analysis is performed locally. No data is ever sent to remote providers or external APIs.
 - **Secret redaction**: Sensitive files (`.env`, `*.db`, `*.sqlite`, `node_modules/`, `logs/`, `app-data/`, `test-results/`, etc.) are always excluded from audit scans regardless of mode.
 - **Mode-gated file reading**: `local_only` mode only reads `package.json` (not source code). `docs_only` mode only reads markdown docs. `full` mode reads source files but never transmits them.
-- **Approval required**: Patch proposals start in `pending` state. They must be explicitly approved by the user before any changes can be applied. Aureon will never modify itself without explicit consent.
+- **Approval required**: Patch proposals start in `pending` state. They must be explicitly approved by the user before any changes can be applied. Vibeforge will never modify itself without explicit consent.
 - **No autonomous self-modification**: The system generates plans and proposals — it never applies patches automatically. The `approvalState` field must be set to `approved` explicitly.
 - **Agent prompts are templates**: Generated agent prompts include safety instructions (`Do NOT modify files without explicit user approval`) and redaction warnings.
 

@@ -1,4 +1,4 @@
-# Aureon Desk — Live Human QA Report
+# Vibeforge — Live Human QA Report
 
 > **Date:** 2026-07-09
 > **Branch:** `main` at `0295c4f`
@@ -29,7 +29,7 @@
 
 ## Phase 1 — Launch & Visible Testing
 
-**Method:** Headed Playwright with Electron — the actual Aureon Desk window was visible on the desktop during the E2E test run.
+**Method:** Headed Playwright with Electron — the actual Vibeforge window was visible on the desktop during the E2E test run.
 
 **Screenshots captured:**
 - `tests/e2e/artifacts/layout_1366x768_studio.png` — Studio hero landing
@@ -39,7 +39,7 @@
 **Visual verification:**
 - Ivory background (#FAF7F2) renders correctly ✅
 - Hero composer visible with placeholder text ✅
-- AureonMark logo renders without distortion ✅
+- VibeforgeMark logo renders without distortion ✅
 - No horizontal overflow at 1366×768 ✅
 - No raw React error or blank screen ✅
 
@@ -73,7 +73,7 @@ The pipeline classifies the intent as `build_app` and generates a responsive lan
 
 ## Phase 3 — Test Task B: Beautiful Landing Page
 
-**Prompt used:** "Build a premium hero landing page for an AI coding desktop app called Aureon Desk. Use calm ivory background, graphite text, bronze accent, Claude-like softness, no neon, one hero composer, feature cards, and live preview."
+**Prompt used:** "Build a premium hero landing page for an AI coding desktop app called Vibeforge. Use calm ivory background, graphite text, bronze accent, Claude-like softness, no neon, one hero composer, feature cards, and live preview."
 
 **Result:** ✅ PASS (via deterministic demo pipeline)
 

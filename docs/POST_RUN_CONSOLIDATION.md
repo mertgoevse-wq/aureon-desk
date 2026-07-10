@@ -1,4 +1,4 @@
-# Aureon Desk — Post-Run Consolidation
+# Vibeforge — Post-Run Consolidation
 
 > **Date:** 2026-07-09
 > **Branch:** `main`

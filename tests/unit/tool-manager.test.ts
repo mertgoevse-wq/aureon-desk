@@ -2,9 +2,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 // Mock paths before anything else
 vi.mock('../../src/main/utils/paths', () => ({
-  getAppDataPath: () => 'C:/tmp/test-aureon',
-  getDbPath: () => 'C:/tmp/test-aureon/aureon.db',
-  getImportsPath: () => 'C:/tmp/test-aureon/imports',
+  getAppDataPath: () => 'C:/tmp/test-Vibeforge',
+  getDbPath: () => 'C:/tmp/test-Vibeforge/Vibeforge.db',
+  getImportsPath: () => 'C:/tmp/test-Vibeforge/imports',
 }))
 
 // Mock getDb before importing the services

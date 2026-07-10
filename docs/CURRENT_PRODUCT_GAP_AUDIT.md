@@ -1,4 +1,4 @@
-# Aureon Desk — Current Product Gap Audit
+# Vibeforge — Current Product Gap Audit
 
 > **Audit date:** 2026-07-09
 > **Branch:** main at `adf6dbb`
@@ -77,7 +77,7 @@ No E2E tests were run — this is a source-level audit only. Manual visible QA n
 - Stop/Restart/Open in Browser controls
 
 **Gap vs. bolt.diy:**
-- **No AI-generated code → preview pipeline:** Bolt.diy takes a natural language prompt, generates code via AI, and live-previews it. Aureon's LivePreview only shows hardcoded demo/HTML templates — it does not connect chat completions to the preview sandbox.
+- **No AI-generated code → preview pipeline:** Bolt.diy takes a natural language prompt, generates code via AI, and live-previews it. Vibeforge's LivePreview only shows hardcoded demo/HTML templates — it does not connect chat completions to the preview sandbox.
 - **No live code editing:** The file explorer shows mock files, not the actual sandbox files. Users cannot edit code in the preview.
 - **No hot reload:** The in-process server doesn't support HMR. Changes require manual restart.
 - **No multi-file projects:** Only single `index.html` for HTML/demo templates. Vite+React template exists but requires npm install (slow, may fail on 16GB machines).
@@ -219,19 +219,19 @@ No E2E tests were run — this is a source-level audit only. Manual visible QA n
 ## 9. Logo/Icon/Brand Asset Gap
 
 **Current state:**
-- `AureonMark` component: inline SVG with stylized "A" + aureole ring, theme-responsive (uses CSS vars)
-- `BrandLockup` / `BrandLockupCompact`: mark + "Aureon Desk" wordmark
-- PNG variants in `public/brand/`: `aureon-mark-64.png`, `aureon-mark-128.png`, `aureon-mark-256.png`, `aureon-logo-512.png`
-- SVG variants in `assets/brand/`: `aureon-icon.svg`, `aureon-logo.svg`, `aureon-mark.svg`, `aureon-wordmark.svg`
-- `aureon-app-icon-256.png` and `aureon-github-banner-1200.png` in `assets/brand/`
+- `VibeforgeMark` component: inline SVG with stylized "A" + aureole ring, theme-responsive (uses CSS vars)
+- `BrandLockup` / `BrandLockupCompact`: mark + "Vibeforge" wordmark
+- PNG variants in `public/brand/`: `Vibeforge-mark-64.png`, `Vibeforge-mark-128.png`, `Vibeforge-mark-256.png`, `Vibeforge-logo-512.png`
+- SVG variants in `assets/brand/`: `Vibeforge-icon.svg`, `Vibeforge-logo.svg`, `Vibeforge-mark.svg`, `Vibeforge-wordmark.svg`
+- `Vibeforge-app-icon-256.png` and `Vibeforge-github-banner-1200.png` in `assets/brand/`
 - App icon: `build/icon.ico` and `build/icon.png` (generated from Nano Banana PNG)
 - Connectors use neutral Lucide icons (no fake brand logos) — compliant with brand policy
 
 **Gap vs. target:**
-- **README banner path is broken:** References `assets/brand/nano-banana/aureon-github-banner.png` but that directory is empty. Actual file is `assets/brand/aureon-github-banner-1200.png`. **Fixed in this audit.**
+- **README banner path is broken:** References `assets/brand/nano-banana/Vibeforge-github-banner.png` but that directory is empty. Actual file is `assets/brand/Vibeforge-github-banner-1200.png`. **Fixed in this audit.**
 - **`assets/brand/nano-banana/` directory is empty** — original Nano Banana source assets may have been moved or deleted
 - **No favicon in renderer** — `src/renderer/index.html` doesn't reference a favicon
-- **AureonMark SVG is hardcoded** — can't swap brand image without code change (by design, but limits flexibility)
+- **VibeforgeMark SVG is hardcoded** — can't swap brand image without code change (by design, but limits flexibility)
 - **No animated brand element** for hero/landing
 
 **Severity:** Low — brand assets are functional, README path is the only broken reference
@@ -403,7 +403,7 @@ Based on the gap analysis, here is the recommended implementation order for the 
 |-----|----------|-----|
 | LivePreview retry loses style | `LivePreview.tsx:128-134, 523-525` | Save style in state ref before `clearAutoPreview()` |
 | Hardcoded sessionStorage key | `LivePreview.tsx:523, 525` | Use `AUTO_PREVIEW_KEYS.style` constant |
-| README broken banner path | `README.md:4` | Update path to `assets/brand/aureon-github-banner-1200.png` |
+| README broken banner path | `README.md:4` | Update path to `assets/brand/Vibeforge-github-banner-1200.png` |
 
 ---
 

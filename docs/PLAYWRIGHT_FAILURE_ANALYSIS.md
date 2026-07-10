@@ -1,4 +1,4 @@
-# Aureon Desk — Playwright Failure Analysis
+# Vibeforge — Playwright Failure Analysis
 
 > **Date:** 2026-07-09
 > **Branch:** main
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-**No real product bugs found.** All 12 new E2E tests (18-aureon-studio-vibe-flow.spec.ts) pass cleanly. The only failures are 4 pre-existing Electron launch flakes on Windows, caused by DevTools WebSocket connection timing issues during sequential test execution. All 4 flaky tests pass on retry.
+**No real product bugs found.** All 12 new E2E tests (18-Vibeforge-studio-vibe-flow.spec.ts) pass cleanly. The only failures are 4 pre-existing Electron launch flakes on Windows, caused by DevTools WebSocket connection timing issues during sequential test execution. All 4 flaky tests pass on retry.
 
 ---
 
@@ -18,7 +18,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Test** | `01-aureon-smoke.spec.ts:37` — Sidebar is visible |
+| **Test** | `01-Vibeforge-smoke.spec.ts:37` — Sidebar is visible |
 | **Expected** | Sidebar renders with `role="navigation"` |
 | **Actual** | `electron.launch: Target page, context or browser has been closed` |
 | **Root Cause** | Electron DevTools WebSocket dropped (code 1006) during sequential launch. Previous test's SQLite WAL files not fully checkpointed. |
@@ -26,12 +26,12 @@
 | **Retry Result** | Failed on retry (same root cause — sequential test after another failure) |
 | **Fix Applied** | ✅ Added retry logic to `electron.launch()` and increased cleanup delay 3s→5s |
 
-### 2. Smoke Test — "Window title includes Aureon Desk" ⚠ (Flaky)
+### 2. Smoke Test — "Window title includes Vibeforge" ⚠ (Flaky)
 
 | Field | Value |
 |-------|-------|
-| **Test** | `01-aureon-smoke.spec.ts:16` — Window title |
-| **Expected** | Title contains "Aureon Desk" |
+| **Test** | `01-Vibeforge-smoke.spec.ts:16` — Window title |
+| **Expected** | Title contains "Vibeforge" |
 | **Actual** | `electron.launch: Target page, context or browser has been closed` |
 | **Root Cause** | Same Electron launch flake — WebSocket disconnect during DevTools connection |
 | **Category** | Infrastructure — NOT a product bug |
@@ -42,7 +42,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Test** | `01-aureon-smoke.spec.ts:23` — No React error |
+| **Test** | `01-Vibeforge-smoke.spec.ts:23` — No React error |
 | **Expected** | No error boundary text in body |
 | **Actual** | `electron.launch: Target page, context or browser has been closed` |
 | **Root Cause** | Same Electron launch flake |
@@ -54,7 +54,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Test** | `01-aureon-smoke.spec.ts:30` — No IPC API error |
+| **Test** | `01-Vibeforge-smoke.spec.ts:30` — No IPC API error |
 | **Expected** | No "IPC API is not available" text |
 | **Actual** | `electron.launch: WebSocket error: read ECONNRESET` |
 | **Root Cause** | Same Electron launch flake — ECONNRESET on DevTools WebSocket |
@@ -66,7 +66,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Test** | `18-aureon-studio-vibe-flow.spec.ts:349` — No React error |
+| **Test** | `18-Vibeforge-studio-vibe-flow.spec.ts:349` — No React error |
 | **Expected** | No errors across all routes |
 | **Actual** | First-run failure (same Electron launch flake pattern) |
 | **Category** | Infrastructure — NOT a product bug |
@@ -77,7 +77,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Test** | `18-aureon-studio-vibe-flow.spec.ts:277` — Template card |
+| **Test** | `18-Vibeforge-studio-vibe-flow.spec.ts:277` — Template card |
 | **Expected** | Click inserts prompt into composer |
 | **Actual** | First-run failure (same Electron launch flake pattern) |
 | **Category** | Infrastructure — NOT a product bug |

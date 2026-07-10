@@ -254,7 +254,7 @@ describe('LivePreview Service — Process Lifecycle', () => {
 
   it('should detect HTML template type when no package.json exists', async () => {
     mockFs.existsSync = vi.fn((p: string) => {
-      if (p.endsWith('package.json') || p.endsWith('.aureon-demo') || p.endsWith('.vibeforge-demo')) return false
+      if (p.endsWith('package.json') || p.endsWith('.Vibeforge-demo') || p.endsWith('.vibeforge-demo')) return false
       return true
     })
 
@@ -265,7 +265,7 @@ describe('LivePreview Service — Process Lifecycle', () => {
 
   it('should detect vite-react template type when package.json exists', async () => {
     mockFs.existsSync = vi.fn((p: string) => {
-      if (p.endsWith('.aureon-demo') || p.endsWith('.vibeforge-demo')) return false
+      if (p.endsWith('.Vibeforge-demo') || p.endsWith('.vibeforge-demo')) return false
       return true
     })
 
@@ -276,7 +276,7 @@ describe('LivePreview Service — Process Lifecycle', () => {
 
   it('should stop running preview and return stopped', async () => {
     mockFs.existsSync = vi.fn((p: string) => {
-      if (p.endsWith('.aureon-demo') || p.endsWith('.vibeforge-demo')) return false
+      if (p.endsWith('.Vibeforge-demo') || p.endsWith('.vibeforge-demo')) return false
       return true
     })
     await livePreviewService.startPreview('/sandbox/app')
@@ -320,7 +320,7 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockFs.existsSync = vi.fn((p: string) => {
-      if (p.endsWith('package.json') || p.endsWith('.aureon-demo') || p.endsWith('.vibeforge-demo')) return false
+      if (p.endsWith('package.json') || p.endsWith('.Vibeforge-demo') || p.endsWith('.vibeforge-demo')) return false
       return true
     })
     livePreviewService.reset()
@@ -427,10 +427,10 @@ describe('LivePreview Service — onStatusChange push mechanism', () => {
   })
 
   it('should fire onStatusChange callback when in-process server enters running state', async () => {
-    // existsSync: return true for sandbox dir itself, false for package.json/.aureon-demo/.vibeforge-demo
+    // existsSync: return true for sandbox dir itself, false for package.json/.Vibeforge-demo/.vibeforge-demo
     // so startPreview uses the in-process static server path
     mockFs.existsSync = vi.fn((p: string) => {
-      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.aureon-demo') || p.includes('.vibeforge-demo'))) return false
+      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.Vibeforge-demo') || p.includes('.vibeforge-demo'))) return false
       return true
     })
     const onChange = vi.fn()
@@ -506,7 +506,7 @@ describe('Studio → LivePreview Regression Contract', () => {
   it('startGeneratedPreview should create demo sandbox and not error', async () => {
     mockFs.writeFileSync = vi.fn()
     mockFs.existsSync = vi.fn((p: string) => {
-      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.aureon-demo'))) return false
+      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.Vibeforge-demo'))) return false
       return true
     })
     const status = await livePreviewService.startGeneratedPreview({
@@ -521,7 +521,7 @@ describe('Studio → LivePreview Regression Contract', () => {
   it('createDemo should return valid CodingDemoResult', async () => {
     mockFs.writeFileSync = vi.fn()
     mockFs.existsSync = vi.fn((p: string) => {
-      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.aureon-demo'))) return false
+      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.Vibeforge-demo'))) return false
       return true
     })
     const result = await livePreviewService.createDemo(3300, 'Calming Ivory')
@@ -532,7 +532,7 @@ describe('Studio → LivePreview Regression Contract', () => {
 
   it('stopPreview should close the in-process HTTP server', async () => {
     mockFs.existsSync = vi.fn((p: string) => {
-      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.aureon-demo'))) return false
+      if (typeof p === 'string' && (p.includes('package.json') || p.includes('.Vibeforge-demo'))) return false
       return true
     })
     await livePreviewService.startPreview('/sandbox/html-app')

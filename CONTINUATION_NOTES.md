@@ -1,4 +1,4 @@
-# Aureon Desk Continuation Notes
+# Vibeforge Continuation Notes
 
 > **⚠️ HISTORICAL DOCUMENT — Updated 2026-07-08**
 > These continuation notes were written for a session handoff from 2026-07-08.
@@ -13,7 +13,7 @@ This file provides a comprehensive handoff of the current codebase and project s
 Paste this into a new chat from the repository root:
 
 ```text
-Bitte lies CONTINUATION_NOTES.md, README.md, CHANGELOG.md, SECURITY_NOTES.md und den aktuellen git status. Fuehre Aureon Desk ab dem Abschnitt "Next work" weiter, ohne bestehende uncommitted/user changes zurueckzusetzen.
+Bitte lies CONTINUATION_NOTES.md, README.md, CHANGELOG.md, SECURITY_NOTES.md und den aktuellen git status. Fuehre Vibeforge ab dem Abschnitt "Next work" weiter, ohne bestehende uncommitted/user changes zurueckzusetzen.
 ```
 
 ---
@@ -25,7 +25,7 @@ Bitte lies CONTINUATION_NOTES.md, README.md, CHANGELOG.md, SECURITY_NOTES.md und
 - Integrated history navigation (back/forward history buttons), window drag regions, a search entry point, and mode-switch tabs directly in the top header.
 
 ### 2. Premium Chat Start Experience
-- Implemented a time-aware greeting ("Good morning, Mert" / "Good afternoon...") with Aureon's custom logo mark.
+- Implemented a time-aware greeting ("Good morning, Mert" / "Good afternoon...") with Vibeforge's custom logo mark.
 - Created a large, centered composer card featuring config selectors for models, system styles, active projects, active tools, and a multiline textarea.
 - Added 8 calm suggestion chips that auto-populate the composer, and a recent chats list displaying up to 3 chats with a working "View all" trigger.
 
@@ -53,7 +53,7 @@ Bitte lies CONTINUATION_NOTES.md, README.md, CHANGELOG.md, SECURITY_NOTES.md und
 
 - **Typecheck**: Passes with zero errors (`npm run typecheck`).
 - **Unit Tests**: All **305** tests pass successfully (`npm test` including new `code-workspace.test.ts` and `settings-layout.test.ts`).
-- **E2E verification**: Created Playwright specs `13-aureon-window-controls.spec.ts`, `14-aureon-chat-home.spec.ts`, `15-aureon-cowork.spec.ts`, `16-aureon-code-workspace.spec.ts`, and `17-aureon-settings-redesign.spec.ts`. Updated `12-aureon-workspace-ui.spec.ts`.
+- **E2E verification**: Created Playwright specs `13-Vibeforge-window-controls.spec.ts`, `14-Vibeforge-chat-home.spec.ts`, `15-Vibeforge-cowork.spec.ts`, `16-Vibeforge-code-workspace.spec.ts`, and `17-Vibeforge-settings-redesign.spec.ts`. Updated `12-Vibeforge-workspace-ui.spec.ts`.
 - **Production Build**: Compiles successfully (`npm run build`).
 
 ---

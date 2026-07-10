@@ -1,4 +1,4 @@
-# Aureon Desk — Brand Guidelines
+# Vibeforge — Brand Guidelines
 
 > **Last updated:** 2026-07-08
 > **Assets by:** Nano Banana (Gemini Image Generation)
@@ -7,7 +7,7 @@
 
 ## Brand Concept
 
-Aureon Desk is a calm, premium desktop AI workspace. The brand identity conveys warmth, focus, and professional capability without any cyberpunk, neon, or glassmorphism aesthetics.
+Vibeforge is a calm, premium desktop AI workspace. The brand identity conveys warmth, focus, and professional capability without any cyberpunk, neon, or glassmorphism aesthetics.
 
 ### Core Principles
 - **Calm, not loud** — warm ivory tones, subtle depth, restrained typography
@@ -23,11 +23,11 @@ Aureon Desk is a calm, premium desktop AI workspace. The brand identity conveys 
 
 | File | Description | Usage |
 |------|-------------|-------|
-| `aureon-app-icon.png` | Rounded app icon with Aureon mark | Windows app icon, ICO generation |
-| `aureon-mark-monochrome.png` | Abstract "A" mark, monochrome | Sidebar logo, tray icon, small badges |
-| `aureon-logo-light.png` | Full logo (mark + wordmark), light bg | README, documentation, splash screens |
-| `aureon-dark-logo-presentation.png` | Full logo, dark bg variant | Dark mode, presentations |
-| `aureon-github-banner.png` | Wide GitHub banner | Repository social preview, README header |
+| `Vibeforge-app-icon.png` | Rounded app icon with Vibeforge mark | Windows app icon, ICO generation |
+| `Vibeforge-mark-monochrome.png` | Abstract "A" mark, monochrome | Sidebar logo, tray icon, small badges |
+| `Vibeforge-logo-light.png` | Full logo (mark + wordmark), light bg | README, documentation, splash screens |
+| `Vibeforge-dark-logo-presentation.png` | Full logo, dark bg variant | Dark mode, presentations |
+| `Vibeforge-github-banner.png` | Wide GitHub banner | Repository social preview, README header |
 
 ### Organized Locations
 
@@ -55,17 +55,17 @@ node scripts/generate-icon.js
 
 | Asset | Renderer Component | Main Process | GitHub |
 |-------|-------------------|--------------|--------|
-| `aureon-mark-monochrome.png` | `AureonMark` (variant="png") | — | — |
-| `aureon-logo-light.png` | `AureonLogo` component, README | — | — |
-| `aureon-github-banner.png` | — | — | `README.md` header |
-| `aureon-app-icon.png` | — | `windows.ts` → `icon.ico` | — |
-| `aureon-dark-logo-presentation.png` | Dark mode (future) | — | — |
+| `Vibeforge-mark-monochrome.png` | `VibeforgeMark` (variant="png") | — | — |
+| `Vibeforge-logo-light.png` | `VibeforgeLogo` component, README | — | — |
+| `Vibeforge-github-banner.png` | — | — | `README.md` header |
+| `Vibeforge-app-icon.png` | — | `windows.ts` → `icon.ico` | — |
+| `Vibeforge-dark-logo-presentation.png` | Dark mode (future) | — | — |
 
 **Code locations:**
-- `src/renderer/src/components/shared/AureonMark.tsx` — SVG + PNG brand mark component
-- `src/renderer/src/layouts/Sidebar.tsx` — Sidebar header (AureonMark, size=34)
-- `src/renderer/src/layouts/AppShell.tsx` — Collapsed topbar (AureonMark, size=22)
-- `src/renderer/src/pages/ChatWorkspace.tsx` — Home greeting (AureonMark, size=44)
+- `src/renderer/src/components/shared/VibeforgeMark.tsx` — SVG + PNG brand mark component
+- `src/renderer/src/layouts/Sidebar.tsx` — Sidebar header (VibeforgeMark, size=34)
+- `src/renderer/src/layouts/AppShell.tsx` — Collapsed topbar (VibeforgeMark, size=22)
+- `src/renderer/src/pages/ChatWorkspace.tsx` — Home greeting (VibeforgeMark, size=44)
 - `src/main/windows.ts` — BrowserWindow icon path
 
 ---
@@ -103,16 +103,16 @@ node scripts/generate-icon.js
 ## Do's and Don'ts
 
 ### ✅ Do
-- Use `AureonMark` component for brand mark (not inline SVG)
+- Use `VibeforgeMark` component for brand mark (not inline SVG)
 - Keep the warm ivory palette everywhere
 - Use soft rounded corners (12px–28px)
 - Maintain consistent spacing and padding
-- Use `src="./brand/aureon-mark.png"` for PNG variant
+- Use `src="./brand/Vibeforge-mark.png"` for PNG variant
 
 ### ❌ Don't
 - Copy Claude Desktop, OpenAI, Codex, or Anthropic UI patterns
 - Use neon colors, cyberpunk aesthetics, or glassmorphism
-- Stretch, rotate, or recolor the Aureon mark
+- Stretch, rotate, or recolor the Vibeforge mark
 - Use the dark logo variant on light backgrounds (and vice versa)
 - Add gradients, glows, or drop shadows to the brand mark
 - Hardcode API keys or brand secrets
@@ -120,4 +120,4 @@ node scripts/generate-icon.js
 
 ---
 
-*These brand guidelines are specific to Aureon Desk. No proprietary AI company branding was referenced or copied.*
+*These brand guidelines are specific to Vibeforge. No proprietary AI company branding was referenced or copied.*

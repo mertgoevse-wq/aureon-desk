@@ -82,7 +82,7 @@ export function CapabilitiesPage(): React.ReactElement {
       <SettingsSection title="Operating System Shields" description="Current system integrations status and blacklisted scopes.">
         <SettingsRow
           label="Accessibility Access"
-          description="OS permission status allowing window management. Aureon does not request this."
+          description="OS permission status allowing window management. Vibeforge does not request this."
           dataTestId="row-permission-accessibility"
         >
           <StatusPill>Not requested</StatusPill>
@@ -90,7 +90,7 @@ export function CapabilitiesPage(): React.ReactElement {
 
         <SettingsRow
           label="Screen Recording Access"
-          description="OS permission status allowing screenshot captures. Aureon does not request this."
+          description="OS permission status allowing screenshot captures. Vibeforge does not request this."
           dataTestId="row-permission-screen"
         >
           <StatusPill>Not requested</StatusPill>

@@ -1,4 +1,4 @@
-// === Aureon Studio Core — Shared Types ===
+// === Vibeforge Studio Core — Shared Types ===
 
 // ---- Autonomy Levels ----
 export type AutonomyLevel = 0 | 1 | 2 | 3 | 4

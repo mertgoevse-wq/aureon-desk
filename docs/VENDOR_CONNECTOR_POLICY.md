@@ -4,7 +4,7 @@ Last updated: 2026-07-09
 
 ## Rule
 
-Aureon Desk does not invent, copy, imitate, or ship fake vendor logos for connector cards.
+Vibeforge does not invent, copy, imitate, or ship fake vendor logos for connector cards.
 
 ## Allowed
 
@@ -20,7 +20,7 @@ Aureon Desk does not invent, copy, imitate, or ship fake vendor logos for connec
 - Lookalike logos.
 - Generated pseudo-logos for Facebook, Instagram, YouTube, TikTok, X/Twitter, LinkedIn, WhatsApp, OpenAI, Google, Anthropic, GitHub, or other vendors.
 - Unattributed copied brand assets.
-- UI copy that implies Aureon is affiliated with a vendor.
+- UI copy that implies Vibeforge is affiliated with a vendor.
 
 ## Social Connectors
 
@@ -34,4 +34,4 @@ Social connector cards use neutral icons only. Official API/OAuth setup docs may
 
 ## WhatsApp
 
-WhatsApp support is limited to official WhatsApp Business API placeholders. Aureon Desk does not automate WhatsApp Web, personal accounts, phone screens, or browser sessions in this build.
+WhatsApp support is limited to official WhatsApp Business API placeholders. Vibeforge does not automate WhatsApp Web, personal accounts, phone screens, or browser sessions in this build.

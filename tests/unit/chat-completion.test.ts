@@ -609,8 +609,8 @@ describe('Chat Completion Service', () => {
       const options = fetchSpy.mock.calls[0][1] as Record<string, unknown>
       const headers = options.headers as Record<string, string>
 
-      expect(headers).toHaveProperty('HTTP-Referer', 'aureon-desk')
-      expect(headers).toHaveProperty('X-Title', 'Aureon Desk')
+      expect(headers).toHaveProperty('HTTP-Referer', 'Vibeforge-desk')
+      expect(headers).toHaveProperty('X-Title', 'Vibeforge')
       expect(headers).toHaveProperty('Authorization')
     })
 
@@ -999,8 +999,8 @@ describe('Chat Completion Service', () => {
       expect(fetchSpy).toHaveBeenCalledTimes(1)
       const options = fetchSpy.mock.calls[0][1] as Record<string, unknown>
       const headers = options.headers as Record<string, string>
-      expect(headers['HTTP-Referer']).toBe('aureon-desk')
-      expect(headers['X-Title']).toBe('Aureon Desk')
+      expect(headers['HTTP-Referer']).toBe('Vibeforge-desk')
+      expect(headers['X-Title']).toBe('Vibeforge')
     })
 
     it('should return clear error for rate limit (429)', async () => {

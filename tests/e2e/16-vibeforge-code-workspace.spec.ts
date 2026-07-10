@@ -1,6 +1,6 @@
 import { test, expect, waitForAppReady, checkForErrorPage } from './helpers/electronApp'
 
-test.describe('Aureon Desk — Code Mode Coding Workspace', () => {
+test.describe('Vibeforge — Code Mode Coding Workspace', () => {
   test.beforeEach(async ({ mainWindow }) => {
     await waitForAppReady(mainWindow)
   })

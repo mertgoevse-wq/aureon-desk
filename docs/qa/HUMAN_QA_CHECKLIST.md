@@ -1,4 +1,4 @@
-# Aureon Desk — Human QA Checklist
+# Vibeforge — Human QA Checklist
 
 > Use this checklist for visible manual QA. Open the app with `npm run dev` and click through every item.
 > Check off each item: ✅ pass, ❌ fail, ⚠️ issue (describe in notes).
@@ -20,7 +20,7 @@
 | # | Check | Result | Notes |
 |---|-------|--------|-------|
 | 1.1 | App launches without crash | | |
-| 1.2 | Window title visible: "Aureon Desk" | | |
+| 1.2 | Window title visible: "Vibeforge" | | |
 | 1.3 | Native window controls work (min/max/close) | | |
 | 1.4 | App taskbar icon shows correctly | | |
 | 1.5 | Window resizes without breaking layout | | |
@@ -35,7 +35,7 @@
 | 2.2 | No fake vendor logos in Connectors page | | |
 | 2.3 | Studio hero icon renders correctly | | |
 | 2.4 | No broken image icons anywhere | | |
-| 2.5 | BrandLockup shows "Aureon Desk" text | | |
+| 2.5 | BrandLockup shows "Vibeforge" text | | |
 
 ## 3. Sidebar
 

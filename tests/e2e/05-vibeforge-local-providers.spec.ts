@@ -11,7 +11,7 @@ async function openProvidersSettings(mainWindow: any): Promise<void> {
   await mainWindow.waitForTimeout(1000)
 }
 
-test.describe('Aureon Desk — Local Providers', () => {
+test.describe('Vibeforge — Local Providers', () => {
   test.beforeEach(async ({ mainWindow }) => {
     await waitForAppReady(mainWindow)
   })

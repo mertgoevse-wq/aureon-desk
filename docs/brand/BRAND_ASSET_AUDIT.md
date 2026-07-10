@@ -1,11 +1,11 @@
-# Aureon Desk — Brand Asset Audit
+# Vibeforge — Brand Asset Audit
 
 > Generated: 2026-07-08
 > Updated: 2026-07-10 (Brand Finalization Pass)
 
 ## Overview
 
-This document catalogs all brand-related assets in the Aureon Desk project, including file sizes, dimensions, usage, and status.
+This document catalogs all brand-related assets in the Vibeforge project, including file sizes, dimensions, usage, and status.
 
 ---
 
@@ -13,20 +13,20 @@ This document catalogs all brand-related assets in the Aureon Desk project, incl
 
 | File | Size | Dimensions | Status | Used In |
 |------|------|------------|--------|---------|
-| `assets/brand/aureon-mark.svg` | ~1KB | 64×64 viewBox | ✅ Good | AureonMark component (variant=svg) |
-| `assets/brand/aureon-icon.svg` | ~2KB | App icon | ✅ Good | Source for ICO generation |
-| `assets/brand/aureon-logo.svg` | ~2KB | Full logo | ✅ Good | Documentation |
-| `assets/brand/aureon-wordmark.svg` | ~2KB | Mark + text | ✅ Good | Sidebar, topbar references |
-| `assets/brand/aureon-logo-lockup.svg` | ~2KB | 400×100 | ✅ NEW | Full logo lockup (mark + wordmark + tagline) |
-| `assets/brand/aureon-github-banner.svg` | ~3KB | 1280×640 | ✅ NEW | GitHub social preview banner source |
+| `assets/brand/Vibeforge-mark.svg` | ~1KB | 64×64 viewBox | ✅ Good | VibeforgeMark component (variant=svg) |
+| `assets/brand/Vibeforge-icon.svg` | ~2KB | App icon | ✅ Good | Source for ICO generation |
+| `assets/brand/Vibeforge-logo.svg` | ~2KB | Full logo | ✅ Good | Documentation |
+| `assets/brand/Vibeforge-wordmark.svg` | ~2KB | Mark + text | ✅ Good | Sidebar, topbar references |
+| `assets/brand/Vibeforge-logo-lockup.svg` | ~2KB | 400×100 | ✅ NEW | Full logo lockup (mark + wordmark + tagline) |
+| `assets/brand/Vibeforge-github-banner.svg` | ~3KB | 1280×640 | ✅ NEW | GitHub social preview banner source |
 
 ### SVG Quality
 - Clean vector format, infinitely scalable
 - Uses proper Ivory/Terracotta palette (#B8683A, #A45A30, #F9EFE9, #E8A45C)
 - Abstract "A" design with aureole ring and neural node dots
 - No copied brand elements from any vendor
-- AureonMark inline SVG uses hardcoded colors (not CSS variables) for guaranteed Chromium/Electron visibility
-- New `aureon-logo-lockup.svg` and `aureon-github-banner.svg` for full branding
+- VibeforgeMark inline SVG uses hardcoded colors (not CSS variables) for guaranteed Chromium/Electron visibility
+- New `Vibeforge-logo-lockup.svg` and `Vibeforge-github-banner.svg` for full branding
 
 ---
 
@@ -34,11 +34,11 @@ This document catalogs all brand-related assets in the Aureon Desk project, incl
 
 | File | Size | Dimensions | Status | Used In |
 |------|------|------------|--------|---------|
-| `public/brand/aureon-mark-32.png` | ~2KB | 32×32 | ✅ NEW | AureonMark (variant=png, small sizes) |
-| `public/brand/aureon-mark-64.png` | ~2KB | 64×64 | ✅ Good | AureonMark (variant=png, size ≤64) |
-| `public/brand/aureon-mark-128.png` | ~5KB | 128×128 | ✅ Good | AureonMark (variant=png, size ≤128) |
-| `public/brand/aureon-mark-256.png` | ~12KB | 256×256 | ✅ Good | AureonMark (variant=png, size ≤256) |
-| `public/brand/aureon-logo-512.png` | ~30KB | 512×? | ✅ Good | AureonLogo component |
+| `public/brand/Vibeforge-mark-32.png` | ~2KB | 32×32 | ✅ NEW | VibeforgeMark (variant=png, small sizes) |
+| `public/brand/Vibeforge-mark-64.png` | ~2KB | 64×64 | ✅ Good | VibeforgeMark (variant=png, size ≤64) |
+| `public/brand/Vibeforge-mark-128.png` | ~5KB | 128×128 | ✅ Good | VibeforgeMark (variant=png, size ≤128) |
+| `public/brand/Vibeforge-mark-256.png` | ~12KB | 256×256 | ✅ Good | VibeforgeMark (variant=png, size ≤256) |
+| `public/brand/Vibeforge-logo-512.png` | ~30KB | 512×? | ✅ Good | VibeforgeLogo component |
 
 ### PNG Quality
 - Optimized sizes, no huge runtime PNGs
@@ -75,16 +75,16 @@ This document catalogs all brand-related assets in the Aureon Desk project, incl
 
 | Component | Asset Used | Variant |
 |-----------|-----------|---------|
-| `AureonMark.tsx` | Inline SVG with hardcoded brand colors | SVG (default) |
-| `AureonMark.tsx` | `aureon-mark-*.png` | PNG (variant) |
-| `BrandLockup.tsx` | `AureonMark` + text | SVG |
-| `BrandLockupCompact` | `AureonMark` only | SVG (compact) |
-| `AppShell.tsx` (topbar) | `BrandLockupCompact` + "Aureon Desk" text | SVG |
+| `VibeforgeMark.tsx` | Inline SVG with hardcoded brand colors | SVG (default) |
+| `VibeforgeMark.tsx` | `Vibeforge-mark-*.png` | PNG (variant) |
+| `BrandLockup.tsx` | `VibeforgeMark` + text | SVG |
+| `BrandLockupCompact` | `VibeforgeMark` only | SVG (compact) |
+| `AppShell.tsx` (topbar) | `BrandLockupCompact` + "Vibeforge" text | SVG |
 | `Sidebar.tsx` (expanded) | `BrandLockup` | SVG |
 | `Sidebar.tsx` (collapsed) | `BrandLockupCompact` | SVG |
-| `SettingsLayout.tsx` | `AureonMark` | SVG |
-| `ChatWorkspace.tsx` | `AureonMark` (greeting) | SVG |
-| `Studio.tsx` | `AureonMark` (hero) | SVG |
+| `SettingsLayout.tsx` | `VibeforgeMark` | SVG |
+| `ChatWorkspace.tsx` | `VibeforgeMark` (greeting) | SVG |
+| `Studio.tsx` | `VibeforgeMark` (hero) | SVG |
 
 ---
 
@@ -113,14 +113,14 @@ This document catalogs all brand-related assets in the Aureon Desk project, incl
 
 | Asset | Status |
 |-------|--------|
-| `public/brand/aureon-mark-32.png` | ✅ NEW |
-| `public/brand/aureon-mark-64.png` | ✅ Present |
-| `public/brand/aureon-mark-128.png` | ✅ Present |
-| `public/brand/aureon-mark-256.png` | ✅ Present |
-| `public/brand/aureon-logo-512.png` | ✅ Present |
+| `public/brand/Vibeforge-mark-32.png` | ✅ NEW |
+| `public/brand/Vibeforge-mark-64.png` | ✅ Present |
+| `public/brand/Vibeforge-mark-128.png` | ✅ Present |
+| `public/brand/Vibeforge-mark-256.png` | ✅ Present |
+| `public/brand/Vibeforge-logo-512.png` | ✅ Present |
 | `build/icon.ico` | ✅ Regenerated (PNG-based, 7 sizes) |
 | `build/icon.png` | ✅ Regenerated |
-| `assets/brand/aureon-github-banner-1200.png` | ✅ Generated |
+| `assets/brand/Vibeforge-github-banner-1200.png` | ✅ Generated |
 
 **No broken references found.**
 
@@ -141,12 +141,12 @@ All well under normal thresholds. No optimization needed.
 
 ## 9. Recommendations
 
-- [x] All Aureon brand SVGs exist and are original
+- [x] All Vibeforge brand SVGs exist and are original
 - [x] All PNG sizes generated for renderer use
 - [x] ICO generated for Windows packaging (PNG-based, 7 sizes)
 - [x] No fake vendor logos
 - [x] No broken image references
-- [x] AureonMark uses hardcoded brand colors for guaranteed visibility (2026-07-10 fix)
+- [x] VibeforgeMark uses hardcoded brand colors for guaranteed visibility (2026-07-10 fix)
 - [x] Branding visible in sidebar (expanded + collapsed), topbar, Settings, Studio hero
 - [x] `scripts/generate-brand-assets.mjs` for reproducible asset generation
 - [ ] Create `assets/vendor/` directory for future licensed vendor assets

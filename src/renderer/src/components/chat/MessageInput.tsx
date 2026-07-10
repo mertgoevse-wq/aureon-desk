@@ -68,7 +68,7 @@ const BUILTIN_COMMANDS: Omit<SlashItem, 'isPrompt'>[] = [
 export function MessageInput({
   onSend,
   disabled = false,
-  placeholder = 'Ask Aureon to write, inspect, plan, or build...'
+  placeholder = 'Ask Vibeforge to write, inspect, plan, or build...'
 }: MessageInputProps): React.ReactElement {
   const [value, setValue] = useState('')
   const [showSlashMenu, setShowSlashMenu] = useState(false)

@@ -59,7 +59,7 @@ export const ONBOARDING_CARDS: VibeTemplate[] = [
     id: 'build-android-app',
     label: 'Build an Android app',
     icon: 'Smartphone',
-    description: 'Create a simple Android app — Aureon helps plan and generate the code.',
+    description: 'Create a simple Android app — Vibeforge helps plan and generate the code.',
     category: 'build',
     prompt: 'I want to build a simple Android app. Help me plan the features and generate the starter code. I\'m a beginner, so explain each file and what it does. Recommend the simplest setup possible.\n\nKeep it offline-first — no server required. Use clean Material Design with warm neutral colors (no neon). After generating, explain how to test it.'
   },
@@ -75,7 +75,7 @@ export const ONBOARDING_CARDS: VibeTemplate[] = [
     id: 'fix-error',
     label: 'Fix an error',
     icon: 'Wrench',
-    description: 'Paste your error message and Aureon will explain what went wrong and how to fix it.',
+    description: 'Paste your error message and Vibeforge will explain what went wrong and how to fix it.',
     category: 'fix',
     prompt: 'I\'m getting this error. Can you explain what it means in simple terms and show me how to fix it step by step?\n\n```\n[paste your error here]\n```\n\nAfter fixing: run typecheck, tests, and build to verify. Do not hardcode any secrets or API keys.'
   },
@@ -99,7 +99,7 @@ export const ONBOARDING_CARDS: VibeTemplate[] = [
     id: 'explain-code',
     label: 'Explain this code',
     icon: 'BookOpen',
-    description: 'Paste any code and Aureon will explain what it does in plain English.',
+    description: 'Paste any code and Vibeforge will explain what it does in plain English.',
     category: 'learn',
     prompt: 'Please explain this code to me like I\'m a beginner. What does each part do? How does it work together?\n\n```\n[paste your code here]\n```'
   },
@@ -116,9 +116,9 @@ export const ONBOARDING_CARDS: VibeTemplate[] = [
     id: 'connect-provider',
     label: 'Connect an AI provider',
     icon: 'KeyRound',
-    description: 'Set up your first AI provider (API key) so Aureon can start helping you.',
+    description: 'Set up your first AI provider (API key) so Vibeforge can start helping you.',
     category: 'setup',
-    prompt: 'Help me set up my first AI provider in Aureon Desk. I need guidance on getting an API key and configuring it. Recommend OpenRouter for beginners (it gives access to many models with one key).'
+    prompt: 'Help me set up my first AI provider in Vibeforge. I need guidance on getting an API key and configuring it. Recommend OpenRouter for beginners (it gives access to many models with one key).'
   },
   {
     id: 'import-github',
@@ -126,7 +126,7 @@ export const ONBOARDING_CARDS: VibeTemplate[] = [
     icon: 'Github',
     description: 'Bring in code from a GitHub repository and start working on it.',
     category: 'setup',
-    prompt: 'Help me import a project from GitHub into Aureon Desk. Guide me through the steps and ask for the repository URL.'
+    prompt: 'Help me import a project from GitHub into Vibeforge. Guide me through the steps and ask for the repository URL.'
   },
   {
     id: 'package-windows',
@@ -156,7 +156,7 @@ export const ONBOARDING_CARDS: VibeTemplate[] = [
     id: 'start-building',
     label: 'Start from scratch',
     icon: 'Lightbulb',
-    description: 'Not sure where to start? Aureon will guide you through the process.',
+    description: 'Not sure where to start? Vibeforge will guide you through the process.',
     category: 'build',
     prompt: 'I want to build something new but I\'m not sure where to start. First, ask me about my interests and skill level. Then suggest a simple project I can build and help me create it step by step. Keep it beginner-friendly.'
   }
@@ -169,7 +169,7 @@ export const GUIDED_BUILDER_STEPS: GuidedStep[] = [
     description: 'Choose the type of project you want to create.',
     options: [
       { id: 'website', label: 'Website', icon: 'Globe', description: 'A web page or site with HTML, CSS, and JavaScript' },
-      { id: 'desktop-app', label: 'Desktop app', icon: 'Monitor', description: 'An Electron desktop application like Aureon itself' },
+      { id: 'desktop-app', label: 'Desktop app', icon: 'Monitor', description: 'An Electron desktop application like Vibeforge itself' },
       { id: 'android-app', label: 'Android app', icon: 'Smartphone', description: 'A simple Android application' },
       { id: 'mini-game', label: 'Mini-game', icon: 'Gamepad2', description: 'A small browser game (puzzle, clicker, quiz)' },
       { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', description: 'A data dashboard with charts and stats' },
@@ -191,7 +191,7 @@ export const GUIDED_BUILDER_STEPS: GuidedStep[] = [
   {
     id: 'action',
     label: 'What do you want to do?',
-    description: 'Pick the first action you want Aureon to help with.',
+    description: 'Pick the first action you want Vibeforge to help with.',
     options: [
       { id: 'plan', label: 'Plan', icon: 'Map', description: 'Create a step-by-step plan for your project' },
       { id: 'generate', label: 'Generate files', icon: 'FileCode', description: 'Generate the starter code and files' },
@@ -208,7 +208,7 @@ export const TUTORIAL_CARDS: TutorialCard[] = [
     id: 'what-is-provider',
     icon: 'KeyRound',
     question: 'What is a provider?',
-    answer: 'A provider is the company or service that runs the AI model. Examples: OpenAI (ChatGPT), Anthropic (Claude), Google (Gemini), or OpenRouter (access to many models). You need an API key from a provider to use Aureon Desk.'
+    answer: 'A provider is the company or service that runs the AI model. Examples: OpenAI (ChatGPT), Anthropic (Claude), Google (Gemini), or OpenRouter (access to many models). You need an API key from a provider to use Vibeforge.'
   },
   {
     id: 'what-is-model',
@@ -220,37 +220,37 @@ export const TUTORIAL_CARDS: TutorialCard[] = [
     id: 'what-is-project',
     icon: 'FolderOpen',
     question: 'What is a project?',
-    answer: 'A project is a folder on your computer that contains your code. Aureon can read files from your project to understand context and help you better. Files are only sent to the AI when you explicitly use them in a chat.'
+    answer: 'A project is a folder on your computer that contains your code. Vibeforge can read files from your project to understand context and help you better. Files are only sent to the AI when you explicitly use them in a chat.'
   },
   {
     id: 'what-is-live-preview',
     icon: 'Monitor',
     question: 'What is LivePreview?',
-    answer: 'LivePreview lets you see your app running in real time inside Aureon Desk. You can build HTML pages, React apps, or run the Coding Demo. It runs on your computer only — not accessible from the internet.'
+    answer: 'LivePreview lets you see your app running in real time inside Vibeforge. You can build HTML pages, React apps, or run the Coding Demo. It runs on your computer only — not accessible from the internet.'
   },
   {
     id: 'what-is-safe-folder',
     icon: 'ShieldCheck',
     question: 'What is a safe local folder?',
-    answer: 'A safe local folder is a project folder on your computer that Aureon can read from. Sensitive files like .env (API keys), .git folders, and node_modules are automatically excluded. Never put passwords or real API keys in project files — use the secure credential vault in Settings instead.'
+    answer: 'A safe local folder is a project folder on your computer that Vibeforge can read from. Sensitive files like .env (API keys), .git folders, and node_modules are automatically excluded. Never put passwords or real API keys in project files — use the secure credential vault in Settings instead.'
   },
   {
     id: 'never-paste',
     icon: 'Shield',
     question: 'What should I never paste into chat?',
-    answer: 'Never paste real passwords, API keys, credit card numbers, or private credentials into chat. These are sent to the AI provider. Use the secure credential vault in Settings > Providers for API keys. Aureon automatically redacts detected secrets, but you should still be careful.'
+    answer: 'Never paste real passwords, API keys, credit card numbers, or private credentials into chat. These are sent to the AI provider. Use the secure credential vault in Settings > Providers for API keys. Vibeforge automatically redacts detected secrets, but you should still be careful.'
   },
   {
     id: 'test-before-push',
     icon: 'CheckCircle',
     question: 'How do I test before pushing?',
-    answer: 'Before pushing code to GitHub: (1) run typecheck to catch errors, (2) run tests to verify nothing is broken, (3) run build to make sure the app compiles, (4) check for secrets with git grep. Aureon can help you with all of these — just ask!'
+    answer: 'Before pushing code to GitHub: (1) run typecheck to catch errors, (2) run tests to verify nothing is broken, (3) run build to make sure the app compiles, (4) check for secrets with git grep. Vibeforge can help you with all of these — just ask!'
   },
   {
     id: 'what-is-build',
     icon: 'Package',
     question: 'What does "build" mean?',
-    answer: 'Building turns your code into a runnable app. For web apps, it means creating the HTML/CSS/JS files. For desktop apps, it means packaging them into an installer (.exe). Aureon can help generate and preview code instantly, and guide you through the build process.'
+    answer: 'Building turns your code into a runnable app. For web apps, it means creating the HTML/CSS/JS files. For desktop apps, it means packaging them into an installer (.exe). Vibeforge can help generate and preview code instantly, and guide you through the build process.'
   }
 ]
 

@@ -1,4 +1,4 @@
-# Aureon Desk — Manual Product QA Notes
+# Vibeforge — Manual Product QA Notes
 
 > **QA date:** 2026-07-09
 > **Branch:** main at `adf6dbb`
@@ -12,7 +12,7 @@
 |-------|--------|
 | `git status` | ✅ main, up to date, 1 untracked (docs/ISSUES_REGISTER.md) |
 | `git branch -a -vv` | ✅ main synced, master 44 behind |
-| `git remote -v` | ✅ github.com/mertgoevse-wq/aureon-desk.git |
+| `git remote -v` | ✅ github.com/mertgoevse-wq/Vibeforge-desk.git |
 | `npm run verify:native` | ✅ PASS — better-sqlite3 binary loads |
 | `npm run typecheck` | ✅ PASS — zero TS errors |
 | `npm test` | ✅ PASS — 491 tests, 22 files |
@@ -129,7 +129,7 @@
 
 ### Bug 3: README Broken Banner Path
 - **Location:** `README.md` line 4
-- **Root cause:** References `assets/brand/nano-banana/aureon-github-banner.png` which doesn't exist (directory is empty). Actual file is `assets/brand/aureon-github-banner-1200.png`.
+- **Root cause:** References `assets/brand/nano-banana/Vibeforge-github-banner.png` which doesn't exist (directory is empty). Actual file is `assets/brand/Vibeforge-github-banner-1200.png`.
 - **Fix:** Update path to correct file location.
 
 ---

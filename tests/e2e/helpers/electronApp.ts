@@ -7,15 +7,15 @@ const MAIN_ENTRY = resolve(__dirname, '../../../out/main/index.js')
 /**
  * Optional slow-motion delay for the Electron launch.
  * Accepts either of:
- *   VIBEFORGE_HUMAN_QA_SLOWMO / AUREON_HUMAN_QA_SLOWMO  (used by serious spec)
- *   VIBEFORGE_SLOW_MO_MS / AUREON_SLOW_MO_MS            (used by visible spec)
+ *   VIBEFORGE_HUMAN_QA_SLOWMO / Vibeforge_HUMAN_QA_SLOWMO  (used by serious spec)
+ *   VIBEFORGE_SLOW_MO_MS / Vibeforge_SLOW_MO_MS            (used by visible spec)
  * Left unset by default — every other test runs at full speed.
  */
 const SLOW_MO_MS = (() => {
   const raw = process.env.VIBEFORGE_HUMAN_QA_SLOWMO ??
-    process.env.AUREON_HUMAN_QA_SLOWMO ??
+    process.env.Vibeforge_HUMAN_QA_SLOWMO ??
     process.env.VIBEFORGE_SLOW_MO_MS ??
-    process.env.AUREON_SLOW_MO_MS
+    process.env.Vibeforge_SLOW_MO_MS
   if (!raw) return undefined
   const parsed = Number.parseInt(raw, 10)
   return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined

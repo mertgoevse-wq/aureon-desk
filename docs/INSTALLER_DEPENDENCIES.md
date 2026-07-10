@@ -1,4 +1,4 @@
-# Aureon Desk — Installer Dependencies
+# Vibeforge — Installer Dependencies
 
 > What developers need vs what normal users need.
 > All optional tools are opt-in only. No silent installs.
@@ -15,7 +15,7 @@ These ship inside the Electron app. Users need nothing extra.
 | better-sqlite3 | Local database | ✅ | Native module, auto-rebuilt |
 | Node.js (Electron) | JS runtime | ✅ | No system Node required |
 | Chromium | Web renderer | ✅ | Inside Electron |
-| Aureon Desk | The app | ✅ | NSIS installer + portable |
+| Vibeforge | The app | ✅ | NSIS installer + portable |
 
 **No Node, Git, or VS Build Tools required for normal use.**
 
@@ -23,7 +23,7 @@ These ship inside the Electron app. Users need nothing extra.
 
 ## Developer Mode (Optional)
 
-Required **only** if you want to build, test, or develop Aureon Desk from source.
+Required **only** if you want to build, test, or develop Vibeforge from source.
 
 ### Required for Source Build
 
@@ -84,7 +84,7 @@ They must be manually downloaded from their respective official sources.
 
 The current NSIS installer (`electron-builder --win`) offers:
 
-- **Standard Install** — Aureon Desk only, no extras
+- **Standard Install** — Vibeforge only, no extras
 - **Portable** — Self-extracting, no installation
 
 A future custom NSIS page could add:

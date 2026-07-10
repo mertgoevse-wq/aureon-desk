@@ -1,6 +1,6 @@
-# LivePreview Runtime Audit — Aureon Desk
+# LivePreview Runtime Audit — Vibeforge
 
-This document outlines the architectural components, IPC channels, sandbox layouts, and rendering mechanics of the LivePreview system in Aureon Desk.
+This document outlines the architectural components, IPC channels, sandbox layouts, and rendering mechanics of the LivePreview system in Vibeforge.
 
 ---
 
@@ -47,11 +47,11 @@ Exposed methods inside `src/preload/index.ts` include:
 ## 2. Sandbox Filesystem & Directories
 
 - **Sandbox Root Path:** `app.getPath('userData')/preview-sandbox/`
-  - In production (Windows): `%APPDATA%/aureon-desk/preview-sandbox/`
-  - In development: `C:/Users/mertg/AppData/Roaming/aureon-desk/preview-sandbox/`
+  - In production (Windows): `%APPDATA%/Vibeforge-desk/preview-sandbox/`
+  - In development: `C:/Users/mertg/AppData/Roaming/Vibeforge-desk/preview-sandbox/`
 - **Active Sandbox Directory:** A subfolder named with a unique v4 UUID (e.g. `.../preview-sandbox/d283af90-2c70-496a-8b83-500b99ac8f25/`) is generated per preview session.
 - **Vite React Template:** Generates `package.json`, `vite.config.ts`, `index.html`, and `src/main.tsx`. Run `npm install` and spawn `npx vite --host 127.0.0.1` locally.
-- **HTML / Demo Template:** Instantly writes a single static `index.html` file (along with an internal marker `.aureon-demo` for self-test identification).
+- **HTML / Demo Template:** Instantly writes a single static `index.html` file (along with an internal marker `.Vibeforge-demo` for self-test identification).
 
 ---
 
@@ -73,7 +73,7 @@ Exposed methods inside `src/preload/index.ts` include:
 
   ```tsx
   {status.status === 'running' && status.url && (
-    <iframe src={status.url} title="Aureon Live Sandbox Preview" />
+    <iframe src={status.url} title="Vibeforge Live Sandbox Preview" />
   )}
   ```
 
@@ -88,7 +88,7 @@ Exposed methods inside `src/preload/index.ts` include:
 
 ## 5. Root Cause Analysis: Studio Auto-Popup Failure (Fixed)
 
-Previously, when the user chose "Generate + Preview" in Aureon Studio, the iframe failed to render immediately because:
+Previously, when the user chose "Generate + Preview" in Vibeforge Studio, the iframe failed to render immediately because:
 
 1. **Async Node.js API:** `livePreviewService.startPreview()` calls `http.createServer().listen()`, which fires its callback asynchronously.
 2. **Premature Status Return:** The IPC handler returned immediately with `{status: 'starting'}` before the callback could set the status to `running`.

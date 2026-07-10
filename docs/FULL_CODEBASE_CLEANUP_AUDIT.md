@@ -1,4 +1,4 @@
-# Aureon Desk — Full Codebase Cleanup Audit
+# Vibeforge — Full Codebase Cleanup Audit
 
 > Generated: 2026-07-10 | Branch: `main` | Commit: pre-cleanup `95b7c00`
 

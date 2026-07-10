@@ -1,4 +1,4 @@
-# VoltAgent Skills Import — Aureon Desk
+# VoltAgent Skills Import — Vibeforge
 
 > Import metadata from [VoltAgent/awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills) — a community-maintained index of 1,497+ Agent Skills from leading teams.
 
@@ -6,7 +6,7 @@
 
 The VoltAgent awesome-agent-skills repository catalogs official Agent Skills from 189+ organizations including Anthropic, Google, Stripe, Vercel, Cloudflare, TestMu AI, Figma, NVIDIA, and many more. Each skill is a small, portable set of instructions for AI assistants.
 
-The Aureon Desk importer:
+The Vibeforge importer:
 1. Fetches the README.md from GitHub
 2. Parses all bullet-point skill entries
 3. Categorizes each skill by keywords (testing, web, AI, etc.)
@@ -59,7 +59,7 @@ Each imported skill includes:
 
 - **No source code is copied.** Only metadata (name, URL, description) is imported.
 - **License status is tracked.** All skills initially marked `unknown` until license review.
-- **Adaptation creates original content.** When a user adapts a skill, the system generates an original Aureon implementation inspired by the source, not a copy.
+- **Adaptation creates original content.** When a user adapts a skill, the system generates an original Vibeforge implementation inspired by the source, not a copy.
 - **Risk levels are auto-assigned.** Skills matching destructive patterns (delete, drop, truncate) are flagged `destructive`. Deploy/publish skills are flagged `caution`.
 
 ## Architecture
@@ -67,7 +67,7 @@ Each imported skill includes:
 ```
 scripts/import-voltagent-awesome-skills.mjs   ← Importer (Node.js)
 src/shared/external-skill-sources.ts          ← Type definitions
-src/shared/curated-skills.ts                  ← Aureon original skills
+src/shared/curated-skills.ts                  ← Vibeforge original skills
 src/shared/data/voltagent-awesome-skills.generated.{json,ts}  ← Output
 src/renderer/src/pages/SkillsPage.tsx          ← Skill Explorer UI
 ```

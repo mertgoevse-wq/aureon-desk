@@ -1,8 +1,8 @@
-# Aureon Desk — Connectors Plan
+# Vibeforge — Connectors Plan
 
 ## Overview
 
-The Connectors system allows Aureon Desk to integrate with external services while maintaining strict security boundaries. Every connector has defined permission scopes, risk notes, and never auto-executes dangerous actions.
+The Connectors system allows Vibeforge to integrate with external services while maintaining strict security boundaries. Every connector has defined permission scopes, risk notes, and never auto-executes dangerous actions.
 
 ## Connector Architecture
 
@@ -105,7 +105,7 @@ The Connectors system allows Aureon Desk to integrate with external services whi
 ### Architecture
 - Local network pairing only (WebSocket)
 - No cloud relay
-- Pairing code displayed in Aureon Desk
+- Pairing code displayed in Vibeforge
 - User enters code on phone
 
 ### Permissions

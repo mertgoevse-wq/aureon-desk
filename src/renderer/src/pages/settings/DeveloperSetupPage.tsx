@@ -155,7 +155,7 @@ interface CategoryConfig {
 const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
   required: {
     title: 'Required for Development',
-    description: 'These tools are needed to build, test, and package Aureon Desk from source. Normal users do not need them.',
+    description: 'These tools are needed to build, test, and package Vibeforge from source. Normal users do not need them.',
     icon: <Wrench size={14} />,
   },
   recommended: {
@@ -216,7 +216,7 @@ export function DeveloperSetupPage(): React.ReactElement {
         </div>
         <h1 className="text-[28px] font-semibold tracking-tight text-[var(--ivory-text)] display-text">Developer Setup</h1>
         <p className="mt-2 max-w-2xl text-xs leading-relaxed text-[var(--ivory-text-3)]">
-          Aureon Desk runs standalone for normal users — no extra tools needed.
+          Vibeforge runs standalone for normal users — no extra tools needed.
           This page helps developers install the tools required to build, test, and contribute to the project.
         </p>
       </div>
@@ -250,7 +250,7 @@ export function DeveloperSetupPage(): React.ReactElement {
             <p className="text-sm font-semibold text-[var(--ivory-text)]">Offline Installer Folder</p>
             <p className="text-xs text-[var(--ivory-text-2)] leading-relaxed">
               Place downloaded installers in <code className="text-[11px] px-1.5 py-0.5 rounded bg-[var(--ivory-bg)] text-[var(--ivory-accent)]">vendor/installers/</code> for offline setup.
-              Aureon never silently installs anything — offline installers must be run manually.
+              Vibeforge never silently installs anything — offline installers must be run manually.
             </p>
             <div className="flex flex-wrap gap-1.5">
               {OFFLINE_INSTALLER_FILES.map(file => (
@@ -295,11 +295,11 @@ export function DeveloperSetupPage(): React.ReactElement {
       {/* Footer */}
       <div className="pt-2 pb-4 text-[10px] text-[var(--ivory-text-3)] leading-relaxed">
         <p>
-          <strong>Normal users:</strong> Aureon Desk includes a bundled Electron runtime — no Node.js, Git, or VS Build Tools required.
+          <strong>Normal users:</strong> Vibeforge includes a bundled Electron runtime — no Node.js, Git, or VS Build Tools required.
           The installer works out of the box on Windows 10+.
         </p>
         <p className="mt-1">
-          See <a href="https://github.com/mertgoevse-wq/aureon-desk/blob/main/docs/INSTALLER_DEPENDENCIES.md" className="text-[var(--ivory-accent)] hover:underline" target="_blank" rel="noopener noreferrer">docs/INSTALLER_DEPENDENCIES.md</a> for the full dependency matrix.
+          See <a href="https://github.com/mertgoevse-wq/Vibeforge-desk/blob/main/docs/INSTALLER_DEPENDENCIES.md" className="text-[var(--ivory-accent)] hover:underline" target="_blank" rel="noopener noreferrer">docs/INSTALLER_DEPENDENCIES.md</a> for the full dependency matrix.
         </p>
       </div>
     </div>

@@ -205,7 +205,7 @@ describe('LearnPage Content Integrity', () => {
     'What is a Tool?',
     'What is MCP?',
     'What is a Prompt Profile?',
-    'When does Aureon choose which one?',
+    'When does Vibeforge choose which one?',
     'What runs locally?',
     'What sends data to providers?',
   ]
@@ -240,7 +240,7 @@ describe('LearnPage Content Integrity', () => {
 // ---------------------------------------------------------------------------
 
 describe('Skill License Policy', () => {
-  it('all Aureon education data is original (no external code)', () => {
+  it('all Vibeforge education data is original (no external code)', () => {
     for (const agent of AGENT_EDUCATION) {
       expect(agent.beginnerExplanation).toBeTruthy()
       expect(agent.beginnerExplanation).not.toContain('ChatGPT')

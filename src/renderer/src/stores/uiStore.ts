@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { safeLocalStorageGet, safeLocalStorageSet, safeLocalStorageRemove } from '../../../shared/local-storage'
 
 interface UIState {
   sidebarCollapsed: boolean
@@ -9,6 +10,8 @@ interface UIState {
   isOnboarding: boolean
   /** When true, hides advanced provider/MCP/debug settings for a cleaner UI */
   simpleMode: boolean
+  /** True when the first-run wizard should be shown (vb_first_run_done not set) */
+  showFirstRun: boolean
 
   toggleSidebar: () => void
   toggleInspector: () => void
@@ -19,12 +22,17 @@ interface UIState {
   toggleSimpleMode: () => void
   setSimpleMode: (simple: boolean) => void
   resetLayout: () => void
+  /** Mark first-run wizard as complete — sets localStorage flag */
+  dismissFirstRun: () => void
+  /** Reset first-run so the wizard shows again (used from Settings → restart onboarding) */
+  resetFirstRun: () => void
 }
 
 const DEFAULT_SIDEBAR_WIDTH = 232
 const DEFAULT_INSPECTOR_WIDTH = 340
 
-export const useUIStore = create<UIState>((set, get) => ({
+
+export const useUIStore = create<UIState>((set) => ({
   sidebarCollapsed: false,
   inspectorOpen: false,
   sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
@@ -32,6 +40,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   activeSettingsPage: null,
   isOnboarding: false,
   simpleMode: true, // Simple mode ON by default for cleaner first impression
+  showFirstRun: safeLocalStorageGet('vb_first_run_done') !== 'true',
 
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
   toggleInspector: () => set((s) => ({ inspectorOpen: !s.inspectorOpen })),
@@ -61,6 +70,14 @@ export const useUIStore = create<UIState>((set, get) => ({
   },
   setActiveSettingsPage: (page) => set({ activeSettingsPage: page }),
   setIsOnboarding: (onboarding) => set({ isOnboarding: onboarding }),
+  dismissFirstRun: () => {
+    safeLocalStorageSet('vb_first_run_done', 'true')
+    set({ showFirstRun: false, isOnboarding: false })
+  },
+  resetFirstRun: () => {
+    safeLocalStorageRemove('vb_first_run_done')
+    set({ showFirstRun: true, isOnboarding: true })
+  },
   resetLayout: () => {
     set({
       sidebarWidth: DEFAULT_SIDEBAR_WIDTH,
