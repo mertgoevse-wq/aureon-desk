@@ -4,6 +4,30 @@
 
 ---
 
+## Full Codebase Cleanup — 2026-07-10
+
+> ✅ **Status: Complete — DRY fix, component extraction, import cleanup, comprehensive audit doc.**
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` (node + web) | ✅ PASS |
+| `npm test` (845 tests, 33 files) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| `applyStyleToHtml()` DRY helper | ✅ PASS |
+| BuildPipelinePanel component extraction | ✅ PASS |
+| 15 unused icon imports removed | ✅ PASS |
+| All data-testid attributes preserved | ✅ PASS |
+| `docs/FULL_CODEBASE_CLEANUP_AUDIT.md` | ✅ Created |
+
+### Key Changes
+
+| Area | Change |
+|------|--------|
+| `live-preview.service.ts` | DRY: extracted `applyStyleToHtml()` helper (~60 lines deduplicated) |
+| `BuildPipelinePanel.tsx` | NEW: extracted 6-tab pipeline panel + follow-up suggestions |
+| `LivePreview.tsx` | Reduced ~850→~600 lines, cleaned imports, simpler props |
+| Audit | 0 duplicate components, 0 circular deps, 0 TODO/FIXME in source |
+
 ## Agent & Skill Education Center — 2026-07-10
 
 > ✅ **Status: Complete — 4-tab education center, 16 agents, 19 skills, auto-selection demo, 28 tests.**

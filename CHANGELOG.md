@@ -1,5 +1,31 @@
 ## [0.9.78] - 2026-07-10
 
+### Changed — Full Codebase Cleanup & LivePreview Performance
+
+**LivePreview service DRY fix:**
+- Extracted duplicated style replacement code (~30 lines × 2) into single `applyStyleToHtml()` helper in `live-preview.service.ts`
+- Used by both `createSandbox()` and `startGeneratedPreview()` — single source of truth
+
+**Component extraction:**
+- Created `BuildPipelinePanel.tsx` — extracted 6-tab pipeline panel from LivePreview.tsx (Code, Files, Diff, Plan, Preview, Cards tabs + follow-up suggestions)
+- Reduced LivePreview.tsx from ~850 lines to ~600 lines
+- Removed 15 unused Lucide icon imports, duplicate Sparkles import, and dead imports
+- All `data-testid` attributes preserved for E2E test compatibility
+
+**Performance:**
+- Removed unnecessary `useMemo` wrapper for `pipelinePanelProps` with missing deps
+- Replaced with plain object — avoids stale callback references
+
+**Docs:**
+- Created `docs/FULL_CODEBASE_CLEANUP_AUDIT.md` — comprehensive audit: 0 duplicate components, 0 circular deps, 0 TODO/FIXME in source
+
+### Verified
+- `npm run typecheck` — ✅ PASS (node + web)
+- `npm test` — ✅ PASS (845 tests, 33 files)
+- `npm run build` — ✅ PASS
+
+## [0.9.78] - 2026-07-10
+
 ### Added — Agent & Skill Education Center
 
 **Education Center:**
