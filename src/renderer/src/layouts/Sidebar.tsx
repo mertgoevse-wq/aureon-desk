@@ -18,7 +18,7 @@ import { useUIStore } from '../stores/uiStore'
 import { useChatStore } from '../stores/chatStore'
 import { ChatList } from '../components/sidebar/ChatList'
 import { useIpc } from '../hooks/useIpc'
-import { BrandLockup } from '../components/shared/BrandLockup'
+import { BrandLockup, BrandLockupCompact } from '../components/shared/BrandLockup'
 
 import type { ChatListItem } from '@shared/types/chat'
 
@@ -111,6 +111,8 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
         aria-label="Sidebar navigation"
         data-testid="sidebar"
       >
+        {/* Compact brand mark at top of collapsed sidebar */}
+        <BrandLockupCompact size={28} className="mb-1" />
         <button
           type="button"
           onClick={toggleSidebar}

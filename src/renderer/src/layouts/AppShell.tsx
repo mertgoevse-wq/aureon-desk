@@ -5,6 +5,7 @@ import { RightInspector } from './RightInspector'
 import { ToastContainer } from '../components/shared/Toast'
 import { CommandPalette } from '../components/shared/CommandPalette'
 import { ShortcutsHelp } from '../components/shared/ShortcutsHelp'
+import { BrandLockupCompact } from '../components/shared/BrandLockup'
 import type { CommandItem } from '../components/shared/CommandPalette'
 import { useUIStore, loadPanelSizes } from '../stores/uiStore'
 import { loadPersistedTheme } from '../utils/theme'
@@ -387,7 +388,13 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
               </button>
             </div>
 
-
+            {/* Brand lockup in topbar */}
+            <div className="hidden md:flex items-center gap-2 shrink-0">
+              <BrandLockupCompact size={22} />
+              <span className="text-[13px] font-semibold text-[var(--ivory-text)] display-text">
+                Aureon Desk
+              </span>
+            </div>
           </div>
 
           {/* Center Column: Mode Switch */}

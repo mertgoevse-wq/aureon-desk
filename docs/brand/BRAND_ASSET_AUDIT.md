@@ -1,6 +1,7 @@
 # Aureon Desk — Brand Asset Audit
 
 > Generated: 2026-07-08
+> Updated: 2026-07-10 (Brand Finalization Pass)
 
 ## Overview
 
@@ -13,15 +14,19 @@ This document catalogs all brand-related assets in the Aureon Desk project, incl
 | File | Size | Dimensions | Status | Used In |
 |------|------|------------|--------|---------|
 | `assets/brand/aureon-mark.svg` | ~1KB | 64×64 viewBox | ✅ Good | AureonMark component (variant=svg) |
-| `assets/brand/aureon-logo.svg` | ~2KB | Full logo | ✅ Good | Documentation |
-| `assets/brand/aureon-wordmark.svg` | ~2KB | Mark + text | ✅ Good | Not currently wired |
 | `assets/brand/aureon-icon.svg` | ~2KB | App icon | ✅ Good | Source for ICO generation |
+| `assets/brand/aureon-logo.svg` | ~2KB | Full logo | ✅ Good | Documentation |
+| `assets/brand/aureon-wordmark.svg` | ~2KB | Mark + text | ✅ Good | Sidebar, topbar references |
+| `assets/brand/aureon-logo-lockup.svg` | ~2KB | 400×100 | ✅ NEW | Full logo lockup (mark + wordmark + tagline) |
+| `assets/brand/aureon-github-banner.svg` | ~3KB | 1280×640 | ✅ NEW | GitHub social preview banner source |
 
 ### SVG Quality
 - Clean vector format, infinitely scalable
-- Uses proper Ivory/Terracotta palette
-- Abstract "A" design with aureole ring
+- Uses proper Ivory/Terracotta palette (#B8683A, #A45A30, #F9EFE9, #E8A45C)
+- Abstract "A" design with aureole ring and neural node dots
 - No copied brand elements from any vendor
+- AureonMark inline SVG uses hardcoded colors (not CSS variables) for guaranteed Chromium/Electron visibility
+- New `aureon-logo-lockup.svg` and `aureon-github-banner.svg` for full branding
 
 ---
 
@@ -29,6 +34,7 @@ This document catalogs all brand-related assets in the Aureon Desk project, incl
 
 | File | Size | Dimensions | Status | Used In |
 |------|------|------------|--------|---------|
+| `public/brand/aureon-mark-32.png` | ~2KB | 32×32 | ✅ NEW | AureonMark (variant=png, small sizes) |
 | `public/brand/aureon-mark-64.png` | ~2KB | 64×64 | ✅ Good | AureonMark (variant=png, size ≤64) |
 | `public/brand/aureon-mark-128.png` | ~5KB | 128×128 | ✅ Good | AureonMark (variant=png, size ≤128) |
 | `public/brand/aureon-mark-256.png` | ~12KB | 256×256 | ✅ Good | AureonMark (variant=png, size ≤256) |
@@ -45,12 +51,15 @@ This document catalogs all brand-related assets in the Aureon Desk project, incl
 
 | File | Size | Dimensions | Status | Used In |
 |------|------|------------|--------|---------|
-| `build/icon.ico` | ~277KB | multi (16,32,48,256) | ✅ Good | Windows app icon, installer |
-| `build/icon.png` | ~262KB | 256×256 | ✅ Good | General reference |
-| `build/icon-16.png` | varies | 16×16 | ✅ Good | Generated |
-| `build/icon-32.png` | varies | 32×32 | ✅ Good | Generated |
-| `build/icon-48.png` | varies | 48×48 | ✅ Good | Generated |
-| `build/icon-256.png` | varies | 256×256 | ✅ Good | Generated |
+| `build/icon.ico` | ~13KB | multi (16,24,32,48,64,128,256) | ✅ Regenerated | Windows app icon, taskbar, installer |
+| `build/icon.png` | ~6KB | 256×256 | ✅ Regenerated | General reference |
+| `build/icon-16.png` | ~1KB | 16×16 | ✅ Generated | ICO source |
+| `build/icon-24.png` | ~1KB | 24×24 | ✅ Generated | ICO source |
+| `build/icon-32.png` | ~1KB | 32×32 | ✅ Generated | ICO source |
+| `build/icon-48.png` | ~1KB | 48×48 | ✅ Generated | ICO source |
+| `build/icon-64.png` | ~1KB | 64×64 | ✅ Generated | ICO source |
+| `build/icon-128.png` | ~3KB | 128×128 | ✅ Generated | ICO source |
+| `build/icon-256.png` | ~6KB | 256×256 | ✅ Generated | ICO source |
 
 ---
 
@@ -66,13 +75,16 @@ This document catalogs all brand-related assets in the Aureon Desk project, incl
 
 | Component | Asset Used | Variant |
 |-----------|-----------|---------|
-| `AureonMark.tsx` | `aureon-mark-*.png` or inline SVG | Both |
-| `BrandLockup.tsx` | `AureonMark` component | SVG default |
-| `AppShell.tsx` | `BrandLockupCompact` | SVG |
-| `Sidebar.tsx` | `BrandLockup` | SVG |
+| `AureonMark.tsx` | Inline SVG with hardcoded brand colors | SVG (default) |
+| `AureonMark.tsx` | `aureon-mark-*.png` | PNG (variant) |
+| `BrandLockup.tsx` | `AureonMark` + text | SVG |
+| `BrandLockupCompact` | `AureonMark` only | SVG (compact) |
+| `AppShell.tsx` (topbar) | `BrandLockupCompact` + "Aureon Desk" text | SVG |
+| `Sidebar.tsx` (expanded) | `BrandLockup` | SVG |
+| `Sidebar.tsx` (collapsed) | `BrandLockupCompact` | SVG |
+| `SettingsLayout.tsx` | `AureonMark` | SVG |
 | `ChatWorkspace.tsx` | `AureonMark` (greeting) | SVG |
-| `Studio.tsx` | `Sparkles` icon | Lucide (no brand asset) |
-| `VibeCoding.tsx` | `Sparkles` icon | Lucide (no brand asset) |
+| `Studio.tsx` | `AureonMark` (hero) | SVG |
 
 ---
 
@@ -101,12 +113,14 @@ This document catalogs all brand-related assets in the Aureon Desk project, incl
 
 | Asset | Status |
 |-------|--------|
+| `public/brand/aureon-mark-32.png` | ✅ NEW |
 | `public/brand/aureon-mark-64.png` | ✅ Present |
 | `public/brand/aureon-mark-128.png` | ✅ Present |
 | `public/brand/aureon-mark-256.png` | ✅ Present |
 | `public/brand/aureon-logo-512.png` | ✅ Present |
-| `build/icon.ico` | ✅ Generated |
-| `build/icon.png` | ✅ Generated |
+| `build/icon.ico` | ✅ Regenerated (PNG-based, 7 sizes) |
+| `build/icon.png` | ✅ Regenerated |
+| `assets/brand/aureon-github-banner-1200.png` | ✅ Generated |
 
 **No broken references found.**
 
@@ -116,10 +130,10 @@ This document catalogs all brand-related assets in the Aureon Desk project, incl
 
 | Category | Total Size | Files |
 |----------|-----------|-------|
-| SVG source assets | ~8KB | 4 files |
-| Public PNG assets | ~50KB | 4 files |
-| Build icons | ~300KB | 6 files |
-| **Total brand assets** | **~360KB** | **14 files** |
+| SVG source assets | ~13KB | 6 files |
+| Public PNG assets | ~55KB | 5 files |
+| Build icons | ~18KB | 9 files |
+| **Total brand assets** | **~86KB** | **20 files** |
 
 All well under normal thresholds. No optimization needed.
 
@@ -129,8 +143,11 @@ All well under normal thresholds. No optimization needed.
 
 - [x] All Aureon brand SVGs exist and are original
 - [x] All PNG sizes generated for renderer use
-- [x] ICO generated for Windows packaging
+- [x] ICO generated for Windows packaging (PNG-based, 7 sizes)
 - [x] No fake vendor logos
 - [x] No broken image references
+- [x] AureonMark uses hardcoded brand colors for guaranteed visibility (2026-07-10 fix)
+- [x] Branding visible in sidebar (expanded + collapsed), topbar, Settings, Studio hero
+- [x] `scripts/generate-brand-assets.mjs` for reproducible asset generation
 - [ ] Create `assets/vendor/` directory for future licensed vendor assets
 - [ ] Add `ConnectorIcon` component for standardized connector icon rendering

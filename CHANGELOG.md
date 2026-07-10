@@ -1,3 +1,26 @@
+## [0.9.74] - 2026-07-10
+
+### Fixed — Brand Logo Visibility & Asset System Finalization
+
+**Root cause:** CSS variables (`var(--ivory-accent)`) in SVG presentation attributes were failing to resolve in some Electron/Chromium rendering paths, causing the Aureon mark to render invisible.
+
+**Fix:** Replaced all CSS variable references in AureonMark.tsx with hardcoded brand hex colors (#B8683A, #A45A30, #F9EFE9, #E8A45C). Increased ring stroke opacity (0.25→0.30) and neural node dot sizes for guaranteed visibility on ivory backgrounds. Added `useId()` for collision-free gradient IDs.
+
+**Brand wiring complete:**
+- Branding visible in: sidebar (expanded + collapsed), topbar, Settings layout, Studio hero
+- Added `BrandLockupCompact` convenience component for icon-only rendering
+- Created new `assets/brand/aureon-logo-lockup.svg` and `assets/brand/aureon-github-banner.svg`
+- Created `scripts/generate-brand-assets.mjs` — reproducible asset generation using canvas package
+- Regenerated `build/icon.ico` as PNG-based multi-size ICO (7 sizes: 16,24,32,48,64,128,256)
+- Regenerated all `public/brand/*.png` and `build/icon*.png` assets
+
+### Verified
+
+- `npm run typecheck` — ✅ PASS (tsconfig.node.json + tsconfig.web.json)
+- `npm test` — ✅ PASS (768 tests, 30 files)
+- `npm run build` — ✅ PASS (electron-vite)
+- Brand asset generation — ✅ PASS (20 files generated)
+
 ## [0.9.73] - 2026-07-09
 
 ### Fixed — MCP Connection and Confirmation Safety
@@ -512,6 +535,38 @@
 - `npm run build` — ✅ PASS
 
 # Changelog
+
+All notable changes to Aureon Desk are documented here.
+
+## [Unreleased] — Visible Human QA Harness (2026-07-09)
+
+### Added
+
+- **`tests/e2e/aureon-human-visible.spec.ts`** — 20-step Playwright Electron
+  headed harness that launches the real Aureon Desk app visibly, exercises
+  the full Studio → Code → LivePreview → Provider → MCP pipeline, and
+  saves numbered PNG screenshots to `tests/e2e/artifacts/human-visible/`.
+- **`npm run test:human:headed`** — headed mode, `workers=1`, full screenshot pipeline.
+- **`npm run test:human:headed:slow`** — bash-friendly slow-motion variant
+  (uses `AUREON_SLOW_MO_MS=500`).
+- **`npm run test:human:ui`** — Playwright UI mode for manual step-by-step review.
+- **`docs/HUMAN_VISIBLE_QA_HARNESS.md`** — operator-facing runbook + screenshot map.
+
+### Changed
+
+- **`tests/e2e/helpers/electronApp.ts`** — added optional
+  `AUREON_SLOW_MO_MS` env var piped into `electron.launch({ slowMo })`.
+  Slow-motion is opt-in; global E2E tests run fast when the env var is unset.
+- **Step 17 (MCP safety gate) assertion is now source-accurate** —
+  matches the actual `ToolsPage.tsx` modal copy: "disabled by default" +
+  "review capabilities before enabling".
+
+### Notes
+
+- Console errors are logged but non-fatal, matching the existing
+  `tests/e2e/99-human-click-qa.spec.ts` convention. The harness fails
+  only on `pageerror` (React crashes) — which is the standard for human
+  review runs.
 
 ## [0.9.73] - 2026-07-09 — Private Beta Release + Live Human QA
 

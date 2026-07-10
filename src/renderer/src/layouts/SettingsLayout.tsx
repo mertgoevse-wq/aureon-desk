@@ -16,6 +16,7 @@ import {
   Shield,
   Wrench
 } from 'lucide-react'
+import { AureonMark } from '../components/shared/AureonMark'
 
 interface SettingsNavItem {
   icon: React.ReactNode
@@ -61,9 +62,7 @@ export function SettingsLayout(): React.ReactElement {
         >
           <div className="px-4 py-4 border-b border-[var(--ivory-border)]">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] flex items-center justify-center ring-1 ring-[var(--ivory-accent)]/15">
-                <Settings size={17} />
-              </div>
+              <AureonMark size={32} />
               <div className="min-w-0">
                 <h2 className="text-[15px] font-semibold text-[var(--ivory-text)]">Settings</h2>
                 <p className="text-[10px] text-[var(--ivory-text-3)] truncate">Aureon workspace controls</p>

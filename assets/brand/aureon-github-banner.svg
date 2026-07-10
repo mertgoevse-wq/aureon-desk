@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" fill="none">
+  <defs>
+    <linearGradient id="banner-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FAF7F2"/>
+      <stop offset="100%" stop-color="#F3EFE6"/>
+    </linearGradient>
+    <linearGradient id="accent-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#B8683A"/>
+      <stop offset="100%" stop-color="#8B5E3C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#banner-grad)"/>
+
+  <!-- Decorative radial glow -->
+  <circle cx="200" cy="320" r="300" fill="#B8683A" opacity="0.04"/>
+  <circle cx="200" cy="320" r="200" fill="#B8683A" opacity="0.06"/>
+
+  <!-- Aureon Mark (large, centered-left) -->
+  <g transform="translate(120, 170) scale(2.4)">
+    <circle cx="56" cy="56" r="52" fill="#F9EFE9" stroke="#B8683A" stroke-width="1.5" stroke-opacity="0.3"/>
+    <circle cx="56" cy="56" r="45" fill="none" stroke="#E8A45C" stroke-width="0.75" stroke-opacity="0.15"/>
+
+    <path d="M27 84L46 24L53 24L36 84H27Z" fill="url(#accent-grad)"/>
+    <path d="M85 84L66 24L59 24L76 84H85Z" fill="url(#accent-grad)"/>
+    <rect x="40" y="60" width="32" height="7" rx="2" fill="url(#accent-grad)"/>
+
+    <circle cx="56" cy="22" r="2.5" fill="#E8A45C" opacity="0.7"/>
+    <circle cx="56" cy="74" r="2.5" fill="#E8A45C" opacity="0.5"/>
+    <circle cx="32" cy="56" r="2" fill="#E8A45C" opacity="0.4"/>
+    <circle cx="80" cy="56" r="2" fill="#E8A45C" opacity="0.4"/>
+
+    <!-- Connection lines -->
+    <line x1="56" y1="26" x2="56" y2="54" stroke="#E8A45C" stroke-width="0.5" stroke-opacity="0.15"/>
+    <line x1="36" y1="56" x2="42" y2="53" stroke="#E8A45C" stroke-width="0.5" stroke-opacity="0.1"/>
+    <line x1="76" y1="56" x2="70" y2="53" stroke="#E8A45C" stroke-width="0.5" stroke-opacity="0.1"/>
+  </g>
+
+  <!-- Title -->
+  <text x="420" y="280" font-family="'Crimson Text', Georgia, serif" font-size="72" font-weight="700" fill="#2C2416" letter-spacing="-1.5">
+    Aureon Desk
+  </text>
+
+  <!-- Subtitle -->
+  <text x="420" y="340" font-family="'Inter', 'Segoe UI', sans-serif" font-size="22" font-weight="500" fill="#8E8371" letter-spacing="1.5">
+    PERSONAL AI WORKSPACE
+  </text>
+
+  <!-- Tagline -->
+  <text x="420" y="390" font-family="'Inter', 'Segoe UI', sans-serif" font-size="14" font-weight="400" fill="#B5A999">
+    Windows-first desktop AI with multi-provider chat, prompt intelligence, project workspaces, and MCP tools
+  </text>
+
+  <!-- Bottom accent line -->
+  <rect x="420" y="410" width="120" height="3" rx="1.5" fill="url(#accent-grad)" opacity="0.5"/>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="620" width="1280" height="20" fill="url(#accent-grad)" opacity="0.08"/>
+</svg>
