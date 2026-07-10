@@ -28,7 +28,17 @@ External Source → Import Metadata → Browse/Filter → Adapt → Aureon Skill
 |-------|------|-------------|
 | `/skills` | Skill Explorer | Browse external catalog + curated starter set |
 | `/settings/skills` | Skill Explorer (settings) | Same view, within settings context |
+| `/learn` | Education Center | Concepts, agents, skills, auto-selection explained |
+| `/settings/learn` | Education Center (settings) | Same view, within settings context |
 | `/tools` | Tools & MCP | MCP server and tool registry management |
+
+## Education Center
+
+A beginner-friendly education page at `/learn` that explains:
+- **Concepts:** What is an Agent, Skill, Tool, MCP, and Prompt Profile — with simple analogies and examples
+- **Agents:** 16 agent profiles with beginner explanations, example prompts, and permissions
+- **Skills:** 19 skill profiles with descriptions, inputs/outputs, and examples
+- **Auto-Selection:** Interactive demo showing how Aureon picks the right agent + skill for a prompt
 
 ## Safety
 

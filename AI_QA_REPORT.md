@@ -4,6 +4,34 @@
 
 ---
 
+## Agent & Skill Education Center — 2026-07-10
+
+> ✅ **Status: Complete — 4-tab education center, 16 agents, 19 skills, auto-selection demo, 28 tests.**
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` (node + web) | ✅ PASS |
+| `npm test` (845 tests, 33 files) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| 16 agents with beginner explanations | ✅ PASS |
+| 19 skills with descriptions + examples | ✅ PASS |
+| 8 core concepts explained (Agent, Skill, Tool, MCP, Prompt Profile, etc.) | ✅ PASS |
+| Auto-selection demo with 9 prompt mappings | ✅ PASS |
+| 28 new education unit tests | ✅ PASS |
+
+### Key Changes
+
+| Area | Change |
+|------|--------|
+| `src/shared/agent-education.ts` | 16 agent profiles + `simulateAutoSelect()` shared helper |
+| `src/shared/skill-education.ts` | 19 skill profiles with inputs/outputs/permissions/examples |
+| `LearnPage.tsx` | 4-tab education center (Concepts, Agents, Skills, Auto-Selection) |
+| `App.tsx` | Routes: `/learn` + `/settings/learn` |
+| `SettingsLayout.tsx` | Learn nav item with GraduationCap icon |
+| Tests | 28 tests: registries, auto-selection, concepts, license policy |
+
+---
+
 ## Artifact Renderer System — 2026-07-10
 
 > ✅ **Status: Complete — 16 artifact types, 14 renderer components, chat + LivePreview integration, 19 unit tests.**

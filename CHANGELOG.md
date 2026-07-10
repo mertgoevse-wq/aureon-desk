@@ -1,3 +1,35 @@
+## [0.9.78] - 2026-07-10
+
+### Added — Agent & Skill Education Center
+
+**Education Center:**
+- Created `src/renderer/src/pages/LearnPage.tsx` — 4-tab education center (Concepts, Agents, Skills, Auto-Selection) with search, category filters, detail panels, and interactive auto-selection demo
+- Routes: `/learn` (standalone) and `/settings/learn` (within settings)
+- Added Learn nav item in SettingsLayout with GraduationCap icon
+
+**Agent Education Data:**
+- Created `src/shared/agent-education.ts` — 16 agent profiles with beginner explanations, icons, categories, skills used, permissions, example prompts, and destructive flags
+- Added `simulateAutoSelect()` shared function — keyword-based prompt routing shared between LearnPage UI and tests
+
+**Skill Education Data:**
+- Created `src/shared/skill-education.ts` — 19 skill profiles with simple descriptions, input/output fields, permissions, examples, test status, and categories
+
+**Concepts Explained:**
+- 8 core concepts: Agent, Skill, Tool, MCP, Prompt Profile, auto-selection, local vs provider data, permissions
+- Each concept has a simple analogy, beginner-friendly description, and concrete example
+
+**Auto-Selection Demo:**
+- Interactive prompt input + 8 example prompts — shows which agent + skill would be selected
+- Keyword-based routing logic: coding, landing page, debug, preview, providers, social, design, docs, cleanup counters
+
+**Tests:**
+- Created `tests/unit/agent-skill-education.test.ts` — 28 tests covering agent registry integrity, skill registry integrity, auto-selection routing (9 prompt→agent→skill mappings), concept coverage, license policy
+
+### Verified
+- `npm run typecheck` — ✅ PASS (node + web)
+- `npm test` — ✅ PASS (845 tests, 33 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.77] - 2026-07-10
 
 ### Added — VoltAgent Awesome Skills Importer

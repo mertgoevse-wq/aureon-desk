@@ -4,6 +4,37 @@
 
 ---
 
+---
+
+## 2026-07-10 — Agent & Skill Education Center
+
+### Goal
+Make agents and skills understandable for beginners. Add a clean education center and expand Aureon's internal agent/skill system with beginner-friendly explanations, interactive auto-selection demo, and 16+ agent profiles.
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `src/shared/agent-education.ts` | 16 agent profiles with beginner explanations, icons, categories, skills, permissions, examples |
+| `src/shared/skill-education.ts` | 19 skill profiles with descriptions, input/output fields, permissions, examples, test status |
+| `src/renderer/src/pages/LearnPage.tsx` | 4-tab education center: Concepts, Agents, Skills, Auto-Selection |
+| `tests/unit/agent-skill-education.test.ts` | 28 unit tests |
+| `docs/AGENTS_AND_SKILLS.md` | Updated with Education Center section |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `App.tsx` | Added LearnPage import + `/learn` and `/settings/learn` routes |
+| `SettingsLayout.tsx` | Added Learn nav item with GraduationCap icon |
+
+### Verification
+- Typecheck ✅ (node + web)
+- Tests ✅ (845/845, 33 files)
+- Build ✅
+
+---
+
 ## 2026-07-10 — Artifact & Output Renderer System
 
 ### Goal

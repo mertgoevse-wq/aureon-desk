@@ -24,6 +24,7 @@ import { CapabilitiesPage } from './pages/settings/CapabilitiesPage'
 import { SelfAudit } from './pages/SelfAudit'
 import { DeviceInputsPage } from './pages/settings/DeviceInputsPage'
 import { SkillsPage } from './pages/SkillsPage'
+import { LearnPage } from './pages/LearnPage'
 
 const router = createHashRouter([
   {
@@ -41,6 +42,7 @@ const router = createHashRouter([
       { path: 'self-audit', element: <SelfAudit /> },
       { path: 'vibe', element: <VibeCoding /> },
       { path: 'skills', element: <SkillsPage /> },
+      { path: 'learn', element: <LearnPage /> },
       {
         path: 'settings',
         element: <SettingsLayout />,
@@ -63,7 +65,8 @@ const router = createHashRouter([
           { path: 'capabilities', element: <CapabilitiesPage /> },
           { path: 'self-audit', element: <SelfAudit /> },
           { path: 'device-inputs', element: <DeviceInputsPage /> },
-          { path: 'skills', element: <SkillsPage /> }
+          { path: 'skills', element: <SkillsPage /> },
+          { path: 'learn', element: <LearnPage /> }
         ]
       }
     ]
