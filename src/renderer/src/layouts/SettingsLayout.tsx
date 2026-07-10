@@ -14,6 +14,7 @@ import {
   ScrollText,
   Settings,
   Shield,
+  Sparkles,
   Wrench
 } from 'lucide-react'
 import { AureonMark } from '../components/shared/AureonMark'
@@ -53,7 +54,8 @@ const navItems: SettingsNavItem[] = [
   { icon: <FileText size={16} />, label: 'Logs', description: 'Runtime events', path: '/settings/logs' },
   { icon: <Code2 size={16} />, label: 'Developer', description: 'Debug and tests', path: '/settings/developer' },
   { icon: <ScanLine size={16} />, label: 'Self Audit', description: 'Inspect & improve', path: '/settings/self-audit' },
-  { icon: <Camera size={16} />, label: 'Device Inputs', description: 'Cam, mic, screen', path: '/settings/device-inputs' }
+  { icon: <Camera size={16} />, label: 'Device Inputs', description: 'Cam, mic, screen', path: '/settings/device-inputs' },
+  { icon: <Sparkles size={16} />, label: 'Skills & Agents', description: 'Browse and adapt', path: '/settings/skills' }
 ]
 
 function isActivePath(currentPath: string, itemPath: string): boolean {

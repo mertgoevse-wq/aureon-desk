@@ -1,3 +1,39 @@
+## [0.9.77] - 2026-07-10
+
+### Added — VoltAgent Awesome Skills Importer
+
+**Skill catalog import:**
+- Created `scripts/import-voltagent-awesome-skills.mjs` — fetches the VoltAgent/awesome-agent-skills README and parses 1,179 skill entries from 189 providers across 20 categories
+- Generates `voltagent-awesome-skills.generated.json` + `.ts` for type-safe rendering
+- Added `npm run skills:import:voltagent` script
+- Supports `--local` flag for offline use
+
+**Type system:**
+- Created `src/shared/external-skill-sources.ts` — ExternalSkillEntry, ExternalSkillSource, license/import/adaptation status enums, 20 SKILL_CATEGORIES, risk levels
+- Created `src/shared/curated-skills.ts` — 12 Aureon-original curated skills (Web App Builder, Frontend Design, Web App Testing, MCP Builder, Android Testing, API Testing, CI/CD Pipeline, Security Review, Brand Guidelines, Theme Factory, Documentation Writer, Spreadsheets & PDFs)
+
+**Skill Explorer UI:**
+- Created `src/renderer/src/pages/SkillsPage.tsx` — full skill browser with search, category/provider filters, curated/external view modes, skill cards with copy/adapt actions, Adapt flow modal (generates original prompts, never copies source)
+- Wired routes: `/skills` and `/settings/skills`
+- Added "Skills & Agents" nav item in SettingsLayout
+
+**Safety:**
+- Metadata-only import — no source code is copied
+- License status tracked (all initially `unknown`)
+- Risk levels auto-assigned (safe/caution/destructive)
+- Adaptation generates original prompts, not derivative works
+
+**Tests:**
+- Created `tests/unit/voltagent-skills-import.test.ts` — 27 tests covering curated skill integrity, category validation, generated data schema, importer parsing logic, license visibility
+
+**Docs:**
+- Created `docs/VOLTAGENT_SKILLS_IMPORT.md`, `docs/AGENTS_AND_SKILLS.md`, `docs/SKILL_LICENSE_POLICY.md`
+
+### Verified
+- `npm run typecheck` — ✅ PASS (node + web)
+- `npm test` — ✅ PASS (814 tests, 32 files)
+- Importer run — ✅ 1,179 skills, 189 providers, 20 categories
+
 ## [0.9.76] - 2026-07-10
 
 ### Added — Artifact & Output Renderer System
