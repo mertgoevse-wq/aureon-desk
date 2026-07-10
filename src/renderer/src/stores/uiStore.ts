@@ -7,6 +7,8 @@ interface UIState {
   inspectorWidth: number
   activeSettingsPage: string | null
   isOnboarding: boolean
+  /** When true, hides advanced provider/MCP/debug settings for a cleaner UI */
+  simpleMode: boolean
 
   toggleSidebar: () => void
   toggleInspector: () => void
@@ -14,6 +16,8 @@ interface UIState {
   setInspectorWidth: (width: number) => void
   setActiveSettingsPage: (page: string | null) => void
   setIsOnboarding: (onboarding: boolean) => void
+  toggleSimpleMode: () => void
+  setSimpleMode: (simple: boolean) => void
   resetLayout: () => void
 }
 
@@ -27,9 +31,19 @@ export const useUIStore = create<UIState>((set, get) => ({
   inspectorWidth: DEFAULT_INSPECTOR_WIDTH,
   activeSettingsPage: null,
   isOnboarding: false,
+  simpleMode: true, // Simple mode ON by default for cleaner first impression
 
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
   toggleInspector: () => set((s) => ({ inspectorOpen: !s.inspectorOpen })),
+  toggleSimpleMode: () => set((s) => {
+    const next = !s.simpleMode
+    try { window.api?.settingsSet('ui.simpleMode', String(next)) } catch { /* */ }
+    return { simpleMode: next }
+  }),
+  setSimpleMode: (simple) => {
+    set({ simpleMode: simple })
+    try { window.api?.settingsSet('ui.simpleMode', String(simple)) } catch { /* */ }
+  },
   setSidebarWidth: (width) => {
     const clamped = Math.max(188, Math.min(500, Math.round(width)))
     set({ sidebarWidth: clamped })
@@ -67,8 +81,10 @@ export async function loadPanelSizes(): Promise<void> {
     if (!window.api) return
     const sw = await window.api.settingsGet('ui.sidebarWidth')
     const iw = await window.api.settingsGet('ui.inspectorWidth')
+    const sm = await window.api.settingsGet('ui.simpleMode')
     const store = useUIStore.getState()
     if (sw) store.setSidebarWidth(Number(sw))
     if (iw) store.setInspectorWidth(Number(iw))
+    if (sm !== null && sm !== undefined) store.setSimpleMode(sm === 'true' || sm === true)
   } catch { /* settings may not be available */ }
 }

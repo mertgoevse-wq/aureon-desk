@@ -25,7 +25,7 @@ import type { ChatListItem } from '@shared/types/chat'
 export const Sidebar = memo(function Sidebar(): React.ReactElement {
   const navigate = useNavigate()
   const location = useLocation()
-  const { sidebarCollapsed, toggleSidebar, sidebarWidth, setSidebarWidth } = useUIStore()
+  const { sidebarCollapsed, toggleSidebar, sidebarWidth, setSidebarWidth, simpleMode } = useUIStore()
   const { setChats, setLoadingChats, setActiveChatId, setActiveChat } = useChatStore()
   const api = useIpc()
   const resizeRef = useRef<{ startX: number; startWidth: number } | null>(null)
@@ -176,15 +176,18 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
         >
           <Code2 size={18} />
         </button>
-        <button
-          type="button"
-          onClick={() => navigate('/cowork')}
-          className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/cowork') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
-          aria-label="Cowork"
-          data-testid="nav-cowork"
-        >
-          <Archive size={18} />
-        </button>
+        {/* Cowork — hidden in simple mode */}
+        {!simpleMode && (
+          <button
+            type="button"
+            onClick={() => navigate('/cowork')}
+            className={`p-2 rounded-[var(--radius-md)] transition-colors duration-[var(--transition-fast)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${isActive('/cowork') ? 'text-[var(--ivory-accent)] bg-[var(--ivory-bg)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
+            aria-label="Cowork"
+            data-testid="nav-cowork"
+          >
+            <Archive size={18} />
+          </button>
+        )}
         <button
           type="button"
           onClick={() => navigate('/settings')}
@@ -295,7 +298,7 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
               <Plus size={12} />
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-1 font-body">
+          <div className={`grid ${simpleMode ? 'grid-cols-1' : 'grid-cols-2'} gap-1 font-body`}>
             <button
               type="button"
               onClick={() => navigate('/projects')}
@@ -306,16 +309,18 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
               <FolderOpen size={13} className="text-[var(--ivory-accent)]" />
               Projects
             </button>
-            <button
-              type="button"
-              onClick={() => navigate('/tools')}
-              className={`h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer
-                ${isActive('/tools') ? 'bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] border border-transparent'}`}
-              data-testid="nav-tools"
-            >
-              <Wrench size={13} className="text-[var(--ivory-accent)]" />
-              Tools
-            </button>
+            {!simpleMode && (
+              <button
+                type="button"
+                onClick={() => navigate('/tools')}
+                className={`h-8 flex items-center justify-center gap-1.5 px-2 rounded-xl text-[11px] font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 cursor-pointer
+                  ${isActive('/tools') ? 'bg-[var(--ivory-elevated)] border border-[var(--ivory-border)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] border border-transparent'}`}
+                data-testid="nav-tools"
+              >
+                <Wrench size={13} className="text-[var(--ivory-accent)]" />
+                Tools
+              </button>
+            )}
           </div>
         </div>
 

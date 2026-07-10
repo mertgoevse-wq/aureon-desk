@@ -1,3 +1,31 @@
+## [0.9.75] - 2026-07-10
+
+### Added — UI Simplification Pass
+
+**Simple/Advanced mode:**
+- New `simpleMode` toggle in Settings > General > Interface Mode. Simple mode is ON by default.
+- In simple mode: hides Cowork workspace, Tools sidebar item, and 9 advanced settings nav items
+- Persisted to settings DB via `ui.simpleMode` key
+- Added to `uiStore` with `toggleSimpleMode()` and `setSimpleMode()` actions
+- `SettingsLayout` filters nav to show only essential items (General, Providers, Prompts, Appearance, Projects, Tools)
+
+**Providers page cleanup:**
+- Removed busy Test Center grid and Token Usage panel (testing remains in individual adapter cards)
+- Cleaner safety notice with neutral styling
+
+**Sidebar simplified:**
+- Cowork and Tools nav items hidden in simple mode
+- Projects section collapses to single-column in simple mode
+
+**Created:**
+- `docs/UI_SIMPLIFICATION_AUDIT.md` — per-screen clutter/UX analysis
+
+### Verified
+
+- `npm run typecheck` — ✅ PASS (node + web)
+- `npm test` — ✅ PASS (768 tests, 30 files)
+- `npm run build` — ✅ PASS
+
 ## [0.9.74] - 2026-07-10
 
 ### Fixed — Brand Logo Visibility & Asset System Finalization

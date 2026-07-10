@@ -4,6 +4,35 @@
 
 ---
 
+## UI Simplification Pass — 2026-07-10
+
+> ✅ **Status: Complete — simple/advanced mode toggle, providers cleanup, sidebar simplification.**
+
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` (node + web) | ✅ PASS |
+| `npm test` (768 tests, 30 files) | ✅ PASS |
+| `npm run build` | ✅ PASS |
+| Simple mode toggle in General Settings | ✅ PASS |
+| Settings nav filters in simple mode | ✅ PASS |
+| Sidebar Cowork/Tools hidden in simple mode | ✅ PASS |
+| AppShell Cowork mode hidden in simple mode | ✅ PASS |
+| Providers page Test Center removed | ✅ PASS |
+| `docs/UI_SIMPLIFICATION_AUDIT.md` created | ✅ PASS |
+
+### Key Changes
+
+| Area | Change |
+|------|--------|
+| `uiStore.ts` | Added `simpleMode` boolean state (default: true), persisted to settings |
+| `GeneralSettingsPage.tsx` | Added Simple/Advanced mode toggle with info banners |
+| `SettingsLayout.tsx` | Filters advanced nav items when in simple mode, shows hidden count |
+| `Sidebar.tsx` | Hides Cowork (collapsed) and Tools (expanded) in simple mode |
+| `AppShell.tsx` | Removes Cowork from mode switch tabs in simple mode |
+| `ProvidersPage.tsx` | Removed Test Center grid and Token Usage table for cleaner UX |
+
+---
+
 ## Brand Identity Finalization — 2026-07-10
 
 > ✅ **Status: Complete — all brand assets generated, wired, and verified.**

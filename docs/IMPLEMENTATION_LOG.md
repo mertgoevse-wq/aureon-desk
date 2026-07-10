@@ -4,6 +4,30 @@
 
 ---
 
+## 2026-07-10 — UI Simplification Pass
+
+### Goal
+Simplify the Aureon Desk UI — make it calmer, cleaner, and more premium. Add a Simple/Advanced mode toggle so first-time users see only essential controls.
+
+### Changes
+
+| File | Change |
+|------|--------|
+| `uiStore.ts` | Added `simpleMode` state (default true), toggle/set actions, persisted to settings |
+| `GeneralSettingsPage.tsx` | Added Interface Mode section with Simple/Advanced toggle + info banners |
+| `SettingsLayout.tsx` | NAV filtering: hides 9 advanced items in simple mode, shows hidden count |
+| `Sidebar.tsx` | Cowork + Tools hidden in simple mode, Projects single-column |
+| `AppShell.tsx` | Cowork mode tab hidden in simple mode |
+| `ProvidersPage.tsx` | Removed Test Center grid and Token Usage table |
+| `docs/UI_SIMPLIFICATION_AUDIT.md` | NEW — per-screen clutter analysis |
+
+### Verification
+- Typecheck ✅ (node + web)
+- Tests ✅ (768/768)
+- Build ✅
+
+---
+
 ## 2026-07-10 — Brand Identity Finalization
 
 ### Goal

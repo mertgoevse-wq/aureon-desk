@@ -2,7 +2,7 @@ import { useEffect, useCallback, useState } from 'react'
 import {
   Eye, EyeOff, Trash2, Check, AlertTriangle, Plus,
   Wifi, Zap, Server, Monitor, Globe, Star, Wrench,
-  Activity, Clock, BarChart3, RotateCcw, Code2, FlaskConical
+  Activity, Clock
 } from 'lucide-react'
 import { Button } from '../../components/shared/Button'
 import { Input } from '../../components/shared/Input'
@@ -263,123 +263,11 @@ export function ProvidersPage(): React.ReactElement {
         </Button>
       </div>
 
-      {/* Safety notice */}
-      <div className="p-3.5 rounded-xl bg-[var(--ivory-warning-bg)] border border-[var(--ivory-warning)]/15 text-xs text-[var(--ivory-warning)] flex items-start gap-2.5">
-        <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-        <span className="leading-relaxed">Sending messages to remote providers transmits your chat content to external servers. Local files referenced in prompts will also be sent.</span>
+      {/* Safety notice — quieter */}
+      <div className="p-3 rounded-xl bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/60 text-[11px] text-[var(--ivory-text-3)] flex items-start gap-2">
+        <AlertTriangle size={13} className="shrink-0 mt-0.5 text-[var(--ivory-text-3)]" />
+        <span className="leading-relaxed">Messages sent to providers transmit your chat content to external servers. Keys are encrypted with your OS credentials.</span>
       </div>
-
-      <Card className="mb-5">
-        <div className="flex items-start justify-between gap-4 mb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Activity size={16} className="text-[var(--ivory-accent)]" />
-              <h3 className="text-base font-semibold">Provider Test Center</h3>
-            </div>
-            <p className="text-xs text-[var(--ivory-text-3)] leading-relaxed">
-              Check credential status, local server reachability, response latency, and sanitized error details without exposing API keys.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button size="sm" variant="ghost" onClick={handleSmokeTestAll} disabled={smokeTestingAll || providers.length === 0} loading={smokeTestingAll}>
-              <FlaskConical size={14} /> Smoke test all
-            </Button>
-            <Button size="sm" variant="secondary" onClick={handleRunAllTests} disabled={testingAll || providers.length === 0} loading={testingAll}>
-              <Wifi size={14} /> Test All
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-          {providers.map(provider => {
-            const result = testCenterResults[provider.id]
-            const hasKey = keyStatus[provider.id]
-            const isLocal = provider.adapter === 'ollama' || provider.adapter === 'lmstudio'
-            const isTesting = testingId === provider.id
-            return (
-              <div key={provider.id} className="rounded-[var(--radius-lg)] border border-[var(--ivory-border)] bg-[var(--ivory-bg)] p-3">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[var(--ivory-text)] truncate">{provider.name}</p>
-                    <p className="text-[11px] text-[var(--ivory-text-3)] truncate">{provider.base_url || 'No base URL configured'}</p>
-                  </div>
-                  <ProviderStatusBadge
-                    hasKey={hasKey}
-                    isEnabled={provider.is_enabled === 1}
-                    testResult={result ? { success: result.success, message: result.message } : null}
-                    isLocal={isLocal}
-                  />
-                </div>
-                <div className="flex flex-wrap items-center gap-1.5 mb-3">
-                  <Badge variant={provider.is_enabled === 1 ? 'success' : 'default'} size="sm">
-                    {provider.is_enabled === 1 ? 'Enabled' : 'Disabled'}
-                  </Badge>
-                  <Badge variant={isLocal || hasKey ? 'success' : 'warning'} size="sm">
-                    {isLocal ? 'No key needed' : hasKey ? 'Key stored' : 'Missing key'}
-                  </Badge>
-                  {result && (
-                    <Badge variant={result.success ? 'success' : 'error'} size="sm">
-                      <Clock size={10} className="mr-0.5" /> {result.latencyMs} ms
-                    </Badge>
-                  )}
-                </div>
-                <p className={`min-h-10 text-[11px] leading-relaxed ${result ? (result.success ? 'text-[var(--ivory-success)]' : 'text-[var(--ivory-error)]') : 'text-[var(--ivory-text-3)]'}`}>
-                  {isTesting ? 'Testing connection...' : result?.message || 'Not tested yet.'}
-                </p>
-                <div className="flex items-center justify-between mt-3">
-                  <span className="text-[10px] text-[var(--ivory-text-3)]">
-                    {result ? new Date(result.checkedAt).toLocaleTimeString() : 'No result'}
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <Button size="sm" variant="ghost" onClick={() => handleSmokeTest(provider.id)} disabled={smokeTestingId === provider.id || (!isLocal && !hasKey) || provider.is_enabled !== 1} loading={smokeTestingId === provider.id}>
-                      <Code2 size={13} /> Sample
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => handleTestConnection(provider.id)} disabled={isTesting || testingAll} loading={isTesting}>
-                      <Wifi size={13} /> Test
-                    </Button>
-                  </div>
-                </div>
-                {/* Smoke test result */}
-                {(() => {
-                  const sr = smokeTestResults[provider.id]
-                  if (!sr) return null
-                  return (
-                    <div className={`mt-2 p-2 rounded-lg text-[10px] leading-relaxed ${sr.success ? 'bg-[var(--ivory-success-bg)] text-[var(--ivory-success)]' : 'bg-[var(--ivory-error-bg)] text-[var(--ivory-error)]'}`}>
-                      <div className="flex items-center gap-1.5">
-                        {sr.success ? <Check size={10} /> : <AlertTriangle size={10} />}
-                        <span className="font-semibold">{sr.success ? 'Passed' : 'Failed'}</span>
-                        {sr.modelUsed && <span className="opacity-70">— {sr.modelUsed}</span>}
-                        {sr.durationMs > 0 && <span className="opacity-70">({sr.durationMs}ms)</span>}
-                      </div>
-                      <p className="mt-0.5 opacity-80">{sr.message}</p>
-                    </div>
-                  )
-                })()}
-              </div>
-            )
-          })}
-        </div>
-
-        {/* Smoke test all summary bar */}
-        {smokeTestAllSummary && (
-          <div className={`mt-4 p-3 rounded-xl flex items-center gap-3 flex-wrap text-[12px] font-medium ${
-            smokeTestAllSummary.passed > 0
-              ? 'bg-[var(--ivory-success-bg)] border border-[var(--ivory-success)]/20 text-[var(--ivory-success)]'
-              : 'bg-[var(--ivory-error-bg)] border border-[var(--ivory-error)]/20 text-[var(--ivory-error)]'
-          }`}>
-            <FlaskConical size={14} className="shrink-0" />
-            <span>Smoke tests complete:</span>
-            <span className="font-bold">{smokeTestAllSummary.passed} passed</span>
-            {smokeTestAllSummary.failed > 0 && (
-              <span className="font-bold">{smokeTestAllSummary.failed} failed</span>
-            )}
-            {smokeTestAllSummary.skipped > 0 && (
-              <span className="opacity-70">{smokeTestAllSummary.skipped} skipped</span>
-            )}
-            <span className="text-[11px] opacity-70">of {smokeTestAllSummary.total} providers</span>
-          </div>
-        )}
-      </Card>
 
       {/* Custom Provider Modal */}
       <Modal
@@ -401,91 +289,6 @@ export function ProvidersPage(): React.ReactElement {
           <Button onClick={handleCreateCustom} className="w-full">Create Provider</Button>
         </div>
       </Modal>
-
-      {/* === Token Usage Panel === */}
-      <Card className="mb-5">
-        <div className="flex items-start justify-between gap-4 mb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <BarChart3 size={16} className="text-[var(--ivory-accent)]" />
-              <h3 className="text-base font-semibold">Token Usage</h3>
-            </div>
-            <p className="text-xs text-[var(--ivory-text-3)] leading-relaxed">
-              Request counts per model. Free-tier models are highlighted. Counts reset when the app restarts.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={async () => { await api.modelRouterClearUsage(); loadUsage() }}
-              disabled={modelUsage.length === 0}
-              title="Reset all usage counts"
-            >
-              <RotateCcw size={13} />
-            </Button>
-            <Button size="sm" variant="secondary" onClick={loadUsage} loading={loadingUsage}>
-              Refresh
-            </Button>
-          </div>
-        </div>
-
-        {loadingUsage ? (
-          <div className="text-center py-6 text-[var(--ivory-text-3)] text-xs">Loading usage data...</div>
-        ) : modelUsage.length === 0 ? (
-          <div className="text-center py-6 text-[var(--ivory-text-3)] text-xs italic">
-            No requests recorded yet. Send a chat message or run a build to populate usage stats.
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {/* Header row */}
-            <div className="grid grid-cols-[1fr_120px_80px_140px] gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">
-              <span>Model</span>
-              <span className="text-right">Requests</span>
-              <span className="text-right">Tier</span>
-              <span className="text-right">Last Used</span>
-            </div>
-
-            {modelUsage.map((entry: any) => {
-              const displayName = entry.displayName || entry.modelId
-              return (
-                <div
-                  key={entry.modelId}
-                  className={`grid grid-cols-[1fr_120px_80px_140px] gap-2 py-2.5 px-3 rounded-xl border transition-colors ${
-                    entry.isFreeTier
-                      ? 'bg-[var(--ivory-accent-light)]/30 border-[var(--ivory-accent)]/20'
-                      : 'bg-[var(--ivory-bg)] border-[var(--ivory-border)]/40'
-                  }`}
-                >
-                  <div className="min-w-0">
-                    <span className="text-[12px] font-semibold text-[var(--ivory-text)] block truncate">
-                      {displayName}
-                    </span>
-                    <span className="text-[10px] text-[var(--ivory-text-3)]">
-                      {entry.provider}
-                    </span>
-                  </div>
-                  <span className="text-right text-[13px] font-bold font-mono text-[var(--ivory-text)] self-center">
-                    {entry.requestCount}
-                  </span>
-                  <span className="text-right self-center">
-                    {entry.isFreeTier ? (
-                      <Badge variant="success" size="sm">Free</Badge>
-                    ) : (
-                      <Badge variant="default" size="sm">Paid</Badge>
-                    )}
-                  </span>
-                  <span className="text-right text-[10px] text-[var(--ivory-text-3)] font-mono self-center">
-                    {entry.lastUsedAt
-                      ? new Date(entry.lastUsedAt).toLocaleTimeString()
-                      : '—'}
-                  </span>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </Card>
 
       <div className="space-y-5">
         {adapters.map((adapter: ProviderAdapterInfo) => {

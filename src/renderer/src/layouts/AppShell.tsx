@@ -15,8 +15,8 @@ import { useIpc } from '../hooks/useIpc'
 import {
   MessageSquare, Library, FolderOpen, Wrench, Settings,
   ScrollText, Server, FileText, Github, Eye, Plus, PanelLeft,
-  PanelRight, RotateCcw, Keyboard, Sun, Users, Code2,
-  ChevronLeft, ChevronRight, Search, Sparkles, Plug
+  PanelRight, RotateCcw, Keyboard, Sun, Code2, Users,
+  ChevronLeft, ChevronRight, Search, Sparkles, Plug, Archive
 } from 'lucide-react'
 import type { ChatListItem } from '@shared/types/chat'
 
@@ -39,7 +39,7 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
   const navigate = useNavigate()
   const location = useLocation()
   const api = useIpc()
-  const { toggleSidebar, toggleInspector, resetLayout, sidebarCollapsed, inspectorOpen } = useUIStore()
+  const { toggleSidebar, toggleInspector, resetLayout, sidebarCollapsed, inspectorOpen, simpleMode } = useUIStore()
   const { setChats, setActiveChatId, setActiveChat } = useChatStore()
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
@@ -49,7 +49,7 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
   const modeItems = [
     { id: 'studio', label: 'Studio', path: '/', icon: <Sparkles size={14} /> },
     { id: 'chat', label: 'Chat', path: '/chat', icon: <MessageSquare size={14} /> },
-    { id: 'cowork', label: 'Cowork', path: '/cowork', icon: <Users size={14} /> },
+    ...(simpleMode ? [] : [{ id: 'cowork', label: 'Cowork', path: '/cowork', icon: <Archive size={14} /> }]),
     { id: 'code', label: 'Code', path: '/preview', icon: <Code2 size={14} /> }
   ]
   const activeMode = location.pathname === '/' || location.pathname.startsWith('/studio')
@@ -219,14 +219,13 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
       description: 'View and manage conversations',
       icon: <MessageSquare size={14} />,
       onSelect: () => navigate('/chat')
-    },
-    {
+    },    ...(simpleMode ? [] : [{
       id: 'cowork',
       label: 'Cowork',
       description: 'Open the task workflow workspace',
       icon: <Users size={14} />,
       onSelect: () => navigate('/cowork')
-    },
+    }]),
     {
       id: 'code-workspace',
       label: 'Code Workspace',

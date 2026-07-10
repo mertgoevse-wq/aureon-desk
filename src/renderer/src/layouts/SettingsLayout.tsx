@@ -17,6 +17,20 @@ import {
   Wrench
 } from 'lucide-react'
 import { AureonMark } from '../components/shared/AureonMark'
+import { useUIStore } from '../stores/uiStore'
+
+/** Settings nav items that are hidden in simple mode */
+const ADVANCED_PATHS = new Set([
+  '/settings/connectors',
+  '/settings/github',
+  '/settings/extensions',
+  '/settings/security',
+  '/settings/capabilities',
+  '/settings/logs',
+  '/settings/developer',
+  '/settings/self-audit',
+  '/settings/device-inputs',
+])
 
 interface SettingsNavItem {
   icon: React.ReactNode
@@ -50,6 +64,7 @@ function isActivePath(currentPath: string, itemPath: string): boolean {
 export function SettingsLayout(): React.ReactElement {
   const navigate = useNavigate()
   const location = useLocation()
+  const simpleMode = useUIStore((s) => s.simpleMode)
 
   return (
     <div className="h-full min-h-0 bg-[var(--ivory-bg)] overflow-hidden" data-testid="settings-layout">
@@ -70,7 +85,9 @@ export function SettingsLayout(): React.ReactElement {
             </div>
           </div>
           <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
-            {navItems.map((item) => {
+            {navItems
+              .filter((item) => !simpleMode || !ADVANCED_PATHS.has(item.path))
+              .map((item) => {
               const isActive = isActivePath(location.pathname, item.path)
               return (
                 <button
@@ -93,6 +110,16 @@ export function SettingsLayout(): React.ReactElement {
                 </button>
               )
             })}
+            {simpleMode && (
+              <div className="mt-4 pt-3 border-t border-[var(--ivory-border)]/30">
+                <p className="px-3 text-[10px] font-semibold text-[var(--ivory-text-3)] uppercase tracking-wider">
+                  {navItems.filter((i) => ADVANCED_PATHS.has(i.path)).length} advanced settings hidden
+                </p>
+                <p className="px-3 text-[10px] text-[var(--ivory-text-3)] mt-1 leading-relaxed">
+                  Toggle "Simple mode" off in General settings to access all controls.
+                </p>
+              </div>
+            )}
           </div>
           <div className="p-3 border-t border-[var(--ivory-border)]/40">
             <button

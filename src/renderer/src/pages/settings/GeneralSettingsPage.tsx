@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Settings as SettingsIcon, ShieldCheck } from 'lucide-react'
+import { Settings as SettingsIcon, ShieldCheck, Eye, EyeOff } from 'lucide-react'
 import { SettingsSection, SettingsRow, Toggle } from '../../components/settings/SettingsComponents'
 import { Select } from '../../components/shared/Select'
+import { useUIStore } from '../../stores/uiStore'
 import { applyTheme } from '../../utils/theme'
 
 export function GeneralSettingsPage(): React.ReactElement {
@@ -11,6 +12,7 @@ export function GeneralSettingsPage(): React.ReactElement {
   const [themeMode, setThemeMode] = useState('ivory')
   const [unhideApps, setUnhideApps] = useState(false)
   const [notifications, setNotifications] = useState(true)
+  const { simpleMode, toggleSimpleMode } = useUIStore()
 
   // Load persisted theme on mount
   useEffect(() => {
@@ -98,6 +100,29 @@ export function GeneralSettingsPage(): React.ReactElement {
             data-testid="select-theme"
           />
         </SettingsRow>
+      </SettingsSection>
+
+      {/* UI Complexity */}
+      <SettingsSection title="Interface Mode" description="Choose between a simplified workspace or full access to all technical settings.">
+        <SettingsRow
+          label="Simple mode"
+          description="Shows only essential build, chat, and preview controls. Hides advanced provider config, MCP tools, and debug settings. Recommended for most users."
+          dataTestId="row-simple-mode"
+        >
+          <Toggle checked={simpleMode} onChange={toggleSimpleMode} dataTestId="toggle-simple-mode" />
+        </SettingsRow>
+        {simpleMode && (
+          <div className="mt-3 p-3 rounded-xl bg-[var(--ivory-accent-light)]/50 border border-[var(--ivory-accent)]/15 text-[11px] text-[var(--ivory-text-2)] flex items-start gap-2">
+            <Eye size={13} className="shrink-0 mt-0.5 text-[var(--ivory-accent)]" />
+            <span>Simple mode is active. Technical settings (providers, MCP, debug) are hidden from navigation. Toggle off to access all controls.</span>
+          </div>
+        )}
+        {!simpleMode && (
+          <div className="mt-3 p-3 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] text-[var(--ivory-text-3)] flex items-start gap-2">
+            <EyeOff size={13} className="shrink-0 mt-0.5" />
+            <span>Advanced mode is active. All technical settings and developer tools are visible.</span>
+          </div>
+        )}
       </SettingsSection>
 
       {/* Safety & Notifications */}
