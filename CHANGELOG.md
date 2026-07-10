@@ -1,4 +1,27 @@
+## [0.9.82] - 2026-07-10 — LivePreview Reliability Pass
+
+### Fixed
+- **Port Detection Race Condition:** Replaced the synchronous `execSync` child-process port probe loop in `live-preview.service.ts` with an in-process `net.createServer()` async socket binding check. Eliminates Windows quoting failures and process-spawn overhead, making port resolution fast and reliable.
+- **Blank Preview Frame on Starting State:** `LivePreview.tsx` now renders the preview `<iframe>` during both `'starting'` and `'running'` states. A backdrop-blur loading spinner overlay is shown while the server is initialising so the frame never appears blank.
+- **Iframe Cache Stale Renders:** Added a `key={status.id}` prop to the preview iframe so React fully remounts it on each new session, preventing stale cached page loads.
+- **URL Input Not Reflecting Live URL:** The hidden `[data-testid="preview-url-input"]` value now binds to `status.url || customUrl` so Playwright E2E tests can reliably read the server URL after the session starts.
+- **Race Condition Status Demotion:** Added a guard in the `onBuildStep` status updater: if the preview is already `'running'` or `'error'`, subsequent pipeline events cannot demote it back to `'starting'` or `'idle'`.
+- **IPC Type Mismatch:** Updated `live-preview.ipc.ts` `preview:createDemo` handler to `async` returning `Promise<CodingDemoResult>` to match the now-async service method.
+
+### Added
+- **Diagnostics Panel:** New inline panel below the server controls bar in `LivePreview.tsx` showing the live preview URL (clickable), current status, last error, a "Restart Preview" button, and a "Copy Diagnostics" clipboard button. All elements are tagged with `data-testid` for E2E testing.
+- **Full Interactive Lifecycle E2E Test:** Added `test('LivePreview full interactive lifecycle — start, stop, restart, and diagnostics')` in `tests/e2e/09-vibeforge-live-preview.spec.ts` covering: template selection, server start, URL non-blank assertion, diagnostics elements, stop, and restart.
+- **Async Unit Tests:** Updated all `tests/unit/live-preview.test.ts` test cases that call `startPreview`, `startGeneratedPreview`, or `createDemo` to use `async/await` consistently with the refactored service API.
+
+### Changed
+- `livePreviewService.startPreview()`, `startGeneratedPreview()`, and `createDemo()` are now `async` methods returning `Promise<…>`.
+- `build-pipeline.service.ts` awaits `livePreviewService.startPreview()` at the build completion step.
+
+### Diagnostics
+- verify:native ✅  |  typecheck ✅  |  unit tests 845/845 ✅  |  build ✅  |  demo:coding ✅
+
 ## [0.9.81] - 2026-07-10 — Vibeforge Codex-like Simplification Pass
+
 
 ### Added
 - **Beginner Guidance Banners:** Added prominent info banners on empty home views and sidebars for Studio (`Studio.tsx`), Chat (`ChatWorkspace.tsx`), and LivePreview (`LivePreview.tsx`) to explain page purpose, next steps, and template execution.

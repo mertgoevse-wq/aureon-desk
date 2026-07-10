@@ -32,8 +32,8 @@ export function registerLivePreviewIPC(): void {
     livePreviewService.cleanupSandboxes(maxAgeHours)
   )
 
-  ipcMain.handle('preview:createDemo', (_e, port?: number, style?: string): CodingDemoResult =>
-    livePreviewService.createDemo(port, style)
+  ipcMain.handle('preview:createDemo', async (_e, port?: number, style?: string): Promise<CodingDemoResult> =>
+    await livePreviewService.createDemo(port, style)
   )
 
   ipcMain.handle('preview:startGenerated', (_e, input: any) =>

@@ -1368,7 +1368,7 @@ export const buildPipelineService = {
 
         // Stop any existing preview, then start the new sandbox
         livePreviewService.stopPreview()
-        const status = livePreviewService.startPreview(sandboxPath!)
+        const status = await livePreviewService.startPreview(sandboxPath!)
         previewStatus = status.status
         previewUrl = status.url
 

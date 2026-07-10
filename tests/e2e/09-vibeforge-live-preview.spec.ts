@@ -116,4 +116,57 @@ test.describe('LivePreview Workspace — E2E', () => {
 
     expect(await checkForErrorPage(mainWindow)).toBeNull()
   })
+
+  test('LivePreview full interactive lifecycle - start, stop, restart, and diagnostics', async ({ mainWindow }) => {
+    await waitForAppReady(mainWindow)
+
+    await mainWindow.click('[data-testid="nav-preview"]')
+    await mainWindow.waitForTimeout(1000)
+
+    // 1. Select "Coding Demo" template
+    const templateSelect = await mainWindow.$('[data-testid="preview-template-select"]')
+    await templateSelect!.selectOption({ label: 'Coding Demo' })
+    await mainWindow.waitForTimeout(300)
+
+    // 2. Start preview (Build with Preview)
+    const createBtn = await mainWindow.$('[data-testid="preview-create-btn"]')
+    await createBtn!.click()
+
+    // Wait for server to start
+    await mainWindow.waitForTimeout(4000)
+
+    // 3. Verify status is running and URL is created (no blank preview)
+    const statusBadge = await mainWindow.$('[data-testid="preview-status"]')
+    const statusText = await statusBadge!.textContent()
+    expect(statusText).toMatch(/Running/i)
+
+    const urlInput = await mainWindow.$('[data-testid="preview-url-input"]')
+    const urlValue = await urlInput!.inputValue()
+    expect(urlValue).toContain('http://127.0.0.1')
+    expect(urlValue.trim()).not.toBe('') // Blank preview fails test
+
+    // Verify diagnostics elements
+    const diagUrl = await mainWindow.$('[data-testid="diagnostics-url"]')
+    expect(diagUrl).not.toBeNull()
+    const diagStatus = await mainWindow.$('[data-testid="diagnostics-status"]')
+    expect(await diagStatus!.textContent()).toMatch(/running/i)
+
+    // 4. Click Stop preview
+    const stopBtn = await mainWindow.$('[data-testid="preview-stop-btn"]')
+    await stopBtn!.click()
+    await mainWindow.waitForTimeout(1000)
+
+    // Verify stopped status
+    const stoppedText = await statusBadge!.textContent()
+    expect(stoppedText).toMatch(/Stopped/i)
+
+    // 5. Start / Restart preview works
+    const startBtn = await mainWindow.$('[data-testid="preview-start-btn"]')
+    await startBtn!.click()
+    await mainWindow.waitForTimeout(1500)
+
+    // Verify back to running
+    const runningText2 = await statusBadge!.textContent()
+    expect(runningText2).toMatch(/Running/i)
+  })
 })

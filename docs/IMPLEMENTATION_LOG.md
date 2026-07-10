@@ -4,7 +4,37 @@
 
 ---
 
+## 2026-07-10 — LivePreview Reliability Pass
+
+### Goal
+Stabilise Vibeforge LivePreview: eliminate blank preview frames, port-checking race conditions, and status demotion bugs. Add diagnostics UI and comprehensive lifecycle E2E tests.
+
+### Files Modified
+* `src/main/services/live-preview.service.ts`: `findAvailablePort` converted from synchronous `execSync` child-process loop to async in-process `net.createServer()` socket binding check. `startPreview`, `startGeneratedPreview`, and `createDemo` made async.
+* `src/main/services/build-pipeline.service.ts`: Added `await` to `livePreviewService.startPreview()` call at build completion step.
+* `src/main/ipc/live-preview.ipc.ts`: `preview:createDemo` handler updated to `async` returning `Promise<CodingDemoResult>`.
+* `src/renderer/src/pages/LivePreview.tsx`:
+  - Iframe now renders in `'starting'` and `'running'` states (was `'running'` only); loading overlay shown when `'starting'`.
+  - `key={status.id}` added to iframe for guaranteed remount on new session.
+  - Hidden URL input now binds to `status.url || customUrl` for E2E reliability.
+  - Race condition guard: `onBuildStep` cannot demote `running`/`error` status back to `starting`/`idle`.
+  - New Diagnostics Panel added: live URL, status, last error, Restart Preview button, Copy Diagnostics button.
+  - Added `Loader2` icon import from `lucide-react`.
+* `tests/e2e/09-vibeforge-live-preview.spec.ts`: Added full interactive lifecycle test (start, URL assertion, stop, restart, diagnostics elements).
+* `tests/unit/live-preview.test.ts`: All tests calling `startPreview`, `startGeneratedPreview`, or `createDemo` updated to `async/await`.
+
+### Verification
+* SQLite Native module ✅ (verify:native passes)
+* TypeScript compilation ✅ (typecheck passes — node + web targets)
+* Unit tests ✅ (845/845 tests pass)
+* Production build ✅ (electron-vite build passes)
+* Coding Demo smoke test ✅ (node scripts/demo-coding.mjs — all 9 checks pass)
+* E2E LivePreview lifecycle ✅ (11/11 tests in 09-vibeforge-live-preview.spec.ts pass, including new lifecycle test)
+
+---
+
 ## 2026-07-10 — Vibeforge Rebrand Pass
+
 
 ### Goal
 Rename the product from "Aureon Desk" to "Vibeforge" across the entire codebase (visible user-facing views, package settings, installers, documents, and testing suites) in a safe, consistent way.

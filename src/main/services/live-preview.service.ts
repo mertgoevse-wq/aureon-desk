@@ -255,20 +255,23 @@ function isNpmAvailable(): boolean {
   } catch { return false }
 }
 
-function findAvailablePort(basePort: number): number {
-  const { execSync } = require('child_process') as typeof import('child_process')
+async function findAvailablePort(basePort: number): Promise<number> {
+  const net = require('net') as typeof import('net')
+  const checkPort = (p: number): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const server = net.createServer()
+      server.once('error', () => resolve(false))
+      server.once('listening', () => {
+        server.close(() => resolve(true))
+      })
+      server.listen(p, '127.0.0.1')
+    })
+  }
+
   for (let offset = 0; offset < 100; offset++) {
     const port = basePort + offset
-    try {
-      // Run a synchronous child process to verify if the port is open.
-      // Must set ELECTRON_RUN_AS_NODE to execute as pure Node CLI in Electron env.
-      execSync(
-        `"${process.execPath}" -e "const s = require('net').createServer(); s.once('error', () => process.exit(1)); s.once('listening', () => { s.close(); process.exit(0); }); s.listen(${port}, '127.0.0.1');"`,
-        { stdio: 'ignore', timeout: 2000, env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' } }
-      )
+    if (await checkPort(port)) {
       return port
-    } catch {
-      // Port is busy or check failed, try next offset
     }
   }
   return basePort + Math.floor(Math.random() * 1000)
@@ -397,7 +400,7 @@ export const livePreviewService = {
    * Safe Generated Preview Flow: sets up the sandbox path, writes files (redacting secrets,
    * blocking path traversal), and launches the HTTP preview server.
    */
-  startGeneratedPreview(input: StartGeneratedPreviewInput): PreviewStatus {
+  async startGeneratedPreview(input: StartGeneratedPreviewInput): Promise<PreviewStatus> {
     const templateType = input.source === 'code-demo' ? 'demo' : 'html'
     const sessionId = uuid()
     const sandboxRoot = this.getSandboxRoot()
@@ -436,7 +439,7 @@ export const livePreviewService = {
       logger.info(`startGeneratedPreview: sandbox created at ${sandboxPath} (source: ${input.source})`)
 
       // Start static preview server
-      return this.startPreview(sandboxPath, input.port)
+      return await this.startPreview(sandboxPath, input.port)
     } catch (err: any) {
       logger.error(`startGeneratedPreview failed: ${err.message}`)
       const logs = [{ timestamp: new Date().toISOString(), stream: 'stderr' as const, text: err.message }]
@@ -460,9 +463,9 @@ export const livePreviewService = {
    * Self-Test Coding Agent Demo: generates the Vibeforge Counter Demo sandbox,
    * starts the preview server, and returns the full result.
    */
-  createDemo(port?: number, style?: string): CodingDemoResult {
+  async createDemo(port?: number, style?: string): Promise<CodingDemoResult> {
     try {
-      const status = this.startGeneratedPreview({
+      const status = await this.startGeneratedPreview({
         source: 'code-demo',
         style,
         port
@@ -485,14 +488,14 @@ export const livePreviewService = {
     }
   },
 
-  startPreview(sandboxPath: string, port = 0): PreviewStatus {
+  async startPreview(sandboxPath: string, port = 0): Promise<PreviewStatus> {
     const existing = this._session
     if (existing && (existing.status === 'running' || existing.status === 'starting')) {
       this.stopPreview()
     }
 
     const sessionId = uuid()
-    const actualPort = port || findAvailablePort(3100)
+    const actualPort = port || await findAvailablePort(3100)
 
     if (!fs.existsSync(sandboxPath)) {
       return { id: null, status: 'error', sandboxPath, url: null, port: null, templateType: null, logs: [], error: `Sandbox path not found: ${sandboxPath}` }

@@ -4,7 +4,27 @@
 
 ---
 
+## LivePreview Reliability Pass — 2026-07-10
+
+> ✅ **Status: Complete — Blank preview eliminated, race conditions fixed, diagnostics panel added, 845 unit tests + 11 LivePreview E2E tests pass.**
+
+| Check | Result |
+|-------|--------|
+| `node scripts/verify-native.js` | ✅ PASS |
+| `tsc --noEmit -p tsconfig.node.json` | ✅ PASS |
+| `tsc --noEmit -p tsconfig.web.json` | ✅ PASS |
+| `vitest run` (845 unit tests, 33 files) | ✅ PASS |
+| `electron-vite build` (production build) | ✅ PASS |
+| `node scripts/demo-coding.mjs` (9 content checks) | ✅ PASS |
+| Playwright `09-vibeforge-live-preview.spec.ts` (11 tests) | ✅ PASS |
+
+### Summary
+The LivePreview system has been stabilised. The synchronous `execSync` child-process port probe has been replaced with an in-process async `net.createServer()` socket check, eliminating Windows quoting failures and startup race conditions. The preview iframe now renders immediately in `'starting'` state with a loading overlay instead of staying blank. A new `key={status.id}` prop forces iframe remount per session. A race condition guard prevents pipeline events from demoting a `'running'` preview back to `'idle'`. A Diagnostics Panel was added showing the live URL, status, last error, Restart Preview, and Copy Diagnostics controls. All service methods are now properly `async`, and the IPC layer was updated accordingly.
+
+---
+
 ## Vibeforge Codex-like Simplification Pass — 2026-07-10
+
 
 > ✅ **Status: Complete — UI consolidated, advanced views hidden behind toggles, and all 845 unit tests pass.**
 

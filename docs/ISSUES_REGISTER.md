@@ -1,15 +1,27 @@
 # Vibeforge — Issues Register
 
-> **Last updated:** 2026-07-10 — Rebrand to Vibeforge complete
+> **Last updated:** 2026-07-10 — LivePreview Reliability Pass complete (v0.9.82)
 > **Branch:** `main`
+
+---
+
+## Issues Resolved in LivePreview Reliability Pass (2026-07-10)
+
+| ID | Area | Issue | Root Cause | Status |
+|----|------|-------|------------|--------|
+| LP-01 | LivePreview | Preview frame stays blank after build | Iframe only mounted in `'running'` state; `'starting'` showed idle panel | ✅ Fixed — iframe now renders in `starting` + `running` with loading overlay |
+| LP-02 | LivePreview | Port probe fails on Windows | `execSync` child-process with inline JS fails due to quote escaping | ✅ Fixed — async in-process `net.createServer()` check |
+| LP-03 | LivePreview | Stale iframe page from previous session | React reused iframe DOM node across sessions | ✅ Fixed — `key={status.id}` forces remount |
+| LP-04 | LivePreview | Status demoted from `running` → `starting` by late pipeline events | No guard in `onBuildStep` setStatus updater | ✅ Fixed — guard preserves `running`/`error` status |
+| LP-05 | LivePreview | E2E URL input always empty | Hidden input bound to `customUrl` only, not `status.url` | ✅ Fixed — binds to `status.url \|\| customUrl` |
+| LP-06 | IPC | TypeScript error: `Promise<CodingDemoResult>` vs `CodingDemoResult` | Handler return type not updated after async refactor | ✅ Fixed — handler is now `async Promise<CodingDemoResult>` |
 
 ---
 
 ## Critical Issues
 
 | ID | Area | Issue | Evidence | Root Cause | Status | Fixed In Commit |
-|----|------|-------|----------|------------|--------|-----------------|
-| — | — | **None found** | Latest pre-feature review plus baseline QA passed | — | — | — |
+|----|------|-------|----------|------------|--------|-----------------|\n| — | — | **None found** | Latest pre-feature review plus baseline QA passed | — | — | — |
 
 ### Critical Issue Checklist (2026-07-09) — Updated
 

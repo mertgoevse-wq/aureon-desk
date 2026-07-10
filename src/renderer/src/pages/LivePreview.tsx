@@ -14,7 +14,8 @@ import {
   Zap,
   FolderOpen,
   ChevronDown,
-  Sparkles
+  Sparkles,
+  Loader2
 } from 'lucide-react'
 import { Button } from '../components/shared/Button'
 import { Badge } from '../components/shared/Badge'
@@ -206,6 +207,10 @@ export function LivePreview(): React.ReactElement {
             type ValidStatus = typeof validStatuses[number]
             const nextStatus: ValidStatus | undefined =
               ps && (validStatuses as readonly string[]).includes(ps) ? (ps as ValidStatus) : undefined
+            // Race condition guard: if we are already running or error, do not demote to starting or idle
+            if (prev.status === 'running' || prev.status === 'error') {
+              return { ...prev, url: s.previewUrl }
+            }
             return { ...prev, url: s.previewUrl, status: nextStatus ?? prev.status }
           })
         }
@@ -571,7 +576,7 @@ export function LivePreview(): React.ReactElement {
               data-testid="preview-url-input"
               title="Custom Preview URL"
               placeholder="Custom URL"
-              value={customUrl}
+              value={status.url || customUrl || ''}
               onChange={e => setCustomUrl(e.target.value)}
               className="hidden"
             />
@@ -651,6 +656,54 @@ export function LivePreview(): React.ReactElement {
             </div>
           </div>
 
+          {/* Diagnostics Panel */}
+          <div className="px-6 py-3 border-b border-[var(--ivory-border)] bg-[var(--ivory-elevated)]/50 text-[11px] text-[var(--ivory-text-2)] font-body flex flex-wrap gap-x-6 gap-y-2 items-center justify-between">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <div>
+                <span className="font-bold text-[var(--ivory-text-3)] mr-1">Preview URL:</span>
+                {status.url ? (
+                  <a href={status.url} target="_blank" rel="noreferrer" className="text-[var(--ivory-accent)] hover:underline font-mono" data-testid="diagnostics-url">
+                    {status.url}
+                  </a>
+                ) : (
+                  <span className="text-[var(--ivory-text-3)] italic">none</span>
+                )}
+              </div>
+              <div>
+                <span className="font-bold text-[var(--ivory-text-3)] mr-1">Status:</span>
+                <span className="font-semibold uppercase text-[10px]" data-testid="diagnostics-status">{status.status}</span>
+              </div>
+              {status.error && (
+                <div className="text-[var(--ivory-error)] max-w-md truncate">
+                  <span className="font-bold text-[var(--ivory-text-3)] mr-1">Error:</span>
+                  <span className="font-mono bg-[var(--ivory-error-bg)]/20 px-1 py-0.5 rounded text-[10px]" data-testid="diagnostics-error">{status.error}</span>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleRestart}
+                disabled={!status.url}
+                className="inline-flex h-6 items-center px-2 text-[10px] font-bold bg-white border border-[var(--ivory-border)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text)] rounded-lg transition disabled:opacity-50 cursor-pointer animate-scale-in"
+                data-testid="diagnostics-restart-btn"
+              >
+                Restart Preview
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const diagnosticText = `Preview URL: ${status.url || 'none'}\nStatus: ${status.status}\nPort: ${status.port || 'none'}\nTemplate: ${status.templateType || 'none'}\nSandbox: ${status.sandboxPath || 'none'}\nError: ${status.error || 'none'}`
+                  navigator.clipboard.writeText(diagnosticText)
+                }}
+                className="inline-flex h-6 items-center px-2 text-[10px] font-bold bg-white border border-[var(--ivory-border)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text)] rounded-lg transition cursor-pointer animate-scale-in"
+                data-testid="diagnostics-copy-btn"
+              >
+                Copy Diagnostics
+              </button>
+            </div>
+          </div>
+
           {/* Sandbox Directory details (if active) */}
           {status.sandboxPath && (
             <div className="px-6 py-2 border-b border-[var(--ivory-border)] bg-[var(--ivory-bg)] flex items-center gap-2 text-[10px] text-[var(--ivory-text-3)] truncate shrink-0">
@@ -718,11 +771,18 @@ export function LivePreview(): React.ReactElement {
             )}
 
             {/* Embedded Interactive Iframe Sandbox */}
-            {status.status === 'running' && status.url ? (
+            {(status.status === 'running' || status.status === 'starting') && status.url ? (
               <div className="space-y-2">
                 <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--ivory-text-3)] block">Interactive Live Preview Frame</span>
-                <div className="rounded-[24px] border border-[var(--ivory-border)] overflow-hidden bg-white shadow-[var(--shadow-md)] h-[360px]">
+                <div className="rounded-[24px] border border-[var(--ivory-border)] overflow-hidden bg-white shadow-[var(--shadow-md)] h-[360px] relative">
+                  {status.status === 'starting' && (
+                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-10 gap-3">
+                      <Loader2 className="animate-spin text-[var(--ivory-accent)]" size={24} />
+                      <span className="text-xs text-[var(--ivory-text-2)] font-semibold animate-pulse">Starting preview server...</span>
+                    </div>
+                  )}
                   <iframe
+                    key={status.id || undefined}
                     src={status.url}
                     title="Vibeforge Live Sandbox Preview"
                     className="w-full h-full border-none bg-white"

@@ -242,44 +242,44 @@ describe('LivePreview Service — Process Lifecycle', () => {
     livePreviewService.reset()
   })
 
-  it('should return error when sandbox path does not exist', () => {
+  it('should return error when sandbox path does not exist', async () => {
     mockFs.existsSync = vi.fn((p: string) => {
       return !p.includes('nonexistent') && !p.includes('preview-sandbox')
     })
 
-    const result = livePreviewService.startPreview('/nonexistent/path')
+    const result = await livePreviewService.startPreview('/nonexistent/path')
     expect(result.status).toBe('error')
     expect(result.error).toContain('not found')
   })
 
-  it('should detect HTML template type when no package.json exists', () => {
+  it('should detect HTML template type when no package.json exists', async () => {
     mockFs.existsSync = vi.fn((p: string) => {
       if (p.endsWith('package.json') || p.endsWith('.aureon-demo') || p.endsWith('.vibeforge-demo')) return false
       return true
     })
 
-    const result = livePreviewService.startPreview('/sandbox/html-app')
+    const result = await livePreviewService.startPreview('/sandbox/html-app')
     expect(result.status).toBe('starting')
     expect(result.templateType).toBe('html')
   })
 
-  it('should detect vite-react template type when package.json exists', () => {
+  it('should detect vite-react template type when package.json exists', async () => {
     mockFs.existsSync = vi.fn((p: string) => {
       if (p.endsWith('.aureon-demo') || p.endsWith('.vibeforge-demo')) return false
       return true
     })
 
-    const result = livePreviewService.startPreview('/sandbox/vite-app')
+    const result = await livePreviewService.startPreview('/sandbox/vite-app')
     expect(result.status).toBe('starting')
     expect(result.templateType).toBe('vite-react')
   })
 
-  it('should stop running preview and return stopped', () => {
+  it('should stop running preview and return stopped', async () => {
     mockFs.existsSync = vi.fn((p: string) => {
       if (p.endsWith('.aureon-demo') || p.endsWith('.vibeforge-demo')) return false
       return true
     })
-    livePreviewService.startPreview('/sandbox/app')
+    await livePreviewService.startPreview('/sandbox/app')
 
     livePreviewService.stopPreview()
     const status = livePreviewService.getStatus()
@@ -326,8 +326,8 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
     livePreviewService.reset()
   })
 
-  it('should start in-process http server and serve index.html', () => {
-    livePreviewService.startPreview('/sandbox/html-app')
+  it('should start in-process http server and serve index.html', async () => {
+    await livePreviewService.startPreview('/sandbox/html-app')
 
     expect(mockHttpCreateServer).toHaveBeenCalled()
     // Port is dynamic (findAvailablePort may scan beyond 3100), so match any number
@@ -352,8 +352,8 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
     expect(res.end).toHaveBeenCalledWith('<html></html>')
   })
 
-  it('should prevent path traversal outside sandbox', () => {
-    livePreviewService.startPreview('/sandbox/html-app')
+  it('should prevent path traversal outside sandbox', async () => {
+    await livePreviewService.startPreview('/sandbox/html-app')
     const handler = (mockHttpCreateServer as any).mock.calls[0][0]
 
     const req = { url: '/../../etc/passwd', headers: {} }
@@ -368,16 +368,16 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
     expect(res.end).toHaveBeenCalledWith('Forbidden')
   })
 
-  it('should close in-process server when stopPreview is called', () => {
-    livePreviewService.startPreview('/sandbox/html-app')
+  it('should close in-process server when stopPreview is called', async () => {
+    await livePreviewService.startPreview('/sandbox/html-app')
     livePreviewService.stopPreview()
     expect(mockHttpServer.close).toHaveBeenCalled()
   })
 
   describe('startGeneratedPreview unified flow', () => {
-    it('should create sandbox session and write entry html file', () => {
+    it('should create sandbox session and write entry html file', async () => {
       mockFs.writeFileSync = vi.fn()
-      const status = livePreviewService.startGeneratedPreview({
+      const status = await livePreviewService.startGeneratedPreview({
         source: 'studio-build-app',
         style: 'Soft Teal',
         port: 3200
@@ -386,8 +386,8 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
       expect(mockFs.writeFileSync).toHaveBeenCalled()
     })
 
-    it('should block directory traversal inside files object', () => {
-      const status = livePreviewService.startGeneratedPreview({
+    it('should block directory traversal inside files object', async () => {
+      const status = await livePreviewService.startGeneratedPreview({
         source: 'manual',
         files: {
           '../escaped.html': '<html></html>'
@@ -397,9 +397,9 @@ describe('LivePreview Service — In-Process HTTP Server', () => {
       expect(status.error).toContain('Path escapes sandbox directory')
     })
 
-    it('should redact secrets from written file content', () => {
+    it('should redact secrets from written file content', async () => {
       mockFs.writeFileSync = vi.fn()
-      livePreviewService.startGeneratedPreview({
+      await livePreviewService.startGeneratedPreview({
         source: 'manual',
         files: {
           'index.html': 'API_KEY: sk-or-v1-abcdefghijklmnopqrstuvwxyz123456'
@@ -436,7 +436,7 @@ describe('LivePreview Service — onStatusChange push mechanism', () => {
     const onChange = vi.fn()
     livePreviewService.onStatusChange(onChange)
 
-    livePreviewService.startPreview('/tmp/sandbox', 3999)
+    await livePreviewService.startPreview('/tmp/sandbox', 3999)
 
     // Wait for setImmediate inside server.listen callback to fire
     await new Promise(r => setImmediate(r))
@@ -458,7 +458,7 @@ describe('LivePreview Service — onStatusChange push mechanism', () => {
       return mockHttpServer
     })
 
-    livePreviewService.startPreview('/tmp/sandbox', 4001)
+    await livePreviewService.startPreview('/tmp/sandbox', 4001)
     await new Promise(r => setTimeout(r, 20))
 
     // onChange may have been called with error state
@@ -474,7 +474,7 @@ describe('LivePreview Service — onStatusChange push mechanism', () => {
     const unsubscribe = livePreviewService.onStatusChange(onChange)
     unsubscribe()
 
-    livePreviewService.startPreview('/tmp/sandbox', 4002)
+    await livePreviewService.startPreview('/tmp/sandbox', 4002)
     await new Promise(r => setImmediate(r))
 
     expect(onChange).not.toHaveBeenCalled()
@@ -503,13 +503,13 @@ describe('Studio → LivePreview Regression Contract', () => {
     expect(AUTO_PREVIEW_KEYS.pipelineModelExplanation).toBe('build-pipeline-model-explanation')
   })
 
-  it('startGeneratedPreview should create demo sandbox and not error', () => {
+  it('startGeneratedPreview should create demo sandbox and not error', async () => {
     mockFs.writeFileSync = vi.fn()
     mockFs.existsSync = vi.fn((p: string) => {
       if (typeof p === 'string' && (p.includes('package.json') || p.includes('.aureon-demo'))) return false
       return true
     })
-    const status = livePreviewService.startGeneratedPreview({
+    const status = await livePreviewService.startGeneratedPreview({
       source: 'studio-build-app',
       style: 'Calming Ivory',
       port: 3200
@@ -518,24 +518,24 @@ describe('Studio → LivePreview Regression Contract', () => {
     expect(mockFs.writeFileSync).toHaveBeenCalled()
   })
 
-  it('createDemo should return valid CodingDemoResult', () => {
+  it('createDemo should return valid CodingDemoResult', async () => {
     mockFs.writeFileSync = vi.fn()
     mockFs.existsSync = vi.fn((p: string) => {
       if (typeof p === 'string' && (p.includes('package.json') || p.includes('.aureon-demo'))) return false
       return true
     })
-    const result = livePreviewService.createDemo(3300, 'Calming Ivory')
+    const result = await livePreviewService.createDemo(3300, 'Calming Ivory')
     expect(result.success).toBe(true)
     expect(result.sandboxId).toBeTruthy()
     expect(result.previewStatus.status).not.toBe('error')
   })
 
-  it('stopPreview should close the in-process HTTP server', () => {
+  it('stopPreview should close the in-process HTTP server', async () => {
     mockFs.existsSync = vi.fn((p: string) => {
       if (typeof p === 'string' && (p.includes('package.json') || p.includes('.aureon-demo'))) return false
       return true
     })
-    livePreviewService.startPreview('/sandbox/html-app')
+    await livePreviewService.startPreview('/sandbox/html-app')
     livePreviewService.stopPreview()
     expect(mockHttpServer.close).toHaveBeenCalled()
   })
