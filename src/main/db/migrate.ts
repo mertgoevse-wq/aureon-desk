@@ -297,6 +297,12 @@ export function runMigrations(): void {
   addToolCol('command', 'TEXT')
   addToolCol('permissions', 'TEXT')
   addToolCol('is_trusted', 'INTEGER NOT NULL DEFAULT 0')
+  addToolCol('source_path', 'TEXT')
+  addToolCol('trust_level', "TEXT NOT NULL DEFAULT 'untrusted'")
+  addToolCol('env_vars', 'TEXT')
+  addToolCol('connection_status', "TEXT NOT NULL DEFAULT 'disconnected'")
+  addToolCol('discovery_data', 'TEXT')
+  addToolCol('last_discovered_at', 'TEXT')
 
   // Project columns additive migration
   const projectCols = sqlite.pragma('table_info(projects)') as { name: string }[]

@@ -1,19 +1,15 @@
 {
-  "commit": "0212078",
+  "commit": "68d64ed",
   "branch": "main",
-  "startedAt": "2026-07-10T17:41:37.420Z",
-  "endedAt": "2026-07-10T17:44:38.539Z",
-  "durationMs": 181119,
+  "startedAt": "2026-07-11T07:06:20.135Z",
+  "endedAt": "2026-07-11T07:09:23.230Z",
+  "durationMs": 183095,
   "environment": {
-    "slowMo": 800,
-    "keepOpen": true,
+    "slowMo": 0,
+    "keepOpen": false,
     "pageErrors": 0,
-    "consoleErrors": 3,
-    "consoleErrorSamples": [
-      "Error: Error invoking remote method 'tool:list': SqliteError: no such column: \"trust_level\" - should this be a string literal in single-quotes?",
-      "Error: Error invoking remote method 'tool:list': SqliteError: no such column: \"trust_level\" - should this be a string literal in single-quotes?",
-      "Error: Error invoking remote method 'tool:list': SqliteError: no such column: \"trust_level\" - should this be a string literal in single-quotes?"
-    ],
+    "consoleErrors": 0,
+    "consoleErrorSamples": [],
     "pageErrorSamples": []
   },
   "flows": [
@@ -24,9 +20,10 @@
         "screenshots/00_startup.png"
       ],
       "durationMs": 0,
-      "startedAt": "2026-07-10T17:41:43.397Z",
-      "endedAt": "2026-07-10T17:41:43.399Z",
-      "pageErrorDelta": 0
+      "startedAt": "2026-07-11T07:06:26.754Z",
+      "endedAt": "2026-07-11T07:06:26.755Z",
+      "pageErrorDelta": 0,
+      "notes": "first-run wizard was not shown"
     },
     {
       "name": "UI sweep — sidebar + major pages",
@@ -38,9 +35,9 @@
         "screenshots/01_projects.png",
         "screenshots/01_prompts.png"
       ],
-      "durationMs": 5333,
-      "startedAt": "2026-07-10T17:41:43.399Z",
-      "endedAt": "2026-07-10T17:41:48.732Z",
+      "durationMs": 5403,
+      "startedAt": "2026-07-11T07:06:26.755Z",
+      "endedAt": "2026-07-11T07:06:32.158Z",
       "pageErrorDelta": 0,
       "notes": "sidebar items clicked + major pages rendered"
     },
@@ -50,9 +47,9 @@
       "screenshots": [
         "screenshots/02_studio_home.png"
       ],
-      "durationMs": 662,
-      "startedAt": "2026-07-10T17:41:48.732Z",
-      "endedAt": "2026-07-10T17:41:49.394Z",
+      "durationMs": 708,
+      "startedAt": "2026-07-11T07:06:32.158Z",
+      "endedAt": "2026-07-11T07:06:32.866Z",
       "pageErrorDelta": 0,
       "notes": "hero + composer + Start building all visible"
     },
@@ -68,9 +65,9 @@
         "screenshots/03_counter_increment_clicked.png",
         "screenshots/03_counter_reset_clicked.png"
       ],
-      "durationMs": 5485,
-      "startedAt": "2026-07-10T17:41:49.395Z",
-      "endedAt": "2026-07-10T17:41:54.880Z",
+      "durationMs": 5572,
+      "startedAt": "2026-07-11T07:06:32.866Z",
+      "endedAt": "2026-07-11T07:06:38.438Z",
       "pageErrorDelta": 0,
       "prompt": "Build a tiny counter app with ivory Claude-like theme, increment button, reset button, and live preview.",
       "responseSummary": "pipelineVisible=true, demoBadge=true, iframeVisible=true, iframeInteraction=increment+reset clicked",
@@ -89,9 +86,9 @@
         "screenshots/04_vibe_prompt_built.png",
         "screenshots/04_vibe_code_mode.png"
       ],
-      "durationMs": 5370,
-      "startedAt": "2026-07-10T17:41:54.880Z",
-      "endedAt": "2026-07-10T17:42:00.250Z",
+      "durationMs": 5492,
+      "startedAt": "2026-07-11T07:06:38.438Z",
+      "endedAt": "2026-07-11T07:06:43.930Z",
       "pageErrorDelta": 0,
       "responseSummary": "steps=3, promptBuilt=true",
       "qualityScore": 80,
@@ -105,9 +102,9 @@
         "screenshots/05_chat_typed.png",
         "screenshots/05_chat_after_send.png"
       ],
-      "durationMs": 151612,
-      "startedAt": "2026-07-10T17:42:00.250Z",
-      "endedAt": "2026-07-10T17:44:31.862Z",
+      "durationMs": 151721,
+      "startedAt": "2026-07-11T07:06:43.931Z",
+      "endedAt": "2026-07-11T07:09:15.652Z",
       "pageErrorDelta": 0,
       "prompt": "Explain what Vibeforge can do in 5 bullet points and suggest one thing I should build first.",
       "responseSummary": "bullets=0 words=0 providerMissingCopy=false hasHeading=false hasList=false",
@@ -121,9 +118,9 @@
         "screenshots/06_landing_typed.png",
         "screenshots/06_landing_livepreview.png"
       ],
-      "durationMs": 1788,
-      "startedAt": "2026-07-10T17:44:31.863Z",
-      "endedAt": "2026-07-10T17:44:33.651Z",
+      "durationMs": 2174,
+      "startedAt": "2026-07-11T07:09:15.652Z",
+      "endedAt": "2026-07-11T07:09:17.826Z",
       "pageErrorDelta": 0,
       "prompt": "Build a premium hero landing page for Vibeforge with calm ivory background, graphite text, bronze accent, a central composer, 4 feature cards, and no neon.",
       "responseSummary": "demoBadge=true",
@@ -138,9 +135,9 @@
         "screenshots/07_followup_suggestions.png",
         "screenshots/07_code_tab.png"
       ],
-      "durationMs": 1634,
-      "startedAt": "2026-07-10T17:44:33.651Z",
-      "endedAt": "2026-07-10T17:44:35.285Z",
+      "durationMs": 1847,
+      "startedAt": "2026-07-11T07:09:17.827Z",
+      "endedAt": "2026-07-11T07:09:19.674Z",
       "pageErrorDelta": 0,
       "responseSummary": "followUpSuggestions=false",
       "qualityScore": 40,
@@ -152,9 +149,9 @@
       "screenshots": [
         "screenshots/08_settings_providers.png"
       ],
-      "durationMs": 599,
-      "startedAt": "2026-07-10T17:44:35.286Z",
-      "endedAt": "2026-07-10T17:44:35.885Z",
+      "durationMs": 665,
+      "startedAt": "2026-07-11T07:09:19.674Z",
+      "endedAt": "2026-07-11T07:09:20.339Z",
       "pageErrorDelta": 0,
       "qualityScore": 30,
       "notes": "key input not found via placeholder"
@@ -166,9 +163,9 @@
         "screenshots/09_tools_home.png",
         "screenshots/09_tools_add_mcp_modal.png"
       ],
-      "durationMs": 1928,
-      "startedAt": "2026-07-10T17:44:35.885Z",
-      "endedAt": "2026-07-10T17:44:37.813Z",
+      "durationMs": 2125,
+      "startedAt": "2026-07-11T07:09:20.340Z",
+      "endedAt": "2026-07-11T07:09:22.465Z",
       "pageErrorDelta": 0,
       "qualityScore": 80,
       "notes": "modal opened=true, safety copy=true"
@@ -179,9 +176,9 @@
       "screenshots": [
         "screenshots/10_maximized.png"
       ],
-      "durationMs": 628,
-      "startedAt": "2026-07-10T17:44:37.813Z",
-      "endedAt": "2026-07-10T17:44:38.441Z",
+      "durationMs": 665,
+      "startedAt": "2026-07-11T07:09:22.466Z",
+      "endedAt": "2026-07-11T07:09:23.131Z",
       "pageErrorDelta": 0,
       "notes": "window set to 1920x1080"
     },
@@ -192,8 +189,8 @@
         "screenshots/99_final.png"
       ],
       "durationMs": 0,
-      "startedAt": "2026-07-10T17:44:38.539Z",
-      "endedAt": "2026-07-10T17:44:38.539Z",
+      "startedAt": "2026-07-11T07:09:23.230Z",
+      "endedAt": "2026-07-11T07:09:23.230Z",
       "pageErrorDelta": 0
     }
   ],

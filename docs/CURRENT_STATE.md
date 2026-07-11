@@ -1,6 +1,6 @@
 # Vibeforge — Current State
 
-> **Last updated:** 2026-07-10
+> **Last updated:** 2026-07-11
 > **Branch:** main
 
 ---
@@ -47,6 +47,12 @@
 - Restart / Stop / Open in Browser controls
 - Coding Demo: generates counter app, verifies HTML content via Playwright
 
+### Android / Phone Companion Foundation
+- Settings page at `/settings/companion` and mobile preview route at `/companion`
+- UI + shared types only for local beta
+- No real network listener, phone sync, pairing authentication, or remote desktop control in this build
+- Companion actions are labeled as prototype previews so beta users do not mistake them for completed sync
+
 ### Cowork Mode
 - Safe placeholder shell: 4 workflow cards (Scheduled, Dispatch, Ideas, Customize) all labeled "Placeholder"
 - Permissions panel showing Browser/Computer/Accessibility/Screen Recording all Off
@@ -82,6 +88,7 @@
 | Dark mode / theme toggle | UI exists, not wired |
 | Project file context injection | Partial (instructions injected, file reading not exposed in UI) |
 | Tool execution (MCP call) | Registry exists, execution not wired to live calls |
+| Phone Companion network layer | UI/types only; no real sync or TCP/WebSocket transport yet |
 | Chat title auto-generation | Uses "New Chat" default; no AI title generation |
 | Attachments | Schema exists, no upload UI |
 | Prompt chip suggestions in home | Basic only (4 feature cards, not dynamic) |
@@ -128,12 +135,16 @@ Electron (main)  ←→  preload contextBridge  ←→  React renderer
 
 ```bash
 npm run dev           # Start dev (Vite HMR + Electron)
-npm run typecheck     # TypeScript check — PASS
-npm test              # Unit tests — 283 PASS
-npm run build         # Build — PASS
+npm run typecheck     # TypeScript check — PASS (direct tsc verified on this machine)
+npm test              # Unit tests — PASS (845 tests, 33 files via direct vitest)
+npm run build         # Build — PASS (direct electron-vite verified)
 npm run test:e2e      # E2E — 84 tests (last known: all PASS)
 npm run verify:native # Native binary check — PASS
 ```
+
+> Note: On the 2026-07-11 stabilization machine, the system npm shim was corrupted
+> (`npm-prefix.js` / `npm-cli.js` missing). Validation used direct `node` and
+> local `node_modules/.bin` commands; source validation itself passed.
 
 ---
 
@@ -158,4 +169,4 @@ This prompt should implement:
 - Window min/max/close controls with Vibeforge style
 - Verified at 1366×768 and maximized
 
-**Status before Prompt 5:** ✅ Ready — baseline is clean, all tests pass, no secrets, docs updated.
+**Status before beta packaging:** ✅ Ready — critical gates pass, headed human QA passes, no page or console errors in latest serious QA report.

@@ -1,7 +1,48 @@
 # Vibeforge — Issues Register
 
-> **Last updated:** 2026-07-10 — LivePreview Reliability Pass complete (v0.9.82)
+> **Last updated:** 2026-07-11 — Pre-beta stabilization complete
 > **Branch:** `main`
+
+---
+
+## Issues Resolved in Pre-Beta Stabilization (2026-07-11)
+
+| ID | Area | Issue | Root Cause | Status |
+|----|------|-------|------------|--------|
+| PB-01 | Onboarding / QA | Serious headed QA route flows timed out behind the first-run wizard | Onboarding was added after the harness and the harness did not dismiss it before route sweeps | ✅ Fixed — harness dismisses onboarding once at startup before core QA |
+| PB-02 | Tools/MCP | Tools page logged `SqliteError: no such column: "trust_level"` on existing databases | Additive migration did not include all newer `tools` schema columns | ✅ Fixed — migration now adds `source_path`, `trust_level`, `env_vars`, `connection_status`, `discovery_data`, and `last_discovered_at` |
+| PB-03 | Phone Companion | Companion screens could imply active phone pairing/sync | Prototype copy described planned actions before clarifying local-beta limitations | ✅ Fixed — desktop and mobile copy now states prototype-only, no real sync/network control |
+
+### Pre-Beta Gate Checklist (2026-07-11)
+
+| # | Check | Result |
+|---|-------|--------|
+| 1 | App starts in headed QA | ✅ PASS |
+| 2 | App name is Vibeforge | ✅ PASS |
+| 3 | Old Aureon text only appears in migration/history | ✅ PASS |
+| 4 | Logo/icon visible | ✅ PASS |
+| 5 | Sidebar clean, major routes reachable | ✅ PASS |
+| 6 | No duplicated core Build controls blocking flow | ✅ PASS |
+| 7 | Beginner/Advanced surfaces reachable | ✅ PASS |
+| 8 | Build with Preview works | ✅ PASS |
+| 9 | LivePreview renders iframe and counter app | ✅ PASS |
+| 10 | Code/Diff pipeline tabs work | ✅ PASS |
+| 11 | Vibe Coding routes to Code/Preview | ✅ PASS |
+| 12 | Agents/Skills page organized | ✅ PASS |
+| 13 | Provider settings render without page errors | ✅ PASS |
+| 14 | Phone Companion does not imply completed full sync | ✅ PASS |
+| 15 | Android `/companion` route does not break desktop | ✅ PASS |
+| 16 | Modals/dropdowns do not block headed QA after onboarding dismissal | ✅ PASS |
+| 17 | No critical tests fail | ✅ PASS |
+
+### Verification
+
+- `node scripts/verify-native.js` ✅ PASS
+- `tsc --noEmit -p tsconfig.node.json` ✅ PASS
+- `tsc --noEmit -p tsconfig.web.json` ✅ PASS
+- `vitest run` ✅ PASS — 845 tests, 33 files
+- `electron-vite build` ✅ PASS
+- `playwright test tests/e2e/vibeforge-human-serious.spec.ts --headed --workers=1 --timeout=1800000` ✅ PASS — 12/12 flows, 0 page errors, 0 console errors
 
 ---
 

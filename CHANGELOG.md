@@ -1,3 +1,18 @@
+## [Unreleased] - 2026-07-11 — Pre-Beta Stabilization
+
+### Fixed
+- **Phone Companion Copy:** Reworded desktop and mobile companion screens so the Android/Phone Companion foundation is clearly labeled as a prototype/UI-only local beta. The pages no longer imply active phone sync, pairing, or remote desktop control.
+- **MCP Tools Migration:** Added missing additive migrations for newer `tools` columns (`source_path`, `trust_level`, `env_vars`, `connection_status`, `discovery_data`, `last_discovered_at`) so existing SQLite databases do not throw `no such column: "trust_level"` when opening Tools/MCP.
+- **Human QA Harness:** Updated the serious headed QA harness to dismiss the first-run onboarding wizard before route sweeps, preserving onboarding while keeping Build/Preview, Vibe Coding, Providers, and Tools checks reachable.
+
+### Verification
+- `node scripts/verify-native.js` — PASS
+- `tsc --noEmit -p tsconfig.node.json` — PASS
+- `tsc --noEmit -p tsconfig.web.json` — PASS
+- `vitest run` — PASS (845 tests, 33 files)
+- `electron-vite build` — PASS
+- `playwright test tests/e2e/vibeforge-human-serious.spec.ts --headed --workers=1 --timeout=1800000` — PASS (12/12 flows, 0 page errors, 0 console errors)
+
 ## [Unreleased] - 2026-07-10 — Aureon → Vibeforge Rename + Android Port Preparation
 
 ### Changed

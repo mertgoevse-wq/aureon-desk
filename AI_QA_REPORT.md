@@ -4,6 +4,34 @@
 
 ---
 
+## Pre-Beta Stabilization — 2026-07-11
+
+> ✅ **Status: Complete — critical gates green after rebrand, UI simplification, LivePreview repair, agent cleanup, onboarding, and Android companion foundation.**
+
+| Check | Result |
+|-------|--------|
+| `git status` / `git log --oneline -12` | ✅ PASS — `main`, clean before edits |
+| `npm run verify:native` | ⚠️ Local npm shim is corrupted (`npm-prefix.js` / `npm-cli.js` missing); direct `node scripts/verify-native.js` PASS |
+| `tsc --noEmit -p tsconfig.node.json` | ✅ PASS |
+| `tsc --noEmit -p tsconfig.web.json` | ✅ PASS |
+| `vitest run` | ✅ PASS — 845/845 tests, 33 files |
+| `electron-vite build` | ✅ PASS |
+| `test:human:debug` equivalent | ✅ PASS on rerun — 12/12 serious headed flows, 0 page errors, 0 console errors |
+| Global search for "Aureon" | ✅ PASS — only historical migration/QA/changelog references remain |
+
+### Summary
+Stabilized two regressions found during serious visible QA:
+
+- First-run onboarding was blocking the headed human QA route sweep. The harness now dismisses the wizard once at startup before exercising core routes.
+- Existing SQLite databases could fail Tools/MCP loading with `no such column: "trust_level"`. The additive migration now covers all current `tools` schema columns.
+
+Also hardened Android/Phone Companion wording so the settings page and `/companion` mobile prototype clearly state that real pairing, sync, network control, and remote actions are not active in this build.
+
+### Critical Gate Result
+App startup, Vibeforge branding, logo visibility, sidebar navigation, Beginner/Advanced surfaces, Build with Preview, LivePreview iframe rendering, Code/Diff tabs, Vibe Coding routing, Skills/Agents organization, Provider settings, Phone Companion prototype language, Android route stability, modals/dropdowns, and critical tests are all green in the latest headed QA report.
+
+---
+
 ## Aureon → Vibeforge Rename + Android Port Preparation — 2026-07-10
 
 > 🟡 **Status: Rename and mobile-prep docs complete — validation blocked by local npm installation failure.**

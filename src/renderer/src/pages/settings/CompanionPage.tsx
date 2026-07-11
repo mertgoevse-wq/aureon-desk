@@ -1,8 +1,8 @@
 /**
  * Vibeforge — Android/Phone Companion Settings Page
  *
- * Configure the local-network phone companion feature. This is a local-beta
- * UI + types pass: no real TCP/network layer is active yet.
+ * Preview the planned local-network phone companion feature. This is a
+ * local-beta UI + types pass: no real TCP/network layer is active yet.
  */
 
 import React, { useState, useCallback } from 'react'
@@ -74,7 +74,7 @@ export function CompanionPage(): React.ReactElement {
         </div>
         <h1 className="text-[28px] font-semibold tracking-tight text-[var(--ivory-text)] display-text">Android Companion</h1>
         <p className="mt-2 max-w-2xl text-xs leading-relaxed text-[var(--ivory-text-3)]">
-          Pair your phone or tablet on the same local network to send prompts, request previews, and approve actions remotely.
+          Preview the planned phone companion controls for local pairing, prompt handoff, preview requests, and desktop approvals. Real sync is not active in this build.
         </p>
       </div>
 
@@ -84,16 +84,16 @@ export function CompanionPage(): React.ReactElement {
         <div>
           <p className="text-[13px] font-semibold text-amber-800 mb-1">Local Beta</p>
           <p className="text-[12px] text-amber-700 leading-relaxed">
-            The companion feature is UI + types only in this release. No real network connection is established yet. Pairing codes and device records are stored locally.
+            The companion feature is UI + types only in this release. No real network connection, phone sync, or remote control is established yet. Pairing codes and device records are local preview data.
           </p>
         </div>
       </div>
 
       {/* Enable Companion */}
-      <SettingsSection title="Companion Access" description="Turn the companion feature on or off.">
+      <SettingsSection title="Companion Prototype" description="Show or hide the local preview controls for the planned companion.">
         <SettingsRow
-          label="Enable Phone Companion"
-          description="Allow phones on the same network to pair with this Vibeforge desktop instance."
+          label="Show Phone Companion Prototype"
+          description="Expose local preview controls only. This does not open a listener or allow any phone to control Vibeforge."
           dataTestId="row-companion-enabled"
         >
           <Toggle checked={config.enabled} onChange={toggleEnabled} dataTestId="toggle-companion-enabled" />
@@ -103,14 +103,14 @@ export function CompanionPage(): React.ReactElement {
       {config.enabled && (
         <>
           {/* Pairing */}
-          <SettingsSection title="Pairing" description="Generate a code or QR data to pair a new device.">
+          <SettingsSection title="Pairing Preview" description="Generate a demo code for the prototype screen. It does not authenticate a real device.">
             <div className="px-5 py-4 space-y-3">
               <div className="flex items-center gap-3">
                 <div className="flex-1 p-3 rounded-xl bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-center tracking-[0.25em] text-[18px] font-mono text-[var(--ivory-text)]">
                   {pairingCode ?? '------'}
                 </div>
                 <Button variant="secondary" size="sm" onClick={generateCode} data-testid="generate-pairing-code">
-                  <RefreshCw size={12} className="mr-1" /> Generate
+                  <RefreshCw size={12} className="mr-1" /> Generate demo code
                 </Button>
                 <Button
                   variant="secondary"
@@ -124,13 +124,13 @@ export function CompanionPage(): React.ReactElement {
                 </Button>
               </div>
               <p className="text-[11px] text-[var(--ivory-text-3)] leading-relaxed">
-                Open <span className="font-mono text-[var(--ivory-accent)]">/companion</span> on your phone and enter the 6-digit code. Codes expire after 5 minutes.
+                Open <span className="font-mono text-[var(--ivory-accent)]">/companion</span> to preview the future phone UI. The code is not connected to a network session in this build.
               </p>
             </div>
           </SettingsSection>
 
           {/* Allowed Commands */}
-          <SettingsSection title="Allowed Commands" description="Choose what a paired phone is allowed to do.">
+          <SettingsSection title="Planned Command Permissions" description="Preview the command policy that will gate the future network layer.">
             {ALL_COMMANDS.map(cmd => (
               <SettingsRow
                 key={cmd.id}
@@ -147,7 +147,7 @@ export function CompanionPage(): React.ReactElement {
           </SettingsSection>
 
           {/* Paired Device */}
-          <SettingsSection title="Paired Device" description="Currently paired phone or tablet.">
+          <SettingsSection title="Paired Device Preview" description="Prototype device state only. No real device sync is stored in this build.">
             {config.pairedDevice ? (
               <div className="px-5 py-4 space-y-3">
                 <div className="flex items-center justify-between">
@@ -170,18 +170,18 @@ export function CompanionPage(): React.ReactElement {
               </div>
             ) : (
               <div className="px-5 py-4 text-[12px] text-[var(--ivory-text-3)] italic">
-                No device paired yet. Generate a pairing code above to connect a phone.
+                No real device is paired. Generate a demo code above to preview the future flow.
               </div>
             )}
           </SettingsSection>
 
           {/* Security Rules */}
-          <SettingsSection title="Security Rules" description="Hard limits enforced by the companion layer.">
+          <SettingsSection title="Security Rules" description="Hard limits planned for the future companion network layer.">
             <div className="px-5 py-3 space-y-2">
               {[
                 { icon: <Shield size={12} />, text: 'No remote shell execution without desktop approval' },
-                { icon: <KeyRound size={12} />, text: 'No API key or provider changes from phone' },
-                { icon: <Trash2 size={12} />, text: 'No file deletion from companion device' },
+                { icon: <KeyRound size={12} />, text: 'No API key or provider changes from a phone' },
+                { icon: <Trash2 size={12} />, text: 'No file deletion from a companion device' },
                 { icon: <Clock size={12} />, text: 'Pairing codes expire after 5 minutes' },
               ].map((rule, i) => (
                 <div key={i} className="flex items-center gap-2 text-[11px] text-[var(--ivory-text-2)]">
@@ -198,7 +198,7 @@ export function CompanionPage(): React.ReactElement {
         <div className="p-4 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-surface)] flex items-start gap-3">
           <Info size={16} className="text-[var(--ivory-text-3)] mt-0.5 shrink-0" />
           <p className="text-[12px] text-[var(--ivory-text-2)] leading-relaxed">
-            Enable the companion to generate pairing codes and manage allowed commands. The mobile view is available at <span className="font-mono text-[var(--ivory-accent)]">/companion</span>.
+            Show the companion prototype to generate demo pairing codes and review planned command permissions. The mobile preview route is available at <span className="font-mono text-[var(--ivory-accent)]">/companion</span>.
           </p>
         </div>
       )}

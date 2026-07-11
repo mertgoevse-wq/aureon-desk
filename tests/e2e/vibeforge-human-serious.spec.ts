@@ -188,6 +188,24 @@ async function waitVisible(page: Page, selector: string, timeout = 10_000): Prom
   }
 }
 
+async function dismissFirstRunWizardIfVisible(page: Page): Promise<boolean> {
+  const wizard = page.getByTestId('first-run-wizard')
+  if (!(await wizard.isVisible({ timeout: 2_000 }).catch(() => false))) {
+    return false
+  }
+
+  const skip = page.getByTestId('wizard-skip-btn')
+  if (await skip.isVisible().catch(() => false)) {
+    await skip.click()
+    await wizard.waitFor({ state: 'hidden', timeout: 5_000 }).catch(() => {})
+    return true
+  }
+
+  await page.keyboard.press('Escape')
+  await wizard.waitFor({ state: 'hidden', timeout: 5_000 }).catch(() => {})
+  return !(await wizard.isVisible().catch(() => false))
+}
+
 /** Verify the composer textarea contains expected text after a navigation/event. */
 async function verifyComposerText(page: Page, expected: string, timeout = 5_000): Promise<boolean> {
   try {
@@ -226,6 +244,7 @@ test.describe('Vibeforge — Serious Human QA Mode', () => {
     await mainWindow.setViewportSize({ width: 1366, height: 768 })
     await waitForAppReady(mainWindow)
     await mainWindow.waitForTimeout(800)
+    const dismissedWizard = await dismissFirstRunWizardIfVisible(mainWindow)
     flowResults.push({
       name: 'Startup',
       status: 'pass',
@@ -234,6 +253,7 @@ test.describe('Vibeforge — Serious Human QA Mode', () => {
       startedAt: new Date().toISOString(),
       endedAt: new Date().toISOString(),
       pageErrorDelta: 0,
+      notes: dismissedWizard ? 'first-run wizard dismissed for route-flow QA' : 'first-run wizard was not shown',
     })
 
     // 2) UI sweep — sidebar items + major pages

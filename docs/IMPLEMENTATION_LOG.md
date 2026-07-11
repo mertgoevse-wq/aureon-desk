@@ -4,6 +4,36 @@
 
 ---
 
+## 2026-07-11 — Pre-Beta Stabilization
+
+### Goal
+Stabilize Vibeforge after the rebrand, UI simplification, LivePreview repair, agent cleanup, onboarding, and Android companion foundation. Fix regressions only; do not add new product features.
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/main/db/migrate.ts` | Added missing additive migrations for current Tools/MCP columns so older SQLite databases do not fail on `trust_level`. |
+| `src/renderer/src/pages/settings/CompanionPage.tsx` | Reworded Phone Companion settings as a prototype/local-beta surface with no active sync or remote control. |
+| `src/renderer/src/pages/CompanionMobileView.tsx` | Reworded `/companion` as a mobile preview route; simulated actions now say they are prototype-only. |
+| `tests/e2e/vibeforge-human-serious.spec.ts` | Dismisses the first-run wizard at startup before exercising core app flows. |
+| `tests/e2e/artifacts/human-serious/*` | Refreshed serious headed QA report/results with 12/12 passing flows. |
+| `CHANGELOG.md`, `AI_QA_REPORT.md`, `docs/ISSUES_REGISTER.md` | Added stabilization evidence and gate results. |
+
+### Verification
+- `node scripts/verify-native.js`: ✅ PASS
+- `tsc --noEmit -p tsconfig.node.json`: ✅ PASS
+- `tsc --noEmit -p tsconfig.web.json`: ✅ PASS
+- `vitest run`: ✅ PASS (845/845 tests, 33 files)
+- `electron-vite build`: ✅ PASS
+- Serious headed QA: ✅ PASS (12/12 flows, 0 page errors, 0 console errors)
+
+### Notes
+- The local system npm install is still corrupted (`npm-prefix.js` / `npm-cli.js` missing), so validation used direct Node and local `node_modules/.bin` binaries.
+- First run onboarding remains enabled for users; only the human QA harness dismisses it before automated route sweeps.
+
+---
+
 ## 2026-07-10 — Aureon → Vibeforge Rename + Android Port Preparation
 
 ### Goal
@@ -411,4 +441,3 @@ Make Vibeforge feel more like a clean Codex-style coding workspace: simple, focu
 - Typecheck ✅ (node + web, compiled cleanly via local tsc binary)
 - Tests ✅ (845 / 845 tests pass, 33 test files)
 - Build ✅ (Vite production bundle compiled cleanly in under 4 seconds)
-

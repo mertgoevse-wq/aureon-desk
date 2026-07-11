@@ -1,8 +1,8 @@
 /**
  * Vibeforge — Companion Mobile View
  *
- * A mobile-first web UI for the Vibeforge phone companion. This view is
- * intended to be opened on a phone or tablet browser at /companion.
+ * A mobile-first preview UI for the planned Vibeforge phone companion. This
+ * view can be opened on a phone or tablet browser at /companion.
  *
  * Status: Local Beta — UI + types only. No real network/TCP layer yet.
  */
@@ -39,7 +39,7 @@ export function CompanionMobileView(): React.ReactElement {
       return
     }
     setPaired(true)
-    showToast('Paired successfully (local beta).')
+    showToast('Prototype pairing preview enabled.')
     setTab('prompt')
   }, [pairingCode, showToast])
 
@@ -50,20 +50,20 @@ export function CompanionMobileView(): React.ReactElement {
 
   const handleSendPrompt = useCallback(() => {
     if (!prompt.trim()) return
-    showToast('Prompt sent to desktop.')
+    showToast('Prototype only: prompt was not sent.')
     setPrompt('')
   }, [prompt, showToast])
 
   const handleStartBuild = useCallback(() => {
     if (!buildPrompt.trim()) return
-    showToast('Build request sent to desktop.')
+    showToast('Prototype only: build was not sent.')
     setBuildPrompt('')
     setStatus(prev => ({ ...prev, buildInProgress: true }))
     setTimeout(() => setStatus(prev => ({ ...prev, buildInProgress: false, previewRunning: true })), 3000)
   }, [buildPrompt, showToast])
 
   const handleRequestPreview = useCallback(() => {
-    showToast('Preview requested from desktop.')
+    showToast('Prototype only: no desktop preview was requested.')
   }, [showToast])
 
   return (
@@ -77,7 +77,7 @@ export function CompanionMobileView(): React.ReactElement {
             </div>
             <div>
               <h1 className="text-[15px] font-semibold display-text">Vibeforge Companion</h1>
-              <p className="text-[10px] text-[var(--ivory-text-3)]">{paired ? 'Paired' : 'Not paired'}</p>
+              <p className="text-[10px] text-[var(--ivory-text-3)]">{paired ? 'Prototype paired' : 'Prototype only'}</p>
             </div>
           </div>
           {paired && (
@@ -123,13 +123,13 @@ export function CompanionMobileView(): React.ReactElement {
               <div>
                 <p className="text-[13px] font-semibold text-amber-800 mb-1">Local Beta</p>
                 <p className="text-[12px] text-amber-700 leading-relaxed">
-                  This is a preview UI. Real pairing over the local network is not active yet.
+                  This is a preview UI. Real pairing, sync, and desktop control over the local network are not active yet.
                 </p>
               </div>
             </div>
 
             <div className="p-4 rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] space-y-3">
-              <label className="block text-[12px] font-semibold text-[var(--ivory-text)]">Enter pairing code</label>
+              <label className="block text-[12px] font-semibold text-[var(--ivory-text)]">Enter demo pairing code</label>
               <input
                 type="text"
                 maxLength={6}
@@ -144,14 +144,14 @@ export function CompanionMobileView(): React.ReactElement {
                 disabled={pairingCode.length !== 6}
                 className="w-full py-3 rounded-xl bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-hover)] text-[13px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                Pair with desktop
+                Preview paired state
               </button>
             </div>
 
             <div className="p-3 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-surface)] flex items-start gap-2">
               <Info size={14} className="text-[var(--ivory-text-3)] mt-0.5 shrink-0" />
               <p className="text-[11px] text-[var(--ivory-text-2)] leading-relaxed">
-                Find the 6-digit code in Vibeforge Desktop under Settings → Android Companion.
+                Find the demo 6-digit code in Vibeforge Desktop under Settings → Android Companion. It does not connect to the desktop yet.
               </p>
             </div>
           </section>
@@ -159,11 +159,11 @@ export function CompanionMobileView(): React.ReactElement {
 
         {paired && tab === 'prompt' && (
           <section className="space-y-3">
-            <h2 className="text-[14px] font-semibold text-[var(--ivory-text)]">Send a prompt</h2>
+            <h2 className="text-[14px] font-semibold text-[var(--ivory-text)]">Prompt handoff preview</h2>
             <textarea
               value={prompt}
               onChange={e => setPrompt(e.target.value)}
-              placeholder="What should the desktop agent do?"
+              placeholder="Draft a prompt for the future desktop handoff..."
               rows={4}
               className="w-full p-3 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[var(--ivory-text)] placeholder-[var(--ivory-text-3)]/60 focus:outline-none focus:border-[var(--ivory-accent)]/40 text-[13px] resize-none"
             />
@@ -173,18 +173,18 @@ export function CompanionMobileView(): React.ReactElement {
               disabled={!prompt.trim()}
               className="w-full py-3 rounded-xl bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-hover)] text-[13px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
             >
-              <Send size={14} /> Send to desktop
+              <Send size={14} /> Preview prompt handoff
             </button>
           </section>
         )}
 
         {paired && tab === 'build' && (
           <section className="space-y-3">
-            <h2 className="text-[14px] font-semibold text-[var(--ivory-text)]">Start a build</h2>
+            <h2 className="text-[14px] font-semibold text-[var(--ivory-text)]">Build request preview</h2>
             <textarea
               value={buildPrompt}
               onChange={e => setBuildPrompt(e.target.value)}
-              placeholder="Describe what you want to build..."
+              placeholder="Draft the build request for the future companion..."
               rows={4}
               className="w-full p-3 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[var(--ivory-text)] placeholder-[var(--ivory-text-3)]/60 focus:outline-none focus:border-[var(--ivory-accent)]/40 text-[13px] resize-none"
             />
@@ -194,14 +194,14 @@ export function CompanionMobileView(): React.ReactElement {
               disabled={!buildPrompt.trim()}
               className="w-full py-3 rounded-xl bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-hover)] text-[13px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
             >
-              <Play size={14} /> Start build
+              <Play size={14} /> Preview build request
             </button>
           </section>
         )}
 
         {paired && tab === 'status' && (
           <section className="space-y-3">
-            <h2 className="text-[14px] font-semibold text-[var(--ivory-text)]">Desktop status</h2>
+            <h2 className="text-[14px] font-semibold text-[var(--ivory-text)]">Mock desktop status</h2>
             <div className="space-y-2">
               {[
                 { label: 'Current page', value: status.appPage },
@@ -219,7 +219,7 @@ export function CompanionMobileView(): React.ReactElement {
               onClick={handleRequestPreview}
               className="w-full py-3 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] text-[13px] font-semibold transition-colors cursor-pointer flex items-center justify-center gap-2"
             >
-              <ImageIcon size={14} /> Request preview
+              <ImageIcon size={14} /> Preview request
             </button>
           </section>
         )}

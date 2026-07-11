@@ -6,9 +6,9 @@
 
 ## 1. Overview
 
-The **Phone Companion** lets a user control Vibeforge Desktop from a phone or tablet on the same local network. The companion can send prompts, trigger builds, request preview screenshots, and approve pending desktop actions.
+The **Phone Companion** is a planned local-network control surface for Vibeforge Desktop. In the current local-beta build, it is UI + shared types only: no phone can connect to, sync with, or control the desktop app yet.
 
-This document describes the current architecture, security model, and planned network layer.
+This document describes the prototype UI, intended security model, and planned network layer.
 
 ---
 
@@ -48,7 +48,7 @@ This document describes the current architecture, security model, and planned ne
 - Settings UI lives in `src/renderer/src/pages/settings/CompanionPage.tsx`.
 - Mobile view lives in `src/renderer/src/pages/CompanionMobileView.tsx`.
 - Routes wired in `src/renderer/src/App.tsx`.
-- No active network server yet.
+- No active network server, pairing authentication, sync channel, or remote command execution yet.
 
 ---
 
