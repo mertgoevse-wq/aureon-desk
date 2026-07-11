@@ -47,7 +47,8 @@ export function Studio(): React.ReactElement {
 
   const [primaryPrompt, setPrimaryPrompt] = useState('')
   const [showMoreTypes, setShowMoreTypes] = useState(false)
-  const [showWizard, setShowWizard] = useState(true)
+  const [showWizard, setShowWizard] = useState(false)
+  const [activeMockIdea, setActiveMockIdea] = useState<string | null>(null)
 
   // Attachment state
   const { attachments, addAttachments, removeAttachment, toggleContext, getContextSummary } = useAttachmentStore()
@@ -373,27 +374,77 @@ export function Studio(): React.ReactElement {
     }
   }
 
+  const examplesList = [
+    {
+      title: 'Build a landing page',
+      prompt: 'Create a calm, premium landing page for a personal AI product.',
+      mock: 'Draft preview: Calm ivory theme hero page, text signup block, and feature cards.'
+    },
+    {
+      title: 'Build a web app',
+      prompt: 'Create a fully functional interactive task planner web app.',
+      mock: 'Draft preview: Interactive Kanban board, task dialogs, filters, and offline storage.'
+    },
+    {
+      title: 'Build an Android app prototype',
+      prompt: 'Create an Android-style habit tracker prototype with a phone layout.',
+      mock: 'Draft preview: Mobile-phone container, weekly grids, check-in taps, and stats.'
+    },
+    {
+      title: 'Improve my UI',
+      prompt: 'Refine the styling, margins, and typography of my existing layout to feel premium.',
+      mock: 'Draft preview: Elegant font scaling, margin corrections, and clean buttons.'
+    },
+    {
+      title: 'Fix a bug',
+      prompt: 'Locate and correct the error in my project files.',
+      mock: 'Draft preview: Automated code analyzer parsing compilation logs to apply fixes.'
+    },
+    {
+      title: 'Explain my project',
+      prompt: 'Read my source files and explain the overall architecture clearly.',
+      mock: 'Draft preview: Detailed overview of data state, models, and UI tree.'
+    }
+  ]
+
+  const handleExampleClick = (item: typeof examplesList[0]) => {
+    setPrimaryPrompt(item.prompt)
+    setActiveMockIdea(item.mock)
+    setShowWizard(true) // route to Guided Builder wizard
+  }
+
   return (
     <div className="h-full overflow-y-auto bg-[var(--ivory-bg)] bg-hero-radial animate-fade-in" data-testid="studio-page">
       <div className="max-w-3xl mx-auto px-6 py-10 flex flex-col items-center min-h-full justify-center" data-testid="hero-landing">
 
-        {/* === HERO MARK === */}
-        <div className="mb-4" data-testid="hero-mark">
-          <VibeForgeMark size={44} className="animate-scale-in" />
+        {/* === CENTERED LOGO === */}
+        <div className="mb-5 flex flex-col items-center" data-testid="hero-mark">
+          <VibeForgeMark size={48} className="animate-scale-in" />
         </div>
 
-        {/* === HERO HEADING === */}
-        <h1 className="text-[2rem] font-semibold text-[var(--ivory-text)] font-display mb-2 leading-tight text-center" data-testid="hero-heading">
-          Build calmly with Vibeforge
+        {/* === SHORT HEADLINE === */}
+        <h1 className="text-[2.2rem] font-semibold text-[var(--ivory-text)] font-display mb-2 leading-tight text-center" data-testid="hero-heading">
+          What do you want to build?
         </h1>
         
-        {/* === BEGINNER FRIENDLY COPY === */}
         <p className="text-[13px] text-[var(--ivory-text-3)] font-body max-w-lg leading-relaxed text-center mb-6" data-testid="hero-subtitle">
-          Describe your idea. Vibeforge will plan it, build files, and open Preview. No coding knowledge needed. You can improve it step by step.
+          Describe your app or choose an option below. No coding knowledge needed.
         </p>
 
         {/* === WIZARD TOGGLE BUTTONS === */}
-        <div className="flex items-center gap-2 p-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/50 rounded-2xl mb-6">
+        <div className="flex items-center gap-2 p-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/50 rounded-2xl mb-6 select-none">
+          <button
+            type="button"
+            onClick={() => setShowWizard(false)}
+            className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition cursor-pointer ${
+              !showWizard
+                ? 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] shadow-sm font-bold'
+                : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]'
+            }`}
+            data-testid="toggle-custom-btn"
+          >
+            Quick Prompt Composer
+          </button>
           <button
             type="button"
             onClick={() => setShowWizard(true)}
@@ -406,27 +457,21 @@ export function Studio(): React.ReactElement {
           >
             Step-by-Step Goal Assistant
           </button>
-          <button
-            type="button"
-            onClick={() => setShowWizard(false)}
-            className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition cursor-pointer ${
-              !showWizard
-                ? 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] shadow-sm font-bold'
-                : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]'
-            }`}
-            data-testid="toggle-custom-btn"
-          >
-            Write Custom Prompt
-          </button>
         </div>
 
         {showWizard ? (
-          <GoalWizard onBuild={handleWizardBuild} />
+          <div className="w-full max-w-xl space-y-4">
+            <GoalWizard onBuild={handleWizardBuild} />
+            {activeMockIdea && (
+              <div className="p-3 bg-[var(--ivory-accent-light)] border border-[var(--ivory-accent)]/15 rounded-2xl text-[12px] text-[var(--ivory-text)] text-center animate-fade-in font-body">
+                💡 <strong>Mock Idea:</strong> {activeMockIdea}
+              </div>
+            )}
+          </div>
         ) : (
           <div className="w-full max-w-xl space-y-6">
             {/* === CENTRAL COMPOSER === */}
             <div className="w-full">
-              {/* Attachment chips for Studio */}
               {attachments.length > 0 && (
                 <div className="mb-2 flex flex-wrap gap-2" data-testid="studio-attachment-chips">
                   {attachments.map((att) => (
@@ -435,23 +480,6 @@ export function Studio(): React.ReactElement {
                       attachment={att}
                       onRemove={removeAttachment}
                       onToggleContext={toggleContext}
-                      onInspectZip={att.isZip ? (id) => {
-                        const a = attachments.find(x => x.id === id)
-                        if (!a) return
-                        api.attachmentProcessFile(a.path).then((result: FileProcessResult) => {
-                          if (result.zipInspect) {
-                            api.attachmentExtractZip(a.path).then((extractResult: ZipExtractResult) => {
-                              if (extractResult.success) {
-                                extractResult.extractedPaths.forEach((p: string) => {
-                                  api.attachmentProcessFile(p).then((r: FileProcessResult) => {
-                                    addAttachments([r.attachment])
-                                  }).catch(() => {})
-                                })
-                              }
-                            }).catch(() => {})
-                          }
-                        }).catch(() => {})
-                      } : undefined}
                     />
                   ))}
                 </div>
@@ -460,13 +488,17 @@ export function Studio(): React.ReactElement {
                 <div className="rounded-2xl border border-[var(--ivory-border)]/70 bg-[var(--ivory-elevated)] p-4 shadow-[var(--shadow-composer)]" data-testid="hero-composer">
                   <textarea
                     value={primaryPrompt}
-                    onChange={e => setPrimaryPrompt(e.target.value)}
+                    onChange={e => {
+                      setPrimaryPrompt(e.target.value)
+                      if (activeMockIdea) setActiveMockIdea(null)
+                    }}
                     onKeyDown={handleComposerKeyDown}
-                    placeholder="Describe what you want to build... (e.g., a pomodoro timer, a dashboard, a portfolio website)"
-                    className="w-full h-12 p-1 bg-transparent text-[14px] text-[var(--ivory-text)] placeholder-[var(--ivory-text-3)]/50 border-none focus:outline-none resize-none font-body leading-relaxed"
+                    placeholder="Describe your idea in simple words..."
+                    className="w-full h-16 p-1 bg-transparent text-[14px] text-[var(--ivory-text)] placeholder-[var(--ivory-text-3)]/50 border-none focus:outline-none resize-none font-body leading-relaxed"
                     data-testid="hero-prompt-input"
                   />
-                  <div className="flex items-center justify-end border-t border-[var(--ivory-border)]/40 pt-3 mt-1.5 gap-2">
+                  <div className="flex items-center justify-between border-t border-[var(--ivory-border)]/40 pt-3 mt-1.5 gap-2">
+                    <span className="text-[10px] text-[var(--ivory-text-3)] font-body">Press Enter to build</span>
                     {/* Primary CTA: Build with Preview */}
                     <button
                       type="button"
@@ -475,138 +507,44 @@ export function Studio(): React.ReactElement {
                       className="inline-flex h-9 items-center justify-center gap-2 px-5 rounded-xl bg-[var(--ivory-bronze)] hover:bg-[var(--ivory-bronze-hover)] text-[12px] font-semibold text-white transition-colors cursor-pointer shadow-[var(--shadow-xs)] disabled:opacity-60 disabled:cursor-wait"
                       data-testid="hero-start-building-btn"
                     >
-                      {resolvingModel ? (
-                        <>Resolving model<ArrowRight size={13} className="animate-pulse" /></>
-                      ) : (
-                        <>Build with Preview <ArrowRight size={13} /></>
-                      )}
+                      {resolvingModel ? 'Resolving model...' : 'Build with Preview'}
                     </button>
                   </div>
                 </div>
               </DropZone>
             </div>
 
-            {/* STYLE PICKER DIRECTLY ON THE LANDING PAGE */}
-            <div className="bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/50 rounded-2xl p-4 space-y-3" data-testid="style-picker">
-              <div className="flex items-center justify-between">
-                <span className="text-[12px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Choose a Style</span>
-                <span className="text-[11px] font-bold text-[var(--ivory-accent)] font-mono">{projectStyle}</span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {['Ivory Premium', 'Codex Calm', 'Emergent Clean', 'Minimal App', 'Soft Dashboard'].map(style => {
-                  const isActive = projectStyle === style
-                  return (
-                    <button
-                      key={style}
-                      type="button"
-                      onClick={() => setProjectStyle(style)}
-                      className={`py-2 px-3 text-[11px] font-semibold border rounded-xl transition cursor-pointer text-center ${
-                        isActive
-                          ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-xs'
-                          : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
-                      }`}
-                    >
-                      {style}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Compact suggestions */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
-              {[
-                'A pomodoro timer',
-                'A weather dashboard',
-                'A contact form',
-              ].map(suggestion => (
+            {/* === 6 EXAMPLE CARDS === */}
+            <div className="grid grid-cols-2 gap-3" data-testid="hero-example-cards">
+              {examplesList.map((item, idx) => (
                 <button
-                  key={suggestion}
+                  key={idx}
                   type="button"
-                  onClick={() => {
-                    setPrimaryPrompt(suggestion)
-                  }}
-                  className="px-3 py-1.5 rounded-full border border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)] text-[12px] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:border-[var(--ivory-accent)]/20 transition cursor-pointer"
+                  onClick={() => handleExampleClick(item)}
+                  className="p-3.5 rounded-2xl border border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)] hover:border-[var(--ivory-accent)]/20 hover:shadow-[var(--shadow-sm)] text-left transition duration-200 cursor-pointer"
                 >
-                  {suggestion}
+                  <span className="text-[12px] font-bold text-[var(--ivory-text)] block">{item.title}</span>
+                  <span className="text-[10.5px] text-[var(--ivory-text-3)] block mt-0.5 leading-relaxed font-body truncate">{item.prompt}</span>
                 </button>
               ))}
             </div>
 
-            {/* === 4 PRIMARY ACTION CARDS === */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {mainCards.map(renderCard)}
-            </div>
-
-            {/* === MORE DRAWER TOGGLE === */}
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={() => setShowMoreTypes(!showMoreTypes)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-surface)] text-[12px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-colors cursor-pointer shadow-[var(--shadow-xs)] select-none"
-                data-testid="hero-more-btn"
-              >
-                <MoreHorizontal size={14} />
-                More
-                <ChevronDown size={12} className={`transition-transform duration-200 ${showMoreTypes ? 'rotate-180' : ''}`} />
+            {/* === SECONDARY NAVIGATION LINKS === */}
+            <div className="flex items-center justify-center gap-5 pt-4 text-[12px] font-semibold text-[var(--ivory-text-3)] font-body select-none">
+              <button type="button" onClick={() => navigate('/projects')} className="hover:text-[var(--ivory-text)] transition cursor-pointer">
+                Open project
               </button>
-
-              {showMoreTypes && (
-                <div className="mt-4 w-full grid grid-cols-2 sm:grid-cols-3 gap-3 text-left animate-in" data-testid="hero-more-panel">
-                  {secondaryCards.map(renderCard)}
-                </div>
-              )}
+              <span className="text-[var(--ivory-border)]/60">•</span>
+              <button type="button" onClick={() => navigate('/settings/providers')} className="hover:text-[var(--ivory-text)] transition cursor-pointer">
+                Connect provider
+              </button>
+              <span className="text-[var(--ivory-border)]/60">•</span>
+              <button type="button" onClick={() => navigate('/learn')} className="hover:text-[var(--ivory-text)] transition cursor-pointer">
+                View tutorials
+              </button>
             </div>
           </div>
         )}
-
-        {/* === AUTONOMY SELECTOR === */}
-        {/* Smart model selection info — shown after a model is resolved */}
-        {modelSelection && !modelSelection.isDemo && (
-          <div className="mt-4 mb-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--ivory-accent-light)]/50 border border-[var(--ivory-accent)]/15 text-[11px] text-[var(--ivory-text-2)] font-medium">
-            <Sparkles size={11} className="text-[var(--ivory-accent)]" />
-            <span className="truncate max-w-[300px]">{modelSelection.explanation}</span>
-          </div>
-        )}
-
-        {/* === AUTONOMY SELECTOR === */}
-        <div className="mt-10 flex items-center justify-center gap-3">
-          <span className="text-[12px] font-semibold uppercase tracking-wider text-[var(--ivory-text-3)]">
-            <ShieldCheck size={13} className="inline mr-1 text-[var(--ivory-accent)]" />
-            Autonomy
-          </span>
-          <div className="inline-flex items-center gap-0.5 p-0.5 rounded-xl bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/50">
-            {AUTONOMY_LEVELS.filter(l => l.level > 0).map(level => {
-              const isCurrent = autonomyLevel === level.level
-              const IconComponent = (() => {
-                switch (level.icon) {
-                  case 'Eye': return <Eye size={12} />
-                  case 'Lightbulb': return <Lightbulb size={12} />
-                  case 'ShieldCheck': return <ShieldCheck size={12} />
-                  case 'FolderCheck': return <FolderCheck size={12} />
-                  case 'Zap': return <Zap size={12} />
-                  default: return <ShieldCheck size={12} />
-                }
-              })()
-              return (
-                <button
-                  key={level.level}
-                  type="button"
-                  onClick={() => setAutonomyLevel(level.level)}
-                  title={level.description}
-                  className={`flex items-center justify-center w-8 h-8 rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring-color)] cursor-pointer
-                    ${isCurrent
-                      ? 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]'
-                      : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-bg)]'
-                    }`}
-                  data-testid={`autonomy-level-${level.level}`}
-                >
-                  {IconComponent}
-                </button>
-              )
-            })}
-          </div>
-        </div>
       </div>
 
       <Drawer

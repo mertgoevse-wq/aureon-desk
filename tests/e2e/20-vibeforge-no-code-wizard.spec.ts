@@ -6,9 +6,12 @@ test.describe('Vibeforge — No-Code Goal Wizard E2E', () => {
   })
 
   test('Guided Builder Flow - Website Wizard path', async ({ mainWindow }) => {
-    // 1. Ensure wizard is visible by default
+    // 1. Ensure wizard is visible by toggling it
+    const toggleBtn = mainWindow.getByTestId('toggle-wizard-btn')
+    await expect(toggleBtn).toBeVisible({ timeout: 5000 })
+    await toggleBtn.click()
     const wizard = mainWindow.getByTestId('goal-wizard')
-    await expect(wizard).toBeVisible({ timeout: 5000 })
+    await expect(wizard).toBeVisible()
 
     // 2. Select Website in Step 1
     const websiteCard = mainWindow.getByTestId('wizard-type-website')
@@ -59,9 +62,12 @@ test.describe('Vibeforge — No-Code Goal Wizard E2E', () => {
   })
 
   test('Guided Builder Flow - Android App Wizard path', async ({ mainWindow }) => {
-    // 1. Ensure wizard is visible
+    // 1. Ensure wizard is visible by toggling it
+    const toggleBtn = mainWindow.getByTestId('toggle-wizard-btn')
+    await expect(toggleBtn).toBeVisible({ timeout: 5000 })
+    await toggleBtn.click()
     const wizard = mainWindow.getByTestId('goal-wizard')
-    await expect(wizard).toBeVisible({ timeout: 5000 })
+    await expect(wizard).toBeVisible()
 
     // 2. Select Android-style App in Step 1
     const androidCard = mainWindow.getByTestId('wizard-type-android-style-app')

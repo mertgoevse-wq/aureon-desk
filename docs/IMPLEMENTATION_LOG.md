@@ -2,6 +2,35 @@
 
 > Append-only log of completed work sessions. Newest entries go on top.
 
+## 2026-07-11 — App Shell & Simple Home Experience
+
+### Goal
+Simplify Vibeforge's sidebar navigation, top bar controls, and Home landing page to present a single, focused guided starting point.
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `docs/SIMPLE_HOME_EXPERIENCE.md` | Core product documentation mapping simplified start components, example flows, and drawer parameters. |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/renderer/src/layouts/Sidebar.tsx` | Divided links into Primary, Secondary, and Advanced drawers with collapsed-by-default behavior. |
+| `src/renderer/src/pages/Studio.tsx` | Redesigned landing to display centered logo, "What do you want to build?" headline, large text composer, 6 example project cards, and secondary utility triggers. |
+| `tests/e2e/20-vibeforge-no-code-wizard.spec.ts` | Updated wizard visibility triggers to toggle Step-by-Step assistant state. |
+
+### Verification
+- `node scripts/verify-native.js`: ✅ PASS
+- `tsc --noEmit -p tsconfig.node.json`: ✅ PASS
+- `tsc --noEmit -p tsconfig.web.json`: ✅ PASS
+- `vitest run`: ✅ PASS (845/845 tests)
+- `electron-vite build`: ✅ PASS
+- `playwright test`: ✅ PASS (13/13 E2E tests)
+
+---
+
 ## 2026-07-11 — Guided No-Code Builder UX & Goal Wizard
 
 ### Goal

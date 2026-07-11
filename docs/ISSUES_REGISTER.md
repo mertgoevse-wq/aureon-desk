@@ -5,6 +5,14 @@
 
 ---
 
+## Issues Resolved in App Shell & Simple Home Experience Pass (2026-07-11)
+
+| ID | Area | Issue | Root Cause | Status |
+|----|------|-------|------------|--------|
+| SHELL-01 | App Shell / Sidebar | Too many items (15+) visible in sidebar at once | Lack of clear categorization and advanced sectioning | ✅ Fixed — Redesigned sidebar into Primary (Build, Chat, Preview, Projects), Secondary (Providers, Learn, Settings), and Advanced (collapsed by default). |
+| SHELL-02 | App Shell / Topbar | Cluttered top navigation with redundant mode switches | Duplicate navigation options with sidebar | ✅ Fixed — Simplified topbar. Removed mode switcher buttons; left only logo, mode title, model status pill, and Search button. |
+| HOME-01 | Home / Studio | Home page felt overwhelming and busy | Excess options, technical selector widgets, and logs displayed immediately | ✅ Fixed — Replaced layout with a centered logo, "What do you want to build?" headline, large text composer, 6 example builder cards, and secondary action links. |
+
 ## Issues Resolved in Guided Builder UX Pass (2026-07-11)
 
 | ID | Area | Issue | Root Cause | Status |

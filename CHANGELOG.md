@@ -1,3 +1,21 @@
+## [Unreleased] - 2026-07-11 — App Shell & Simple Home Experience
+
+### Added
+- **Simplified Home Layout:** Centered VibeForgeMark logo, "What do you want to build?" headline, large text composer, 6 examples list cards (Build a landing page, Build a web app, Build an Android app prototype, Improve my UI, Fix a bug, Explain my project) with mockup visualization preview cards.
+- **Home Documentation:** Added `docs/SIMPLE_HOME_EXPERIENCE.md`.
+
+### Changed
+- **Sidebar Restructuring:** Organized navigation into three clear buckets: Primary (Build, Chat, Preview, Projects), Secondary (Providers, Learn, Settings), and Advanced (collapsed by default).
+- **Topbar Simplification:** Removed center mode tab switcher; now shows logo, active page name, and search Ctrl+K button.
+
+### Verification
+- `node scripts/verify-native.js` — PASS
+- `tsc --noEmit -p tsconfig.node.json` — PASS
+- `tsc --noEmit -p tsconfig.web.json` — PASS
+- `vitest run` — PASS (845 tests, 33 files)
+- `electron-vite build` — PASS
+- `playwright test` — PASS (13/13 E2E tests in 09-vibeforge-live-preview and 20-vibeforge-no-code-wizard)
+
 ## [Unreleased] - 2026-07-11 — Guided No-Code Builder UX & Goal Wizard
 
 ### Added

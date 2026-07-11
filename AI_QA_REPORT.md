@@ -2,6 +2,24 @@
 
 > **Branch:** main
 
+## App Shell & Simple Home Experience — 2026-07-11
+
+> ✅ **Status: Complete — app shell and start screen simplified around one guided workflow.**
+
+| Check | Result |
+|-------|--------|
+| `node scripts/verify-native.js` | ✅ PASS |
+| `tsc --noEmit -p tsconfig.node.json` | ✅ PASS |
+| `tsc --noEmit -p tsconfig.web.json` | ✅ PASS |
+| `vitest run` | ✅ PASS — 845/845 tests, 33 files |
+| `electron-vite build` | ✅ PASS |
+| Playwright E2E Tests | ✅ PASS — `tests/e2e/09-vibeforge-live-preview.spec.ts` 11/11, `tests/e2e/20-vibeforge-no-code-wizard.spec.ts` 2/2 |
+
+### Summary
+Redesigned the sidebar navigation into three distinct zones: Primary (Build, Chat, Preview, Projects), Secondary (Providers, Learn, Settings), and Advanced (collapsed by default). Simplified topbar, leaving logo, mode name, status, and search button without clutter. Restructured Home view with a centered brand logo, "What do you want to build?" headline, large text composer, 6 example starter cards, and secondary utility links.
+
+---
+
 ## Guided No-Code Builder UX & Goal Wizard — 2026-07-11
 
 > ✅ **Status: Complete — app converted into a guided builder with a 5-step wizard.**
