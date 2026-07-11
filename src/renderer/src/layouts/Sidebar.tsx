@@ -19,6 +19,8 @@ import {
   ChevronRight,
   ChevronDown,
   UserCircle,
+  Smartphone,
+  GraduationCap,
 } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useUIStore } from '../stores/uiStore'
@@ -128,24 +130,25 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
   const primaryLinks = [
     { label: 'Build', icon: <Sparkles size={13} />, path: '/', testId: 'nav-studio' },
     { label: 'Chat', icon: <MessageSquare size={13} />, path: '/chat', testId: 'nav-chats' },
-    { label: 'Code', icon: <Monitor size={13} />, path: '/preview', testId: 'nav-preview' },
+    { label: 'Preview', icon: <Monitor size={13} />, path: '/preview', testId: 'nav-preview' },
     { label: 'Projects', icon: <FolderOpen size={13} />, path: '/projects', testId: 'nav-projects' },
   ]
 
   const secondaryLinks = [
-    { label: 'Agents', icon: <Bot size={13} />, path: '/learn?tab=agents', testId: 'nav-agents' },
-    { label: 'Skills', icon: <Wrench size={13} />, path: '/skills', testId: 'nav-skills' },
-    { label: 'Vibe Coding', icon: <Code2 size={13} />, path: '/vibe', navigateTo: '/', testId: 'nav-vibe' },
     { label: 'Providers', icon: <KeyRound size={13} />, path: '/settings/providers', testId: 'nav-providers' },
+    { label: 'Learn', icon: <GraduationCap size={13} />, path: '/learn', testId: 'nav-learn' },
     { label: 'Settings', icon: <Settings size={13} />, path: '/settings/general', testId: 'nav-settings' },
   ]
 
   const advancedLinks = [
+    { label: 'Code', icon: <Code2 size={13} />, path: '/vibe', testId: 'nav-vibe' },
+    { label: 'Agents', icon: <Bot size={13} />, path: '/learn?tab=agents', testId: 'nav-agents' },
+    { label: 'Skills', icon: <Wrench size={13} />, path: '/skills', testId: 'nav-skills' },
     { label: 'MCP', icon: <Plug size={13} />, path: '/settings/tools', testId: 'nav-mcp' },
     { label: 'Connectors', icon: <Boxes size={13} />, path: '/settings/connectors', testId: 'nav-connectors' },
     { label: 'Logs', icon: <FileText size={13} />, path: '/settings/logs', testId: 'nav-logs' },
-    { label: 'Developer Setup', icon: <Package size={13} />, path: '/settings/developer-setup', testId: 'nav-devsetup' },
-    { label: 'Beta/Release', icon: <Code2 size={13} />, path: '/settings/developer', testId: 'nav-beta' },
+    { label: 'Developer', icon: <Package size={13} />, path: '/settings/developer-setup', testId: 'nav-devsetup' },
+    { label: 'Phone Companion', icon: <Smartphone size={13} />, path: '/settings/companion', testId: 'nav-companion' },
   ]
 
   if (sidebarCollapsed) {
