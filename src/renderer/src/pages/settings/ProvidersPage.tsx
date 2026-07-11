@@ -250,23 +250,43 @@ export function ProvidersPage(): React.ReactElement {
   }, [customForm, api, loadData])
 
   return (
-    <div className="space-y-5 max-w-4xl">
+    <div className="space-y-4 max-w-4xl">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h2 className="text-xl font-semibold text-[var(--ivory-text)] display-text">Providers &amp; API Keys</h2>
-          <p className="text-xs text-[var(--ivory-text-3)] mt-1 leading-relaxed">
-            Manage your AI provider connections. Keys are encrypted with your OS credentials (DPAPI on Windows).
+          <h2 className="text-[18px] font-semibold text-[var(--ivory-text)]">Providers</h2>
+          <p className="text-[11px] text-[var(--ivory-text-3)] mt-1 leading-relaxed">
+            Configure model access. Keys stay encrypted in the local vault.
           </p>
         </div>
-        <Button size="sm" onClick={() => setShowCustomForm(true)} className="shrink-0">
+        <Button variant="secondary" size="sm" onClick={() => setShowCustomForm(true)} className="shrink-0">
           <Plus size={14} /> Add Custom
         </Button>
       </div>
 
       {/* Safety notice — quieter */}
-      <div className="p-3 rounded-xl bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/60 text-[11px] text-[var(--ivory-text-3)] flex items-start gap-2">
+      <div className="p-2.5 rounded-xl bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/60 text-[11px] text-[var(--ivory-text-3)] flex items-start gap-2">
         <AlertTriangle size={13} className="shrink-0 mt-0.5 text-[var(--ivory-text-3)]" />
-        <span className="leading-relaxed">Messages sent to providers transmit your chat content to external servers. Keys are encrypted with your OS credentials.</span>
+        <span className="leading-relaxed">External providers receive prompt content when selected. Local providers stay on your machine.</span>
+      </div>
+
+      <div className="rounded-xl border border-[var(--ivory-border)]/70 bg-[var(--ivory-elevated)] p-3 flex items-center justify-between gap-3 flex-wrap">
+        <div className="min-w-0">
+          <h3 className="text-[13px] font-semibold text-[var(--ivory-text)] flex items-center gap-1.5">
+            <Activity size={13} className="text-[var(--ivory-text-3)]" />
+            Provider Test Center
+          </h3>
+          <p className="text-[10px] text-[var(--ivory-text-3)] mt-0.5">
+            {Object.keys(testCenterResults).length > 0
+              ? `${Object.keys(testCenterResults).length} recent checks`
+              : loadingUsage
+                ? 'Loading provider usage...'
+                : `${modelUsage.length} model routes available`}
+          </p>
+        </div>
+        <Button variant="secondary" size="sm" onClick={handleRunAllTests} loading={testingAll} disabled={providers.length === 0}>
+          <Clock size={13} />
+          Test All
+        </Button>
       </div>
 
       {/* Custom Provider Modal */}
@@ -290,7 +310,7 @@ export function ProvidersPage(): React.ReactElement {
         </div>
       </Modal>
 
-      <div className="space-y-5">
+      <div className="space-y-4">
         {adapters.map((adapter: ProviderAdapterInfo) => {
           const provider = providers.find(p => p.slug === adapter.slug)
           const hasKey = provider ? keyStatus[provider.id] : false
@@ -303,7 +323,7 @@ export function ProvidersPage(): React.ReactElement {
           return (
             <Card key={adapter.slug}>
               {/* Header */}
-              <div className="flex items-start justify-between mb-5 gap-4">
+              <div className="flex items-start justify-between mb-4 gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <h3 className="text-[15px] font-semibold text-[var(--ivory-text)]">{adapter.name}</h3>
@@ -318,13 +338,13 @@ export function ProvidersPage(): React.ReactElement {
                       <Badge variant="default" size="sm">Not configured</Badge>
                     )}
                   </div>
-                  <p className="text-xs text-[var(--ivory-text-3)] leading-relaxed">{adapter.description}</p>
+                <p className="text-[11px] text-[var(--ivory-text-3)] leading-relaxed">{adapter.description}</p>
                 </div>
               </div>
 
               {/* Local provider help card */}
               {adapter.capabilities.includes('local') && (
-                <div className="mb-4 p-3 rounded-xl bg-[var(--ivory-surface)]/60 border border-[var(--ivory-border)]/50 text-[11px] text-[var(--ivory-text-2)]">
+                <div className="mb-3 p-2.5 rounded-xl bg-[var(--ivory-surface)]/60 border border-[var(--ivory-border)]/50 text-[11px] text-[var(--ivory-text-2)]">
                   <p className="font-semibold mb-1">
                     {adapter.slug === 'ollama' ? '🦙 Running Ollama locally' : '🖥️ Running LM Studio locally'}
                   </p>
@@ -338,7 +358,7 @@ export function ProvidersPage(): React.ReactElement {
 
               {/* OpenRouter help card */}
               {adapter.slug === 'openrouter' && (
-                <div className="mb-4 p-3 rounded-xl bg-[var(--ivory-surface)]/60 border border-[var(--ivory-border)]/50 text-[11px] text-[var(--ivory-text-2)]">
+                <div className="mb-3 p-2.5 rounded-xl bg-[var(--ivory-surface)]/60 border border-[var(--ivory-border)]/50 text-[11px] text-[var(--ivory-text-2)]">
                   <p className="font-semibold mb-1">OpenRouter — multi-provider access</p>
                   <p className="text-[var(--ivory-text-3)] leading-relaxed">
                     Use <code className="text-[10px] px-1 py-0.5 rounded bg-[var(--ivory-surface-2)]">:free</code> models for zero-cost testing. Get a key at openrouter.ai/keys.
@@ -347,7 +367,7 @@ export function ProvidersPage(): React.ReactElement {
               )}
 
               {/* Capabilities */}
-              <div className="flex flex-wrap gap-1 mb-4">
+              <div className="flex flex-wrap gap-1 mb-3">
                 {adapter.capabilities.map(cap => (
                   <span key={cap} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-ui-caption font-medium bg-[var(--ivory-bg)] text-[var(--ivory-text-2)] border border-[var(--ivory-border)]/60">
                     {CAPABILITY_LABELS[cap]?.icon} {CAPABILITY_LABELS[cap]?.label || cap}
@@ -450,8 +470,8 @@ export function ProvidersPage(): React.ReactElement {
                     <span className="leading-relaxed">{testResult.message}</span>
                   </div>
                 )}
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div className="flex items-center gap-3 flex-wrap">
                     {provider && (
                       <>
                         <Button variant="secondary" size="sm" onClick={() => handleTestConnection(provider.id)} disabled={isTesting}>

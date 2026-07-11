@@ -99,7 +99,7 @@ export function Modal({
   return (
     <div
       ref={overlayRef}
-      className={`fixed inset-0 z-[200] flex items-center justify-center bg-black/20 p-4 transition-opacity duration-200 ${
+      className={`fixed inset-0 z-[200] flex items-start justify-center overflow-y-auto bg-black/20 p-4 sm:items-center transition-opacity duration-200 ${
         isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
       onClick={handleOverlayClick}
@@ -110,9 +110,9 @@ export function Modal({
         ref={contentRef}
         className={`w-full ${sizeClasses[size]} bg-[var(--ivory-bg)] rounded-[20px]
           border border-[var(--ivory-border)] shadow-[var(--shadow-xl)] ring-1 ring-black/5
-          transition duration-200 ${
+          transition duration-200 my-auto ${
           isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-        } max-h-[85vh] flex flex-col`}
+        } max-h-[calc(100vh-2rem)] flex flex-col`}
       >
         {title && (
           <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--ivory-border)]/60 shrink-0">

@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Code2, FileText, Image, Video, Music,
   FileSearch, MonitorPlay, Plug, Workflow, ChevronRight,
-  Sparkles, ShieldCheck, ArrowRight, MessageSquare,
+  Sparkles, ShieldCheck, ArrowRight,
   Eye, Lightbulb, Zap, FolderCheck, ChevronDown, MoreHorizontal,
-  GraduationCap
 } from 'lucide-react'
 import { useIpc } from '../hooks/useIpc'
 import { TASK_CATEGORIES, AUTONOMY_LEVELS } from '@shared/types/studio-core'
@@ -18,6 +17,7 @@ import { DropZone } from '../components/shared/DropZone'
 import { AttachmentChip } from '../components/shared/AttachmentChip'
 import { useAttachmentStore } from '../stores/attachmentStore'
 import type { FileProcessResult, ZipExtractResult } from '@shared/attachments'
+import { GoalWizard } from '../components/shared/GoalWizard'
 
 const TASK_ICONS: Record<string, React.ReactElement> = {
   LayoutDashboard: <LayoutDashboard size={22} />,
@@ -47,6 +47,7 @@ export function Studio(): React.ReactElement {
 
   const [primaryPrompt, setPrimaryPrompt] = useState('')
   const [showMoreTypes, setShowMoreTypes] = useState(false)
+  const [showWizard, setShowWizard] = useState(true)
 
   // Attachment state
   const { attachments, addAttachments, removeAttachment, toggleContext, getContextSummary } = useAttachmentStore()
@@ -284,6 +285,29 @@ export function Studio(): React.ReactElement {
   const [resolvingModel, setResolvingModel] = useState(false)
   const [showModelInfo, setShowModelInfo] = useState(false)
 
+  const handleWizardBuild = async (briefPrompt: string, style: string, platform: string) => {
+    setResolvingModel(true)
+    try {
+      const selection = await api.modelRouterResolveBestForBuild(briefPrompt)
+      setModelSelection(selection)
+      setShowModelInfo(true)
+      setAutoBuildPipeline({
+        style,
+        prompt: briefPrompt,
+        platform,
+        mode: 'generate-and-preview',
+        modelRoute: selection.modelDbId,
+        modelExplanation: selection.explanation,
+      })
+      navigate('/preview')
+    } catch {
+      setAutoBuildPipeline({ style, prompt: briefPrompt, platform, mode: 'generate-and-preview' })
+      navigate('/preview')
+    } finally {
+      setResolvingModel(false)
+    }
+  }
+
   const handleStartBuilding = async () => {
     // "Start building" — if user typed a prompt, start the pipeline directly
     // Otherwise open the Build App wizard (drawer)
@@ -342,10 +366,6 @@ export function Studio(): React.ReactElement {
     navigate('/preview')
   }
 
-  const handleOpenChat = () => {
-    navigate('/chat')
-  }
-
   const handleComposerKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -355,146 +375,190 @@ export function Studio(): React.ReactElement {
 
   return (
     <div className="h-full overflow-y-auto bg-[var(--ivory-bg)] bg-hero-radial animate-fade-in" data-testid="studio-page">
-      <div className="max-w-3xl mx-auto px-6 py-12 flex flex-col items-center min-h-full justify-center" data-testid="hero-landing">
+      <div className="max-w-3xl mx-auto px-6 py-10 flex flex-col items-center min-h-full justify-center" data-testid="hero-landing">
 
         {/* === HERO MARK === */}
-        <div className="mb-7" data-testid="hero-mark">
-          <VibeForgeMark size={56} className="animate-scale-in" />
+        <div className="mb-4" data-testid="hero-mark">
+          <VibeForgeMark size={44} className="animate-scale-in" />
         </div>
 
         {/* === HERO HEADING === */}
-        <h1 className="text-[2.5rem] font-semibold tracking-[-0.02em] text-[var(--ivory-text)] font-display mb-3 leading-tight text-center" data-testid="hero-heading">
+        <h1 className="text-[2rem] font-semibold text-[var(--ivory-text)] font-display mb-2 leading-tight text-center" data-testid="hero-heading">
           Build calmly with Vibeforge
         </h1>
-        <p className="text-[14px] text-[var(--ivory-text-3)] font-body max-w-md leading-relaxed text-center mb-8" data-testid="hero-subtitle">
-          A guided AI workspace for chat, code, projects, tools, and live preview.
+        
+        {/* === BEGINNER FRIENDLY COPY === */}
+        <p className="text-[13px] text-[var(--ivory-text-3)] font-body max-w-lg leading-relaxed text-center mb-6" data-testid="hero-subtitle">
+          Describe your idea. Vibeforge will plan it, build files, and open Preview. No coding knowledge needed. You can improve it step by step.
         </p>
 
-        {/* === BEGINNER GUIDE === */}
-        <div className="w-full max-w-xl mb-6 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/50 rounded-2xl p-4 text-left text-[11px] text-[var(--ivory-text-2)] leading-relaxed shadow-sm font-body animate-scale-in">
-          <div className="font-bold text-[var(--ivory-text)] mb-1 flex items-center gap-1.5">
-            <GraduationCap size={13} className="text-[var(--ivory-accent)]" />
-            Beginner's Guide — How to Build
-          </div>
-          Type your app ideas (e.g. <i>"Build a simple calculator"</i> or <i>"Create a pomodoro timer"</i>) in the input below, then click <b>Build with Preview</b>. We will automatically select the best model, start an isolated sandboxed server, and open the LivePreview panel.
-        </div>
-
-        {/* === CENTRAL COMPOSER === */}
-        <div className="w-full max-w-xl mb-6">
-          {/* Attachment chips for Studio */}
-          {attachments.length > 0 && (
-            <div className="mb-2 flex flex-wrap gap-2" data-testid="studio-attachment-chips">
-              {attachments.map((att) => (
-                <AttachmentChip
-                  key={att.id}
-                  attachment={att}
-                  onRemove={removeAttachment}
-                  onToggleContext={toggleContext}
-                  onInspectZip={att.isZip ? (id) => {
-                    const a = attachments.find(x => x.id === id)
-                    if (!a) return
-                    api.attachmentProcessFile(a.path).then((result: FileProcessResult) => {
-                      if (result.zipInspect) {
-                        api.attachmentExtractZip(a.path).then((extractResult: ZipExtractResult) => {
-                          if (extractResult.success) {
-                            extractResult.extractedPaths.forEach((p: string) => {
-                              api.attachmentProcessFile(p).then((r: FileProcessResult) => {
-                                addAttachments([r.attachment])
-                              }).catch(() => {})
-                            })
-                          }
-                        }).catch(() => {})
-                      }
-                    }).catch(() => {})
-                  } : undefined}
-                />
-              ))}
-            </div>
-          )}
-          <DropZone onFilesDropped={handleFilesDropped} disabled={isProcessingDrop}>
-          <div className="rounded-2xl border border-[var(--ivory-border)]/70 bg-[var(--ivory-elevated)] p-4 shadow-[var(--shadow-composer)]" data-testid="hero-composer">
-          <textarea
-            value={primaryPrompt}
-            onChange={e => setPrimaryPrompt(e.target.value)}
-            onKeyDown={handleComposerKeyDown}
-            placeholder="Describe what you want to build... (e.g., a task timer, a mini-game, a dashboard)"
-            className="w-full h-12 p-1 bg-transparent text-[14px] text-[var(--ivory-text)] placeholder-[var(--ivory-text-3)]/50 border-none focus:outline-none resize-none font-body leading-relaxed"
-            data-testid="hero-prompt-input"
-          />
-          <div className="flex items-center justify-between border-t border-[var(--ivory-border)]/40 pt-3 mt-1.5 gap-2">
-            {/* Secondary CTA: Open chat */}
-            <button
-              type="button"
-              onClick={handleOpenChat}
-              className="inline-flex h-9 items-center justify-center gap-2 px-4 rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[12px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-colors cursor-pointer"
-              data-testid="hero-open-chat-btn"
-            >
-              <MessageSquare size={13} /> Open chat
-            </button>
-            {/* Primary CTA: Build with Preview */}
-            <button
-              type="button"
-              onClick={handleStartBuilding}
-              disabled={resolvingModel}
-              className="inline-flex h-9 items-center justify-center gap-2 px-5 rounded-xl bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-[12px] font-bold text-white transition-colors cursor-pointer shadow-[var(--shadow-xs)] disabled:opacity-60 disabled:cursor-wait"
-              data-testid="hero-start-building-btn"
-            >
-              {resolvingModel ? (
-                <>Resolving model<ArrowRight size={13} className="animate-pulse" /></>
-              ) : (
-                <>Build with Preview <ArrowRight size={13} /></>
-              )}
-            </button>
-          </div>
-          </div>
-        </DropZone>
-        </div>
-
-        {/* Compact suggestions */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
-          {[
-            'A pomodoro timer',
-            'A markdown editor',
-            'A weather dashboard',
-            'A contact form',
-          ].map(suggestion => (
-            <button
-              key={suggestion}
-              type="button"
-              onClick={() => {
-                setPrimaryPrompt(suggestion)
-              }}
-              className="px-3 py-1.5 rounded-full border border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)] text-[12px] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:border-[var(--ivory-accent)]/20 transition cursor-pointer"
-            >
-              {suggestion}
-            </button>
-          ))}
-        </div>
-
-        {/* === 4 PRIMARY ACTION CARDS === */}
-        <div className="w-full max-w-xl grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          {mainCards.map(renderCard)}
-        </div>
-
-        {/* === MORE DRAWER TOGGLE === */}
-        <div className="text-center">
+        {/* === WIZARD TOGGLE BUTTONS === */}
+        <div className="flex items-center gap-2 p-1 bg-[var(--ivory-surface)] border border-[var(--ivory-border)]/50 rounded-2xl mb-6">
           <button
             type="button"
-            onClick={() => setShowMoreTypes(!showMoreTypes)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-surface)] text-[12px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-colors cursor-pointer shadow-[var(--shadow-xs)] select-none"
-            data-testid="hero-more-btn"
+            onClick={() => setShowWizard(true)}
+            className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition cursor-pointer ${
+              showWizard
+                ? 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] shadow-sm font-bold'
+                : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]'
+            }`}
+            data-testid="toggle-wizard-btn"
           >
-            <MoreHorizontal size={14} />
-            More
-            <ChevronDown size={12} className={`transition-transform duration-200 ${showMoreTypes ? 'rotate-180' : ''}`} />
+            Step-by-Step Goal Assistant
           </button>
-
-          {showMoreTypes && (
-            <div className="mt-4 w-full max-w-xl grid grid-cols-2 sm:grid-cols-3 gap-3 text-left animate-in" data-testid="hero-more-panel">
-              {secondaryCards.map(renderCard)}
-            </div>
-          )}
+          <button
+            type="button"
+            onClick={() => setShowWizard(false)}
+            className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition cursor-pointer ${
+              !showWizard
+                ? 'bg-[var(--ivory-accent-light)] text-[var(--ivory-accent)] shadow-sm font-bold'
+                : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)]'
+            }`}
+            data-testid="toggle-custom-btn"
+          >
+            Write Custom Prompt
+          </button>
         </div>
+
+        {showWizard ? (
+          <GoalWizard onBuild={handleWizardBuild} />
+        ) : (
+          <div className="w-full max-w-xl space-y-6">
+            {/* === CENTRAL COMPOSER === */}
+            <div className="w-full">
+              {/* Attachment chips for Studio */}
+              {attachments.length > 0 && (
+                <div className="mb-2 flex flex-wrap gap-2" data-testid="studio-attachment-chips">
+                  {attachments.map((att) => (
+                    <AttachmentChip
+                      key={att.id}
+                      attachment={att}
+                      onRemove={removeAttachment}
+                      onToggleContext={toggleContext}
+                      onInspectZip={att.isZip ? (id) => {
+                        const a = attachments.find(x => x.id === id)
+                        if (!a) return
+                        api.attachmentProcessFile(a.path).then((result: FileProcessResult) => {
+                          if (result.zipInspect) {
+                            api.attachmentExtractZip(a.path).then((extractResult: ZipExtractResult) => {
+                              if (extractResult.success) {
+                                extractResult.extractedPaths.forEach((p: string) => {
+                                  api.attachmentProcessFile(p).then((r: FileProcessResult) => {
+                                    addAttachments([r.attachment])
+                                  }).catch(() => {})
+                                })
+                              }
+                            }).catch(() => {})
+                          }
+                        }).catch(() => {})
+                      } : undefined}
+                    />
+                  ))}
+                </div>
+              )}
+              <DropZone onFilesDropped={handleFilesDropped} disabled={isProcessingDrop}>
+                <div className="rounded-2xl border border-[var(--ivory-border)]/70 bg-[var(--ivory-elevated)] p-4 shadow-[var(--shadow-composer)]" data-testid="hero-composer">
+                  <textarea
+                    value={primaryPrompt}
+                    onChange={e => setPrimaryPrompt(e.target.value)}
+                    onKeyDown={handleComposerKeyDown}
+                    placeholder="Describe what you want to build... (e.g., a pomodoro timer, a dashboard, a portfolio website)"
+                    className="w-full h-12 p-1 bg-transparent text-[14px] text-[var(--ivory-text)] placeholder-[var(--ivory-text-3)]/50 border-none focus:outline-none resize-none font-body leading-relaxed"
+                    data-testid="hero-prompt-input"
+                  />
+                  <div className="flex items-center justify-end border-t border-[var(--ivory-border)]/40 pt-3 mt-1.5 gap-2">
+                    {/* Primary CTA: Build with Preview */}
+                    <button
+                      type="button"
+                      onClick={handleStartBuilding}
+                      disabled={resolvingModel}
+                      className="inline-flex h-9 items-center justify-center gap-2 px-5 rounded-xl bg-[var(--ivory-bronze)] hover:bg-[var(--ivory-bronze-hover)] text-[12px] font-semibold text-white transition-colors cursor-pointer shadow-[var(--shadow-xs)] disabled:opacity-60 disabled:cursor-wait"
+                      data-testid="hero-start-building-btn"
+                    >
+                      {resolvingModel ? (
+                        <>Resolving model<ArrowRight size={13} className="animate-pulse" /></>
+                      ) : (
+                        <>Build with Preview <ArrowRight size={13} /></>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </DropZone>
+            </div>
+
+            {/* STYLE PICKER DIRECTLY ON THE LANDING PAGE */}
+            <div className="bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/50 rounded-2xl p-4 space-y-3" data-testid="style-picker">
+              <div className="flex items-center justify-between">
+                <span className="text-[12px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Choose a Style</span>
+                <span className="text-[11px] font-bold text-[var(--ivory-accent)] font-mono">{projectStyle}</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {['Ivory Premium', 'Codex Calm', 'Emergent Clean', 'Minimal App', 'Soft Dashboard'].map(style => {
+                  const isActive = projectStyle === style
+                  return (
+                    <button
+                      key={style}
+                      type="button"
+                      onClick={() => setProjectStyle(style)}
+                      className={`py-2 px-3 text-[11px] font-semibold border rounded-xl transition cursor-pointer text-center ${
+                        isActive
+                          ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-xs'
+                          : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                      }`}
+                    >
+                      {style}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Compact suggestions */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
+              {[
+                'A pomodoro timer',
+                'A weather dashboard',
+                'A contact form',
+              ].map(suggestion => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  onClick={() => {
+                    setPrimaryPrompt(suggestion)
+                  }}
+                  className="px-3 py-1.5 rounded-full border border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)] text-[12px] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:border-[var(--ivory-accent)]/20 transition cursor-pointer"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+
+            {/* === 4 PRIMARY ACTION CARDS === */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {mainCards.map(renderCard)}
+            </div>
+
+            {/* === MORE DRAWER TOGGLE === */}
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setShowMoreTypes(!showMoreTypes)}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-surface)] text-[12px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] transition-colors cursor-pointer shadow-[var(--shadow-xs)] select-none"
+                data-testid="hero-more-btn"
+              >
+                <MoreHorizontal size={14} />
+                More
+                <ChevronDown size={12} className={`transition-transform duration-200 ${showMoreTypes ? 'rotate-180' : ''}`} />
+              </button>
+
+              {showMoreTypes && (
+                <div className="mt-4 w-full grid grid-cols-2 sm:grid-cols-3 gap-3 text-left animate-in" data-testid="hero-more-panel">
+                  {secondaryCards.map(renderCard)}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* === AUTONOMY SELECTOR === */}
         {/* Smart model selection info — shown after a model is resolved */}
@@ -611,9 +675,9 @@ export function Studio(): React.ReactElement {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <span className="text-[12px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Output Format</span>
-                  <div className="grid grid-cols-3 gap-2">
+                <details className="rounded-xl border border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] px-3 py-2">
+                  <summary className="cursor-pointer text-[11px] font-semibold text-[var(--ivory-text-3)]">Advanced output options</summary>
+                  <div className="grid grid-cols-3 gap-2 mt-3">
                     {['Generate + Preview', 'Generate sandbox', 'Plan only'].map(opt => {
                       const isActive = outputOption === opt
                       return (
@@ -621,10 +685,10 @@ export function Studio(): React.ReactElement {
                           key={opt}
                           type="button"
                           onClick={() => setOutputOption(opt)}
-                          className={`py-2.5 px-1 text-[12px] font-bold border rounded-xl transition cursor-pointer text-center ${
+                          className={`py-2 px-1 text-[11px] font-semibold border rounded-xl transition cursor-pointer text-center ${
                             isActive
-                              ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              ? 'border-[var(--ivory-bronze)]/40 bg-[var(--ivory-bronze-light)]/60 text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {opt}
@@ -632,7 +696,7 @@ export function Studio(): React.ReactElement {
                       )
                     })}
                   </div>
-                </div>
+                </details>
               </div>
             )}
 
@@ -661,9 +725,9 @@ export function Studio(): React.ReactElement {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <span className="text-[12px] font-bold uppercase tracking-wider text-[var(--ivory-text-3)]">Output Format</span>
-                  <div className="grid grid-cols-2 gap-2">
+                <details className="rounded-xl border border-[var(--ivory-border)]/60 bg-[var(--ivory-bg)] px-3 py-2">
+                  <summary className="cursor-pointer text-[11px] font-semibold text-[var(--ivory-text-3)]">Advanced output options</summary>
+                  <div className="grid grid-cols-2 gap-2 mt-3">
                     {['Generate sandbox', 'Plan only'].map(opt => {
                       const isActive = outputOption === opt
                       return (
@@ -671,10 +735,10 @@ export function Studio(): React.ReactElement {
                           key={opt}
                           type="button"
                           onClick={() => setOutputOption(opt)}
-                          className={`py-2 px-2 text-[12px] font-semibold border rounded-xl transition cursor-pointer text-center ${
+                          className={`py-2 px-2 text-[11px] font-semibold border rounded-xl transition cursor-pointer text-center ${
                             isActive
-                              ? 'border-[var(--ivory-accent)] bg-[var(--ivory-accent-light)] text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
-                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-bg)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
+                              ? 'border-[var(--ivory-bronze)]/40 bg-[var(--ivory-bronze-light)]/60 text-[var(--ivory-text)] shadow-[var(--shadow-xs)]'
+                              : 'border-[var(--ivory-border)]/50 bg-[var(--ivory-elevated)] hover:bg-[var(--ivory-surface)] text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)]'
                           }`}
                         >
                           {opt}
@@ -682,7 +746,7 @@ export function Studio(): React.ReactElement {
                       )
                     })}
                   </div>
-                </div>
+                </details>
               </div>
             )}
 
@@ -1077,7 +1141,7 @@ export function Studio(): React.ReactElement {
                 onClick={handleStartTask}
                 disabled={!orchestration}
                 data-testid="studio-start-flow-btn"
-                className="w-full h-10 bg-[var(--ivory-accent)] hover:bg-[var(--ivory-accent-hover)] text-white text-[13px] font-bold rounded-xl shadow-sm transition-colors cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-10 bg-[var(--ivory-bronze)] hover:bg-[var(--ivory-bronze-hover)] text-white text-[13px] font-semibold rounded-xl shadow-sm transition-colors cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {selectedCard === 'build_app' ? 'Build with Preview' : 'Start Task Flow'} <ArrowRight size={13} />
               </button>

@@ -2,6 +2,79 @@
 
 > Append-only log of completed work sessions. Newest entries go on top.
 
+## 2026-07-11 — Guided No-Code Builder UX & Goal Wizard
+
+### Goal
+Transform Vibeforge from a technical developer dashboard into a guided no-code builder that helps non-technical users build apps, websites, and utilities step-by-step.
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `docs/GUIDED_BUILDER_UX_PLAN.md` | Product strategy plan outlining target flows, primary versus advanced screens, and beginner/advanced user journeys. |
+| `src/renderer/src/components/shared/GoalWizard.tsx` | Interactive 5-step no-code Goal Wizard containing type selection, purpose, features, visual style preview, and build action. |
+| `tests/e2e/20-vibeforge-no-code-wizard.spec.ts` | E2E tests verifying Guided Builder wizard flow for website and android app categories. |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/renderer/src/pages/Studio.tsx` | Wired the Step-by-Step Goal Assistant wizard to default startup view. Simplified landing copy. Integrated visual style picker directly on landing page. Moved Custom Prompt composer and Autonomy settings behind toggle/Advanced states. |
+| `CHANGELOG.md`, `AI_QA_REPORT.md`, `docs/ISSUES_REGISTER.md` | Documented wizard E2E results and issues resolved. |
+
+### Verification
+- `node scripts/verify-native.js`: ✅ PASS
+- `tsc --noEmit -p tsconfig.node.json`: ✅ PASS
+- `tsc --noEmit -p tsconfig.web.json`: ✅ PASS
+- `vitest run`: ✅ PASS (845/845 tests, 33 files)
+- `electron-vite build`: ✅ PASS
+- E2E tests: ✅ PASS (`tests/e2e/09-vibeforge-live-preview.spec.ts` 11/11, `tests/e2e/20-vibeforge-no-code-wizard.spec.ts` 2/2)
+
+---
+
+## 2026-07-11 — Video-Based UI Polish
+
+### Goal
+Polish Vibeforge based on the recorded click-through. Fix visible UX crowding, alignment, modal, and action-hierarchy problems without adding product features.
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `docs/VIDEO_UI_AUDIT.md` | Video-observed issue register with impacted files, severity, fix plan, and final gate status. |
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/renderer/src/layouts/AppShell.tsx` | Tightened the top shell height and mode switch while preserving Studio/Chat/Cowork/Code route coverage. |
+| `src/renderer/src/layouts/Sidebar.tsx` | Removed the persistent help promo card, consolidated Code/Preview navigation, and fixed Vibe Coding to route to Build without double-active state. |
+| `src/renderer/src/pages/Studio.tsx` | Reduced hero copy, removed the normal Open Chat secondary CTA, reduced suggestions, softened buttons, and moved output variants into advanced drawer details. |
+| `src/renderer/src/pages/LivePreview.tsx` | Shortened Code header, narrowed the composer rail, collapsed explorer/logs/diagnostics, removed normal demo CTAs, moved demo execution under Developer tools, and rendered preview as a neutral browser canvas. |
+| `src/renderer/src/components/chat/BuildPipelinePanel.tsx` | Suppressed structured JSON-like streaming blobs from the visible Code tab and directs users to Files/Diff for readable generated output. |
+| `src/renderer/src/components/shared/Button.tsx` | Softened primary button styling from strong accent orange to the bronze token. |
+| `src/renderer/src/components/shared/Modal.tsx` | Made modals viewport-scroll-safe with stricter max-height to avoid clipped provider/settings forms. |
+| `src/renderer/src/layouts/SettingsLayout.tsx` | Reduced sidebar width/padding, kept beta diagnostics reachable, and restored stable Developer test id. |
+| `src/renderer/src/pages/settings/ProvidersPage.tsx` | Shortened copy, restored a compact Provider Test Center, wrapped actions, and reduced provider card density. |
+| `src/renderer/src/pages/SkillsPage.tsx` | Reduced each agent/skill card to one primary "Use in Build" action plus Copy. |
+| `src/renderer/src/pages/ChatWorkspace.tsx` | Removed the long chat guidance banner and routed the "More" prompt back to Build. |
+| `src/renderer/src/components/shared/VibeForgeBrandLockup.tsx`, `src/renderer/src/components/shared/VibeForgeMark.tsx` | Corrected visible/accessible brand text to "Vibeforge". |
+| `CHANGELOG.md`, `AI_QA_REPORT.md`, `docs/ISSUES_REGISTER.md` | Added UI polish evidence and validation results. |
+
+### Verification
+- `node scripts/verify-native.js`: ✅ PASS
+- `tsc --noEmit -p tsconfig.node.json`: ✅ PASS
+- `tsc --noEmit -p tsconfig.web.json`: ✅ PASS
+- `vitest run`: ✅ PASS (845/845 tests, 33 files)
+- `electron-vite build`: ✅ PASS
+- `electron-vite dev`: ✅ PASS (renderer on port 5173; Electron main window created)
+- Headed workspace QA: ✅ PASS (`tests/e2e/12-vibeforge-workspace-ui.spec.ts`, 5/5)
+- Screenshot sweep: ✅ PASS (`test-results/video-ui-polish/`)
+
+### Notes
+- Demo execution remains available only inside collapsed Developer tools on Code/LivePreview.
+- Settings Advanced remains reachable by default for beta diagnostics and existing QA coverage; normal Build/Preview flows hide demo/dev controls.
+
 ---
 
 ## 2026-07-11 — Pre-Beta Stabilization

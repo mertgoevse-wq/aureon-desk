@@ -6,9 +6,8 @@
  *   Advanced — all agents + full VoltAgent external catalog (search + filters)
  *
  * Action buttons on each card:
- *   "Use this"     → navigate to Studio with example prompt pre-filled
- *   "Copy prompt"  → copy example prompt to clipboard
- *   "Send to Build"→ navigate to Studio and trigger build directly
+ *   "Use in Build" → navigate to Studio with example prompt pre-filled
+ *   "Copy"         → copy example prompt to clipboard
  */
 
 import React, { useState, useMemo, useCallback } from 'react'
@@ -206,12 +205,6 @@ export function SkillsPage(): React.ReactElement {
     navigate('/studio')
   }, [navigate])
 
-  const handleSendToBuild = useCallback((prompt: string) => {
-    sessionStorage.setItem('vb_prefill_prompt', prompt)
-    sessionStorage.setItem('vb_auto_build', '1')
-    navigate('/studio')
-  }, [navigate])
-
   const clearFilters = useCallback(() => {
     setSearchQuery('')
     setSelectedCategory('all')
@@ -334,7 +327,6 @@ export function SkillsPage(): React.ReactElement {
                       copiedId={copiedId}
                       onCopyPrompt={handleCopyPrompt}
                       onUse={handleUseSkill}
-                      onSendToBuild={handleSendToBuild}
                     />
                   ))}
                 </div>
@@ -357,7 +349,6 @@ export function SkillsPage(): React.ReactElement {
                       copiedId={copiedId}
                       onCopyPrompt={handleCopyPrompt}
                       onUse={handleUseSkill}
-                      onSendToBuild={handleSendToBuild}
                     />
                   ))}
                 </div>
@@ -379,7 +370,6 @@ export function SkillsPage(): React.ReactElement {
                     copiedId={copiedId}
                     onCopyPrompt={handleCopyPrompt}
                     onUse={handleUseSkill}
-                    onSendToBuild={handleSendToBuild}
                   />
                 ))}
               </div>
@@ -398,7 +388,6 @@ export function SkillsPage(): React.ReactElement {
                     copiedId={copiedId}
                     onCopyPrompt={handleCopyPrompt}
                     onUse={handleUseSkill}
-                    onSendToBuild={handleSendToBuild}
                   />
                 ))}
               </div>
@@ -452,13 +441,11 @@ function AgentCard({
   copiedId,
   onCopyPrompt,
   onUse,
-  onSendToBuild,
 }: {
   agent: AgentEducation
   copiedId: string | null
   onCopyPrompt: (id: string, prompt: string) => void
   onUse: (prompt: string) => void
-  onSendToBuild: (prompt: string) => void
 }): React.ReactElement {
   const icon = AGENT_ICON_MAP[agent.icon] ?? <Bot size={16} />
   const isActive = true // agents are always active
@@ -492,28 +479,19 @@ function AgentCard({
           type="button"
           onClick={() => onUse(agent.examplePrompt)}
           disabled={!isActive}
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-hover)] text-[10px] font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--ivory-bronze)] text-white hover:bg-[var(--ivory-bronze-hover)] text-[10px] font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           data-testid="agent-use-btn"
         >
-          <Zap size={9} /> Use this
+          <Zap size={9} /> Use in Build
         </button>
         <button
           type="button"
           onClick={() => onCopyPrompt(agent.id, agent.examplePrompt)}
-          className="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-[var(--ivory-border)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] text-[10px] font-semibold transition-colors cursor-pointer"
+          className="ml-auto inline-flex items-center gap-1 px-2 py-1 rounded-full border border-[var(--ivory-border)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] text-[10px] font-semibold transition-colors cursor-pointer"
           data-testid="agent-copy-btn"
         >
           {copiedId === agent.id ? <CheckCircle size={9} className="text-emerald-600" /> : <Copy size={9} />}
           {copiedId === agent.id ? 'Copied' : 'Copy'}
-        </button>
-        <button
-          type="button"
-          onClick={() => onSendToBuild(agent.examplePrompt)}
-          className="ml-auto inline-flex items-center gap-1 text-[10px] font-semibold text-[var(--ivory-text-3)] hover:text-[var(--ivory-accent)] transition-colors cursor-pointer"
-          data-testid="agent-build-btn"
-          title="Send to Build"
-        >
-          <ArrowRight size={10} /> Build
         </button>
       </div>
     </div>
@@ -527,13 +505,11 @@ function CanonicalSkillCard({
   copiedId,
   onCopyPrompt,
   onUse,
-  onSendToBuild,
 }: {
   skill: CuratedSkill
   copiedId: string | null
   onCopyPrompt: (id: string, prompt: string) => void
   onUse: (prompt: string) => void
-  onSendToBuild: (prompt: string) => void
 }): React.ReactElement {
   const catInfo = SKILL_CATEGORIES.find(c => c.id === skill.category)
   const isActive = skill.status === 'active'
@@ -587,27 +563,19 @@ function CanonicalSkillCard({
             <button
               type="button"
               onClick={() => onUse(skill.examplePrompt)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-hover)] text-[10px] font-semibold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[var(--ivory-bronze)] text-white hover:bg-[var(--ivory-bronze-hover)] text-[10px] font-semibold transition-colors cursor-pointer"
               data-testid="skill-use-btn"
             >
-              <Zap size={10} /> Use this
+              <Zap size={10} /> Use in Build
             </button>
             <button
               type="button"
               onClick={() => onCopyPrompt(skill.id, skill.examplePrompt)}
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-[var(--ivory-border)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] text-[10px] font-semibold transition-colors cursor-pointer"
+              className="ml-auto inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-[var(--ivory-border)] text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] text-[10px] font-semibold transition-colors cursor-pointer"
               data-testid="skill-copy-btn"
             >
               {copiedId === skill.id ? <CheckCircle size={9} className="text-emerald-600" /> : <Copy size={9} />}
-              {copiedId === skill.id ? 'Copied!' : 'Copy prompt'}
-            </button>
-            <button
-              type="button"
-              onClick={() => onSendToBuild(skill.examplePrompt)}
-              className="ml-auto inline-flex items-center gap-1 text-[10px] font-semibold text-[var(--ivory-accent)] hover:underline cursor-pointer"
-              data-testid="skill-build-btn"
-            >
-              <ArrowRight size={10} /> Send to Build
+              {copiedId === skill.id ? 'Copied' : 'Copy'}
             </button>
           </>
         ) : (

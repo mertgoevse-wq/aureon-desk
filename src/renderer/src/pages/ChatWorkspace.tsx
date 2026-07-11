@@ -8,7 +8,7 @@ import { useIpc } from '../hooks/useIpc'
 import { useNavigate } from 'react-router-dom'
 
 import {
-  MessageSquare, ScrollText, FolderOpen, Wrench, ChevronDown,
+  ScrollText, FolderOpen, ChevronDown,
   Sparkles, SlidersHorizontal, Clock3, AlertTriangle,
   BookOpen, Zap, Monitor, KeyRound, Package, Bug
 } from 'lucide-react'
@@ -83,7 +83,6 @@ export function ChatWorkspace(): React.ReactElement {
   const [homeProjectId, setHomeProjectId] = useState<string | null>(null)
   const [homePromptsOpen, setHomePromptsOpen] = useState(false)
   const [homeProjectsOpen, setHomeProjectsOpen] = useState(false)
-  const [toolsCount, setToolsCount] = useState(0)
   const [projects, setProjects] = useState<any[]>([])
 
   useEffect(() => {
@@ -142,12 +141,6 @@ export function ChatWorkspace(): React.ReactElement {
       })
       .catch(console.error)
 
-    api.toolList()
-      .then((list: any[]) => {
-        const count = list.filter((t: any) => t.is_enabled === 1 || t.is_enabled === true).length
-        setToolsCount(count)
-      })
-      .catch(console.error)
   }, [api, activeChat])
 
   const selectedPrompt = systemPrompts.find(p => p.id === selectedPromptId)
@@ -242,18 +235,9 @@ export function ChatWorkspace(): React.ReactElement {
         <div className="min-h-full flex items-center justify-center px-6 py-10">
           <div className="w-full max-w-3xl text-center flex flex-col items-center">
             {/* Greeting */}
-            <h1 className="text-4xl font-semibold text-[var(--ivory-text)] tracking-tight font-display mb-5 select-none">
+            <h1 className="text-[2rem] font-semibold text-[var(--ivory-text)] font-display mb-5 select-none">
               {getTimeAwareGreeting()}, Mert
             </h1>
-
-            {/* Beginner Guidance banner */}
-            <div className="w-full max-w-2xl mb-6 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/50 rounded-2xl p-4 text-left text-[11px] text-[var(--ivory-text-2)] leading-relaxed shadow-sm font-body animate-scale-in">
-              <div className="font-bold text-[var(--ivory-text)] mb-1 flex items-center gap-1.5">
-                <MessageSquare size={13} className="text-[var(--ivory-accent)]" />
-                Vibeforge Chat Workspace
-              </div>
-              Ask general questions, request code reviews, or design architectures. You can select your AI provider model, target project contexts, and system profile settings directly inside the toolbar options. Type a prompt and press <b>Enter</b> to spawn a dedicated conversation.
-            </div>
 
             {/* Large Centered Composer Card */}
             <div className="w-full rounded-[28px] border border-[var(--ivory-border)] bg-[var(--ivory-elevated)] shadow-[var(--shadow-lg)] ring-1 ring-white/60 overflow-hidden mb-6">
@@ -345,16 +329,6 @@ export function ChatWorkspace(): React.ReactElement {
                     )}
                   </div>
 
-                  {/* Tools Badge */}
-                  <button
-                    type="button"
-                    onClick={() => navigate('/tools')}
-                    className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[var(--ivory-bg)] border border-[var(--ivory-border)] text-[11px] font-semibold text-[var(--ivory-text-2)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition-colors focus:outline-none cursor-pointer"
-                  >
-                    <Wrench size={11} className="text-[var(--ivory-accent)]" />
-                    <span>{toolsCount} tools active</span>
-                  </button>
-
                   {/* Setup Provider Callout Badge */}
                   {enabledModels.length === 0 && (
                     <button
@@ -391,7 +365,7 @@ export function ChatWorkspace(): React.ReactElement {
                 ))}
                 <button
                   type="button"
-                  onClick={() => navigate('/vibe')}
+                  onClick={() => navigate('/studio')}
                   className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--ivory-elevated)] border border-[var(--ivory-border)]/60 rounded-full text-[11px] font-medium text-[var(--ivory-text-3)] hover:text-[var(--ivory-text-2)] transition cursor-pointer select-none"
                 >
                   <span>More…</span>

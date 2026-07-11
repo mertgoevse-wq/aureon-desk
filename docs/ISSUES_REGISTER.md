@@ -1,7 +1,54 @@
 # Vibeforge — Issues Register
 
-> **Last updated:** 2026-07-11 — Pre-beta stabilization complete
+> **Last updated:** 2026-07-11 — Guided No-Code Builder UX and Goal Wizard complete
 > **Branch:** `main`
+
+---
+
+## Issues Resolved in Guided Builder UX Pass (2026-07-11)
+
+| ID | Area | Issue | Root Cause | Status |
+|----|------|-------|------------|--------|
+| GBUX-01 | Studio / Build | Technical terminology and layout was overwhelming for beginner/non-technical users | Autonomy selectors, custom platforms, and advanced output configurations competed with the simple goal definition | ✅ Fixed — Defaulted home page to Step-by-Step Goal Assistant wizard. Moved all complex advanced developer configuration under toggleable drawers/panels |
+| GBUX-02 | Goal Wizard | Non-programmers lacked structured path to build app prompts | Had to manually craft text matching the compilation platform requirements | ✅ Fixed — Added 5-step no-code GoalWizard selector (What to build, Purpose, Elements/Features, Visual style, Build brief preview) with automatic high-quality prompt compiling |
+
+## Issues Resolved in Video UI Polish Pass (2026-07-11)
+
+| ID | Area | Issue | Root Cause | Status |
+|----|------|-------|------------|--------|
+| VUI-01 | Studio / Build | Build landing felt text-heavy with competing actions | Beginner guide and secondary Chat CTA competed with the main build path | ✅ Fixed — shorter hero copy, fewer suggestions, one primary Build with Preview action |
+| VUI-02 | LivePreview | Code Mode felt crowded and dashboard-like | Explorer, diagnostics, logs, demo actions, and preview controls were all visible at once | ✅ Fixed — narrower rail, collapsed explorer/logs/diagnostics, browser-like canvas |
+| VUI-03 | LivePreview | Demo controls appeared in normal user UI | Demo template/button and idle CTA were exposed alongside normal Build with Preview | ✅ Fixed — demo execution is under collapsed Developer tools only |
+| VUI-04 | Build Pipeline | Raw generated stream could display as escaped structured text | Streaming pane printed all stream text verbatim | ✅ Fixed — JSON-like structured stream text is hidden from the visible Code tab |
+| VUI-05 | Navigation | Code, Preview, and Vibe Coding routes created duplicate mental models | Sidebar had separate Code/Preview actions and Vibe Coding shared Build's active route | ✅ Fixed — one top-level Code route, Vibe Coding routes to Build without double-active state |
+| VUI-06 | Settings / Providers | Provider/settings forms could feel clipped or shifted | Modal max-height and settings/provider spacing were too tight for 1366x768 review | ✅ Fixed — viewport-safe modal sizing, tighter settings shell, compact Provider Test Center |
+| VUI-07 | Skills / Agents | Cards had too many similar actions | Use, Copy, and Send to Build all appeared as peer actions | ✅ Fixed — one primary Use in Build action plus Copy |
+
+### Video UI Gate Checklist (2026-07-11)
+
+| # | Check | Result |
+|---|-------|--------|
+| 1 | Chat less crowded | ✅ PASS |
+| 2 | Build/Studio one visible primary action | ✅ PASS |
+| 3 | Code/Preview header smaller | ✅ PASS |
+| 4 | Demo controls hidden by default | ✅ PASS |
+| 5 | LivePreview browser-like canvas | ✅ PASS |
+| 6 | Code/Diff tabs remain available | ✅ PASS |
+| 7 | Providers settings usable | ✅ PASS |
+| 8 | Skills/Agents organized | ✅ PASS |
+| 9 | Provider modal not clipped at 1366x768 | ✅ PASS |
+| 10 | 1366x768 no horizontal overflow | ✅ PASS |
+| 11 | Direct validation commands pass | ✅ PASS |
+
+### Verification
+
+- `node scripts/verify-native.js` ✅ PASS
+- `tsc --noEmit -p tsconfig.node.json` ✅ PASS
+- `tsc --noEmit -p tsconfig.web.json` ✅ PASS
+- `vitest run` ✅ PASS — 845 tests, 33 files
+- `electron-vite build` ✅ PASS
+- `playwright test tests/e2e/12-vibeforge-workspace-ui.spec.ts --headed --workers=1 --timeout=180000` ✅ PASS — 5/5
+- Screenshot sweep ✅ PASS — `test-results/video-ui-polish/`
 
 ---
 

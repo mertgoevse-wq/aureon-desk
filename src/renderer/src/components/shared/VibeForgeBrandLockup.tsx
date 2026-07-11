@@ -21,7 +21,7 @@ export function VibeForgeBrandLockup({
       <VibeForgeMark size={size} className="shrink-0" />
       <div className="min-w-0">
         <h1 className="text-[18px] font-semibold tracking-tight display-text text-[var(--ivory-text)] truncate leading-tight">
-          VibeForge
+          Vibeforge
         </h1>
         <p className="text-xs text-[var(--ivory-text-3)] truncate font-medium mt-0.5">
           Build ideas into working software

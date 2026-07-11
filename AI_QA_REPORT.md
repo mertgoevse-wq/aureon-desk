@@ -2,6 +2,46 @@
 
 > **Branch:** main
 
+## Guided No-Code Builder UX & Goal Wizard — 2026-07-11
+
+> ✅ **Status: Complete — app converted into a guided builder with a 5-step wizard.**
+
+| Check | Result |
+|-------|--------|
+| `node scripts/verify-native.js` | ✅ PASS |
+| `tsc --noEmit -p tsconfig.node.json` | ✅ PASS |
+| `tsc --noEmit -p tsconfig.web.json` | ✅ PASS |
+| `vitest run` | ✅ PASS — 845/845 tests, 33 files |
+| `electron-vite build` | ✅ PASS |
+| E2E Goal Wizard | ✅ PASS — `tests/e2e/20-vibeforge-no-code-wizard.spec.ts` 2/2 |
+
+### Summary
+Transformed Vibeforge into a guided builder experience for non-programmers. Added a 5-step interactive GoalWizard helper that builds briefs without technical terminology, select style layouts, and launches directly into "Build with Preview". Simplified primary home view by defaulting to the step-by-step goal assistant, moving custom prompt entries and technical configs into secondary tabs or collapsed panels.
+
+---
+
+## Video-Based UI Polish — 2026-07-11
+
+> ✅ **Status: Complete — visible polish applied without adding product features.**
+
+| Check | Result |
+|-------|--------|
+| `node scripts/verify-native.js` | ✅ PASS |
+| `tsc --noEmit -p tsconfig.node.json` | ✅ PASS |
+| `tsc --noEmit -p tsconfig.web.json` | ✅ PASS |
+| `vitest run` | ✅ PASS — 845/845 tests, 33 files |
+| `electron-vite build` | ✅ PASS |
+| `electron-vite dev` | ✅ PASS — renderer dev server at `http://localhost:5173/`, Electron main window created, no stderr |
+| Headed workspace QA | ✅ PASS — `tests/e2e/12-vibeforge-workspace-ui.spec.ts` 5/5 |
+| Screenshot sweep | ✅ PASS — `test-results/video-ui-polish/` captured Chat, Build, Code/Preview, Settings, Providers, Skills, Agents, modal, 1366x768, and maximized Build |
+
+### Summary
+Polished the surfaces called out from the user video: Studio, Sidebar, AppShell, LivePreview, Settings, Providers, Skills/Agents, and Chat. Normal user flows now show fewer peer actions, shorter headers, less explanatory copy, softer primary buttons, and hidden developer/demo controls. LivePreview now has a single visible Build with Preview action, collapsed diagnostics/logs, a browser-like preview canvas, and no normal demo CTA. Structured generation streams are no longer rendered as escaped JSON-like blobs in the visible Code tab.
+
+### Notes
+- The historical `VibeForge*` component/file names remain for compatibility, but visible brand text and image labels now use `Vibeforge`.
+- Provider Advanced settings remain reachable for existing QA and beta diagnostics, while demo execution is hidden under collapsed Developer tools inside Code/LivePreview.
+
 ---
 
 ## Pre-Beta Stabilization — 2026-07-11

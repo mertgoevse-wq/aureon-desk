@@ -1,3 +1,44 @@
+## [Unreleased] - 2026-07-11 — Guided No-Code Builder UX & Goal Wizard
+
+### Added
+- **GoalWizard Component:** Added a 5-step no-code GoalWizard helper (`What to build`, `Purpose`, `Elements/Features`, `Visual Style`, `Build brief preview`) with automatic prompt compiling.
+- **Goal Wizard E2E Tests:** Added `tests/e2e/20-vibeforge-no-code-wizard.spec.ts` E2E test file verifying both website and android app wizard flows.
+
+### Changed
+- **Studio Page:** Converted the primary landing screen into a guided builder experience. Defaulted the main view to the Step-by-Step Goal Assistant wizard.
+- **Aesthetics & Tone:** Rephrased landing page copy to focus on non-programmers, adding helper suggestions and visual style configurations.
+- **Technical Compaction:** Moved all advanced settings, autonomy parameters, and custom prompt editors behind toggleable drawers or collapse headers.
+
+### Verification
+- `node scripts/verify-native.js` — PASS
+- `tsc --noEmit -p tsconfig.node.json` — PASS
+- `tsc --noEmit -p tsconfig.web.json` — PASS
+- `vitest run` — PASS (845 tests, 33 files)
+- `electron-vite build` — PASS
+- `playwright test tests/e2e/20-vibeforge-no-code-wizard.spec.ts` — PASS (2/2)
+
+## [Unreleased] - 2026-07-11 — Video-Based UI Polish
+
+### Changed
+- **Studio/Build:** Reduced the hero copy, removed the normal secondary Chat CTA, kept one visible "Build with Preview" action, and moved alternate output modes behind advanced drawer details.
+- **Code/LivePreview:** Shortened the Code header, narrowed the left rail, collapsed explorer/logs/diagnostics by default, removed normal demo CTAs, moved "Run Coding Demo App" into collapsed Developer tools, and rendered the preview as a neutral browser-like canvas.
+- **Navigation:** Removed duplicate Code/Preview top-level sidebar choices, fixed Vibe Coding routing back to Build without double-active state, removed the sidebar help promo card, and corrected visible brand casing to "Vibeforge".
+- **Settings/Providers:** Tightened settings spacing, made modals viewport-safe, restored a compact Provider Test Center, and reduced provider card/header copy.
+- **Skills/Agents/Chat:** Reduced card actions to one primary path plus Copy and trimmed the Chat home guidance banner.
+
+### Fixed
+- **Raw Stream Display:** Structured JSON-like generation streams are no longer shown as escaped blobs in the Code tab; users are directed to Files/Diff for readable output.
+- **Modal Layout:** Shared modal overlay now supports viewport scrolling and safer max-height to prevent clipped forms.
+
+### Verification
+- `node scripts/verify-native.js` — PASS
+- `tsc --noEmit -p tsconfig.node.json` — PASS
+- `tsc --noEmit -p tsconfig.web.json` — PASS
+- `vitest run` — PASS (845 tests, 33 files)
+- `electron-vite build` — PASS
+- `playwright test tests/e2e/12-vibeforge-workspace-ui.spec.ts --headed --workers=1 --timeout=180000` — PASS (5/5)
+- Manual screenshot sweep: `test-results/video-ui-polish/` — Chat, Build, Code/Preview, Settings, Providers, Skills, Agents, provider modal, 1366x768, and maximized Build.
+
 ## [Unreleased] - 2026-07-11 — Pre-Beta Stabilization
 
 ### Fixed

@@ -51,7 +51,7 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
   const modeItems = [
     { id: 'studio', label: 'Studio', path: '/', icon: <Sparkles size={14} /> },
     { id: 'chat', label: 'Chat', path: '/chat', icon: <MessageSquare size={14} /> },
-    ...(simpleMode ? [] : [{ id: 'cowork', label: 'Cowork', path: '/cowork', icon: <Archive size={14} /> }]),
+    { id: 'cowork', label: 'Cowork', path: '/cowork', icon: <Archive size={14} /> },
     { id: 'code', label: 'Code', path: '/preview', icon: <Code2 size={14} /> }
   ]
   const activeMode = location.pathname === '/' || location.pathname.startsWith('/studio')
@@ -364,15 +364,15 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 bg-[var(--ivory-bg)]">
         <header
-          className="h-12 shrink-0 border-b border-[var(--ivory-border)] bg-[var(--ivory-elevated)]/86 backdrop-blur-xl px-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 shadow-[var(--shadow-xs)] select-none"
+          className="h-11 shrink-0 border-b border-[var(--ivory-border)] bg-[var(--ivory-elevated)]/86 backdrop-blur-xl px-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 shadow-[var(--shadow-xs)] select-none"
         >
           {/* Left Column: Navigation controls & Brand */}
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex items-center gap-1 border border-[var(--ivory-border)] bg-[var(--ivory-bg)] rounded-xl p-0.5 shadow-[var(--shadow-xs)] shrink-0">
+            <div className="flex items-center gap-1 border border-[var(--ivory-border)] bg-[var(--ivory-bg)] rounded-lg p-0.5 shadow-[var(--shadow-xs)] shrink-0">
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition focus:outline-none"
+                className="w-6 h-6 flex items-center justify-center rounded-md text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition focus:outline-none"
                 aria-label="Go back"
                 title="Back"
               >
@@ -381,7 +381,7 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
               <button
                 type="button"
                 onClick={() => navigate(1)}
-                className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition focus:outline-none"
+                className="w-6 h-6 flex items-center justify-center rounded-md text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)] transition focus:outline-none"
                 aria-label="Go forward"
                 title="Forward"
               >
@@ -400,7 +400,7 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
 
           {/* Center Column: Mode Switch */}
           <div
-            className="inline-flex items-center rounded-2xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] p-1 shadow-[var(--shadow-xs)]"
+            className="inline-flex items-center rounded-xl border border-[var(--ivory-border)] bg-[var(--ivory-bg)] p-0.5 shadow-[var(--shadow-xs)]"
             data-testid="mode-switch"
             role="tablist"
             aria-label="Workspace mode"
@@ -414,7 +414,7 @@ export const AppShell = memo(function AppShell(): React.ReactElement {
                   role="tab"
                   {...{ 'aria-selected': selected }}
                   onClick={() => navigate(item.path)}
-                  className={`h-8 min-w-[76px] px-3 inline-flex items-center justify-center gap-1.5 rounded-xl text-[12px] font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
+                  className={`h-7 min-w-[66px] px-2.5 inline-flex items-center justify-center gap-1.5 rounded-lg text-[12px] font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35
                     ${selected
                       ? 'bg-[var(--ivory-elevated)] text-[var(--ivory-text)] shadow-[var(--shadow-sm)]'
                       : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface)]'}`}

@@ -26,7 +26,7 @@ export function VibeForgeMark({
     return (
       <img
         src={size <= 64 ? '/brand/vibeforge-mark-64.png' : size <= 128 ? '/brand/vibeforge-mark-128.png' : '/brand/vibeforge-mark-256.png'}
-        alt="VibeForge"
+        alt="Vibeforge"
         width={size}
         height={size}
         className={className}
@@ -42,7 +42,7 @@ export function VibeForgeMark({
       height={size}
       viewBox="0 0 256 256"
       fill="none"
-      aria-label="VibeForge"
+      aria-label="Vibeforge"
       role="img"
       className={className}
       xmlns="http://www.w3.org/2000/svg"

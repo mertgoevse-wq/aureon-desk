@@ -19,8 +19,6 @@ import {
   ChevronRight,
   ChevronDown,
   UserCircle,
-  Lightbulb,
-  X
 } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useUIStore } from '../stores/uiStore'
@@ -42,20 +40,11 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
     return localStorage.getItem('vb_show_advanced_nav') === 'true'
   })
 
-  const [helpCardDismissed, setHelpCardDismissed] = useState(() => {
-    return localStorage.getItem('vb_sidebar_help_dismissed') === 'true'
-  })
-
   const toggleAdvancedNav = useCallback(() => {
     const nextVal = !showAdvancedNav
     setShowAdvancedNav(nextVal)
     localStorage.setItem('vb_show_advanced_nav', String(nextVal))
   }, [showAdvancedNav])
-
-  const dismissHelpCard = useCallback(() => {
-    setHelpCardDismissed(true)
-    localStorage.setItem('vb_sidebar_help_dismissed', 'true')
-  }, [])
 
   useEffect(() => {
     loadChats()
@@ -137,16 +126,16 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
 
   // Navigation definition lists
   const primaryLinks = [
-    { label: 'Chat', icon: <MessageSquare size={13} />, path: '/chat', testId: 'nav-chats' },
     { label: 'Build', icon: <Sparkles size={13} />, path: '/', testId: 'nav-studio' },
-    { label: 'Code', icon: <Monitor size={13} />, path: '/vibe', testId: 'nav-vibe' },
-    { label: 'Preview', icon: <Code2 size={13} />, path: '/preview', testId: 'nav-preview' },
+    { label: 'Chat', icon: <MessageSquare size={13} />, path: '/chat', testId: 'nav-chats' },
+    { label: 'Code', icon: <Monitor size={13} />, path: '/preview', testId: 'nav-preview' },
     { label: 'Projects', icon: <FolderOpen size={13} />, path: '/projects', testId: 'nav-projects' },
   ]
 
   const secondaryLinks = [
     { label: 'Agents', icon: <Bot size={13} />, path: '/learn?tab=agents', testId: 'nav-agents' },
     { label: 'Skills', icon: <Wrench size={13} />, path: '/skills', testId: 'nav-skills' },
+    { label: 'Vibe Coding', icon: <Code2 size={13} />, path: '/vibe', navigateTo: '/', testId: 'nav-vibe' },
     { label: 'Providers', icon: <KeyRound size={13} />, path: '/settings/providers', testId: 'nav-providers' },
     { label: 'Settings', icon: <Settings size={13} />, path: '/settings/general', testId: 'nav-settings' },
   ]
@@ -204,7 +193,7 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
             <button
               key={link.path}
               type="button"
-              onClick={() => navigate(link.path)}
+              onClick={() => navigate(('navigateTo' in link ? link.navigateTo : link.path) as string)}
               title={link.label}
               className={`p-2 rounded-xl transition cursor-pointer ${isActive(link.path) ? 'text-[var(--ivory-accent)] bg-[var(--ivory-active-bg)] shadow-[var(--shadow-xs)]' : 'text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)]'}`}
               data-testid={link.testId}
@@ -320,7 +309,7 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
                 <button
                   key={link.path}
                   type="button"
-                  onClick={() => navigate(link.path)}
+                  onClick={() => navigate(('navigateTo' in link ? link.navigateTo : link.path) as string)}
                   className={`w-full h-8 px-3 rounded-lg text-[11px] font-semibold transition cursor-pointer flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35 ${
                     active
                       ? 'bg-[var(--ivory-active-bg)] text-[var(--ivory-accent)] shadow-[var(--shadow-xs)]'
@@ -421,36 +410,6 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
 
         </div>
 
-        {/* Contextual Help Card */}
-        {!helpCardDismissed && (
-          <div className="mx-3 mb-3 p-3 rounded-2xl bg-[var(--ivory-accent-light)]/40 border border-[var(--ivory-accent)]/15 shrink-0" data-testid="sidebar-help-card">
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <div className="flex items-center gap-1.5">
-                <Lightbulb size={13} className="text-[var(--ivory-accent)] shrink-0" />
-                <span className="text-[11px] font-semibold text-[var(--ivory-text)]">New here?</span>
-              </div>
-              <button
-                type="button"
-                onClick={dismissHelpCard}
-                className="p-0.5 text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] cursor-pointer shrink-0"
-                aria-label="Dismiss help"
-              >
-                <X size={12} />
-              </button>
-            </div>
-            <p className="text-[10px] text-[var(--ivory-text-2)] leading-relaxed mb-2">
-              Start with the Beginner guide in Skills & Agents, or run the first-build wizard from Settings → General.
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate('/skills')}
-              className="w-full py-1.5 rounded-lg bg-[var(--ivory-accent)] text-white hover:bg-[var(--ivory-accent-hover)] text-[10px] font-semibold transition-colors cursor-pointer"
-            >
-              Open Skills & Agents
-            </button>
-          </div>
-        )}
-
         {/* Footer Profile Block */}
         <div className="border-t border-[var(--ivory-border)]/25 p-2.5 bg-[var(--ivory-surface)] flex items-center justify-between gap-2 shrink-0">
           <div className="flex items-center gap-1.5 min-w-0">
@@ -462,7 +421,7 @@ export const Sidebar = memo(function Sidebar(): React.ReactElement {
             onClick={() => navigate('/settings/general')}
             className="p-1 rounded-lg text-[var(--ivory-text-3)] hover:text-[var(--ivory-text)] hover:bg-[var(--ivory-surface-2)] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ivory-accent)]/35"
             aria-label="Open settings"
-            data-testid="nav-settings"
+            data-testid="nav-settings-footer"
           >
             <Settings size={12} />
           </button>
